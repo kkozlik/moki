@@ -7,10 +7,13 @@ const { cfg } = require('./modules/config');
 
 // const port = process.env.PORT || 5000;
 // start server
-const server = app.listen(cfg.port, () => {
+const server = app.listen(cfg.port, 'loalhost');
+
+server.on('listening', () => {
   // eslint-disable-next-line no-console
   console.log(`listening on:\t${cfg.port}`);
-}).on('error', console.log);
+});
+server.on('error', console.log);
 
 module.exports = app;
 
