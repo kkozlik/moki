@@ -15,6 +15,8 @@ BuildRequires:  npm, yarn
 Obsoletes:	sbc-events-gui
 Requires:	nodejs
 Requires:	yarn
+Requires: python3
+Requires: python36-ldap
 
 %description
 ABC Monitor GUI
@@ -49,10 +51,17 @@ install sns.json %{buildroot}/var/lib/logstash/sns.json
 # install moki
 install -d %{buildroot}/usr/share/Moki
 cp -r Moki/* %{buildroot}/usr/share/Moki/
+
+# install moki ldap-auth comp
+install -d %{buildroot}/usr/sbin
+cp Moki/ldap_auth/ldap-auth %{buildroot}/usr/sbin/
+
 # install moki service file
 install -d %{buildroot}/usr/lib/systemd/system
 install -m 0644 moki-client.service %{buildroot}/usr/lib/systemd/system/
 install -m 0644 moki-server.service %{buildroot}/usr/lib/systemd/system/
+install -m 0644 ldap-auth.service %{buildroot}/usr/lib/systemd/system/
+
 # perform moki install
 cd %{buildroot}/usr/share/Moki/client
 npm install
@@ -77,10 +86,8 @@ chown node-web /var/lib/logstash/sns.json
 
 systemctl daemon-reload
 echo "Enabling and restarting moki services"
-systemctl -q enable moki-server moki-client
-systemctl -q restart moki-server moki-client
-systemctl -q enable moki-server moki-server
-systemctl -q restart moki-server moki-server
+systemctl -q enable moki-server moki-client ldap-auth
+systemctl -q restart moki-server moki-client ldap-auth
 
 %files
 /opt/abc-monitor-gui/
@@ -93,5 +100,7 @@ systemctl -q restart moki-server moki-server
 /usr/share/Moki/
 /usr/lib/systemd/system/moki-server.service
 /usr/lib/systemd/system/moki-client.service
+/usr/lib/systemd/system/ldap-auth.service
+/usr/sbin/ldap-auth
 
 %changelog
