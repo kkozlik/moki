@@ -1,0 +1,50 @@
+version: "3.4"
+
+services:
+
+  server:
+    build:
+      context: server
+      target: prod
+    # image: docker.frafos.net/license-api:latest
+    container_name: moki-express
+    restart: always
+    environment:
+      API_PORT: 5000
+    ports:
+      - 5000:5000
+    extra_hosts:
+      gitlab.frafos.net: 172.22.1.126
+#    volumes:
+#      - api_data:/etc/db
+#      - "./custom_config/templates:/config/templates"
+
+  client:
+    build:
+      context: client
+#      target: prod
+    # image: docker.frafos.net/license-front:latest
+    container_name: moki-react
+    restart: always
+    # environment:
+    #   API_HOST: ''
+    ports:
+      - 3000:3000
+
+  # nginx is used for ssl termination
+  nginx:
+    restart: always
+    build:
+      context: nginx
+      target: prod
+    # image: docker.frafos.net/license-nginx:latest
+    container_name: moki-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - server
+      - client
+
+# volumes:
+#   api_data:

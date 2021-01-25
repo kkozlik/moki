@@ -1,4 +1,6 @@
-FROM node:10 AS dev
+ARG img=docker.frafos.net/node:10
+ARG img_prod=docker.frafos.net/node:10-alpine
+FROM ${img} as dev
 
 WORKDIR /app
 
@@ -22,7 +24,7 @@ EXPOSE $PORT
 
 CMD npm install && nodemon
 
-FROM node:10-alpine AS prod
+FROM ${img_prod} as prod
 
 WORKDIR /app
 
