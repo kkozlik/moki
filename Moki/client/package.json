@@ -1,7 +1,6 @@
 {
   "name": "moki-react",
   "version": "1.1.0",
-  "proxy": "http://localhost:5000/",
   "description": "Monitor GUI",
   "author": "Frafos",
   "license": "Apache-2.0",
@@ -21,7 +20,7 @@
     "react-country-flag": "^2.3.0",
     "jquery": "^3.3.1",
     "jspdf": "^1.4.1",
-    "file-saver": "^2.0.2",  
+    "file-saver": "^2.0.2",
     "jszip": "^3.5.0",
     "moment": "^2.24.0",
     "popper.js": "^1.14.6",
