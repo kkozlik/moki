@@ -1,16 +1,20 @@
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.min.js';
+import 'jquery/src/jquery';
+
 import React from 'react';
 import ReactDOM from 'react-dom';
-import * as serviceWorker from './serviceWorker';
 import {
-    BrowserRouter
+  BrowserRouter
 } from 'react-router-dom';
-import App from './App';
-import './styles/style.css';
-import 'jquery/src/jquery';
-import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
-import '../node_modules/bootstrap/dist/js/bootstrap.min.js';
 
-ReactDOM.render(( 
+import './styles/style.css';
+import App from './App';
+
+// import * as serviceWorker from './serviceWorker';
+
+
+ReactDOM.render((
     <BrowserRouter>
         < App />
     </BrowserRouter>
@@ -21,4 +25,4 @@ ReactDOM.render((
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: http://bit.ly/CRA-PWA
 //serviceWorker.unregister();
-serviceWorker.register();
+// serviceWorker.register();

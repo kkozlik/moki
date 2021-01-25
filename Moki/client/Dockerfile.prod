@@ -1,20 +1,5 @@
 ARG img=node:10
 ARG img_nginx=nginx:alpine
-FROM ${img} as dev
-
-WORKDIR /app
-
-# install app dependencies
-COPY package*.json ./
-RUN npm install --silent
-
-ENV PATH=$PATH:/app/node_modules/.bin
-
-# Copy source
-COPY . ./
-
-CMD npm start
-
 FROM ${img} as build
 
 ENV NODE_ENV=production

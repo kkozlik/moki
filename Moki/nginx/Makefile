@@ -1,5 +1,4 @@
 NAME		= moki-nginx
-URL			= docker.frafos.net
 RELEASE	= dev
 
 IMG_NAME	= $(URL)/$(NAME):$(RELEASE)

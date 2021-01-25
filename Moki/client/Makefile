@@ -5,6 +5,7 @@ PORT	= 3000
 CMD	=
 IMG_NAME	= $(URL)/$(NAME):$(RELEASE)
 VOLUMES = -v `pwd`:/app
+D_FILE	= Dockerfile
 
 .PHONY: $(NAME)
 ## moki-react-express-app: Default target, run build
@@ -14,7 +15,7 @@ $(NAME): build
 ## build: Build the nodejs docker image (default target)
 build:
 	@echo " -- Building $(NAME) docker image (target: $(BUILD_TARGET)) ..."
-	@docker build -t $(NAME) --target=$(BUILD_TARGET) .
+	@docker build --rm -t $(NAME) --target=$(BUILD_TARGET) --file=$(D_FILE) .
 	@echo " -- Building $(NAME) docker image: done"
 
 .PHONY: build-prod
@@ -30,10 +31,10 @@ run:
 	@echo " -- Running $(NAME) docker image ..."
 	@docker run	--rm -it \
 			--user "$(id -u):$(id -g)" \
-      $(VOLUMES) \
-      -p $(PORT):$(PORT) \
+			$(VOLUMES) \
+			-p $(PORT):$(PORT) \
 			--net=host \
-      --name $(NAME) \
+			--name $(NAME) \
 			$(NAME) $(CMD)
 	@echo " -- Running $(NAME) docker image: done"
 
