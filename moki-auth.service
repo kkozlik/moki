@@ -1,6 +1,6 @@
 [Service]
 Type=simple
-ExecStart=/usr/sbin/ldap-auth
+ExecStart=/usr/sbin/moki-auth
 WorkingDirectory=/usr/share/Moki/
 Restart=always
 StandardOutput=syslog
@@ -12,4 +12,4 @@ StartLimitInterval=0
 
 [Install]
 WantedBy=multi-user.target
-Alias=lap-auth
+Alias=moki-auth,ldap-auth
