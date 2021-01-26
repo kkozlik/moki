@@ -1,0 +1,9 @@
+{
+  "extends": "airbnb",
+  "settings": {
+			"react": {
+				"version": "999.999.999"
+			},
+    "class-methods-use-this": "disable"
+  }
+}

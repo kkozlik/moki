@@ -1,0 +1,110 @@
+import React, {
+    Component
+} from 'react';
+import * as d3 from "d3";
+import emptyIcon from "../../styles/icons/empty_small.png";
+
+
+export default class GaugeChart extends Component {
+
+    componentDidUpdate(prevProps) {
+        this.draw(this.props.data, this.props.id, this.props.width);
+    }
+
+    draw(data, id, width) {
+        //FOR UPDATE: remove chart if it's already there
+        var chart = document.getElementById(id + "SVG");
+        if (chart) {
+            chart.remove();
+        }
+
+         var height = 70;
+         var svg = d3.select('#' + id).append("svg");
+         if (data === 0) {
+            svg.attr('width', width)
+                .attr('height', 70)
+                .attr('id', id + 'SVG');
+
+            svg.append("line")
+                .attr("x1", 0)
+                .attr("y1", 10)
+                .attr("x2", width)
+                .attr("y2", 10)
+                .attr("stroke-width", 0.4)
+                .attr("stroke", "#808080");
+
+            svg.append('svg:image')
+                .attr("xlink:href", emptyIcon)
+                .attr('transform', 'translate(' + width / 2 + ',30)');
+
+            svg.append("line")
+                .attr("x1", 0)
+                .attr("y1", 90)
+                .attr("x2", width)
+                .attr("y2", 90)
+                .attr("stroke-width", 0.4)
+                .attr("stroke", "#808080");
+
+        } else {
+        
+       
+
+        svg.attr('width', width)
+            .attr('height', height)
+            .attr('id', id + 'SVG');
+        
+            var g = svg.append('g')
+            .attr('transform', 'translate('+width/2+',' + height + ')');
+
+        var value = data/100;
+        var text = Math.round(value * 100) + '%';
+        data = [value, 1 - value];
+        var anglesRange = 0.5 * Math.PI;
+        var radis = Math.min(width, 2 * height) / 2;
+        var thickness = 20;
+        var colors = ["#ff0000", "#F5F5F5"];
+            
+            if(value < 0.5){
+                 colors = ["#00ff00", "#F5F5F5"];
+            }
+            else if(value < 0.8){
+                 colors = ["#ffa500", "#F5F5F5"];
+            }
+            
+    
+        var pies = d3.pie()
+            .value( d => d)
+            .sort(null)
+            .startAngle( anglesRange * -1)
+            .endAngle( anglesRange)
+
+        var arc = d3.arc()
+            .outerRadius(radis)
+            .innerRadius(radis - thickness)
+
+        g.selectAll("path")
+            .data(pies(data))
+            .enter()
+            .append("path")
+            .attr("fill", (d, i) => colors[i])
+            .attr("d", arc)
+
+        g.append("text")
+            .text( d => text)
+            .attr("dy", "-1rem")
+            .attr("class", "h4")
+            .attr("text-anchor", "middle")
+            
+        }
+    }
+
+    render() {
+        return ( < div id = {
+                this.props.id
+            } >
+            <
+            h3 className = "alignLeft title" > {
+                this.props.name
+            } < /h3></div > )
+    }
+}

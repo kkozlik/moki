@@ -1,0 +1,39 @@
+import store from "../store/index";
+import DashboardsTypes from './DashboardsTypes';
+
+export const getTypes=()=>{
+     var types = store.getState().types;
+    
+       //check if correct types - changing dashboard from no type to types one
+        var pathname = window.location.pathname.substring(1);
+        var dashboardTypesChecked = DashboardsTypes[pathname];
+        if(dashboardTypesChecked === undefined){
+            types = "";
+        }
+      /*  else {
+            for(var i = 0; i < dashboardTypesChecked.length; i++) {
+                if(dashboardTypesChecked[i] !== types[i].id){
+                    //store.dispatch(assignType(dashboardTypesChecked));
+                    types = dashboardTypesChecked;
+                    i = dashboardTypesChecked.length;
+                }
+            }
+
+        }*/
+    
+        var typesResult = [];
+        var disableCount = 0;
+        for(var i =0; i < types.length; i++) {
+            if(types[i].state !== 'disable'){
+                typesResult.push(types[i]);
+            }
+            else{
+                disableCount++;
+            }
+        }
+        //all types are disabled = special NOT TYPE filter
+        if(disableCount === types.length && types.length !== 0 ){
+           return "type:none";
+        }
+        return typesResult; 
+}

@@ -1,0 +1,766 @@
+// setting.js hold the setting endpoints
+
+const fs = require('fs');
+const {
+    exec
+} = require('child_process');
+const {
+    newHTTPError
+} = require('./index');
+const {
+    cfg,
+    setMonitorVersion
+} = require('../modules/config');
+const {
+    connectToES
+} = require('../modules/elastic');
+const distinct_query = require('../../js/template_queries/distinct_query.js');
+const { getJWTsipUserFilter } = require('../modules/jwt');
+var domainFilter = "*";
+var path = require('path');
+var monitorVersion = "4.6";
+/**
+ * @swagger
+ * tags:
+ *   name: Setting
+ *   description: Setting management
+ */
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *
+ *     Version:
+ *       type: object
+ *       required:
+ *         - version
+ *       properties:
+ *         version:
+ *           type: string
+ *           description: monitor version
+ *       example:
+ *         version: 4.5
+ *
+ *     ESRes:
+ *       type: object
+ *       properties:
+ *         took:
+ *           type: integer
+ *           description: request delay
+ *         timed_out:
+ *           type: boolean
+ *           description: is request timed out
+ *         status:
+ *           type: integer
+ *           description: request status
+ *
+ *     Hostname:
+ *       allOf:
+ *         - $ref: '#/components/schemas/ESRes'
+ *       properties:
+ *         hits:
+ *           type: object
+ *         _shards:
+ *           type: object
+ *
+ *     Hostnames:
+ *       properties:
+ *         took:
+ *           type: integer
+ *           description: request delay
+ *         responses:
+ *           type: array
+ *           items:
+ *             $ref: '#/components/schemas/Hostname'
+ *       example:
+ *         took: 20
+ */
+
+/**
+ * @swagger
+ * definitions:
+ *   Version:
+ *     schema:
+ *       $ref: '#/components/schemas/Version'
+ *
+ *   Hostname:
+ *     schema:
+ *       $ref: '#/components/schemas/Hostname'
+ *
+ *   Hostnames:
+ *     schema:
+ *       $ref: '#/components/schemas/Hostnames'
+ *   Settings:
+ *     type: "array"
+ *     description: JSON settings file contains just global-config optios - general, sns and alarms setting 
+ *     example:
+ *         [{app: "m_config", attrs: []},{app: "m_alarms", attrs: []},{app: "m_sns",attrs: []}]
+ *   SettingFile:
+ *     type: "array"
+ *     description: JSON settings file contains whole stored settings 
+ *     example:
+ *         [general: { global-config: [{app: "gconfig", attrs: []}, {app: "m_config",attrs: []}, {app: "m_alarms",attrs: []}, {app: "m_sns",attrs: []}], m_filters: [{id: "filterID",attribute: [ filters: [], name: "dashboard name", types: []]}]}, m_version: "4.5", version: "1.0"]
+ */
+
+class SettingController {
+    /**
+     * @swagger
+     * /api/setting:
+     *   get:
+     *     description: Fetch settings
+     *     tags: [Setting]
+     *     produces:
+     *       - application/json
+     *     parameters:
+     *       - name: pretty
+     *         description: Return a pretty json
+     *         in: query
+     *         required: false
+     *         type: bool
+     *     responses:
+     *       200:
+     *         description: Return the json setting - if monitor.json available, value are merged to defaults.json
+     *         content:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/definitions/Settings'
+     *       400:
+     *         description: processing error
+     *         content:
+     *           application/json:
+     *             example: { "error": "Problem reading data file: no such file or directory, open '/etc/abc-monitor/defaults.json'" }
+     *       500:
+     *         description: internal error
+     *         content:
+     *           application/json:
+     *             example:
+     *               error: "bash: not found"
+     */
+    static load(req, res, next) {
+        return fs.readFile(cfg.fileDefaults, (err, defaults) => {
+            if (err) {
+                console.error(`Problem with reading default file. ${err}`);
+                return next(newHTTPError(400, `Problem with reading data: ${err}`));
+            }
+
+            return fs.readFile(cfg.fileMonitor, (err2, data) => {
+                if (err2) {
+                    console.error(`Problem with reading default file. ${err2}`);
+                    return next(newHTTPError(400, `Problem with reading data: ${err2}`));
+                }
+
+                console.info('Reading files and inserting default values.');
+                // if value in monitor.json use this one, not default
+                const jsonData = JSON.parse(data);
+                const jsonDefaults = JSON.parse(defaults);
+                if ('general' in jsonData && jsonData.general['global-config']) {
+                    jsonData.general['global-config'].forEach(data => {
+                        jsonDefaults.forEach(defaults => {
+                            if (data.app == defaults.app) {
+                                data.attrs.forEach(attrs => {
+                                    defaults.attrs.forEach(defaultsAttrs => {
+                                        if (attrs.attribute == defaultsAttrs.attribute) {
+                                            defaultsAttrs.value = attrs.value;
+                                            if (attrs.comments) {
+                                                defaultsAttrs.comments = attrs.comments;
+                                            }
+                                        }
+                                    });
+                                });
+                            }
+                        });
+                    });
+                }
+
+                return res.status(200).send(jsonDefaults);
+            });
+        });
+    }
+
+
+    /**
+     * @swagger
+     * /api/defaults:
+     *   get:
+     *     description: Return stored defaults values without merging it with user's one
+     *     tags: [Setting]
+     *     produces:
+     *       - application/json
+     *     parameters:
+     *       - name: pretty
+     *         description: Return a pretty json
+     *         in: query
+     *         required: false
+     *         type: bool
+     *     responses:
+     *       200:
+     *         description: Setting payload
+     *         content:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/definitions/Settings'
+     *       500:
+     *         description: internal error
+     *         content:
+     *           application/json:
+     *             example:
+     *               error: "bash: not found"
+     */
+    static defaults(request, respond) {
+        fs.readFile(cfg.fileDefaults, function (err, defaults) {
+            if (err) {
+                respond.status(400).send({
+                    msg: "Problem with reading data: " + err
+                });
+                console.error("Problem with reading defaults file. " + err);
+            }
+            return respond.status(200).send(defaults);
+
+        });
+    }
+
+    /**
+     * @swagger
+     * /api/filters:
+     *   get:
+     *     description: Return settings payload with stored filters.
+     *     tags: [Setting]
+     *     produces:
+     *       - application/json
+     *     responses:
+     *       200:
+     *         description: Setting payload
+     *         content:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/definitions/SettingFile'
+     *       500:
+     *         description: internal error
+     *         content:
+     *           application/json:
+     *             example:
+     *               error: "bash: not found"
+     */
+    static loadFilters(request, respond) {
+        fs.readFile(cfg.fileMonitor, function (err, filters) {
+            if (err) {
+                respond.status(400).send({
+                    msg: "Problem with reading data: " + err
+                });
+                console.error("Problem with reading monitor file. " + err);
+            }
+            return respond.status(200).send(filters);
+
+        });
+    }
+
+    /**
+     * @swagger
+     * /api/filters/delete:
+     *   get:
+     *     description: delete filter
+     *     tags: [Setting]
+     *     produces:
+     *       - application/json
+     *     parameters:
+     *       - name: pretty
+     *         description: Return new config file
+     *         in: query
+     *         required: false
+     *         type: bool
+     *     responses:
+     *       200:
+     *         description: Setting payload
+     *         content:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/definitions/SettingFile'
+     *       400:
+     *         description: Problem writing new filters to config file
+     *         content:
+     *           application/json:
+     *             example:
+     *               error: "Problem writing new filters to config file"
+     */
+    static deleteFilter(request, respond) {
+        //get config file
+        var jsonData = JSON.parse(fs.readFileSync(cfg.fileMonitor));
+        var jsonDataOld = JSON.parse(fs.readFileSync(cfg.fileMonitor));
+        // filters paste it on top layer
+        jsonData["general"]["m_filters"] = [];
+
+        //add new        
+        jsonData["general"]["m_filters"] = request.body;
+        console.info("Writing new filters to file.");
+
+        //write also monitor version
+        jsonData["m_version"] = monitorVersion;
+        //write it to monitor file
+        fs.writeFile(cfg.fileMonitor, JSON.stringify(jsonData), function (error) {
+            if (error) {
+                respond.status(400).send({
+                    "msg": error
+                });
+                console.error("Problem writing new filters to config file. " + error);
+            }
+            //call check config script
+            exec("/usr/sbin/abc-monitor-check-config", function (error, stdout, stderr) {
+                if (error) {
+                    //write old data back
+                    fs.writeFile(cfg.fileMonitor, JSON.stringify(jsonDataOld));
+
+                    respond.status(400).send({
+                        "msg": stderr
+                    });
+                    console.error("Config checked failed. Writing old config back. " + stderr);
+                    respond.end();
+                } else {
+
+                    //call generate config script
+                    exec("/usr/sbin/abc-monitor-activate-config", function (error, stdout, stderr) {
+                        if (error) {
+                            respond.status(400).send({
+                                "msg": stderr
+                            });
+                            console.error("Config activation failed. " + stderr);
+                            respond.end();
+                        } else {
+                            console.info("New config activated");
+                            respond.status(200).send({
+                                "msg": "Data has been saved."
+                            });
+                        }
+                    })
+
+                }
+            })
+
+
+        });
+    }
+
+    /**
+     * @swagger
+     * /api/filters/save:
+     *   post:
+     *     description: save new filter
+     *     tags: [Setting]
+     *     produces:
+     *       - application/json
+     *     parameters:
+     *       - name: pretty
+     *         description: Return a pretty json
+     *         in: query
+     *         required: false
+     *         type: bool
+     *     responses:
+     *       200:
+     *         description: new settings file
+     *         content:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/definitions/SettingFile'
+     *       400:
+     *         description: problem with writing data to file 
+     *         content:
+     *           application/json:
+     *             example:
+     *               error: "Config checked failed. Writing old config back."
+     */
+    static save(request, respond) {
+        //get config file
+        var jsonData = JSON.parse(fs.readFileSync(cfg.fileMonitor));
+        var jsonDataOld = JSON.parse(fs.readFileSync(cfg.fileMonitor));
+
+        //if filters paste it on top layer
+        if (request.body.app === "m_filters") {
+            var filters = [];
+            //old
+            if (jsonData["general"]["m_filters"]) {
+                filters = jsonData["general"]["m_filters"]
+            } else {
+                jsonData["general"]["m_filters"] = [];
+            }
+
+            //add new
+            filters.push(request.body.attrs);
+            jsonData["general"]["m_filters"] = filters;
+            console.info("Writing new filters to file. " + JSON.stringify(filters));
+
+
+        } else {
+            //the rest of m_config
+            var isConfigGroupThere = false;
+            for (var i = 0; i < jsonData["general"]["global-config"].length; i++) {
+
+                if (jsonData["general"]["global-config"][i]["app"] === request.body.app) {
+
+                    jsonData["general"]["global-config"][i]["attrs"] = request.body.attrs;
+                    isConfigGroupThere = true;
+                }
+            }
+            //no m_sns or m_m_config or m_alarms
+            if (isConfigGroupThere === false) {
+                jsonData["general"]["global-config"].push(request.body);
+            }
+
+        }
+        //write also monitor version
+        jsonData["m_version"] = monitorVersion;
+
+        //write it to monitor file
+        fs.writeFile(cfg.fileMonitor, JSON.stringify(jsonData), function (error) {
+            if (error) respond.status(400).send({
+                "msg": error
+            });
+            console.info("Writing new config to file. " + JSON.stringify(jsonData));
+            //call check config script
+            exec("/usr/sbin/abc-monitor-check-config", function (error, stdout, stderr) {
+                if (error) {
+                    //write old data back
+                    fs.writeFile(cfg.fileMonitor, JSON.stringify(jsonDataOld));
+                    console.error("Config checked failed. Writing old config back. " + stderr);
+                    respond.status(400).send({
+                        "msg": stderr
+                    });
+
+                } else {
+                    console.info("Activating config.");
+                    //call generate config script
+                    exec("/usr/sbin/abc-monitor-activate-config", function (error, stdout, stderr) {
+                        if (error) {
+                            respond.status(400).send({
+                                "msg": stderr
+                            });
+                            console.error("Config cannot be activated. " + stderr);
+                            respond.end();
+                        } else {
+                            console.info("New config activated.");
+                            respond.status(200).send({
+                                "msg": "Data has been saved."
+                            });
+                        }
+                    })
+
+                }
+            })
+
+
+        });
+    }
+
+    /**
+     * @swagger
+     * /api/tag:
+     *   get:
+     *     description: Add tag to event
+     *     tags: [Setting]
+     *     produces:
+     *       - application/json
+     *     parameters:
+     *       - name: pretty
+     *         description: Return a pretty json
+     *         in: query
+     *         required: false
+     *         type: bool
+     *     responses:
+     *       200:
+     *         description: Elasticsearch payload
+     *         content:
+     *           application/json:
+     *             example:
+     *               {_index: xxx, result: updated}
+     *             schema:
+     *               $ref: '#/definitions/Message'
+     *       500:
+     *         description: elasticsearch error
+     *         content:
+     *           application/json:
+     *             example:
+     *               {_index: xxx, result: error}
+     */
+    static tag(req, res, next) {
+        async function search() {
+            var tags = req.body.tags;
+            var client = connectToES(res);
+            const response = await client.update({
+                id: req.body.id,
+                type: '_doc',
+                index: req.body.index,
+                refresh: true,
+                body: {
+                    doc: {
+                        attrs: {
+                            tags: tags
+                        }
+                    }
+                }
+            });
+
+            client.close();
+            return res.json(response);
+        }
+
+        return search().catch((e) => {
+            return next(e);
+        });
+    }
+
+    /**
+     * @swagger
+     * /api/tag/delete:
+     *   get:
+     *     description: delete tag from event
+     *     tags: [Setting]
+     *     produces:
+     *       - application/json
+     *     parameters:
+     *       - name: pretty
+     *         description: Return a pretty json
+     *         in: query
+     *         required: false
+     *         type: bool
+     *     responses:
+     *       200:
+     *         description: Elasticsearch payload
+     *         content:
+     *           application/json:
+     *             example:
+     *               {_index: xxx, result: updated}
+     *             schema:
+     *               $ref: '#/definitions/Message'
+     *       500:
+     *         description: elasticsearch error
+     *         content:
+     *           application/json:
+     *             example:
+     *               {_index: xxx, result: error}
+     */
+    static deleteTag(req, res, next) {
+        async function search() {
+            var tag = req.body.tags;
+            var client = connectToES(res);
+            const response = await client.updateByQuery({
+                index: "*",
+                refresh: true,
+                body: {
+                    "query": {
+                        "match": {
+                            "attrs.tags": tag
+                        }
+                    },
+                    "script": {
+                        "source": "if(ctx._source.attrs.tags.contains(params.tag)) { ctx._source.attrs.tags.remove(ctx._source.attrs.tags.indexOf(params.tag)) }",
+                        "lang": "painless",
+                        "params": {
+                            "tag": tag
+                        }
+                    }
+                }
+            });
+
+            client.close();
+            return res.json(response);
+        }
+
+        return search().catch((e) => {
+            return next(e);
+        });
+    }
+
+
+    /**
+     * @swagger
+     * /api/tags:
+     *   get:
+     *     description: Get distinct tags list
+     *     tags: [Setting]
+     *     produces:
+     *       - application/json
+     *     parameters:
+     *       - name: pretty
+     *         description: Return a pretty json
+     *         in: query
+     *         required: false
+     *         type: bool
+     *     responses:
+     *       200:
+     *         description: Hostname payload
+     *         content:
+     *           application/json
+     *       500:
+     *         description: internal error
+     *         content:
+     *           application/json:
+     *             example:
+     *               error: "bash: not found"
+     */
+    static tags(req, res, next) {
+        async function search() {
+            const client = connectToES(res);
+            const tags = distinct_query.getTemplate('attrs.tags');
+
+            const response = await client.msearch({
+                body: [
+
+                    {
+                        index: 'logstash*',
+                        ignore_unavailable: true,
+                        preference: 1542895076143,
+                    },
+                    tags
+                ]
+            });
+
+            client.close();
+            return res.json(response);
+        }
+
+        return search().catch((e) => {
+            return next(e);
+        });
+    }
+
+    /**
+     * @swagger
+     * /api/monitor/version:
+     *   get:
+     *     description: Return the monitor version
+     *     tags: [Setting]
+     *     produces:
+     *       - application/json
+     *     parameters:
+     *       - name: pretty
+     *         description: Return a pretty json
+     *         in: query
+     *         required: false
+     *         type: bool
+     *     responses:
+     *       200:
+     *         description: Setting payload
+     *         content:
+     *           application/json:
+     *             example:
+     *               version: 4.5
+     *             schema:
+     *               $ref: '#/definitions/Message'
+     *       500:
+     *         description: internal error
+     *         content:
+     *           application/json:
+     *             example:
+     *               error: "bash: not found"
+     */
+    static loadMonitorVersion(request, respond) {
+        return exec(" rpm -q --qf '%{VERSION}-%{RELEASE}\n'  abc-monitor", (error, stdout, stderr) => {
+            if (!error) {
+                setMonitorVersion(stdout);
+            }
+            monitorVersion = cfg.monitorVersion;
+            return respond.status(200).send({
+                version: cfg.monitorVersion
+            });
+        });
+    }
+
+    //api/monitor/logo
+    static loadLogo(request, respond) {
+        var logoPath = "../../../"+ request.body.path;
+        var img = fs.readFileSync(path.join(__dirname,logoPath));
+        respond.writeHead(200, { 'Content-Type': 'image/png' });
+        respond.end(img, 'binary');
+    }
+
+    /**
+     * @swagger
+     * /api/hostnames:
+     *   get:
+     *     description: Get distinct hostnames, realms and tags
+     *     tags: [Setting]
+     *     produces:
+     *       - application/json
+     *     parameters:
+     *       - name: pretty
+     *         description: Return a pretty json
+     *         in: query
+     *         required: false
+     *         type: bool
+     *     responses:
+     *       200:
+     *         description: Hostname payload
+     *         content:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/definitions/Hostnames'
+     *       500:
+     *         description: internal error
+     *         content:
+     *           application/json:
+     *             example:
+     *               error: "bash: not found"
+     */
+    static hostnames(req, res, next) {
+        async function search() {
+            const client = connectToES(res);
+
+             //check if domain fiter should be use
+             var isDomainFilter = await getJWTsipUserFilter(req);
+             if (isDomainFilter.domain) {
+                 domainFilter = "tls-cn:"+ isDomainFilter.domain;
+             }
+
+            // get hostnames list
+            const hostnames = distinct_query.getTemplate('attrs.hostname', domainFilter);
+            // get realms list
+            const realms = distinct_query.getTemplate('attrs.realm', domainFilter);
+            const srcRealms = distinct_query.getTemplate('attrs.src_rlm_name', domainFilter);
+            const dstRealms = distinct_query.getTemplate('attrs.dst_rlm_name', domainFilter);
+            const tags = distinct_query.getTemplate('attrs.tags', domainFilter);
+
+            const response = await client.msearch({
+                body: [
+                    {
+                        index: 'logstash*',
+                        ignore_unavailable: true,
+                        preference: 1542895076143,
+                    },
+                    hostnames,
+                    {
+                        index: 'collectd*',
+                        ignore_unavailable: true,
+                        preference: 1542895076143,
+                    },
+                    realms,
+                    {
+                        index: 'logstash*',
+                        ignore_unavailable: true,
+                        preference: 1542895076143,
+                    },
+                    srcRealms,
+                    {
+                        index: 'logstash*',
+                        ignore_unavailable: true,
+                        preference: 1542895076143,
+                    },
+                    dstRealms,
+                    {
+                        index: 'logstash*',
+                        ignore_unavailable: true,
+                        preference: 1542895076143,
+                    },
+                    tags,
+                ]
+            });
+
+            client.close();
+            return res.json(response);
+        }
+
+        return search().catch((e) => {
+            return next(e);
+        });
+    }
+}
+
+module.exports = SettingController;

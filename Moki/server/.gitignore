@@ -1,0 +1,12 @@
+# classic nodejs exclude
+node_modules
+npm-debug.log
+# emacs tmp files
+.#*
+*~
+# emacs live rendering markdown remaning files
+*.md.temp
+# coverage file
+.nyc_output
+coverage
+.env

@@ -1,0 +1,16 @@
+[Service]
+Type=simple
+Environment="HOST=127.0.0.1"
+ExecStart=/usr/bin/npm run start
+WorkingDirectory=/usr/share/Moki/server
+Restart=always
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=moki
+TimeoutStopSec=30
+RestartSec=1
+StartLimitInterval=0
+
+[Install]
+WantedBy=multi-user.target
+Alias=moki-server

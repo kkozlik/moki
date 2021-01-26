@@ -1,0 +1,24 @@
+node_modules
+.aws-config.json
+dist
+.DS_Store
+bootstrap.*.min.css
+tmp
+*~
+*.swp
+tags
+dump
+build/
+rpm-build/
+tmp/
+*.pem
+*.crt
+*.key
+*~
+# emacs projectile flag file
+.projectile
+# archives
+*.tar.gz
+*.deb
+*.rpm
+

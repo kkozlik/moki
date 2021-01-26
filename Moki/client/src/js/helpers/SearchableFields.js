@@ -1,0 +1,31 @@
+export const getSearchableFields=()=>{
+    return ([
+        "call-id",
+        "dst_ca_id",
+        "dst_rlm_name",
+        "duration",
+        "from",
+        "from-domain",
+        "from-ua",
+        "hostname",
+        "method",
+        "originator",
+        "rtp-MOScqex-avg",
+        "rtp-MOScqex-min",
+        "r-uri",
+        "sbc",
+        "sip-code",
+        "source-alias",
+        "sourceSubnets",
+        "src_ca_id",
+        "src_rlm_name",
+        "src-port",
+        "to",
+        "to-ua", 
+        "type",
+        "source",
+        "conf_id",
+        "reason",
+        "tags"
+        ]);
+}
