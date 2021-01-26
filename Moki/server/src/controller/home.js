@@ -64,6 +64,19 @@ var domainFilter = "*";
  *          type: string
  *          example:
  *            "call-end"
+ *        name:
+ *          description: User frendly name, used only on client side
+ *          type: string
+ *          example:
+ *            "Call end"
+ *        state:
+ *          description: state of type filter, used only on client side
+ *          type: string
+ *          enum:
+ *          - "enable"
+ *          - "disable"
+ *          example:
+ *            "enable"
  *   Filter:
  *     type: "object"
  *     required:
@@ -74,6 +87,24 @@ var domainFilter = "*";
  *          type: string
  *          example:
  *            "attrs.sip-code: 408"
+ *        id:
+ *          description: GUI id, used only on client side
+ *          type: string
+ *          example:
+ *            1
+ *        pinned:
+ *          description: if filter should be in every dashboard, used only on client side
+ *          type: string
+ *          example:
+ *            "true"
+ *        state:
+ *          description: state of type filter, used only on client side
+ *          type: string
+ *          enum:
+ *          - "enable"
+ *          - "disable"
+ *          example:
+ *            "enable"
  *   ChartResponse:
  *      type: "object"
  *      properties:
