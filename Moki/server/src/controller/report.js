@@ -33,40 +33,6 @@ var userFilter = "*";
 
 class ReportController {
 
-    /**
-     * @swagger
-     * /api/report:
-     *   post:
-     *     description: Get report's data
-     *     tags: [Chart]
-     *     produces:
-     *       - application/json
-     *     parameters:
-     *       - gte: pretty
-     *         description: GTE timestamp
-     *         in: query
-     *         required: true
-     *         type: string
-     *       - lte: pretty
-     *         description: LTE timestamp
-     *         in: query
-     *         required: true
-     *         type: string
-     *         example: report.html?gte=1593597358000&lte=1593618958000
-     *     responses:
-     *       200:
-     *         description: return report data
-     *         content:
-     *           application/json:
-     *             schema:
-     *               $ref: '#/definitions/ChartResponse'
-     *       400:
-     *         description: elasticsearch error
-     *         content:
-     *           application/json:
-     *             schema:
-     *               $ref: '#/definitions/ChartResponseError'
-     */
     static getReport(req, res, next) {
         async function search() {
             const client = connectToES();

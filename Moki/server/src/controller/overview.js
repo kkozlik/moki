@@ -33,7 +33,7 @@ class overviewController {
      * /api/overview/charts:
      *   post:
      *     description: Get overview charts
-     *     tags: [Chart]
+     *     tags: [Overview]
      *     produces:
      *       - application/json
      *     parameters:
@@ -169,6 +169,41 @@ class overviewController {
         });
     }
 
+     /**
+     * @swagger
+     * /api/overview/table:
+     *   post:
+     *     description: Get data for table
+     *     tags: [Overview]
+     *     produces:
+     *       - application/json
+     *     parameters:
+     *       - name: pretty
+     *         description: Return a pretty json
+     *         in: query
+     *         required: false
+     *         type: bool
+     *       - name: form
+     *         description: Overview chart form
+     *         in: body
+     *         required: true
+     *         type: object
+     *         schema:
+     *           $ref: '#/definitions/ChartForm'
+     *     responses:
+     *       200:
+     *         description: return chart data
+     *         content:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/definitions/TableResponse'
+     *       400:
+     *         description: elasticsearch error
+     *         content:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/definitions/ChartResponseError'
+     */
     static getTable(req, res, next) {
         async function search() {
             const client = connectToES();

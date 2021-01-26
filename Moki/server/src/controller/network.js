@@ -32,7 +32,7 @@ class networkController {
      * /api/network/charts:
      *   post:
      *     description: Get network charts
-     *     tags: [Chart]
+     *     tags: [Network]
      *     produces:
      *       - application/json
      *     parameters:
@@ -253,7 +253,7 @@ class networkController {
      * /api/network/table:
      *   post:
      *     description: Get data for table
-     *     tags: [Chart]
+     *     tags: [Network]
      *     produces:
      *       - application/json
      *     parameters:

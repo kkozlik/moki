@@ -36,7 +36,7 @@ class registrationController {
      * /api/registration/charts:
      *   post:
      *     description: Get registration charts
-     *     tags: [Chart]
+     *     tags: [Registration]
      *     produces:
      *       - application/json
      *     parameters:
@@ -192,7 +192,7 @@ class registrationController {
      * /api/registration/registrations_map:
      *   post:
      *     description: Get geoip chart
-     *     tags: [Chart]
+     *     tags: [Registration]
      *     produces:
      *       - application/json
      *     parameters:
@@ -280,7 +280,7 @@ class registrationController {
      * /api/registration/table:
      *   post:
      *     description: Get data for table
-     *     tags: [Chart]
+     *     tags: [Registration]
      *     produces:
      *       - application/json
      *     parameters:

@@ -30,7 +30,7 @@ class transportController {
      * /api/transport/charts:
      *   post:
      *     description: Get transport charts
-     *     tags: [Chart]
+     *     tags: [Transport]
      *     produces:
      *       - application/json
      *     parameters:
@@ -123,7 +123,7 @@ class transportController {
      * /api/transport/table:
      *   post:
      *     description: Get data for table
-     *     tags: [Chart]
+     *     tags: [Transport]
      *     produces:
      *       - application/json
      *     parameters:

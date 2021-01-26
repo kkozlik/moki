@@ -35,7 +35,7 @@ class restrictedController {
      * /api/restricted/charts:
      *   post:
      *     description: Get restricted charts, in AWS after no-admin user login
-     *     tags: [Chart]
+     *     tags: [Restricted]
      *     produces:
      *       - application/json
      *     parameters:
@@ -250,7 +250,7 @@ class restrictedController {
      * /api/restricted/calls:
      *   post:
      *     description: Get data for calls, in AWS after no-admin user login
-     *     tags: [Chart]
+     *     tags: [Restricted]
      *     produces:
      *       - application/json
      *     parameters:
@@ -329,7 +329,7 @@ class restrictedController {
      * /api/restricted/table:
      *   post:
      *     description: Get data for table, in AWS after no-admin user login
-     *     tags: [Chart]
+     *     tags: [Restricted]
      *     produces:
      *       - application/json
      *     parameters:

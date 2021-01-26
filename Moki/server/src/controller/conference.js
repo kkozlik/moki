@@ -34,7 +34,7 @@ class ConferenceController {
      * /api/conference/charts:
      *   post:
      *     description: Get Conference charts
-     *     tags: [Chart]
+     *     tags: [Conference]
      *     produces:
      *       - application/json
      *     parameters:
@@ -209,7 +209,7 @@ class ConferenceController {
     * /api/conference/table:
      *   post:
      *     description: Get data for table
-     *     tags: [Chart]
+     *     tags: [Conference]
      *     produces:
      *       - application/json
      *     parameters:

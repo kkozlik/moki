@@ -31,7 +31,7 @@ class systemController {
      * /api/system/charts:
      *   post:
      *     description: Get system charts
-     *     tags: [Chart]
+     *     tags: [System]
      *     produces:
      *       - application/json
      *     parameters:
@@ -226,7 +226,7 @@ class systemController {
      * /api/system/table:
      *   post:
      *     description: Get data for table
-     *     tags: [Chart]
+     *     tags: [System]
      *     produces:
      *       - application/json
      *     parameters:

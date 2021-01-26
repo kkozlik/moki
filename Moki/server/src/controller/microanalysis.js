@@ -33,7 +33,7 @@ class MicronalysisController {
      * /api/micronalysis/charts:
      *   post:
      *     description: Get Micronalysis charts
-     *     tags: [Chart]
+     *     tags: [Micronalysis]
      *     produces:
      *       - application/json
      *     parameters:

@@ -32,7 +32,7 @@ class qosController {
      * /api/qos/charts:
      *   post:
      *     description: Get qos charts
-     *     tags: [Chart]
+     *     tags: [QoS]
      *     produces:
      *       - application/json
      *     parameters:
@@ -137,7 +137,7 @@ class qosController {
      * /api/qos/qos_histogram:
      *   post:
      *     description: Get QoS HISTOGRAM data for animation
-     *     tags: [Chart]
+     *     tags: [QoS]
      *     produces:
      *       - application/json
      *     parameters:
@@ -226,7 +226,7 @@ class qosController {
      * /api/qos/table:
      *   post:
      *     description: Get data for table
-     *     tags: [Chart]
+     *     tags: [QoS]
      *     produces:
      *       - application/json
      *     parameters:

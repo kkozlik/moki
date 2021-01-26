@@ -34,7 +34,7 @@ class diagnosticsController {
      * /api/diagnostics/charts:
      *   post:
      *     description: Get diagnostics charts
-     *     tags: [Chart]
+     *     tags: [Diagnostics]
      *     produces:
      *       - application/json
      *     parameters:
@@ -129,7 +129,7 @@ class diagnosticsController {
      * /api/diagnostics/table:
      *   post:
      *     description: Get data for table
-     *     tags: [Chart]
+     *     tags: [Diagnostics]
      *     produces:
      *       - application/json
      *     parameters:

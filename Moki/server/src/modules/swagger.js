@@ -6,7 +6,7 @@ const options = {
     openapi: '3.0.0',
     info: {
       title: 'Moki express API',
-      description: 'Monitor API',
+      description: 'Monitor server API. Most fo the requests are for getting data to dashboards or time series data for charts animations.',
       version: '1.1.0',
       contact: {
         name: 'Jana Němcová',

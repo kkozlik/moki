@@ -30,7 +30,7 @@ class realmController {
      * /api/realm/charts:
      *   post:
      *     description: Get realm charts
-     *     tags: [Chart]
+     *     tags: [Realm]
      *     produces:
      *       - application/json
      *     parameters:
@@ -225,7 +225,7 @@ class realmController {
   * /api/realm/table:
   *   post:
   *     description: Get data for table
-  *     tags: [Chart]
+  *     tags: [Realm]
   *     produces:
   *       - application/json
   *     parameters:

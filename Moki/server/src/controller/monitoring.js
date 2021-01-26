@@ -28,7 +28,7 @@ class monitoringController {
      * /api/monitoring/charts:
      *   post:
      *     description: Get monitoring charts
-     *     tags: [Chart]
+     *     tags: [Monitoring]
      *     produces:
      *       - application/json
      *     parameters:
@@ -144,7 +144,7 @@ class monitoringController {
  * /api/monitoring/events:
  *   post:
  *     description: Get events statistics
- *     tags: [Chart]
+ *     tags: [Monitoring]
  *     produces:
  *       - application/json
  *     parameters:
@@ -226,7 +226,7 @@ class monitoringController {
 * /api/monitoring/sbc:
 *   post:
 *     description: Get SBC events stats
-*     tags: [Chart]
+*     tags: [Monitoring]
 *     produces:
 *       - application/json
 *     parameters:

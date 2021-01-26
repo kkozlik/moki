@@ -37,7 +37,7 @@ class ConnectivityCAController {
      * /api/connectivityCA/charts:
      *   post:
      *     description: Get ConnectivityCA charts
-     *     tags: [Chart]
+     *     tags: [ConnectivityCA]
      *     produces:
      *       - application/json
      *     parameters:
@@ -254,7 +254,7 @@ class ConnectivityCAController {
      * /api/connectivityCA/connection_failure_ratio_ca:
      *   post:
      *     description: Get connection failure ratio CA data based on time buckets
-     *     tags: [Chart]
+     *     tags: [ConnectivityCA]
      *     produces:
      *       - application/json
      *     parameters:
@@ -338,7 +338,7 @@ class ConnectivityCAController {
      * /api/connectivityCA/error_code_analysis:
      *   post:
      *     description: Get connection error code analysis data based on time buckets
-     *     tags: [Chart]
+     *     tags: [ConnectivityCA]
      *     produces:
      *       - application/json
      *     parameters:
@@ -418,7 +418,7 @@ class ConnectivityCAController {
      * /api/connectivityCA/number_of_call-attemps_ca:
      *   post:
      *     description: Get number of call-attempts CA data based on time buckets
-     *     tags: [Chart]
+     *     tags: [ConnectivityCA]
      *     produces:
      *       - application/json
      *     parameters:
@@ -509,7 +509,7 @@ class ConnectivityCAController {
      * /api/connectivityCA/duration_of_calls_ca_(avg):
      *   post:
      *     description: Get number of duration of calls CA (avg) based on timebucket
-     *     tags: [Chart]
+     *     tags: [ConnectivityCA]
      *     produces:
      *       - application/json
      *     parameters:
@@ -599,7 +599,7 @@ class ConnectivityCAController {
      * /api/connectivityCA/from_to_ca:
      *   post:
      *     description: Get number of topology chart data based on time buckets
-     *     tags: [Chart]
+     *     tags: [ConnectivityCA]
      *     produces:
      *       - application/json
      *     parameters:
@@ -687,7 +687,7 @@ class ConnectivityCAController {
      * /api/connectivityCA/number_of_call-ends_ca:
      *   post:
      *     description: Get number of call-ends CA data based on time buckets
-     *     tags: [Chart]
+     *     tags: [ConnectivityCA]
      *     produces:
      *       - application/json
      *     parameters:

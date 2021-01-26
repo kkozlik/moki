@@ -26,71 +26,10 @@ var monitorVersion = "4.6";
  *   description: Setting management
  */
 
-/**
- * @swagger
- * components:
- *   schemas:
- *
- *     Version:
- *       type: object
- *       required:
- *         - version
- *       properties:
- *         version:
- *           type: string
- *           description: monitor version
- *       example:
- *         version: 4.5
- *
- *     ESRes:
- *       type: object
- *       properties:
- *         took:
- *           type: integer
- *           description: request delay
- *         timed_out:
- *           type: boolean
- *           description: is request timed out
- *         status:
- *           type: integer
- *           description: request status
- *
- *     Hostname:
- *       allOf:
- *         - $ref: '#/components/schemas/ESRes'
- *       properties:
- *         hits:
- *           type: object
- *         _shards:
- *           type: object
- *
- *     Hostnames:
- *       properties:
- *         took:
- *           type: integer
- *           description: request delay
- *         responses:
- *           type: array
- *           items:
- *             $ref: '#/components/schemas/Hostname'
- *       example:
- *         took: 20
- */
 
 /**
  * @swagger
  * definitions:
- *   Version:
- *     schema:
- *       $ref: '#/components/schemas/Version'
- *
- *   Hostname:
- *     schema:
- *       $ref: '#/components/schemas/Hostname'
- *
- *   Hostnames:
- *     schema:
- *       $ref: '#/components/schemas/Hostnames'
  *   Settings:
  *     type: "array"
  *     description: JSON settings file contains just global-config optios - general, sns and alarms setting 
@@ -112,12 +51,6 @@ class SettingController {
      *     tags: [Setting]
      *     produces:
      *       - application/json
-     *     parameters:
-     *       - name: pretty
-     *         description: Return a pretty json
-     *         in: query
-     *         required: false
-     *         type: bool
      *     responses:
      *       200:
      *         description: Return the json setting - if monitor.json available, value are merged to defaults.json
@@ -187,12 +120,6 @@ class SettingController {
      *     tags: [Setting]
      *     produces:
      *       - application/json
-     *     parameters:
-     *       - name: pretty
-     *         description: Return a pretty json
-     *         in: query
-     *         required: false
-     *         type: bool
      *     responses:
      *       200:
      *         description: Setting payload
@@ -261,14 +188,36 @@ class SettingController {
      *   get:
      *     description: delete filter
      *     tags: [Setting]
-     *     produces:
+     *     consumes:
      *       - application/json
      *     parameters:
-     *       - name: pretty
-     *         description: Return new config file
-     *         in: query
-     *         required: false
-     *         type: bool
+     *       - in: body
+     *         name: filter
+     *         description: new filter list
+     *         schema:
+     *           type: object
+     *           properties:
+     *             id:
+     *               type: string
+     *               example: {"id":"Myfilter"}
+     *             attribute:
+     *               type: array
+     *               description: array of filters
+     *               example: {"attribute":[]}
+        *             name:
+        *               type: string
+        *               description: name of dashboard where filter was created
+        *               example: {"name":"/connectivityCA"}
+        *             types:
+        *               type: array
+        *               description: array of types
+        *               example: {"types":[]}
+        *             timerange:
+        *               type: array
+        *               description: timestamp from and to
+        *               example: {"timerange":[1610683132626,1610683145434]}
+     *         required: true
+     *         type: application/json                    
      *     responses:
      *       200:
      *         description: Setting payload
@@ -346,14 +295,36 @@ class SettingController {
      *   post:
      *     description: save new filter
      *     tags: [Setting]
-     *     produces:
+     *     consumes:
      *       - application/json
      *     parameters:
-     *       - name: pretty
-     *         description: Return a pretty json
-     *         in: query
-     *         required: false
-     *         type: bool
+     *       - in: body
+     *         name: filter
+     *         description: new filter to save
+     *         schema:
+     *           type: object
+     *           properties:
+     *             id:
+     *               type: string
+     *               example: {"id":"Myfilter"}
+     *             attribute:
+     *               type: array
+     *               description: array of filters
+     *               example: {"attribute":[]}
+        *             name:
+        *               type: string
+        *               description: name of dashboard where filter was created
+        *               example: {"name":"/connectivityCA"}
+        *             types:
+        *               type: array
+        *               description: array of types
+        *               example: {"types":[]}
+        *             timerange:
+        *               type: array
+        *               description: timestamp from and to
+        *               example: {"timerange":[1610683132626,1610683145434]}
+     *         required: true
+     *         type: application/json 
      *     responses:
      *       200:
      *         description: new settings file
@@ -456,14 +427,29 @@ class SettingController {
      *   get:
      *     description: Add tag to event
      *     tags: [Setting]
-     *     produces:
+     *     consumes:
      *       - application/json
      *     parameters:
-     *       - name: pretty
-     *         description: Return a pretty json
-     *         in: query
-     *         required: false
-     *         type: bool
+     *       - in: body
+     *         name: tag
+     *         description: new tag
+     *         schema:
+     *           type: object
+     *           properties:
+     *             id:
+     *               type: string
+     *               example: U9dQO3cBRVjVWRSl0BzX
+     *               description: event id
+    *             name:
+    *               type: string
+    *               description: index where event is stored
+    *               example: "logstashh-2021.01.25"
+    *             types:
+    *               type: array
+    *               description: array of tags
+    *               example: {"tags":["coolEvent"]}
+     *         required: true
+     *         type: application/json 
      *     responses:
      *       200:
      *         description: Elasticsearch payload
@@ -513,14 +499,29 @@ class SettingController {
      *   get:
      *     description: delete tag from event
      *     tags: [Setting]
-     *     produces:
+     *     consumes:
      *       - application/json
      *     parameters:
-     *       - name: pretty
-     *         description: Return a pretty json
-     *         in: query
-     *         required: false
-     *         type: bool
+     *       - in: body
+     *         name: tag
+     *         description: tag to delete
+     *         schema:
+     *           type: object
+     *           properties:
+     *             id:
+     *               type: string
+     *               example: U9dQO3cBRVjVWRSl0BzX
+     *               description: event id
+    *             name:
+    *               type: string
+    *               description: index where event is stored
+    *               example: "logstashh-2021.01.25"
+    *             types:
+    *               type: array
+    *               description: array of tags
+    *               example: {"tags":["coolEvent"]}
+     *         required: true
+     *         type: application/json 
      *     responses:
      *       200:
      *         description: Elasticsearch payload
@@ -571,31 +572,8 @@ class SettingController {
 
 
     /**
-     * @swagger
      * /api/tags:
-     *   get:
-     *     description: Get distinct tags list
-     *     tags: [Setting]
-     *     produces:
-     *       - application/json
-     *     parameters:
-     *       - name: pretty
-     *         description: Return a pretty json
-     *         in: query
-     *         required: false
-     *         type: bool
-     *     responses:
-     *       200:
-     *         description: Hostname payload
-     *         content:
-     *           application/json
-     *       500:
-     *         description: internal error
-     *         content:
-     *           application/json:
-     *             example:
-     *               error: "bash: not found"
-     */
+**/
     static tags(req, res, next) {
         async function search() {
             const client = connectToES(res);
@@ -630,12 +608,6 @@ class SettingController {
      *     tags: [Setting]
      *     produces:
      *       - application/json
-     *     parameters:
-     *       - name: pretty
-     *         description: Return a pretty json
-     *         in: query
-     *         required: false
-     *         type: bool
      *     responses:
      *       200:
      *         description: Setting payload
@@ -643,8 +615,6 @@ class SettingController {
      *           application/json:
      *             example:
      *               version: 4.5
-     *             schema:
-     *               $ref: '#/definitions/Message'
      *       500:
      *         description: internal error
      *         content:
@@ -666,49 +636,22 @@ class SettingController {
 
     //api/monitor/logo
     static loadLogo(request, respond) {
-        var logoPath = "../../../"+ request.body.path;
-        var img = fs.readFileSync(path.join(__dirname,logoPath));
+        var logoPath = "../../../" + request.body.path;
+        var img = fs.readFileSync(path.join(__dirname, logoPath));
         respond.writeHead(200, { 'Content-Type': 'image/png' });
         respond.end(img, 'binary');
     }
 
-    /**
-     * @swagger
-     * /api/hostnames:
-     *   get:
-     *     description: Get distinct hostnames, realms and tags
-     *     tags: [Setting]
-     *     produces:
-     *       - application/json
-     *     parameters:
-     *       - name: pretty
-     *         description: Return a pretty json
-     *         in: query
-     *         required: false
-     *         type: bool
-     *     responses:
-     *       200:
-     *         description: Hostname payload
-     *         content:
-     *           application/json:
-     *             schema:
-     *               $ref: '#/definitions/Hostnames'
-     *       500:
-     *         description: internal error
-     *         content:
-     *           application/json:
-     *             example:
-     *               error: "bash: not found"
-     */
+    // get hostnames
     static hostnames(req, res, next) {
         async function search() {
             const client = connectToES(res);
 
-             //check if domain fiter should be use
-             var isDomainFilter = await getJWTsipUserFilter(req);
-             if (isDomainFilter.domain) {
-                 domainFilter = "tls-cn:"+ isDomainFilter.domain;
-             }
+            //check if domain fiter should be use
+            var isDomainFilter = await getJWTsipUserFilter(req);
+            if (isDomainFilter.domain) {
+                domainFilter = "tls-cn:" + isDomainFilter.domain;
+            }
 
             // get hostnames list
             const hostnames = distinct_query.getTemplate('attrs.hostname', domainFilter);

@@ -30,8 +30,8 @@ class exceededController {
      * @swagger
      * /api/exceeded/charts:
      *   post:
-     *     description: Get exceeded charts
-     *     tags: [Chart]
+     *     description: Get exceeded (alarms) charts 
+     *     tags: [Exceeded]
      *     produces:
      *       - application/json
      *     parameters:
@@ -170,7 +170,7 @@ class exceededController {
      * /api/exceeded/table:
      *   post:
      *     description: Get data for table
-     *     tags: [Chart]
+     *     tags: [Exceeded]
      *     produces:
      *       - application/json
      *     parameters:

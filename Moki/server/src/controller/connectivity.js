@@ -32,7 +32,7 @@ class ConnectivityController {
      * /api/connectivity/charts:
      *   post:
      *     description: Get Connectivity charts
-     *     tags: [Chart]
+     *     tags: [Connectivity]
      *     produces:
      *       - application/json
      *     parameters:

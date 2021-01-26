@@ -35,10 +35,10 @@ class CallsController {
 
     /**
      * @swagger
-     * /api/call/charts:
+     * /api/calls/charts:
      *   post:
      *     description: Get all calls charts
-     *     tags: [Chart]
+     *     tags: [Calls]
      *     produces:
      *       - application/json
      *     parameters:
@@ -294,10 +294,10 @@ class CallsController {
 
     /**
      * @swagger
-     * /api/call/table:
+     * /api/calls/table:
      *   post:
      *     description: Get data for table
-     *     tags: [Chart]
+     *     tags: [Calls]
      *     produces:
      *       - application/json
      *     parameters:

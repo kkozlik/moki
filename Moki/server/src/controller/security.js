@@ -36,7 +36,7 @@ class securityController {
      * /api/security/charts:
      *   post:
      *     description: Get security charts
-     *     tags: [Chart]
+     *     tags: [Security]
      *     produces:
      *       - application/json
      *     parameters:
@@ -175,7 +175,7 @@ class securityController {
      * /api/security/events_by_ip_addr:
      *   post:
      *     description: Get events by IP addr for animation
-     *     tags: [Chart]
+     *     tags: [Security]
      *     produces:
      *       - application/json
      *     parameters:
@@ -218,9 +218,6 @@ class securityController {
 
             if (req.body.timerange_gte) {
                 timestamp_gte = Math.round(req.body.timerange_gte);
-            }
-            if (req.body.timezone) {
-                var timezone = req.body.timezone;
             }
 
             //check if domain fiter should be use
@@ -265,6 +262,7 @@ class securityController {
      * /api/security/top_subnets:
      *   post:
      *     description: Get top subnets events for animation
+     *     tags: [Security]
      *     produces:
      *       - application/json
      *     parameters:
@@ -351,6 +349,7 @@ class securityController {
      * /api/security/events_by_country:
      *   post:
      *     description: Get events by country for animation
+     *     tags: [Security]
      *     produces:
      *       - application/json
      *     parameters:
@@ -487,7 +486,7 @@ class securityController {
      * /api/security/events_by_ip_addr:
      *   post:
      *     description: Get events by IP addr for animation
-     *     tags: [Chart]
+     *     tags: [Security]
      *     produces:
      *       - application/json
      *     parameters:
@@ -575,7 +574,7 @@ class securityController {
      * /api/security/security_geo_events:
      *   post:
      *     description: Get geoip chart
-     *     tags: [Chart]
+     *     tags: [Security]
      *     produces:
      *       - application/json
      *     parameters:
@@ -666,7 +665,7 @@ class securityController {
  * /api/security/table:
  *   post:
  *     description: Get data for table
- *     tags: [Chart]
+ *     tags: [Security]
  *     produces:
  *       - application/json
  *     parameters:

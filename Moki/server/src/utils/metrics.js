@@ -6,6 +6,7 @@ var fs = require("fs"),
 
 
 function getFiltersConcat(filters) {
+  console.info(filters);
   // get filters, if no place "*", if more than 1, concat with AND
   let filter = '*';
   if (filters && filters.length != 0) {
@@ -25,6 +26,7 @@ function getFiltersConcat(filters) {
 }
 
 function getTypesConcat(value) {
+  console.info(value);
   // concat types with OR
   var types = '*';
   if (value && value.length != 0) {

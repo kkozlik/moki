@@ -27,95 +27,48 @@ supress = "nofield";
 var userFilter = "*";
 var domainFilter = "*";
 
-/**
- * @swagger
- * tags:
- *   name: Chart
- *   description: Charts management
- */
 
 /**
  * @swagger
  * definitions:
  *   ChartForm:
  *     type: "object"
- *     required:
- *         - filters
- *         - types
- *         - timerange_gte
- *         - timerange_lte
  *     properties:
  *        filters:
- *          description: filters to apply
+ *          description: filters to apply, if not filled, query will return everything.
  *          type: array
  *          items:
  *            $ref: "#/definitions/Filter"
  *        types:
- *          description: types to filter for different dashboards
+ *          description: types to filter for different dashboards. No need to use this field to filter.
  *          type: array
  *          items:
  *            $ref: "#/definitions/Type"
  *        timerange_gte:
- *          description: gte time in UNIX timestamp
- *          type: string
+ *          description: gte time in UNIX timestamp in ms! If not filled, timestamp is set to last 6 hours.
+ *          type: timestamp
  *          example:
- *            timerange_gte: 1592458026000
+ *            1592458026000
  *        timerange_lte:
- *          description: lte time in UNIX timestamp
- *          type: string
+ *          description: lte time in UNIX timestamp  in ms! If not filled, timestamp is set to last 6 hours.
+ *          type: timestamp
  *          example:
- *             timerange_lte: 1592479626000
+ *            1592479626000
  *   Type:
  *     type: "object"
  *     required:
  *         - id
- *         - name
- *         - state
  *     properties:
  *        id:
- *          description: event type 
+ *          description: event type in attrs.type
  *          type: string
  *          example:
  *            "call-end"
- *        name:
- *          description: User frendly name
- *          type: string
- *          example:
- *            "Call end"
- *        state:
- *          description: state of type filter
- *          type: string
- *          enum:
- *          - "enable"
- *          - "disable"
- *          example:
- *            "enable"
  *   Filter:
  *     type: "object"
  *     required:
- *         - id
- *         - pinned
- *         - state
  *         - title
  *     properties:
- *        id:
- *          description: GUI id 
- *          type: string
- *          example:
- *            1
- *        pinned:
- *          description: if filter should be in every dashboard
- *          type: string
- *          example:
- *            "true"
- *        state:
- *          description: state of type filter
- *          type: string
- *          enum:
- *          - "enable"
- *          - "disable"
- *          example:
- *            "enable"
  *        title:
  *          description: value of filter
  *          type: string
@@ -170,7 +123,7 @@ class HomeController {
      * /api/home/charts:
      *   post:
      *     description: Get home charts
-     *     tags: [Chart]
+     *     tags: [Home]
      *     produces:
      *       - application/json
      *     parameters:

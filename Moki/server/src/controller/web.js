@@ -38,7 +38,7 @@ class webController {
      * /api/web:
      *   post:
      *     description: Get special charts for web page
-     *     tags: [Chart]
+     *     tags: [Web]
      *     produces:
      *       - application/json
      *     parameters:
@@ -173,7 +173,7 @@ class webController {
      * /api/web/distinct_ips:
      *   post:
      *     description: Get distinct IP addr for animation
-     *     tags: [Chart]
+     *     tags: [Web]
      *     produces:
      *       - application/json
      *     parameters:
@@ -254,7 +254,7 @@ class webController {
      * /api/web/events:
      *   post:
      *     description: Get events count for animation
-     *     tags: [Chart]
+     *     tags: [Web]
      *     produces:
      *       - application/json
      *     parameters:
@@ -334,7 +334,7 @@ class webController {
      * /api/web/top_user_agents:
      *   post:
      *     description: Get top user agents data
-     *     tags: [Chart]
+     *     tags: [Web]
      *     produces:
      *       - application/json
      *     parameters:
@@ -465,7 +465,7 @@ class webController {
      * /api/web/security_geo_events:
      *   post:
      *     description: Get geoip chart
-     *     tags: [Chart]
+     *     tags: [Web]
      *     produces:
      *       - application/json
      *     parameters:
