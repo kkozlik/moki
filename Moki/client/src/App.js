@@ -38,6 +38,9 @@ import store from "./js/store/index";
 import {
     setUser
 } from "./js/actions/index";
+import {
+    setWidthChart
+} from "./js/actions/index";
 import { Redirect } from 'react-router';
 
 class App extends Component {
@@ -71,7 +74,13 @@ class App extends Component {
     componentDidMount() {
         //check if needed to display an error
         this.showError(this.state.error);
+        //resize window function
+        window.addEventListener('resize', this.windowResize);
     }
+
+    componentWillUnmount() {
+        window.removeEventListener('resize', this.windowResize);
+      }
 
     //get monitor name
     async getMonitorName() {
@@ -322,6 +331,11 @@ class App extends Component {
         request();
     }
 
+    //change charts width if windows width changes 
+    windowResize() {
+        if(window.innerWidth !== store.getState().width ) store.dispatch(setWidthChart(window.innerWidth));
+  }
+  
     //get sip user
     async getSipUser() {
         var response = "";

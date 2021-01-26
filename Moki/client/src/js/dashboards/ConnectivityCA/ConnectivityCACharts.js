@@ -151,8 +151,6 @@ class ConnectivityCACharts extends Component {
         return (<div> {
             this.state.isLoading && < LoadingScreenCharts />
         } <div className="row no-gutters" >
-                <div className="col">
-                    <div className="row">
                         <div className="col" >
                             <ValueChart data={
                                 this.state.sumCallEnd
@@ -182,7 +180,8 @@ class ConnectivityCACharts extends Component {
                                 name={
                                     "SUM DURATION"
                                 }
-                            />  </div>  </div> <div className="row" >
+                            />  </div>  </div> 
+                        <div className="row no-gutters" >
                         <MultivalueChart data={
                             this.state.statsCA
                         }
@@ -210,7 +209,7 @@ class ConnectivityCACharts extends Component {
                                 "Starts"
                             }
                         />  </div>
-                    <div className="row" >
+                    <div className="row no-gutters">
                         <MultivalueChart data={
                             this.state.sourceStatsCA
                         }
@@ -237,8 +236,8 @@ class ConnectivityCACharts extends Component {
                             name6={
                                 "Starts"
                             }
-                        />  </div>
-                </div> </div>
+                        />  
+                </div>
             <div className="row no-gutters" >
                 <TopologyChart data={
                     this.state.fromToCA

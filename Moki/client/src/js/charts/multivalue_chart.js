@@ -87,9 +87,9 @@ unfilter(event){
 
         
         return (
-            <div id = {this.props.id}>
+            <div id = {this.props.id} style={{"width": "100%"}}>
                 <h3 className="alignLeft title">{this.props.name}</h3>
-            <table width="1000px">
+            <table style={{"width": "100%"}}>
                 <tbody>
                 <tr>
                     <th><h3>{this.props.name1}<img onClick={this.order} field="name" className="icon" alt="filterIcon" src={sortIcon} /></h3>
