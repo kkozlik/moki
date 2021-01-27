@@ -123,10 +123,10 @@ class ConnectivityCAController {
             const codeAnalysis = heatmap_query.getTemplate("attrs.sip-code", "failure", "attrs.src_ca_id", "failure", getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, "*", domainFilter), supress);
 
             //CA RATIO HISTORY
-            const ratioHistory = datehistogram_two_agg_query.getTemplate("attrs.dst_ca_id", "failure", timebucket, getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, "*", domainFilter), supress);
+            const ratioHistory = datehistogram_two_agg_query.getTemplate("attrs.dst_ca_id", "failure", timebucket, getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, "*", domainFilter),  timestamp_gte, timestamp_lte, supress);
 
             //CA AVAILABILITY
-            const caAvailability = datehistogram_two_agg_query.getTemplate("attrs.dest_ca_name", "StatesCA", timebucket, getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, "*", domainFilter), supress, "max");
+            const caAvailability = datehistogram_two_agg_query.getTemplate("attrs.dest_ca_name", "StatesCA", timebucket, getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, "*", domainFilter),  timestamp_gte, timestamp_lte, supress, "max");
 
             //DESTINATIONS CAs STATISTICS
             var statsCA = multiple_query.getTemplate("attrs.dst_ca_id", "attrs.duration", "CallEnd", "CallAttempts", "SumFailureSuccess", "failure", "AnsweredCalls", getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, "*", domainFilter), supress);
@@ -138,7 +138,7 @@ class ConnectivityCAController {
             const sumCallStart = query_string.getTemplate(getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, "attrs.type:call-start", domainFilter), supress);
 
             //AVG MoS
-            const avgMoS = datehistogram_two_agg_query.getTemplate("attrs.dst_ca_id", "attrs.rtp-MOScqex-avg", timebucket, getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, "*", domainFilter), supress);
+            const avgMoS = datehistogram_two_agg_query.getTemplate("attrs.dst_ca_id", "attrs.rtp-MOScqex-avg", timebucket, getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, "*", domainFilter),  timestamp_gte, timestamp_lte, supress);
 
             const response = await client.msearch({
                 body: [
@@ -476,7 +476,7 @@ class ConnectivityCAController {
 
             console.info("SERVER search with filters: " + filters + " types: " + types + " timerange: " + timestamp_gte + "-" + timestamp_lte + " timebucket: " + timebucket + " userFilter: " + userFilter);
             //CA RATIO HISTORY - animation
-            const attemptAnimation =  datehistogram_two_agg_query.getTemplate("attrs.dst_ca_id", "attrs.src_ca_id", timebucket, getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, "attrs.type:call-attempt", domainFilter), supress, "terms");
+            const attemptAnimation =  datehistogram_two_agg_query.getTemplate("attrs.dst_ca_id", "attrs.src_ca_id", timebucket, getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, "attrs.type:call-attempt", domainFilter), timestamp_gte, timestamp_lte, supress, "terms");
 
 
             const response = await client.msearch({
@@ -655,7 +655,7 @@ class ConnectivityCAController {
             var timebucket =  (timestamp_lte - timestamp_gte) / 30000;
             timebucket = Math.round(timebucket) + "s";
 
-            const attemptAnimation =  datehistogram_two_agg_query.getTemplate("attrs.src_ca_id", "attrs.dst_ca_id", timebucket, getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, "attrs.type:call-end OR attrs.type:call-start OR attrs.type:call-attempt", domainFilter), supress, "terms");
+            const attemptAnimation =  datehistogram_two_agg_query.getTemplate("attrs.src_ca_id", "attrs.dst_ca_id", timebucket, getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, "attrs.type:call-end OR attrs.type:call-start OR attrs.type:call-attempt", domainFilter), timestamp_gte, timestamp_lte, supress, "terms");
 
             const response = await client.msearch({
                 body: [
@@ -745,7 +745,7 @@ class ConnectivityCAController {
 
             console.info("SERVER search with filters: " + filters + " types: " + types + " timerange: " + timestamp_gte + "-" + timestamp_lte + " timebucket: " + timebucket + " userFilter: " + userFilter);
             //CA RATIO HISTORY - animation
-            const attemptAnimation =  datehistogram_two_agg_query.getTemplate("attrs.dst_ca_id", "attrs.src_ca_id", timebucket, getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, "attrs.type:call-end", domainFilter), supress, "terms");
+            const attemptAnimation =  datehistogram_two_agg_query.getTemplate("attrs.dst_ca_id", "attrs.src_ca_id", timebucket, getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, "attrs.type:call-end", domainFilter), timestamp_gte, timestamp_lte, supress, "terms");
 
 
             const response = await client.msearch({

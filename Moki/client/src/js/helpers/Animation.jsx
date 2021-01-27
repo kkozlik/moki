@@ -154,14 +154,16 @@ class Animation extends Component {
                     else {
                         console.info("Animation: finish, ending");
                         clearInterval(animation);
+                        thiss.props.setData(thiss.state.dataAll);
                         thiss.setState({
                             data: [],
                             animationTime: "",
                             count: -1,
                             icon: playIcon,
-                            animation: ""
+                            animation: "",
+                            dataAll: ""
                         })
-                        thiss.props.setData(thiss.state.dataAll);
+
                     }
                 }, 1000);
 
@@ -225,8 +227,8 @@ class Animation extends Component {
                 animation: "",
                 animationTime: "",
                 count: -1,
-                dataAll: "",
-                icon: playIcon
+                icon: playIcon,
+                dataAll: ""
             });
         }
         var display = this.props.display === "none" ? "none" : "block";
