@@ -339,7 +339,9 @@ export default class timedateHeatmap extends Component {
                     else
                         return d;                       
                 })         
-                .attr('font-weight', 'normal');
+                .attr('font-weight', 'normal')
+                .append("svg:title")
+                .text(function(d) { return d});
 
             svg.append("g")
                 .attr("class", "x axis")

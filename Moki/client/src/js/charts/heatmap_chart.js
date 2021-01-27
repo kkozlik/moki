@@ -281,7 +281,9 @@ export default class heatmap extends Component {
                     else
                         return d;                       
                 })         
-                .attr('font-weight', 'normal');
+                .attr('font-weight', 'normal')
+                .append("svg:title")
+                .text(function(d) { return d});
 
             svg.append("g")
                 .attr("class", "x axis")
@@ -297,7 +299,9 @@ export default class heatmap extends Component {
                     else
                         return d;                       
                 })      
-                .attr("transform", "rotate(-65)");
+                .attr("transform", "rotate(-65)")
+                .append("svg:title")
+                .text(function(d) { return d});
 
             if (id === "failureCA" || id === "callAtemptsCA" || id === "callEndsCA" || id === "durationCA") {
                 // text label for the x axis

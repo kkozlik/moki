@@ -32,6 +32,13 @@ export default class multivalueChart extends Component {
 unfilter(event){ 
      createFilter("NOT "+event.currentTarget.getAttribute('field') +":\""+event.currentTarget.getAttribute('value')+"\"");
 }
+
+wrapText(text){
+    if(text.length > 20)
+    return text.substring(0,20)+'...';
+else
+    return text;
+}
     
     sortByKey(array, key) {
         return array.sort(function(a, b) {
@@ -63,7 +70,7 @@ unfilter(event){
                             <img onClick={this.filter} field={this.props.field} value={data[i].name} className="icon" alt="filterIcon" src={filter} />
                             <img field={this.props.field} value={data[i].name}  onClick={this.unfilter} className="icon" alt="unfilterIcon" src={unfilter} /> 
                             </span>
-                           {data[i].name}
+                           <span title={data[i].name}>{this.wrapText(data[i].name)}</span>
                            </td> 
                     <td className="filtertd" key={"value0"+i}> {niceNumber(data[i].value0)}</td>
                     <td className="filtertd" key={"value1"+i}>{durationFormat(data[i].value1)}</td>
