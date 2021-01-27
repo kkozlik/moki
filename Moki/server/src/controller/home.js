@@ -45,12 +45,12 @@ var domainFilter = "*";
  *          items:
  *            $ref: "#/definitions/Type"
  *        timerange_gte:
- *          description: gte time in UNIX timestamp in ms! If not filled, timestamp is set to last 6 hours.
+ *          description: gte time in UNIX timestamp in ms! If not filled the time range between gte and lte will be set to last 6 hours.
  *          type: timestamp
  *          example:
  *            1592458026000
  *        timerange_lte:
- *          description: lte time in UNIX timestamp  in ms! If not filled, timestamp is set to last 6 hours.
+ *          description: lte time in UNIX timestamp  in ms! If not filled the time range between gte and lte will be set to last 6 hours.
  *          type: timestamp
  *          example:
  *            1592479626000
@@ -65,7 +65,7 @@ var domainFilter = "*";
  *          example:
  *            "call-end"
  *        name:
- *          description: User frendly name, used only on client side
+ *          description: User friendly name, used only on client side
  *          type: string
  *          example:
  *            "Call end"
