@@ -214,8 +214,6 @@ class Animation extends Component {
                 this.props.setData(this.state.data[event.target.value].data);
             }
         }
-
-        this.play();
     }
 
     //render animation buttons and slider
