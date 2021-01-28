@@ -54,7 +54,7 @@ cp -r Moki/* %{buildroot}/usr/share/Moki/
 
 # install moki moki-auth comp
 install -d %{buildroot}/usr/sbin
-cp Moki/ldap_auth/moki-auth %{buildroot}/usr/sbin/
+cp Moki/auth/moki-auth %{buildroot}/usr/sbin/
 
 # install moki service file
 install -d %{buildroot}/usr/lib/systemd/system
