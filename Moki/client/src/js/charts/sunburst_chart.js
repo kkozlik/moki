@@ -5,7 +5,7 @@ import * as d3 from "d3";
 import {
     createFilter
 } from "../helpers/createFilter";
-import Colors from '../helpers/Colors';
+import Colors from '../helpers/style/Colors';
 import emptyIcon from "../../styles/icons/empty_small.png";
 
 export default class sunburst extends Component {
@@ -18,10 +18,17 @@ export default class sunburst extends Component {
         this.draw = this.draw.bind(this);
     }
 
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.data !== this.state.data) {
-            this.setState({ data: nextProps.data });
-            this.draw(nextProps.data, this.props.width, this.props.units);
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (nextProps.data !== prevState.data) {
+            return { data: nextProps.data };
+        }
+        else return null;
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (prevProps.data !== this.props.data) {
+            this.setState({ data: this.props.data });
+            this.draw(this.props.data, this.props.width, this.props.units);
         }
     }
 
@@ -33,7 +40,6 @@ export default class sunburst extends Component {
         if (chart) {
             chart.remove();
         }
-        var j = 0;
         var width = 180;
         var height = 170;
         var svgWidth = widthSvg;
@@ -80,7 +86,7 @@ export default class sunburst extends Component {
             //animation for 2 sec, transition delay is in milliseconds
             //get count of all nodes
             var nodesCount = data.children.length;
-            for(var o = 0; o < data.children.length; o++){
+            for (var o = 0; o < data.children.length; o++) {
                 nodesCount = nodesCount + data.children[o].children.length;
             }
             var animationSpeed = 1200 / nodesCount;

@@ -24,10 +24,17 @@ export default class geoIpMap extends Component {
         this.setData = this.setData.bind(this);
     }
 
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.data !== this.state.data) {
-            this.setState({ data: nextProps.data });
-            this.draw(nextProps.data, this.props.width, this.props.units, this.props.name);
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (nextProps.data !== prevState.data) {
+            return { data: nextProps.data };
+        }
+        else return null;
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (prevProps.data !== this.props.data) {
+            this.setState({ data: this.props.data });
+            this.draw(this.props.data, this.props.width, this.props.units, this.props.name);
         }
     }
 
@@ -59,168 +66,170 @@ export default class geoIpMap extends Component {
 
         if (data.length === 0) {
             var svg = d3.select('#geoIpMap')
-            .append('svg')
-            .attr('width', width)
-            .attr('height', height)
-            .attr('id', 'geoIpMapSVGempty');
+                .append('svg')
+                .attr('width', width)
+                .attr('height', height)
+                .attr('id', 'geoIpMapSVGempty');
             svg.append('svg:image')
                 .attr("xlink:href", emptyIcon)
                 .attr("id", "emptyIconChart")
                 .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')')
         } else {
 
-        var isEmpty = document.getElementsByClassName("city");
-        //chart is empty /first run
-         if(isEmpty.length === 0){
-            svg = d3.select('#geoIpMap')
-            .append('svg')
-            .attr('width', width)
-            .attr('height', height);
+            var isEmpty = document.getElementsByClassName("city");
+            //chart is empty /first run
+            if (isEmpty.length === 0) {
+                svg = d3.select('#geoIpMap')
+                    .append('svg')
+                    .attr('width', width)
+                    .attr('height', height);
 
-            var g = svg.append("g").attr('transform', 'translate(' + width / 8 + ',0)');
-            var projection = d3.geoMercator();
-            var path = d3.geoPath().projection(projection);
-            var rScale = d3.scaleSqrt();
-            var first = true;
+                var g = svg.append("g").attr('transform', 'translate(' + width / 8 + ',0)');
+                var projection = d3.geoMercator();
+                var path = d3.geoPath().projection(projection);
+                var rScale = d3.scaleSqrt();
+                var first = true;
 
-            //get max value
-            var maxValue = 0;
-            var minValue = data[0].doc_count;
-            for (var i = 0; i < data.length; i++) {
+                //get max value
+                var maxValue = 0;
+                var minValue = data[0].doc_count;
+                for (var i = 0; i < data.length; i++) {
 
 
-                if (maxValue < data[i].doc_count) {
-                    maxValue = data[i].doc_count;
-                }
-                if (minValue > data[i].doc_count) {
-                    minValue = data[i].doc_count;
-                }
-            }
-
-            rScale.domain([minValue - 1, maxValue + 1]).range([0, 8]);
-            var thiss = this;
-            // zoom and pan
-            const zoom = d3.zoom()
-                .scaleExtent([1, 20])
-                .extent([[0, 0], [width, height]])
-                .on('zoom', () => {
-                    g.style('stroke-width', `${1.5 / d3.event.transform.k}px`);
-                    g.attr('transform', d3.event.transform);
-
-                    // draw the circles in their new positions
-                   /* d3.selectAll("circle").attr("r", d => d.doc_count ?
-                        rScale(d.doc_count) / d3.event.transform.k : 2 / d3.event.transform.k
-                    );
-*/
-                    d3.selectAll("circle").attr("r", function (d) {
-                        if(d.doc_count){
-                            if(rScale(d.doc_count) / d3.event.transform.k > 2){
-                                return 2;
-                            }
-                            else{
-                                return rScale(d.doc_count) / d3.event.transform.k;
-                            }
-                        }else {
-                            return 2 / d3.event.transform.k;
-                        }
-                    })
-
-                    //display names 
-                    if (d3.event.transform.k >= 4 && first) {
-                        first = false;
-                        d3.csv(cities).then(function (city) {
-                            g.selectAll(".city_label")
-                                .data(city)
-                                .enter()
-                                .append("text")
-                                .attr("class", "city_label")
-                                .text(function (d) {
-                                    return d.city_ascii
-                                })
-                                .style("font-size", "2px")
-                                .attr("transform", function (d) {
-                                    if (d.lng && d.lat) {
-                                        return "translate(" + projection([
-                                            d.lng,
-                                            d.lat
-                                        ]) + ")";
-                                    }
-                                })
-                        }
-                        )
+                    if (maxValue < data[i].doc_count) {
+                        maxValue = data[i].doc_count;
                     }
-                    //zooming out
-                    if (d3.event.transform.k < 4 && !first) {
-                        first = true;
-                        g.selectAll(".city_label").remove();
+                    if (minValue > data[i].doc_count) {
+                        minValue = data[i].doc_count;
                     }
+                }
 
-                })
-            svg.call(zoom);
+                rScale.domain([minValue - 1, maxValue + 1]).range([0, 8]);
+                var thiss = this;
+                // zoom and pan
+                const zoom = d3.zoom()
+                    .scaleExtent([1, 20])
+                    .extent([[0, 0], [width, height]])
+                    .on('zoom', () => {
+                        g.style('stroke-width', `${1.5 / d3.event.transform.k}px`);
+                        g.attr('transform', d3.event.transform);
 
+                        // draw the circles in their new positions
+                        /* d3.selectAll("circle").attr("r", d => d.doc_count ?
+                             rScale(d.doc_count) / d3.event.transform.k : 2 / d3.event.transform.k
+                         );
+     */
+                        d3.selectAll("circle").attr("r", function (d) {
+                            if (d.doc_count) {
+                                if (rScale(d.doc_count) / d3.event.transform.k > 2) {
+                                    return 2;
+                                }
+                                else {
+                                    return rScale(d.doc_count) / d3.event.transform.k;
+                                }
+                            } else {
+                                return 2 / d3.event.transform.k;
+                            }
+                        })
 
-            var countries = topojson.feature(map, map.objects.countries).features;
-            g.selectAll("path")
-                .data(countries)
-                .enter().append("path")
-                .attr("d", path)
-                .attr("fill", "#343a40");
-
-            var tooltip = d3.select('#geoIpMap').append('div')
-                .attr('class', 'tooltipgeoIpMap')
-                .style("width", "200px")
-                .style("height", "80px")
-                .style("background", "white")
-                .style('opacity', 0.9)
-                .style("position", "absolute")
-                .style("visibility", "hidden")
-                .style("box-shadow", "0px 0px 6px black")
-                .style("padding", "10px");
-            tooltip.append("div");
-
-            //cites
-            d3.csv(cities).then(function (city) {
-
-
-                g.selectAll("city")
-                    .data(city)
-                    .enter()
-                    .append("circle")
-                    .attr("r", 2)
-                    .attr("fill", "#121416")
-                    .attr("class", "city")
-                    .attr("transform", function (d) {
-                        if (d.lng && d.lat) {
-                            return "translate(" + projection([
-                                d.lng,
-                                d.lat
-                            ]) + ")";
+                        //display names 
+                        if (d3.event.transform.k >= 4 && first) {
+                            first = false;
+                            d3.csv(cities).then(function (city) {
+                                g.selectAll(".city_label")
+                                    .data(city)
+                                    .enter()
+                                    .append("text")
+                                    .attr("class", "city_label")
+                                    .text(function (d) {
+                                        return d.city_ascii
+                                    })
+                                    .style("font-size", "2px")
+                                    .attr("transform", function (d) {
+                                        if (d.lng && d.lat) {
+                                            return "translate(" + projection([
+                                                d.lng,
+                                                d.lat
+                                            ]) + ")";
+                                        }
+                                    })
+                            }
+                            )
                         }
-                    })
-                    .on("mouseover", function (d) {
-                        tooltip.style("visibility", "visible");
-                        tooltip.select("div").html(d.city_ascii);
-                    })
-                    .on("mouseout", function (d) {
-                        tooltip.style("visibility", "hidden")
-                    })
-                    .on("mousemove", function (d) {
-                        tooltip
-                            .style("left", (d3.event.layerX - 20) + "px")
-                            .style("top", (d3.event.layerY - 70) + "px");
+                        //zooming out
+                        if (d3.event.transform.k < 4 && !first) {
+                            first = true;
+                            g.selectAll(".city_label").remove();
+                        }
 
+                    })
+                svg.call(zoom);
+
+
+                var countries = topojson.feature(map, map.objects.countries).features;
+                g.selectAll("path")
+                    .data(countries)
+                    .enter().append("path")
+                    .attr("d", path)
+                    .attr("fill", "#343a40");
+
+                var tooltip = d3.select('#geoIpMap').append('div')
+                    .attr('class', 'tooltipgeoIpMap')
+                    .style("width", "200px")
+                    .style("height", "80px")
+                    .style("background", "white")
+                    .style('opacity', 0.9)
+                    .style("position", "absolute")
+                    .style("visibility", "hidden")
+                    .style("box-shadow", "0px 0px 6px black")
+                    .style("padding", "10px");
+                tooltip.append("div");
+
+                //cites
+                d3.csv(cities).then(function (city) {
+
+
+                    g.selectAll("city")
+                        .data(city)
+                        .enter()
+                        .append("circle")
+                        .attr("r", 2)
+                        .attr("fill", "#121416")
+                        .attr("class", "city")
+                        .attr("transform", function (d) {
+                            if (d.lng && d.lat) {
+                                return "translate(" + projection([
+                                    d.lng,
+                                    d.lat
+                                ]) + ")";
+                            }
+                        })
+                        .on("mouseover", function (d) {
+                            tooltip.style("visibility", "visible");
+                            tooltip.select("div").html(d.city_ascii);
+                        })
+                        .on("mouseout", function (d) {
+                            tooltip.style("visibility", "hidden")
+                        })
+                        .on("mousemove", function (d) {
+                            tooltip
+                                .style("left", (d3.event.layerX - 20) + "px")
+                                .style("top", (d3.event.layerY - 70) + "px");
+
+                        });
+                    thiss.drawOnlyPins(g, name, data, units, svg)
+                    thiss.setState({
+                        g: g,
+                        svg: svg
                     });
-                    thiss.drawOnlyPins(g, name, data, units, svg) 
-                    thiss.setState({g:g,
-                    svg: svg});
-            });
-        }
-        //rerender only pins
-        else {
-            this.drawOnlyPins(this.state.g, name, data, units, this.state.svg) 
+                });
+            }
+            //rerender only pins
+            else {
+                this.drawOnlyPins(this.state.g, name, data, units, this.state.svg)
+            }
         }
     }
-}
 
 
     //draw only data
@@ -230,16 +239,16 @@ export default class geoIpMap extends Component {
         var projection = d3.geoMercator();
 
         var tooltip = d3.select('#geoIpMap').append('div')
-                .attr('class', 'tooltipgeoIpMap')
-                .style("width", "200px")
-                .style("height", "80px")
-                .style("background", "white")
-                .style('opacity', 0.9)
-                .style("position", "absolute")
-                .style("visibility", "hidden")
-                .style("box-shadow", "0px 0px 6px black")
-                .style("padding", "10px");
-            tooltip.append("div");
+            .attr('class', 'tooltipgeoIpMap')
+            .style("width", "200px")
+            .style("height", "80px")
+            .style("background", "white")
+            .style('opacity', 0.9)
+            .style("position", "absolute")
+            .style("visibility", "hidden")
+            .style("box-shadow", "0px 0px 6px black")
+            .style("padding", "10px");
+        tooltip.append("div");
 
         var rScale = d3.scaleSqrt();
 
@@ -258,17 +267,17 @@ export default class geoIpMap extends Component {
         }
 
         rScale.domain([minValue - 1, maxValue + 1]).range([0, 8]);
-                //remove old pins if exists
+        //remove old pins if exists
         var pins = document.getElementsByClassName("pins");
         if (pins) {
-            while(pins.length > 0){
+            while (pins.length > 0) {
                 pins[0].parentNode.removeChild(pins[0]);
             }
         }
 
         var pinsPulse = document.getElementsByClassName("pinsPulse");
         if (pinsPulse) {
-            while(pinsPulse.length > 0){
+            while (pinsPulse.length > 0) {
                 pinsPulse[0].parentNode.removeChild(pinsPulse[0]);
             }
         }
@@ -278,7 +287,7 @@ export default class geoIpMap extends Component {
             .data(data)
             .enter().append("circle")
             .attr("r", function (d) {
-                if(rScale(d.doc_count) < 2) return 2;
+                if (rScale(d.doc_count) < 2) return 2;
                 return rScale(d.doc_count);
             })
             .attr("fill", "transparent")
@@ -339,7 +348,7 @@ export default class geoIpMap extends Component {
             pins
                 .transition()
                 .ease(d3.easeLinear)
-                .attr("r", function (d) { if(d.doc_count) return rScale(d.doc_count) + 10 })
+                .attr("r", function (d) { if (d.doc_count) return rScale(d.doc_count) + 10 })
                 .style("opacity", function (d) { return d === 60 ? 0 : 1 })
                 .duration(500)
                 .on("end", function () { if (++i === pins.size() - 1) { transition(); } });
@@ -354,52 +363,52 @@ export default class geoIpMap extends Component {
 
         transition();
 
-         // zoom and pan
-         const zoom = d3.zoom()
-         .scaleExtent([1, 20])
-         .extent([[0, 0], [width, height]])
-         .on('zoom', () => {
-             g.style('stroke-width', `${1.5 / d3.event.transform.k}px`);
-             g.attr('transform', d3.event.transform);
+        // zoom and pan
+        const zoom = d3.zoom()
+            .scaleExtent([1, 20])
+            .extent([[0, 0], [width, height]])
+            .on('zoom', () => {
+                g.style('stroke-width', `${1.5 / d3.event.transform.k}px`);
+                g.attr('transform', d3.event.transform);
 
-             // draw the circles in their new positions
-             d3.selectAll("circle").attr("r", d => d.doc_count ?
-                 rScale(d.doc_count) / d3.event.transform.k : 2 / d3.event.transform.k
-             );
+                // draw the circles in their new positions
+                d3.selectAll("circle").attr("r", d => d.doc_count ?
+                    rScale(d.doc_count) / d3.event.transform.k : 2 / d3.event.transform.k
+                );
 
-             //display names 
-             var first = true;
-             if (d3.event.transform.k >= 4 && first) {
-                 first = false;
-                 d3.csv(cities).then(function (city) {
-                     g.selectAll(".city_label")
-                         .data(city)
-                         .enter()
-                         .append("text")
-                         .attr("class", "city_label")
-                         .text(function (d) {
-                             return d.city_ascii
-                         })
-                         .style("font-size", "2px")
-                         .attr("transform", function (d) {
-                             if (d.lng && d.lat) {
-                                 return "translate(" + projection([
-                                     d.lng,
-                                     d.lat
-                                 ]) + ")";
-                             }
-                         })
-                 }
-                 )
-             }
-             //zooming out
-             if (d3.event.transform.k < 4 && !first) {
-                 first = true;
-                 g.selectAll(".city_label").remove();
-             }
+                //display names 
+                var first = true;
+                if (d3.event.transform.k >= 4 && first) {
+                    first = false;
+                    d3.csv(cities).then(function (city) {
+                        g.selectAll(".city_label")
+                            .data(city)
+                            .enter()
+                            .append("text")
+                            .attr("class", "city_label")
+                            .text(function (d) {
+                                return d.city_ascii
+                            })
+                            .style("font-size", "2px")
+                            .attr("transform", function (d) {
+                                if (d.lng && d.lat) {
+                                    return "translate(" + projection([
+                                        d.lng,
+                                        d.lat
+                                    ]) + ")";
+                                }
+                            })
+                    }
+                    )
+                }
+                //zooming out
+                if (d3.event.transform.k < 4 && !first) {
+                    first = true;
+                    g.selectAll(".city_label").remove();
+                }
 
-         })
-     svg.call(zoom);
+            })
+        svg.call(zoom);
 
 
     }
@@ -407,6 +416,6 @@ export default class geoIpMap extends Component {
     render() {
         return (<div id="geoIpMap" > <h3 className="alignLeft title" > {
             this.props.name
-        } </h3><Animation display={this.props.displayAnimation} name={this.props.name} type={this.props.type} setData={this.setData} dataAll={this.state.data} autoplay={this.props.autoplay}/></div >)
+        } </h3><Animation display={this.props.displayAnimation} name={this.props.name} type={this.props.type} setData={this.setData} dataAll={this.state.data} autoplay={this.props.autoplay} /></div >)
     }
 }

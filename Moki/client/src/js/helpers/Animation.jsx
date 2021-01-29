@@ -46,7 +46,7 @@ class Animation extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (nextProps.dataAll != this.state.dataAll && (this.state.dataAll === "" || this.state.dataAll === undefined)) {
+        if (nextProps.dataAll !== this.state.dataAll && (this.state.dataAll === "" || this.state.dataAll === undefined)) {
             this.setState({ dataAll: nextProps.dataAll });
         }
     }

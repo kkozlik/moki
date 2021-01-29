@@ -421,7 +421,7 @@ class Settings extends Component {
 
     //search with wildcard
     matchRuleShort(str, rule) {
-        var escapeRegex = (str) => str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1");
+        var escapeRegex = (str) => str.replace(/([.*+?^=!:${}()|[]\/\\])/g, "\\$1");
         return new RegExp("^" + rule.split("*").map(escapeRegex).join(".*") + "$").test(str);
     }
 

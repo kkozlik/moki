@@ -2,7 +2,7 @@ import React, {
     Component
 } from 'react';
 import * as d3 from "d3";
-import Colors from '../helpers/Colors';
+import Colors from '../helpers/style/Colors';
 import emptyIcon from "../../styles/icons/empty.png";
 import Animation from '../helpers/Animation';
 
@@ -14,20 +14,24 @@ export default class topology extends Component {
         }
         this.setData = this.setData.bind(this);
     }
+    
+    static getDerivedStateFromProps(nextProps, prevState){
+        if(nextProps.data!==prevState.data){
+          return { data: nextProps.data};
+       }
+       else return null;
+     }
+     
+     componentDidUpdate(prevProps, prevState) {
+       if(prevProps.data!==this.props.data){
+        this.setState({ data: this.props.data });
+        this.draw(this.state.data, this.props.width, this.props.height, this.props.units);
+       }
+     }
 
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.data !== this.state.data) {
-            this.setState({data: nextProps.data});
-        }
-    }
 
     setData(data) {
         this.setState({data: data});
-    }
-
-    componentDidUpdate(prevProps) {
-            this.draw(this.state.data, this.props.width, this.props.height, this.props.units);
-    
     }
 
     draw(data, width, height, units) {

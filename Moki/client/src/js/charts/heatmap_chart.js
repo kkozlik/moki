@@ -7,10 +7,10 @@ import {
 } from "../helpers/createFilter";
 import {
     ColorsRedGreen
-} from "../helpers/ColorsRedGreen";
+} from "../helpers/style/ColorsRedGreen";
 import {
     ColorsGreen
-} from "../helpers/ColorsGreen";
+} from "../helpers/style/ColorsGreen";
 import {
     durationFormat
 } from "../helpers/durationFormat";
@@ -27,14 +27,18 @@ export default class heatmap extends Component {
         this.setData = this.setData.bind(this);
     }
 
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.data !== this.state.data) {
-            this.setState({ data: nextProps.data });
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (nextProps.data !== prevState.data) {
+            return { data: nextProps.data };
         }
+        else return null;
     }
 
-    componentDidUpdate(prevProps) {
-        this.draw(this.state.data, this.props.id, this.props.field, this.props.field2, this.props.width, this.props.name, this.props.units);
+    componentDidUpdate(prevProps, prevState) {
+        if (prevProps.data !== this.props.data) {
+            this.setState({ data: this.props.data });
+            this.draw(this.state.data, this.props.id, this.props.field, this.props.field2, this.props.width, this.props.name, this.props.units);
+        }
     }
 
     setData(data) {
@@ -62,7 +66,7 @@ export default class heatmap extends Component {
             var maxTextWidth = d3.max(data.map(n => n.attr1.length));
             marginBottom = maxTextWidth > 50 ? 150 : (maxTextWidth * 7) + 10;
             maxTextWidth = d3.max(data.map(n => n.attr2.length));
-            marginLeft =  maxTextWidth > 50 ? 150 : maxTextWidth > 15 ? maxTextWidth * 8 :  maxTextWidth * 13;
+            marginLeft = maxTextWidth > 50 ? 150 : maxTextWidth > 15 ? maxTextWidth * 8 : maxTextWidth * 13;
         }
 
         var margin = {
@@ -183,7 +187,7 @@ export default class heatmap extends Component {
                 .data(data)
                 .enter().append('g').append('rect')
                 .attr('class', 'cell')
-               // .style("opacity", "0")
+                // .style("opacity", "0")
                 .attr('width', function (d) {
                     if (d.value === -1) return 0;
                     return cellSize + 5;
@@ -243,14 +247,14 @@ export default class heatmap extends Component {
                     tooltip.style("visibility", "hidden");
                 });
 
-          /*      var animationSpeed = data.length > 10 ? 20 : 40;
-                console.log(animationSpeed);
-            //animation
-            rect.transition()
-                .duration(0)
-                .delay((d, i) => i * animationSpeed)
-                .style("opacity", 1);
-        */
+            /*      var animationSpeed = data.length > 10 ? 20 : 40;
+                  console.log(animationSpeed);
+              //animation
+              rect.transition()
+                  .duration(0)
+                  .delay((d, i) => i * animationSpeed)
+                  .style("opacity", 1);
+          */
 
             //filter type onClick
             rect.on("click", el => {
@@ -276,14 +280,14 @@ export default class heatmap extends Component {
                 .call(yAxis)
                 .selectAll('text')
                 .text(function (d) {
-                    if(d.length > 20)
-                        return d.substring(0,20)+'...';
+                    if (d.length > 20)
+                        return d.substring(0, 20) + '...';
                     else
-                        return d;                       
-                })         
+                        return d;
+                })
                 .attr('font-weight', 'normal')
                 .append("svg:title")
-                .text(function(d) { return d});
+                .text(function (d) { return d });
 
             svg.append("g")
                 .attr("class", "x axis")
@@ -294,14 +298,14 @@ export default class heatmap extends Component {
                 .attr("dx", "-.8em")
                 .attr("dy", ".15em")
                 .text(function (d) {
-                    if(d.length > 20)
-                        return d.substring(0,20)+'...';
+                    if (d.length > 20)
+                        return d.substring(0, 20) + '...';
                     else
-                        return d;                       
-                })      
+                        return d;
+                })
                 .attr("transform", "rotate(-65)")
                 .append("svg:title")
-                .text(function(d) { return d});
+                .text(function (d) { return d });
 
             if (id === "failureCA" || id === "callAtemptsCA" || id === "callEndsCA" || id === "durationCA") {
                 // text label for the x axis
@@ -355,7 +359,7 @@ export default class heatmap extends Component {
         } > <h3 className="alignLeft title" > {
             this.props.name
         } </h3>
-          {window.location.pathname !== "/connectivity" && <Animation name={this.props.name} type={this.props.type} setData={this.setData} dataAll={this.state.data} />}
-          </div>)
+            {window.location.pathname !== "/connectivity" && <Animation name={this.props.name} type={this.props.type} setData={this.setData} dataAll={this.state.data} />}
+        </div>)
     }
 }

@@ -18,22 +18,28 @@ class ConferenceTable extends Component {
         this.state = {
             calls: [],
             total: 0
-        }  
+        }
         store.subscribe(() => this.loadData());
     }
 
-componentDidMount() {
-     this.loadData();
-}
+    componentDidMount() {
+        this.loadData();
+    }
 
+    componentWillUnmount() {
+        // fix Warning: Can't perform a React state update on an unmounted component
+        this.setState = (state, callback) => {
+            return;
+        };
+    }
 
     async loadData() {
         var calls = await elasticsearchConnection("conference/table");
 
-        if (calls === undefined || !calls.hits || !calls.hits.hits ||(typeof calls === "string" && calls.includes("ERROR:"))) {
+        if (calls === undefined || !calls.hits || !calls.hits.hits || (typeof calls === "string" && calls.includes("ERROR:"))) {
 
             return;
-        } else if(calls) {
+        } else if (calls) {
             var data = calls.hits.hits;
             var total = calls.hits.total.value;
             this.setState({
@@ -47,18 +53,18 @@ componentDidMount() {
 
     render() {
         return (
-            <div className = "row no-gutters" >
-            <TableChart data = {
-                this.state.calls
-            } total={this.state.total}
-            name = {
-                "conference"
-            }
-            tags={this.props.tags}
-            id = {
-                "CONFERENCE EVENTS"
-            }
-            />  </div >
+            <div className="row no-gutters" >
+                <TableChart data={
+                    this.state.calls
+                } total={this.state.total}
+                    name={
+                        "conference"
+                    }
+                    tags={this.props.tags}
+                    id={
+                        "CONFERENCE EVENTS"
+                    }
+                />  </div >
         );
     }
 }

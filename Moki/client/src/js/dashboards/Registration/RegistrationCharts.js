@@ -44,6 +44,13 @@ class RegistrationCharts extends Component {
 
     }
 
+    componentWillUnmount() {
+        // fix Warning: Can't perform a React state update on an unmounted component
+        this.setState = (state, callback) => {
+            return;
+        };
+    }
+
     componentDidMount() {
         this.loadData();
     }
@@ -111,8 +118,8 @@ class RegistrationCharts extends Component {
     //render GUI
     render() {
         return (<div> {
-                this.state.isLoading && < LoadingScreenCharts />
-            } <div className="row no-gutters" >
+            this.state.isLoading && < LoadingScreenCharts />
+        } <div className="row no-gutters" >
                 <TimedateStackedChart id="eventsOverTime"
                     data={
                         this.state.eventRegsTimeline
@@ -128,86 +135,86 @@ class RegistrationCharts extends Component {
                         store.getState().width - 300
                     }
                 />  </div>
-               <div className="row no-gutters">
-                    <div className="column">
-                        <MultipleAreaChart data={
-                            this.state.parallelRegs
-                        } name={"PARALLEL REGS"} id={"parallelRegs"} width={store.getState().width - 500} />
-                    </div>
-                    <div >
-                        <ValueChart data={
-                            this.state.regsActual
-                        } name={"ACTUAL REGS"} biggerFont={"biggerFont"} />
-                    </div>
+            <div className="row no-gutters">
+                <div className="column">
+                    <MultipleAreaChart data={
+                        this.state.parallelRegs
+                    } name={"PARALLEL REGS"} id={"parallelRegs"} width={store.getState().width - 500} />
                 </div>
+                <div >
+                    <ValueChart data={
+                        this.state.regsActual
+                    } name={"ACTUAL REGS"} biggerFont={"biggerFont"} />
+                </div>
+            </div>
 
-                <div className="row no-gutters" >
-                    <div className="col" >
-                        <Geoipchart data={
-                            this.state.geoipMap
+            <div className="row no-gutters" >
+                <div className="col" >
+                    <Geoipchart data={
+                        this.state.geoipMap
+                    }
+                        type={"geoip"}
+                        units={"count"}
+                        width={
+                            store.getState().width - 300
                         }
-                            type={"geoip"}
-                            units={"count"}
-                            width={
-                                store.getState().width - 300
-                            }
-                            name="REGISTRATIONS MAP" />
-                    </div> </div> <div className="row no-gutters" >
-                    <div className="col" >
-                        <DonutChart data={
-                            this.state.userAgents
+                        name="REGISTRATIONS MAP" />
+                </div> </div> <div className="row no-gutters" >
+                <div className="col" >
+                    <DonutChart data={
+                        this.state.userAgents
+                    }
+                        units={"count"}
+                        name={
+                            "USER-AGENTS IN REG. NEW"
                         }
-                            units={"count"}
-                            name={
-                                "USER-AGENTS IN REG. NEW"
-                            }
-                            field={
-                                "attrs.from-ua"
-                            }
-                            id="userAgents"
-                            width={
-                                store.getState().width - 300
-                            }
-                            height={
-                                170
-                            }
-                            legendSize={
-                                450
-                            }
-                        />  </div> <div className="col" >
-                        <DonutChart data={
-                            this.state.transportProtocol
+                        field={
+                            "attrs.from-ua"
                         }
-                            name={
-                                "TRANSPORT PROTOCOL"
-                            }
-                            units={"count"}
-                            field={
-                                "attrs.transport"
-                            }
-                            id="transportProtocol"
-                            width={
-                                (store.getState().width - 300) / 2
-                            }
-                            height={
-                                170
-                            }
-                            legendSize={
-                                50
-                            }
-                        />  </div> <div className="col" >
-                        <ListChart data={
-                            this.state.topRegExpired
+                        id="userAgents"
+                        width={
+                            store.getState().width - 300
                         }
-                            name={
-                                "TOP REG. EXPIRED"
-                            }
-                            field={
-                                "attrs.from.keyword"
-                            }
-                        />  </div>
+                        height={
+                            170
+                        }
+                        legendSize={
+                            450
+                        }
+                    />  </div> <div className="col" >
+                    <DonutChart data={
+                        this.state.transportProtocol
+                    }
+                        name={
+                            "TRANSPORT PROTOCOL"
+                        }
+                        units={"count"}
+                        field={
+                            "attrs.transport"
+                        }
+                        id="transportProtocol"
+                        width={
+                            (store.getState().width - 300) / 2
+                        }
+                        height={
+                            170
+                        }
+                        legendSize={
+                            50
+                        }
+                    />  </div> <div className="col" >
+                    <ListChart data={
+                        this.state.topRegExpired
+                    }
+                        name={
+                            "TOP REG. EXPIRED"
+                        }
+                        field={
+                            "attrs.from.keyword"
+                        }
+                    />  </div>
 
-                </div> </div>
+            </div> </div>
         );
     }
 }

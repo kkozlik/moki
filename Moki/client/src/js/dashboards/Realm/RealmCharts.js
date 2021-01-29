@@ -41,10 +41,24 @@ class RealmCharts extends Component {
 
     }
 
-    componentWillReceiveProps(nextProps){
-      if(nextProps.hostnames !==  this.props.hostnames){
-        this.setState({hostnames: nextProps.hostnames });
-      }
+    componentWillUnmount() {
+        // fix Warning: Can't perform a React state update on an unmounted component
+        this.setState = (state, callback) => {
+            return;
+        };
+    }
+
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (nextProps.hostnames !== prevState.hostnames) {
+            return { hostnames: nextProps.hostnames };
+        }
+        else return null;
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (prevProps.hostnames !== this.props.hostnames) {
+            this.setState({ hostnames: this.props.hostnames });
+        }
     }
     componentDidMount() {
         this.loadData();
@@ -135,241 +149,241 @@ class RealmCharts extends Component {
 
     //render GUI
     render() {
-        return ( <
+        return (<
             div > {
-                this.state.isLoading && < LoadingScreenCharts / >
+                this.state.isLoading && < LoadingScreenCharts />
             } <
-            div className = "row no-gutters" >
-            <
-            div className = "col" >
-            <
-            MultipleLineChart id = "maxCallsFromByHost" 
-            hostnames = {this.state.hostnames}
-            data = {
-                this.state.maxCallsFromByHost
-            }
-            name = {
-                "MAX CALLS FROM BY HOST"
-            }
-            width = {
-                (store.getState().width -300)/3
-            }
-            ticks = {
-                3
-            }
-            />                            < /
+            div className="row no-gutters" >
+                <
+            div className="col" >
+                    <
+                        MultipleLineChart id="maxCallsFromByHost"
+                        hostnames={this.state.hostnames}
+                        data={
+                            this.state.maxCallsFromByHost
+                        }
+                        name={
+                            "MAX CALLS FROM BY HOST"
+                        }
+                        width={
+                            (store.getState().width - 300) / 3
+                        }
+                        ticks={
+                            3
+                        }
+                    />                            < /
             div > <
-            div className = "col" >
-            <
-            MultipleLineChart id = "maxCallsToByHost"
-            data = {
-                this.state.maxCallsToByHost
-            }
-            name = {
-                "MAX CALLS TO BY HOST"
-            }
-            width = {
-                (store.getState().width -300)/3
-            }
-            hostnames = {this.state.hostnames}
-            ticks = {
-                3
-            }
-            />                            < /
+            div className="col" >
+                        <
+                            MultipleLineChart id="maxCallsToByHost"
+                            data={
+                                this.state.maxCallsToByHost
+                            }
+                            name={
+                                "MAX CALLS TO BY HOST"
+                            }
+                            width={
+                                (store.getState().width - 300) / 3
+                            }
+                            hostnames={this.state.hostnames}
+                            ticks={
+                                3
+                            }
+                        />                            < /
             div > <
-            div className = "col" >
-            <
-            MultipleLineChart id = "maxCallsFromByrealm"
-            data = {
-                this.state.maxCallsFromByrealm
-            }
-            hostnames = {this.state.hostnames}
-            name = {
-                "MAX CALLS FROM BY REALM"
-            }
-            width = {
-                (store.getState().width -300)/3
-            }
-            ticks = {
-                3
-            }
-            />                            < /
+            div className="col" >
+                            <
+                                MultipleLineChart id="maxCallsFromByrealm"
+                                data={
+                                    this.state.maxCallsFromByrealm
+                                }
+                                hostnames={this.state.hostnames}
+                                name={
+                                    "MAX CALLS FROM BY REALM"
+                                }
+                                width={
+                                    (store.getState().width - 300) / 3
+                                }
+                                ticks={
+                                    3
+                                }
+                            />                            < /
             div > <
-            div className = "col" >
-            <
-            MultipleLineChart id = "maxCallsToByrealm"
-            data = {
-                this.state.maxCallsToByrealm
-            }
-            name = {
-                "MAX CALLS TO BY REALM"
-            }
-            hostnames = {this.state.hostnames}
-            width = {
-                (store.getState().width -300)/3
-            }
-            ticks = {
-                3
-            }
-            />                            < /
+            div className="col" >
+                                <
+                                    MultipleLineChart id="maxCallsToByrealm"
+                                    data={
+                                        this.state.maxCallsToByrealm
+                                    }
+                                    name={
+                                        "MAX CALLS TO BY REALM"
+                                    }
+                                    hostnames={this.state.hostnames}
+                                    width={
+                                        (store.getState().width - 300) / 3
+                                    }
+                                    ticks={
+                                        3
+                                    }
+                                />                            < /
             div >
 
             <
-            div className = "col" >
-            <
-            MultipleLineChart id = "maxStartCallsFromByHost"
-            data = {
-                this.state.maxStartCallsFromByHost
-            }
-            hostnames = {this.state.hostnames}
-            name = {
-                "MAX START CALLS FROM BY HOST"
-            }
-            width = {
-                (store.getState().width -300)/3
-            }
-            ticks = {
-                3
-            }
-            />                            < /
+            div className="col" >
+                                    <
+                                        MultipleLineChart id="maxStartCallsFromByHost"
+                                        data={
+                                            this.state.maxStartCallsFromByHost
+                                        }
+                                        hostnames={this.state.hostnames}
+                                        name={
+                                            "MAX START CALLS FROM BY HOST"
+                                        }
+                                        width={
+                                            (store.getState().width - 300) / 3
+                                        }
+                                        ticks={
+                                            3
+                                        }
+                                    />                            < /
             div >
 
             <
-            div className = "col" >
-            <
-            MultipleLineChart id = "maxStartCallsToByHost"
-            data = {
-                this.state.maxStartCallsToByHost
-            }
-            hostnames = {this.state.hostnames}
-            name = {
-                "MAX START CALLS TO BY HOST"
-            }
-            width = {
-                (store.getState().width -300)/3
-            }
-            ticks = {
-                3
-            }
-            />                            < /
+            div className="col" >
+                                        <
+                                            MultipleLineChart id="maxStartCallsToByHost"
+                                            data={
+                                                this.state.maxStartCallsToByHost
+                                            }
+                                            hostnames={this.state.hostnames}
+                                            name={
+                                                "MAX START CALLS TO BY HOST"
+                                            }
+                                            width={
+                                                (store.getState().width - 300) / 3
+                                            }
+                                            ticks={
+                                                3
+                                            }
+                                        />                            < /
             div >
 
             <
-            div className = "col" >
-            <
-            MultipleLineChart id = "maxStartCallsFromByrealm"
-            data = {
-                this.state.maxStartCallsFromByrealm
-            }
-            hostnames = {this.state.hostnames}
-            name = {
-                "MAX START CALLS FROM BY REALM"
-            }
-            width = {
-                (store.getState().width -300)/3
-            }
-            ticks = {
-                3
-            }
-            />                            < /
+            div className="col" >
+                                            <
+                                                MultipleLineChart id="maxStartCallsFromByrealm"
+                                                data={
+                                                    this.state.maxStartCallsFromByrealm
+                                                }
+                                                hostnames={this.state.hostnames}
+                                                name={
+                                                    "MAX START CALLS FROM BY REALM"
+                                                }
+                                                width={
+                                                    (store.getState().width - 300) / 3
+                                                }
+                                                ticks={
+                                                    3
+                                                }
+                                            />                            < /
             div >
 
             <
-            div className = "col" >
-            <
-            MultipleLineChart id = "maxStartCallsToByrealm"
-            data = {
-                this.state.maxStartCallsToByrealm
-            }
-            hostnames = {this.state.hostnames}
-            name = {
-                "MAX START CALLS TO BY REALM"
-            }
-            width = {
-                (store.getState().width -300)/3
-            }
-            ticks = {
-                3
-            }
-            />                            < /
+            div className="col" >
+                                                <
+                                                    MultipleLineChart id="maxStartCallsToByrealm"
+                                                    data={
+                                                        this.state.maxStartCallsToByrealm
+                                                    }
+                                                    hostnames={this.state.hostnames}
+                                                    name={
+                                                        "MAX START CALLS TO BY REALM"
+                                                    }
+                                                    width={
+                                                        (store.getState().width - 300) / 3
+                                                    }
+                                                    ticks={
+                                                        3
+                                                    }
+                                                />                            < /
             div >
 
             <
-            div className = "col" >
-            <
-            MultipleLineChart id = "rtpToByHost"
-            data = {
-                this.state.rtpToByHost
-            }
-            hostnames = {this.state.hostnames}
-            name = {
-                "RTP RELAYED TO BY HOST"
-            }
-            width = {
-                (store.getState().width -300)/3
-            }
-            ticks = {
-                3
-            }
-            />                            < /
+            div className="col" >
+                                                    <
+                                                        MultipleLineChart id="rtpToByHost"
+                                                        data={
+                                                            this.state.rtpToByHost
+                                                        }
+                                                        hostnames={this.state.hostnames}
+                                                        name={
+                                                            "RTP RELAYED TO BY HOST"
+                                                        }
+                                                        width={
+                                                            (store.getState().width - 300) / 3
+                                                        }
+                                                        ticks={
+                                                            3
+                                                        }
+                                                    />                            < /
             div >
 
             <
-            div className = "col" >
-            <
-            MultipleLineChart id = "rtpFromByHost"
-            data = {
-                this.state.rtpFromByHost
-            }
-            name = {
-                "RTP RELAYED FROM BY HOST"
-            }
-            hostnames = {this.state.hostnames}
-            width = {
-                (store.getState().width -300)/3
-            }
-            ticks = {
-                3
-            }
-            />                            < /
+            div className="col" >
+                                                        <
+                                                            MultipleLineChart id="rtpFromByHost"
+                                                            data={
+                                                                this.state.rtpFromByHost
+                                                            }
+                                                            name={
+                                                                "RTP RELAYED FROM BY HOST"
+                                                            }
+                                                            hostnames={this.state.hostnames}
+                                                            width={
+                                                                (store.getState().width - 300) / 3
+                                                            }
+                                                            ticks={
+                                                                3
+                                                            }
+                                                        />                            < /
             div >
 
             <
-            div className = "col" >
-            <
-            MultipleLineChart id = "rtpToByRealm"
-            data = {
-                this.state.rtpToByRealm
-            }
-            name = {
-                "RTP RELAYED TO BY REALM"
-            }
-            hostnames = {this.state.hostnames}
-            width = {
-                (store.getState().width -300)/3
-            }
-            ticks = {
-                3
-            }
-            />                            < /
+            div className="col" >
+                                                            <
+                                                                MultipleLineChart id="rtpToByRealm"
+                                                                data={
+                                                                    this.state.rtpToByRealm
+                                                                }
+                                                                name={
+                                                                    "RTP RELAYED TO BY REALM"
+                                                                }
+                                                                hostnames={this.state.hostnames}
+                                                                width={
+                                                                    (store.getState().width - 300) / 3
+                                                                }
+                                                                ticks={
+                                                                    3
+                                                                }
+                                                            />                            < /
             div > <
-            div className = "col" >
-            <
-            MultipleLineChart id = "rtpFromByRealm"
-            data = {
-                this.state.rtpFromByRealm
-            }
-            name = {
-                "RTP RELAYED FROM BY REALM"
-            }
-            hostnames = {this.state.hostnames}
-            width = {
-                (store.getState().width -300)/3
-            }
-            ticks = {
-                3
-            }
-            />                            < /
+            div className="col" >
+                                                                <
+                                                                    MultipleLineChart id="rtpFromByRealm"
+                                                                    data={
+                                                                        this.state.rtpFromByRealm
+                                                                    }
+                                                                    name={
+                                                                        "RTP RELAYED FROM BY REALM"
+                                                                    }
+                                                                    hostnames={this.state.hostnames}
+                                                                    width={
+                                                                        (store.getState().width - 300) / 3
+                                                                    }
+                                                                    ticks={
+                                                                        3
+                                                                    }
+                                                                />                            < /
             div >
 
 

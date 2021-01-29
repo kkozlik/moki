@@ -30,6 +30,12 @@ class TransportCharts extends Component {
 
     }
 
+    componentWillUnmount() {
+        // fix Warning: Can't perform a React state update on an unmounted component
+        this.setState = (state, callback) => {
+            return;
+        };
+    }
 
     componentDidMount() {
         this.loadData();
@@ -72,26 +78,26 @@ class TransportCharts extends Component {
 
     //render GUI
     render() {
-        return ( <
+        return (<
             div > {
-                this.state.isLoading && < LoadingScreenCharts / >
+                this.state.isLoading && < LoadingScreenCharts />
             } <
-            div className = "row no-gutters" >
-            <
-            TimedateStackedChart id = "eventsOverTime"
-            data = {
-                this.state.eventRegsTimeline
-            }
-            units = {"count"}
-            name = {
-                "EVENTS OVER TIME"
-            }
-            keys = {
-                DashboardsTypes["transport"]
-            }
-            width = {store.getState().width-300}
-            
-            />  <
+            div className="row no-gutters" >
+                <
+                    TimedateStackedChart id="eventsOverTime"
+                    data={
+                        this.state.eventRegsTimeline
+                    }
+                    units={"count"}
+                    name={
+                        "EVENTS OVER TIME"
+                    }
+                    keys={
+                        DashboardsTypes["transport"]
+                    }
+                    width={store.getState().width - 300}
+
+                />  <
             /div> <
             /div>
         );

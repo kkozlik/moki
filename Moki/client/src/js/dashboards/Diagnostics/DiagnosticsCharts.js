@@ -28,6 +28,12 @@ class DiagnosticsCharts extends Component {
         store.subscribe(() => this.loadData());
     }
 
+    componentWillUnmount() {
+        // fix Warning: Can't perform a React state update on an unmounted component
+        this.setState = (state, callback) => {
+            return;
+        };
+    }
 
     componentDidMount() {
         this.loadData();
@@ -51,7 +57,7 @@ class DiagnosticsCharts extends Component {
             });
             return;
 
-        } else if(data){
+        } else if (data) {
 
             //EVENT Diagnostic TIMELINE
             var eventDiagnosticTimeline = parseStackedTimebar.parse(data.responses[0]);
@@ -69,28 +75,28 @@ class DiagnosticsCharts extends Component {
     //render GUI
     render() {
         console.log(store.getState().width);
-        return ( <
+        return (<
             div > {
-                this.state.isLoading && < LoadingScreenCharts / >
+                this.state.isLoading && < LoadingScreenCharts />
             }
 
             <
-            div className = "row no-gutters" >
-            <
-            TimedateStackedChart data = {
-                this.state.eventDiagnosticTimeline
-            }
-            id = "eventsOverTime"
-            name = {
-                "EVENTS OVER TIME"
-            }
-            keys = {
-                DashboardsTypes["diagnostics"]
-            }
-            units = {"count"}
-            width = {
-                store.getState().width-300        }
-            />  <
+            div className="row no-gutters" >
+                <
+                    TimedateStackedChart data={
+                        this.state.eventDiagnosticTimeline
+                    }
+                    id="eventsOverTime"
+                    name={
+                        "EVENTS OVER TIME"
+                    }
+                    keys={
+                        DashboardsTypes["diagnostics"]
+                    }
+                    units={"count"}
+                    width={
+                        store.getState().width - 300}
+                />  <
             /div> <
             /div> 
         );

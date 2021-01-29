@@ -30,16 +30,22 @@ class TableChart extends Component {
     createFilter("NOT " + event.currentTarget.getAttribute('field') + ":\"" + event.currentTarget.getAttribute('value') + "\"");
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.data !== this.state.data) {
+  static getDerivedStateFromProps(nextProps, prevState) {
+    if (nextProps.data !== prevState.data) {
+      return { data: nextProps.data };
+    }
+    else return null;
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.data !== this.props.data) {
       //data format: [list, sum]
-      console.log(nextProps.data);
       var pagginationData = [];
-      if (nextProps.data.length > 0) {
-        pagginationData = [nextProps.data[0].slice(0, 10), nextProps.data[1]]
+      if (this.props.data.length > 0) {
+        pagginationData = [this.props.data[0].slice(0, 10), this.props.data[1]]
       }
       this.setState({
-        data: nextProps.data,
+        data: this.props.data,
         pagginationData: pagginationData
       });
     }
@@ -54,7 +60,7 @@ class TableChart extends Component {
     i = parseInt(i);
     var pagginationData = i === 1 ? [this.state.data[0].slice(i - 1, i * 10), this.state.data[1]] : [this.state.data[0].slice(i - 1, (i - 1) * 10), this.state.data[1]];
     this.setState({
-      page: i-1,
+      page: i - 1,
       pagginationData: pagginationData
 
     })

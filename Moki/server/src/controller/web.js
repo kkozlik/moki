@@ -19,7 +19,7 @@ const {getWebFilter} = require('../modules/config');
 
 var geoip = require('../../js/template_queries/geoip_agg_filter.js');
 var datehistogram_agg_filter_query = require('../../js/template_queries/datehistogram_agg_filter_query.js');
-var datehistogram_query = require('../../js/template_queries/datehistogram_query.js');
+var datehistogram_query = require('../../js/template_queries/datehistogram_with_zero_query.js');
 var agg_filter = require('../../js/template_queries/agg_filter.js');
 var agg_filter_animation = require('../../js/template_queries/agg_filter_animation.js');
 var geoipAnimation = require('../../js/template_queries/geoip_agg_filter_animation.js');

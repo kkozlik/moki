@@ -318,9 +318,6 @@ class App extends Component {
                     tags: tags,
                     tagsFull: json.responses[4].aggregations.distinct.buckets
                 });
-                console.log("app tags");
-
-                console.log(tags);
             }
 
             this.setState({
@@ -446,8 +443,6 @@ class App extends Component {
     render() {
         var dashboards = this.state.dashboards;
         var dashboardsSettings = this.state.dashboardsSettings;
-        console.info(dashboards);
-        console.info(dashboardsSettings);
         var loadingScreen = <span> <div className="errorBar" > {
             this.state.error
         } </div> <div style={
@@ -476,8 +471,6 @@ class App extends Component {
         var sipUserSwitch;
         const aws = this.state.aws;
         var url = window.location.pathname;
-        console.info("IS admin?: " + this.state.admin);
-        console.info("IS site admin?: " + this.state.siteAdmin);
         if (this.state.dashboards.length > 0) {
             if ((aws === false || this.state.admin || this.state.siteAdmin) && url.includes("sequenceDiagram")) {
                 sipUserSwitch = <div className="row"

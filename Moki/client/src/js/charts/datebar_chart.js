@@ -9,7 +9,7 @@ import store from "../store/index";
 import {
     setTimerange
 } from "../actions/index";
-import Colors from '../helpers/Colors';
+import Colors from '../helpers/style/Colors';
 import emptyIcon from "../../styles/icons/empty.png";
 import {
     getTimeBucket
@@ -27,10 +27,17 @@ export default class datebarChart extends Component {
         this.draw = this.draw.bind(this);
     }
 
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.data !== this.state.data) {
-            this.setState({ data: nextProps.data });
-            this.draw(nextProps.data, this.props.id, this.props.marginLeft, this.props.height, this.props.width, this.props.name, this.props.units);
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (nextProps.data !== prevState.data) {
+            return { data: nextProps.data };
+        }
+        else return null;
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (prevProps.data !== this.props.data) {
+            this.setState({ data: this.props.data });
+            this.draw(this.props.data, this.props.id, this.props.marginLeft, this.props.height, this.props.width, this.props.name, this.props.units);
         }
     }
 

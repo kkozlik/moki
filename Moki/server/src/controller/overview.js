@@ -210,6 +210,8 @@ class overviewController {
 
             const filters = getFiltersConcat(req.body.filters);
             const types = getTypesConcat(req.body.types);
+            console.log("req.body");
+            console.log(req.body);
 
             if (req.body.timerange_lte) {
                 timestamp_lte = Math.round(req.body.timerange_lte);
@@ -224,6 +226,7 @@ class overviewController {
             if (isDomainFilter.domain) {
                 domainFilter = isDomainFilter.domain;
             }
+            console.info("SERVER search with filters: " + filters + " types: " + types + " timerange: " + timestamp_gte + "-" + timestamp_lte + " timebucket: " + timebucket + " userFilter: " + userFilter + " domainFilter: "+domainFilter);
 
             var timebucket = getTimestampBucket(timestamp_gte, timestamp_lte);
             var overview = timerange_query.getTemplate(getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, "attrs.type:reg-new OR attrs.type:reg-expired OR attrs.type:reg-del OR attrs.type:call-end OR attrs.type:call-start OR attrs.type:call-attempt OR attrs.type:notice OR attrs.type:auth-failed OR attrs.type:log-reply OR attrs.type:action-log OR attrs.type:message-log OR attrs.type:error OR attrs.type:alert OR attrs.type:fbl-new OR attrs.type:fgl-new OR attrs.type:message-dropped OR attrs.type:recording OR attrs.type:limit OR attrs.type:prompt OR attrs.type:conf-join OR attrs.type:conf-leave", domainFilter), supress);

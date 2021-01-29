@@ -511,8 +511,8 @@ function dragElement(elmnt) {
         var nodeNames = this.state.nodesNames;
         return <span  style={{"width": "100%", "marginLeft": "30px", "marginTop":"20px"}}>
             <span>
-                {nodeNames && <a key="downloadPCAP" onClick={this.getPcap}> <img className="icon" alt="downloadIcon" src={downloadPcapIcon} title="download PCAP" /></a>}
-                {nodeNames && <a key="downloadSD" onClick={this.getDiagram}> <img className="icon" alt="downloadIcon" src={downloadIcon} title="download chart" /></a>}
+                {nodeNames && <button className="noFormatButton" key="downloadPCAP" onClick={this.getPcap}> <img className="icon" alt="downloadIcon" src={downloadPcapIcon} title="download PCAP" /></button>}
+                {nodeNames && <button className="noFormatButton" key="downloadSD" onClick={this.getDiagram}> <img className="icon" alt="downloadIcon" src={downloadIcon} title="download chart" /></button>}
              {nodeNames && nodeNames.map(name =><span style={{"marginLeft": "5px"}} key={name}><input type="checkbox" defaultChecked="true" id={name} onClick={() => this.check(name)} style={{"verticalAlign": "middle"}}></input><label style={{"marginLeft":"5px", "verticalAlign": "middle"}}>{name}</label></span>)}
                 </span>
             <div style={{"width": "100%", "marginTop": "0px"}} id="diagram">{renderDiagram()}</div>

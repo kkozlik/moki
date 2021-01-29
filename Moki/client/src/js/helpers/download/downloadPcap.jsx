@@ -1,6 +1,5 @@
 export async function downloadPcap(pathname) {
     var response;
-    var data;
     console.info("Downloading pcap " + pathname);
     try {
         response = await fetch("/api/download/pcap", {

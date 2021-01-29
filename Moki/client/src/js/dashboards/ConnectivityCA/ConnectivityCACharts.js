@@ -53,6 +53,13 @@ class ConnectivityCACharts extends Component {
 
     }
 
+    componentWillUnmount() {
+        // fix Warning: Can't perform a React state update on an unmounted component
+        this.setState = (state, callback) => {
+            return;
+        };
+    }
+
     componentDidMount() {
         this.loadData();
     }
@@ -151,93 +158,93 @@ class ConnectivityCACharts extends Component {
         return (<div> {
             this.state.isLoading && < LoadingScreenCharts />
         } <div className="row no-gutters" >
-                        <div className="col" >
-                            <ValueChart data={
-                                this.state.sumCallEnd
-                            }
-                                name={
-                                    "ENDs"
-                                } />  </div> <div className="col" >
-                            <ValueChart data={
-                                this.state.sumCallAttempt
-                            }
-                                name={
-                                    "ATTEMPTs"
-                                }
-                            />  </div>
-                        <div className="col" >
-                            <ValueChart data={
-                                this.state.sumCallStart
-                            }
-                                name={
-                                    "STARTs"
-                                }
-                            />  </div>
-                        <div className="col" >
-                            <ValueChart data={
-                                this.state.durationSum
-                            }
-                                name={
-                                    "SUM DURATION"
-                                }
-                            />  </div>  </div> 
-                        <div className="row no-gutters" >
-                        <MultivalueChart data={
-                            this.state.statsCA
+                <div className="col" >
+                    <ValueChart data={
+                        this.state.sumCallEnd
+                    }
+                        name={
+                            "ENDs"
+                        } />  </div> <div className="col" >
+                    <ValueChart data={
+                        this.state.sumCallAttempt
+                    }
+                        name={
+                            "ATTEMPTs"
                         }
-                            field="attrs.dst_ca_id"
-                            id="statsCA"
-                            name={
-                                "DESTINATIONS CAs STATISTICS"
-                            }
-                            name1={
-                                "CA name"
-                            }
-                            name2={
-                                "AVG failure (%)"
-                            }
-                            name3={
-                                "Minutes"
-                            }
-                            name4={
-                                "Attempts"
-                            }
-                            name5={
-                                "Ends"
-                            }
-                            name6={
-                                "Starts"
-                            }
-                        />  </div>
-                    <div className="row no-gutters">
-                        <MultivalueChart data={
-                            this.state.sourceStatsCA
+                    />  </div>
+                <div className="col" >
+                    <ValueChart data={
+                        this.state.sumCallStart
+                    }
+                        name={
+                            "STARTs"
                         }
-                            field="attrs.src_ca_id"
-                            id="srcStatsCA"
-                            name={
-                                "SOURCE CAs STATISTICS"
-                            }
-                            name1={
-                                "CA name"
-                            }
-                            name2={
-                                "AVG failure (%)"
-                            }
-                            name3={
-                                "Minutes"
-                            }
-                            name4={
-                                "Ends"
-                            }
-                            name5={
-                                "Attempts"
-                            }
-                            name6={
-                                "Starts"
-                            }
-                        />  
-                </div>
+                    />  </div>
+                <div className="col" >
+                    <ValueChart data={
+                        this.state.durationSum
+                    }
+                        name={
+                            "SUM DURATION"
+                        }
+                    />  </div>  </div>
+            <div className="row no-gutters" >
+                <MultivalueChart data={
+                    this.state.statsCA
+                }
+                    field="attrs.dst_ca_id"
+                    id="statsCA"
+                    name={
+                        "DESTINATIONS CAs STATISTICS"
+                    }
+                    name1={
+                        "CA name"
+                    }
+                    name2={
+                        "AVG failure (%)"
+                    }
+                    name3={
+                        "Minutes"
+                    }
+                    name4={
+                        "Attempts"
+                    }
+                    name5={
+                        "Ends"
+                    }
+                    name6={
+                        "Starts"
+                    }
+                />  </div>
+            <div className="row no-gutters">
+                <MultivalueChart data={
+                    this.state.sourceStatsCA
+                }
+                    field="attrs.src_ca_id"
+                    id="srcStatsCA"
+                    name={
+                        "SOURCE CAs STATISTICS"
+                    }
+                    name1={
+                        "CA name"
+                    }
+                    name2={
+                        "AVG failure (%)"
+                    }
+                    name3={
+                        "Minutes"
+                    }
+                    name4={
+                        "Ends"
+                    }
+                    name5={
+                        "Attempts"
+                    }
+                    name6={
+                        "Starts"
+                    }
+                />
+            </div>
             <div className="row no-gutters" >
                 <TopologyChart data={
                     this.state.fromToCA
@@ -386,8 +393,8 @@ class ConnectivityCACharts extends Component {
                         units={
                             "count"
                         }
-                    />  </div> 
-                    <div className="col" >
+                    />  </div>
+                <div className="col" >
                     <TimedateHeatmap data={
                         this.state.avgMoS
                     }
@@ -408,7 +415,7 @@ class ConnectivityCACharts extends Component {
                             "AVG"
                         }
                     />
-                    </div> <div className="col" >
+                </div> <div className="col" >
                     <TimedateHeatmap data={
                         this.state.ratioHistory
                     }

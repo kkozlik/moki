@@ -3,8 +3,8 @@ import React, {
 } from 'react';
 import * as d3 from "d3";
 
-import ColorType from '../helpers/ColorType';
-import Colors from '../helpers/Colors';
+import ColorType from '../helpers/style/ColorType';
+import Colors from '../helpers/style/Colors';
 import {
     timestampBucket
 } from '../bars/TimestampBucket.js';
@@ -35,11 +35,18 @@ export default class StackedChart extends Component {
         this.draw = this.draw.bind(this);
     }
 
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.data !== this.state.data) {
-            this.setState({ data: nextProps.data });
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (nextProps.data !== prevState.data) {
+            return { data: nextProps.data };
+        }
+        else return null;
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (prevProps.data !== this.props.data) {
+            this.setState({ data: this.props.data });
             var isFirst = this.state.data && this.state.data.length === 0 ? true : false;
-            this.draw(nextProps.data, this.props.id, this.props.width, this.props.name, this.props.units, isFirst);
+            this.draw(this.props.data, this.props.id, this.props.width, this.props.name, this.props.units, isFirst);
         }
     }
 

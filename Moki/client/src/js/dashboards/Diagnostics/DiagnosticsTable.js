@@ -25,7 +25,13 @@ class DiagnosticsTable extends Component {
     componentDidMount() {
         this.loadData();
     }
-    
+
+    componentWillUnmount() {
+        // fix Warning: Can't perform a React state update on an unmounted component
+        this.setState = (state, callback) => {
+            return;
+        };
+    }
 
     async loadData() {
         var calls = await elasticsearchConnection("diagnostics/table");
@@ -34,7 +40,7 @@ class DiagnosticsTable extends Component {
 
             console.error(calls);
             return;
-        } else if (calls){
+        } else if (calls) {
 
             var data = calls.hits.hits;
             var total = calls.hits.total.value;
@@ -46,21 +52,21 @@ class DiagnosticsTable extends Component {
     }
 
     render() {
-        return ( 
+        return (
             <
-            div className = "row no-gutters" >
-            <
-            TableChart data = {
-                this.state.calls
-            }
-            name = {
-                "diagnostics"
-            } total={this.state.total}
-            id = {
-                "DIAGNOSTICS EVENTS"
-            }
-            tags={this.props.tags} 
-            />  <
+            div className="row no-gutters" >
+                <
+                    TableChart data={
+                        this.state.calls
+                    }
+                    name={
+                        "diagnostics"
+                    } total={this.state.total}
+                    id={
+                        "DIAGNOSTICS EVENTS"
+                    }
+                    tags={this.props.tags}
+                />  <
             /div> 
         );
     }

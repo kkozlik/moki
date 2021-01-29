@@ -45,7 +45,12 @@ class WebCharts extends Component {
         this.loadData();
     }
 
-
+    componentWillUnmount() {
+        // fix Warning: Can't perform a React state update on an unmounted component
+        this.setState = (state, callback) => {
+            return;
+        };
+    }
 
     /*
     Load data from elasticsearch
@@ -113,12 +118,12 @@ class WebCharts extends Component {
                 <div className="col-3" >
                     <CountUpChart data={
                         this.state.totalEvents}
-                        type={"countUP"} name={"EVENTS"} biggerFont={"biggerFont"} autoplay={true} displayAnimation="none"/>
+                        type={"countUP"} name={"EVENTS"} biggerFont={"biggerFont"} autoplay={true} displayAnimation="none" />
                 </div>
                 <div className="col-3" >
                     <CountUpChart data={
                         this.state.eventsByIP
-                    } type={"distinct"}  name={"DISTINCT IPs"} biggerFont={"biggerFont"}  autoplay={true} displayAnimation="none"/>
+                    } type={"distinct"} name={"DISTINCT IPs"} biggerFont={"biggerFont"} autoplay={true} displayAnimation="none" />
                 </div>
                 <div className="col-3" >
                     <ListChart data={
@@ -143,9 +148,9 @@ class WebCharts extends Component {
                         type="list"
                         field={
                             "attrs.src-ua"
-                        } 
+                        }
                         autoplay={true}
-                        />  </div>
+                    />  </div>
             </div>
 
             <div className="row no-gutters" >

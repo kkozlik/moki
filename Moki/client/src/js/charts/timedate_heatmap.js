@@ -18,10 +18,10 @@ import {
 } from "../helpers/getTimeBucket";
 import {
     ColorsRedGreen
-} from "../helpers/ColorsRedGreen";
+} from "../helpers/style/ColorsRedGreen";
 import {
     ColorsGreen
-} from "../helpers/ColorsGreen";
+} from "../helpers/style/ColorsGreen";
 
 export default class timedateHeatmap extends Component {
     constructor(props) {
@@ -31,12 +31,19 @@ export default class timedateHeatmap extends Component {
         }
     }
 
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.data !== this.state.data) {
-            this.setState({ data: nextProps.data });
-            this.draw(nextProps.data, this.props.id, this.props.field, this.props.width, this.props.name, this.props.units);
-        }
-    }
+    static getDerivedStateFromProps(nextProps, prevState){
+        if(nextProps.data!==prevState.data){
+          return { data: nextProps.data};
+       }
+       else return null;
+     }
+     
+     componentDidUpdate(prevProps, prevState) {
+       if(prevProps.data!==this.props.data){
+        this.setState({ data: this.props.data });
+        this.draw(this.props.data, this.props.id, this.props.field, this.props.width, this.props.name, this.props.units);
+       }
+     }
 
     draw(data, id, field, width, name, units) {
         units = units ? " (" + units + ")" : "";

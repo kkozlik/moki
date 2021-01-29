@@ -6,7 +6,6 @@ import React, {
 } from 'react';
 
 import TimedateHeatmap from '../../charts/timedate_heatmap.js';
-import BarChart from '../../charts/bar_chart.js';
 import TimedateStackedChart from '../../charts/timedate_stackedbar.js';
 import StackedChart from '../../charts/stackedbar.js';
 import store from "../../store/index";
@@ -17,7 +16,6 @@ import ListChart from '../../charts/list_chart.js';
 var parseDateHeatmap = require('../../parse_data/parseDateHeatmap.js');
 const parseStackedbar = require('../../parse_data/parseStackedbarData.js');
 const parseStackedTimebar = require('../../parse_data/parseStackedbarTimeData.js');
-const parseBucketData = require('../../parse_data/parseBucketData.js');
 var parseListData = require('../../parse_data/parseListData.js');
 
 class OverviewCharts extends Component {
@@ -44,6 +42,12 @@ class OverviewCharts extends Component {
         this.loadData();
     }
 
+    componentWillUnmount() {
+        // fix Warning: Can't perform a React state update on an unmounted component
+        this.setState = (state, callback) => {
+            return;
+        };
+    }
 
     /*
     Load data from elasticsearch

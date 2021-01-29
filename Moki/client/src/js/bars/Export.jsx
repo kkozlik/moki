@@ -13,22 +13,35 @@ class Export extends Component {
         this.state = {
             data: "",
             //attributes attrs+, @timestamp   
-            attributes: []
+            attributes: [],
+            exportOpen: false
         }
         this.loadData = this.loadData.bind(this);
         this.export = this.export.bind(this);
     }
 
-    componentWillMount() {
-        this.loadData();
-    }
+    static getDerivedStateFromProps(nextProps, prevState){
+        if(nextProps.exportOpen!==prevState.exportOpen){
+          return { exportOpen: nextProps.exportOpen};
+       }
+       else return null;
+     }
+     
+     componentDidUpdate(prevProps, prevState) {
+       if(prevProps.exportOpen!==this.props.exportOpen){
+        this.setState({ exportOpen: this.props.exportOpen });
+        if(this.props.exportOpen === true) {
+            this.loadData();    
+        }
+       }
+     }
 
     async loadData() {
         try {
 
-            var name = window.location.pathname.substr(1);
-            if (name === "home" || name === "connectivity" || name === "connectivityCA") {
-                name = "overview";
+            var name = "overview";
+            if (name === "exceeded" || name === "network" || name === "system" || name === "realm") {
+                name = window.location.pathname.substr(1);
             }
             // Retrieves the list of calls
             const response = await fetch("/api/" + name + "/table", {
@@ -52,24 +65,27 @@ class Export extends Component {
                 data: data
             });
 
-            //attributes attrs+, @timestamp             
-            var attributes = Object.keys(data[0]._source.attrs);
-            attributes.push("@timestamp");
-            //get list of attributes from all data (can be different attributes)
-            for (var i = 1; i < data.length; i++) {
-                var keys = Object.keys(data[i]._source.attrs);
-                for (var j = 0; j < keys.length; j++) {
-                    if (!attributes.includes(keys[j])) {
-                        attributes.push(keys[j]);
-                    }
+            //attributes attrs+, @timestamp   
+            if (data[0]) {
+                var attributes = Object.keys(data[0]._source.attrs);
+                attributes.push("@timestamp");
+                //get list of attributes from all data (can be different attributes)
+                for (var i = 1; i < data.length; i++) {
+                    var keys = Object.keys(data[i]._source.attrs);
+                    for (var j = 0; j < keys.length; j++) {
+                        if (!attributes.includes(keys[j])) {
+                            attributes.push(keys[j]);
+                        }
 
+                    }
                 }
+                this.setState({ attributes: attributes });
             }
-            this.setState({ attributes: attributes });
 
         } catch (error) {
             console.error(error);
         }
+
     }
 
     convertToCSV(objArray) {

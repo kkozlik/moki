@@ -18,20 +18,29 @@ export default class CountUpChart extends Component {
         this.setData = this.setData.bind(this);
     }
 
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.data !== this.state.count) {
-            this.setState({ data: nextProps.data });
-            this.countUp(nextProps.data);
+
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (nextProps.data !== prevState.data) {
+            return { data: nextProps.data };
         }
-        if (nextProps.dataAgo !== this.state.dataAgo) {
-            this.setState({ dataAgo: nextProps.dataAgo });
+        if (nextProps.dataAgo !== prevState.dataAgo) {
+            return { dataAgo: nextProps.dataAgo };
+        }
+        else return null;
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (prevProps.data !== this.props.data) {
+            this.setState({ data: this.props.data });
         }
     }
 
     setData(data) {
-        this.setState({ data: data,
-        count: data });
-      }
+        this.setState({
+            data: data,
+            count: data
+        });
+    }
 
     countUp(data) {
         if (data > 0) {
@@ -39,7 +48,6 @@ export default class CountUpChart extends Component {
             var current = 0;
             var duration = 120;
             var increment = end <= duration ? Math.abs(Math.floor(duration / end)) : Math.abs(Math.floor(end / duration));
-            var stepTime = increment;
             var thiss = this;
 
             var timer = setInterval(function () {
@@ -75,9 +83,9 @@ export default class CountUpChart extends Component {
         var bucket = getTimeBucket();
         return (
             <div id="valueChart">
-                 {window.location.pathname === "/web" && <Animation  name={this.props.name} type={this.props.type} setData={this.setData} dataAll={this.state.data} autoplay={this.props.autoplay}  display={this.props.displayAnimation}/>}
+                {window.location.pathname === "/web" && <Animation name={this.props.name} type={this.props.type} setData={this.setData} dataAll={this.state.data} autoplay={this.props.autoplay} display={this.props.displayAnimation} />}
                 <h3 className="alignLeft title" >{this.props.name}</h3>
-                <h4 className={"alignLeft " + this.props.biggerFont} title={"last "+bucket}>{this.state.count.toLocaleString()}</h4>
+                <h4 className={"alignLeft " + this.props.biggerFont} title={"last " + bucket}>{this.state.count.toLocaleString()}</h4>
                 <h4 className={"alignLeft "} title={"difference to previous"}>{this.getDifference(this.state.data, this.state.dataAgo)}</h4>
             </div>
         )

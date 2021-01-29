@@ -23,6 +23,13 @@ class RealmTable extends Component {
 
     }
 
+    componentWillUnmount() {
+        // fix Warning: Can't perform a React state update on an unmounted component
+        this.setState = (state, callback) => {
+            return;
+        };
+    }
+
     componentDidMount() {
         this.loadData();
     }
@@ -35,7 +42,7 @@ class RealmTable extends Component {
         } else if (calls) {
 
             var data = calls.hits.hits;
-             var total = calls.hits.total.value;
+            var total = calls.hits.total.value;
             this.setState({
                 calls: data,
                 total: total
@@ -48,19 +55,19 @@ class RealmTable extends Component {
     render() {
         return (
             <
-            div className = "row no-gutters" >
-            <
-            TableChart data = {
-                this.state.calls
-            } total={this.state.total}
-            name = {
-                "realm"
-            }
-            id = {
-                "REALM EVENTS"
-            }
-            tags={this.props.tags} 
-            />  <
+            div className="row no-gutters" >
+                <
+                    TableChart data={
+                        this.state.calls
+                    } total={this.state.total}
+                    name={
+                        "realm"
+                    }
+                    id={
+                        "REALM EVENTS"
+                    }
+                    tags={this.props.tags}
+                />  <
             /div>
         );
     }

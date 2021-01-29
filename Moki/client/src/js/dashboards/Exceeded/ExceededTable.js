@@ -23,6 +23,13 @@ class ExceededTable extends Component {
 
     }
 
+    componentWillUnmount() {
+        // fix Warning: Can't perform a React state update on an unmounted component
+        this.setState = (state, callback) => {
+            return;
+        };
+    }
+
     componentDidMount() {
         this.loadData();
     }
@@ -49,19 +56,19 @@ class ExceededTable extends Component {
     render() {
         return (
             <
-            div className = "row no-gutters" >
-            <
-            TableChart data = {
-                this.state.calls
-            } total={this.state.total}
-            name = {
-                "exceeded"
-            }
-            id = {
-                "EXCEEDED EVENTS"
-            }
-            tags={this.props.tags} 
-            />  < /
+            div className="row no-gutters" >
+                <
+                    TableChart data={
+                        this.state.calls
+                    } total={this.state.total}
+                    name={
+                        "exceeded"
+                    }
+                    id={
+                        "EXCEEDED EVENTS"
+                    }
+                    tags={this.props.tags}
+                />  < /
             div >
         );
     }

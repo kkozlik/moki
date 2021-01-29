@@ -47,8 +47,8 @@ value: heatmapDataParse[i].agg.buckets[j].agg.buckets[0].doc_count
 
         var heatmapDataInnerEmpty = JSON.parse(JSON.stringify(heatmapDataInner));  
         //add real values
-        for (var i = 0; i < heatmapDataParse.length; i++) {
-            for (var j = 0; j < heatmapDataParse[i].agg.buckets.length; j++) {
+        for ( i = 0; i < heatmapDataParse.length; i++) {
+            for ( j = 0; j < heatmapDataParse[i].agg.buckets.length; j++) {
                 if(heatmapDataParse[i].agg.buckets[j].agg.buckets.length > 0 && heatmapDataParse[i].agg.buckets[j].agg.buckets[0].doc_count){
                     for (var k = 0; k < heatmapDataInner.length; k++) {
                         if(heatmapDataInner[k].attr1 === heatmapDataParse[i].agg.buckets[j].key && heatmapDataInner[k].attr2 === heatmapDataParse[i].agg.buckets[j].agg.buckets[0].key){

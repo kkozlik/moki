@@ -32,6 +32,13 @@ class QoSCharts extends Component {
 
     }
 
+    componentWillUnmount() {
+        // fix Warning: Can't perform a React state update on an unmounted component
+        this.setState = (state, callback) => {
+            return;
+        };
+    }
+
     componentDidMount() {
         this.loadData();
     }
@@ -77,45 +84,45 @@ class QoSCharts extends Component {
 
     //render GUI
     render() {
-        return ( <
+        return (<
             div > {
-                this.state.isLoading && < LoadingScreenCharts / >
+                this.state.isLoading && < LoadingScreenCharts />
             }
 
             <
-            div className = "row no-gutters" >
-            <
-            BarChart data = {
-                this.state.QoSHistogram
-            }
-            units = {"count"}
-            id = "QoSHistogram"
-            bottomMargin = {
-                100
-            }
-            type="histogram"
-            name = {
-                "QoS HISTOGRAM"
-            }
-            width = {
-                store.getState().width-300
-            }
-            />  <
-            TimedateStackedChart id = "MoSStats"
-            units = {"count"}
-            data = {
-                this.state.MoSStats
-            }
-            name = {
-                "MoS STATS"
-            }
-            keys = {
-                 ["*-2.58", "2.58-3.1", "3.1-3.6", "3.6-4.03", "4.03-*"]
-            }
-            width = {
-                store.getState().width-300
-            }
-            />  <
+            div className="row no-gutters" >
+                <
+                    BarChart data={
+                        this.state.QoSHistogram
+                    }
+                    units={"count"}
+                    id="QoSHistogram"
+                    bottomMargin={
+                        100
+                    }
+                    type="histogram"
+                    name={
+                        "QoS HISTOGRAM"
+                    }
+                    width={
+                        store.getState().width - 300
+                    }
+                />  <
+                    TimedateStackedChart id="MoSStats"
+                    units={"count"}
+                    data={
+                        this.state.MoSStats
+                    }
+                    name={
+                        "MoS STATS"
+                    }
+                    keys={
+                        ["*-2.58", "2.58-3.1", "3.1-3.6", "3.6-4.03", "4.03-*"]
+                    }
+                    width={
+                        store.getState().width - 300
+                    }
+                />  <
             /div> <
             /div> 
         );

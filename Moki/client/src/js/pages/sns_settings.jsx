@@ -190,8 +190,6 @@ class Settings extends Component {
 
         //separate type
         for (var i = 0; i < data.length; i++) {
-            console.log(data[i]);
-            console.log(data[i].type);
             if (data[i].type === "SYSTEM") {
                 Alerttype.push(data[i]);
             } else if (data[i].type === "URI") {
@@ -208,7 +206,7 @@ class Settings extends Component {
         var Generaldata = this.generateGeneralData(Generaltype);
         var URIdata = this.generateGeneralData(URItype);
         var IPdata = this.generateGeneralData(IPtype);
-        var Alertdata = this.generateGeneralData(Alerttype);
+      //  var Alertdata = this.generateGeneralData(Alerttype);
         var CAdata = this.generateGeneralData(CAtype);
 
         return (<div className="container-fluid">

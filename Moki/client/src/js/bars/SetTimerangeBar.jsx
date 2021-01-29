@@ -12,7 +12,6 @@ import historyIcon from "../../styles/icons/reload_time.png";
 import historyIconGrey from "../../styles/icons/reload_time_grey.png";
 import refreshIcon from "../../styles/icons/refresh.png";
 import refreshStopIcon from "../../styles/icons/refreshStop.png";
-import Popup from "reactjs-popup";
 import Export from "./Export";
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
@@ -32,13 +31,14 @@ class timerangeBar extends Component {
             refreshUnit: "seconds",
             refreshValue: 30,
             click: false,
-            history: []
+            history: [],
+            exportCSVOpen: false,
+            exportJSONOpen: false
         }
         this.setTimerange = this.setTimerange.bind(this);
         this.close = this.close.bind(this);
         this.share = this.share.bind(this);
         this.setToNow = this.setToNow.bind(this);
-        this.toggleMenu = this.toggleMenu.bind(this);
         this.moveTimerangeBack =
             this.moveTimerangeBack.bind(this);
         this.moveTimerangeForward =
@@ -55,6 +55,10 @@ class timerangeBar extends Component {
         this.popupTrigger = React.createRef();
         this.addHistory = this.addHistory.bind(this);
         this.loadHistory = this.loadHistory.bind(this);
+        this.exportJSON = this.exportJSON.bind(this);
+        this.exportCSV = this.exportCSV.bind(this);
+        this.exportJSONclose = this.exportJSONclose.bind(this);
+        this.exportCSVclose = this.exportCSVclose.bind(this);
         store.subscribe(() => this.rerenderTimerange());
 
 
@@ -479,15 +483,23 @@ class timerangeBar extends Component {
 
     exportCSV() {
         document.getElementById("CSVexport").style.display = "block";
+        this.setState({ exportCSVOpen: true });
     }
 
     exportJSON() {
         document.getElementById("JSONexport").style.display = "block";
+        this.setState({ exportJSONOpen: true });
     }
 
-    toggleMenu() {
-        this.setState({ click: true });
+    exportJSONclose() {
+        document.getElementById("JSONexport").style.display = "none"
+        this.setState({ exportJSONOpen: false });
     }
+    exportCSVclose() {
+        document.getElementById("CSVexport").style.display = "none"
+        this.setState({ exportCSVOpen: false });
+    }
+
 
     render() {
         //const sipUser = this.state.sipUser.user;
@@ -584,17 +596,17 @@ class timerangeBar extends Component {
 
                 </div>
                 {name !== "web" && <div className="export" id="CSVexport">
-                    <button className="close" onClick={(function () { document.getElementById("CSVexport").style.display = "none" })}>
+                    <button className="close" onClick={this.exportCSVclose}>
                         &times;
                         </button>
-                    <Export type="CSV" />
+                    <Export type="CSV" exportOpen={this.state.exportCSVOpen} />
                 </div>
                 }
                 {name !== "web" && <div className="export" id="JSONexport">
-                    <button className="close" onClick={(function () { document.getElementById("JSONexport").style.display = "none" })}>
+                    <button className="close" onClick={this.exportJSONclose}>
                         &times;
                         </button>
-                    <Export type="JSON" />
+                    <Export type="JSON" exportOpen={this.state.exportJSONOpen} />
                 </div>
                 }
             </div>

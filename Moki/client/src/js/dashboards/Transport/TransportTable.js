@@ -24,6 +24,12 @@ class TransportTable extends Component {
 
     }
 
+    componentWillUnmount() {
+        // fix Warning: Can't perform a React state update on an unmounted component
+        this.setState = (state, callback) => {
+            return;
+        };
+    }
 
     componentDidMount() {
         this.loadData();
@@ -47,22 +53,22 @@ class TransportTable extends Component {
     render() {
         return (
             <
-            div className = "row no-gutters" >
-            <
-            TableChart data = {
-                this.state.registrations
-            } total={this.state.total}
-            name = {
-                "transport"
-            }
-            id = {
-                "TRANSPORT EVENTS"
-            }
-                 width = {
-                store.getState().width-300
-            }
-            tags={this.props.tags} 
-            />  < /
+            div className="row no-gutters" >
+                <
+                    TableChart data={
+                        this.state.registrations
+                    } total={this.state.total}
+                    name={
+                        "transport"
+                    }
+                    id={
+                        "TRANSPORT EVENTS"
+                    }
+                    width={
+                        store.getState().width - 300
+                    }
+                    tags={this.props.tags}
+                />  < /
             div > 
         );
     }

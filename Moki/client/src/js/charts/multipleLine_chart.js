@@ -17,7 +17,7 @@ import store from "../store/index";
 import {
     setTimerange
 } from "../actions/index";
-import Colors from '../helpers/Colors';
+import Colors from '../helpers/style/Colors';
 import emptyIcon from "../../styles/icons/empty_small.png";
 
 export default class MultipleLineChart extends Component {
@@ -29,13 +29,20 @@ export default class MultipleLineChart extends Component {
         this.draw = this.draw.bind(this);
     }
 
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.data !== this.state.data) {
-            this.setState({ data: nextProps.data });
-            var isFirst = this.state.data && this.state.data.length === 0 ? true : false;
-            this.draw(nextProps.data, this.props.id, this.props.width, this.props.ticks, this.props.hostnames);
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (nextProps.data !== prevState.data) {
+            return { data: nextProps.data };
+        }
+        else return null;
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (prevProps.data !== this.props.data) {
+            this.setState({ data: this.props.data });
+            this.draw(this.props.data, this.props.id, this.props.width, this.props.ticks, this.props.hostnames);
         }
     }
+
 
     draw(data, id, width, ticks, hostnames) {
         //FOR UPDATE: remove chart if it's already there

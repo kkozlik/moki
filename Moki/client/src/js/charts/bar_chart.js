@@ -2,8 +2,8 @@ import React, {
     Component
 } from 'react';
 import * as d3 from "d3";
-import ColorType from '../helpers/ColorType';
-import Colors from '../helpers/Colors';
+import ColorType from '../helpers/style/ColorType';
+import Colors from '../helpers/style/Colors';
 import emptyIcon from "../../styles/icons/empty_small.png";
 import Animation from '../helpers/Animation';
 
@@ -16,12 +16,19 @@ export default class barChart extends Component {
         this.setData = this.setData.bind(this);
     }
 
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.data !== this.state.data) {
-            this.setState({ data: nextProps.data });
-            this.draw(nextProps.data, this.props.width, this.props.units, this.props.name);
-        }
-    }
+    static getDerivedStateFromProps(nextProps, prevState){
+        if(nextProps.data!==prevState.data){
+          return { data: nextProps.data};
+       }
+       else return null;
+     }
+     
+     componentDidUpdate(prevProps, prevState) {
+       if(prevProps.data!==this.props.data){
+        this.setState({ data: this.props.data });
+        this.draw(this.props.data, this.props.width, this.props.units, this.props.name);
+       }
+     }
 
     setData(data) {
         this.setState({ data: data });

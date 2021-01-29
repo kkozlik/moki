@@ -287,11 +287,11 @@ class HomeController {
 
             const incidentCount = datehistogram_query.getTemplate(
                 timebucket,
-                getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, "*", domainFilter), timestamp_gte, timestamp_lte, supress);
+                getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, "*", domainFilter), supress);
 
             const incidentCountDayAgo = datehistogram_query.getTemplate(
                 timebucket,
-                getQueries(filters, types, (timestamp_gte - 60 * 60 * 24 * 1000), (timestamp_lte - 60 * 60 * 24 * 1000), userFilter, "*", domainFilter), timestamp_gte, timestamp_lte, supress);
+                getQueries(filters, types, (timestamp_gte - 60 * 60 * 24 * 1000), (timestamp_lte - 60 * 60 * 24 * 1000), userFilter, "*", domainFilter), supress);
 
             const incidentActual = timerange_query.getTemplate(
                 getQueries(filters, types,lastTimebucket, timestamp_lte, userFilter, "*", domainFilter), supress);

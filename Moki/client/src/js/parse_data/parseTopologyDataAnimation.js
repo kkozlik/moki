@@ -71,11 +71,11 @@ function parse(response) {
             time:   response.aggregations.agg.buckets[p].key,
             data: [nodes, nodesList, links]
         });
-        var nodes = [];
-        var nodesList = [];
-        var links = [];
-        var id = 0;
-        var nodeId = 0;
+        nodes = [];
+        nodesList = [];
+        links = [];
+        id = 0;
+        nodeId = 0;
         }
         return result;
     }

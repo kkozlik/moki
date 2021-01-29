@@ -41,12 +41,25 @@ class SystemCharts extends Component {
 
     }
 
-    componentWillReceiveProps(nextProps){
-      if(nextProps.hostnames !==  this.props.hostnames){
-        this.setState({hostnames: nextProps.hostnames });
-      }
+    componentWillUnmount() {
+        // fix Warning: Can't perform a React state update on an unmounted component
+        this.setState = (state,callback)=>{
+            return;
+        };
+    }
+    
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (nextProps.hostnames !== prevState.hostnames) {
+            return { hostnames: nextProps.hostnames };
+        }
+        else return null;
     }
 
+    componentDidUpdate(prevProps, prevState) {
+        if (prevProps.hostnames !== this.props.hostnames) {
+            this.setState({ hostnames: this.props.hostnames });
+        }
+    }
     componentDidMount() {
         this.loadData();
     }
@@ -133,245 +146,245 @@ class SystemCharts extends Component {
     //render GUI
     render() {
 
-        return ( <
+        return (<
             div > {
-                this.state.isLoading && < LoadingScreenCharts / >
+                this.state.isLoading && < LoadingScreenCharts />
             }
 
             <
-            div className = "row no-gutters" >
-            <
-            div className = "col" >
-            <
-            MultipleLineChart id = "shortterm"
-            data = {
-                this.state.shortterm
-            }
-            name = {
-                "LOAD-SHORTTERM"
-            }
-            width = {
-                (store.getState().width-250) / 3
-            }
-            
-            hostnames = {this.state.hostnames}
-    
-            ticks = {
-                3
-            }
-            />                            <
+            div className="row no-gutters" >
+                <
+            div className="col" >
+                    <
+                        MultipleLineChart id="shortterm"
+                        data={
+                            this.state.shortterm
+                        }
+                        name={
+                            "LOAD-SHORTTERM"
+                        }
+                        width={
+                            (store.getState().width - 250) / 3
+                        }
+
+                        hostnames={this.state.hostnames}
+
+                        ticks={
+                            3
+                        }
+                    />                            <
             /div> <
-            div className = "col" >
-            <
-            MultipleLineChart id = "midterm"
-            data = {
-                this.state.midterm
-            }
-            name = {
-                "LOAD-MIDTERM"
-            }
-            hostnames = {this.state.hostnames}
-            width = {
-                (store.getState().width-250) / 3
-            }
-            ticks = {
-                3
-            }
-            />                            <
+            div className="col" >
+                        <
+                            MultipleLineChart id="midterm"
+                            data={
+                                this.state.midterm
+                            }
+                            name={
+                                "LOAD-MIDTERM"
+                            }
+                            hostnames={this.state.hostnames}
+                            width={
+                                (store.getState().width - 250) / 3
+                            }
+                            ticks={
+                                3
+                            }
+                        />                            <
             /div> <
-            div className = "col" >
-            <
-            MultipleLineChart id = "longterm"
-            data = {
-                this.state.longterm
-            }
-            name = {
-                "LOAD-LONGTERM"
-            }
-            hostnames = {this.state.hostnames}
-            width = {
-                (store.getState().width-250) / 3
-            }
-            ticks = {
-                3
-            }
-            />                            <
+            div className="col" >
+                            <
+                                MultipleLineChart id="longterm"
+                                data={
+                                    this.state.longterm
+                                }
+                                name={
+                                    "LOAD-LONGTERM"
+                                }
+                                hostnames={this.state.hostnames}
+                                width={
+                                    (store.getState().width - 250) / 3
+                                }
+                                ticks={
+                                    3
+                                }
+                            />                            <
             /div> <
-            div className = "col" >
-            <
-            MultipleLineChart id = "memoryFree"
-            data = {
-                this.state.memoryFree
-            }
-            hostnames = {this.state.hostnames}
-            name = {
-                "MEMORY-FREE"
-            }
-            width = {
-                (store.getState().width-250) / 3
-            }
-            ticks = {
-                3
-            }
-            />                            <
+            div className="col" >
+                                <
+                                    MultipleLineChart id="memoryFree"
+                                    data={
+                                        this.state.memoryFree
+                                    }
+                                    hostnames={this.state.hostnames}
+                                    name={
+                                        "MEMORY-FREE"
+                                    }
+                                    width={
+                                        (store.getState().width - 250) / 3
+                                    }
+                                    ticks={
+                                        3
+                                    }
+                                />                            <
             /div>
 
             <
-            div className = "col" >
-            <
-            MultipleLineChart id = "memoryUsed"
-            data = {
-                this.state.memoryUsed
-            }
-            hostnames = {this.state.hostnames}
-            name = {
-                "MEMORY-USED"
-            }
-            width = {
-                (store.getState().width-250) / 3
-            }
-            ticks = {
-                3
-            }
-            />                            <
+            div className="col" >
+                                    <
+                                        MultipleLineChart id="memoryUsed"
+                                        data={
+                                            this.state.memoryUsed
+                                        }
+                                        hostnames={this.state.hostnames}
+                                        name={
+                                            "MEMORY-USED"
+                                        }
+                                        width={
+                                            (store.getState().width - 250) / 3
+                                        }
+                                        ticks={
+                                            3
+                                        }
+                                    />                            <
             /div>
 
             <
-            div className = "col" >
-            <
-            MultipleLineChart id = "memoryCached"
-            hostnames = {this.state.hostnames}
-            data = {
-                this.state.memoryCached
-            }
-            name = {
-                "MEMORY-CACHED"
-            }
-            width = {
-                (store.getState().width-250) / 3
-            }
-            ticks = {
-                3
-            }
-            />                            <
+            div className="col" >
+                                        <
+                                            MultipleLineChart id="memoryCached"
+                                            hostnames={this.state.hostnames}
+                                            data={
+                                                this.state.memoryCached
+                                            }
+                                            name={
+                                                "MEMORY-CACHED"
+                                            }
+                                            width={
+                                                (store.getState().width - 250) / 3
+                                            }
+                                            ticks={
+                                                3
+                                            }
+                                        />                            <
             /div>
 
             <
-            div className = "col" >
-            <
-            MultipleLineChart id = "memoryBuffered"
-            data = {
-                this.state.memoryBuffered
-            }
-            hostnames = {this.state.hostnames}
-            name = {
-                "MEMORY-BUFFERED"
-            }
-            width = {
-                (store.getState().width-250) / 3
-            }
-            ticks = {
-                3
-            }
-            />                            <
+            div className="col" >
+                                            <
+                                                MultipleLineChart id="memoryBuffered"
+                                                data={
+                                                    this.state.memoryBuffered
+                                                }
+                                                hostnames={this.state.hostnames}
+                                                name={
+                                                    "MEMORY-BUFFERED"
+                                                }
+                                                width={
+                                                    (store.getState().width - 250) / 3
+                                                }
+                                                ticks={
+                                                    3
+                                                }
+                                            />                            <
             /div>
 
             <
-            div className = "col" >
-            <
-            MultipleLineChart id = "uas"
-            data = {
-                this.state.uas
-            }
-            name = {
-                "UAS SIP trans."
-            }
-            hostnames = {this.state.hostnames}
-            width = {
-                (store.getState().width-250) / 3
-            }
-            ticks = {
-                3
-            }
-            />                            <
+            div className="col" >
+                                                <
+                                                    MultipleLineChart id="uas"
+                                                    data={
+                                                        this.state.uas
+                                                    }
+                                                    name={
+                                                        "UAS SIP trans."
+                                                    }
+                                                    hostnames={this.state.hostnames}
+                                                    width={
+                                                        (store.getState().width - 250) / 3
+                                                    }
+                                                    ticks={
+                                                        3
+                                                    }
+                                                />                            <
             /div>
 
             <
-            div className = "col" >
-            <
-            MultipleLineChart id = "uac"
-            data = {
-                this.state.uac
-            }
-            name = {
-                "UAC SIP trans."
-            }
-            hostnames = {this.state.hostnames}
-            width = {
-                (store.getState().width-250) / 3
-            }
-            ticks = {
-                3
-            }
-            />                            <
+            div className="col" >
+                                                    <
+                                                        MultipleLineChart id="uac"
+                                                        data={
+                                                            this.state.uac
+                                                        }
+                                                        name={
+                                                            "UAC SIP trans."
+                                                        }
+                                                        hostnames={this.state.hostnames}
+                                                        width={
+                                                            (store.getState().width - 250) / 3
+                                                        }
+                                                        ticks={
+                                                            3
+                                                        }
+                                                    />                            <
             /div>
 
             <
-            div className = "col" >
-            <
-            MultipleLineChart id = "cpuUser"
-            data = {
-                this.state.cpuUser
-            }
-            hostnames = {this.state.hostnames}
-            name = {
-                "CPU-USER"
-            }
-            width = {
-                (store.getState().width-250) / 3
-            }
-            ticks = {
-                3
-            }
-            />                            <
+            div className="col" >
+                                                        <
+                                                            MultipleLineChart id="cpuUser"
+                                                            data={
+                                                                this.state.cpuUser
+                                                            }
+                                                            hostnames={this.state.hostnames}
+                                                            name={
+                                                                "CPU-USER"
+                                                            }
+                                                            width={
+                                                                (store.getState().width - 250) / 3
+                                                            }
+                                                            ticks={
+                                                                3
+                                                            }
+                                                        />                            <
             /div>
 
             <
-            div className = "col" >
-            <
-            MultipleLineChart id = "cpuSystem"
-            data = {
-                this.state.cpuSystem
-            }
-            hostnames = {this.state.hostnames}
-            name = {
-                "CPU-SYSTEM"
-            }
-            width = {
-                (store.getState().width-250) / 3
-            }
-            ticks = {
-                3
-            }
-            />                            <
+            div className="col" >
+                                                            <
+                                                                MultipleLineChart id="cpuSystem"
+                                                                data={
+                                                                    this.state.cpuSystem
+                                                                }
+                                                                hostnames={this.state.hostnames}
+                                                                name={
+                                                                    "CPU-SYSTEM"
+                                                                }
+                                                                width={
+                                                                    (store.getState().width - 250) / 3
+                                                                }
+                                                                ticks={
+                                                                    3
+                                                                }
+                                                            />                            <
             /div> <
-            div className = "col" >
-            <
-            MultipleLineChart id = "cpuIdle"
-            data = {
-                this.state.cpuIdle
-            }
-            hostnames = {this.state.hostnames}
-            name = {
-                "CPU-IDLE"
-            }
-            width = {
-                (store.getState().width-250) / 3
-            }
-            ticks = {
-                3
-            }
-            />                            <
+            div className="col" >
+                                                                <
+                                                                    MultipleLineChart id="cpuIdle"
+                                                                    data={
+                                                                        this.state.cpuIdle
+                                                                    }
+                                                                    hostnames={this.state.hostnames}
+                                                                    name={
+                                                                        "CPU-IDLE"
+                                                                    }
+                                                                    width={
+                                                                        (store.getState().width - 250) / 3
+                                                                    }
+                                                                    ticks={
+                                                                        3
+                                                                    }
+                                                                />                            <
             /div>
 
             <

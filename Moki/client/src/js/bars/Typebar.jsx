@@ -76,6 +76,14 @@ class Typebar extends Component {
         store.subscribe(() => this.rerenderTypes());   
     }
     
+    componentWillUnmount() {
+        // fix Warning: Can't perform a React state update on an unmounted component
+        this.setState = (state,callback)=>{
+            return;
+        };
+    }
+
+    
 //when you load stored filters and types, you need to rerender GUI
     rerenderTypes(){
     if(store.getState().types !== this.state.types){
