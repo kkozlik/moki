@@ -5,6 +5,10 @@ import store from "../store/index";
 export async function elasticsearchConnection(query){
     var pathname = window.location.pathname;
     pathname = pathname.substr(1);
+    //check of path name end with "/", if so remove it
+    if (pathname.substring(pathname.length - 1) == "/") {
+        pathname = pathname.substring(0, pathname.length - 1);
+    }
     if(query.includes(pathname)){
             console.info("MOKI: send fetch: "+query);        
             console.info("MOKI: send fetch with filters: "+JSON.stringify(getFilters()));

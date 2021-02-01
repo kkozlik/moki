@@ -78,6 +78,10 @@ class Animation extends Component {
             //replace space for underscore and lower case
             var name = this.props.name.replace(/ /g, "_").toLowerCase();
             var dashboard = window.location.pathname.substring(1);
+            //check of path name end with "/", if so remove it
+            if (dashboard.substring(dashboard.length - 1) == "/") {
+                dashboard = dashboard.substring(0, dashboard.length - 1);
+            }
             //get format is "dashboardName/chartName"
             var data = await elasticsearchConnection(dashboard + "/" + name);
             if (typeof data === "string" && data.includes("ERROR:")) {
