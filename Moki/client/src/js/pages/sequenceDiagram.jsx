@@ -4,15 +4,15 @@ import React, {
 import * as d3 from "d3";
 import {
     downloadPcap
-} from '../helpers/downloadPcap';
+} from '../helpers/download/downloadPcap';
 import downloadIcon from "../../styles/icons/download.png";
 import downloadPcapIcon from "../../styles/icons/downloadPcap.png";
 import {
     downloadPcapMerged
-} from '../helpers/downloadPcapMerged';
+} from '../helpers/download/downloadPcapMerged';
 import {
     downloadSD
-} from '../helpers/downloadSD';
+} from '../helpers/download/downloadSD';
 
 class SequenceDiagram extends Component {
     constructor(props) {

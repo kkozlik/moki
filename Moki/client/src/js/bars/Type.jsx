@@ -1,7 +1,7 @@
 import React, {
     Component
 } from 'react';
-import colorType from '../helpers/ColorType';
+import colorType from '../helpers/style/ColorType';
 
 class Type extends Component{
 constructor(props) {

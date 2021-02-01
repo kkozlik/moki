@@ -2,7 +2,7 @@
 get html tag with attribute "file" 
 download pcap file 
 */
-import { downloadPcap } from './downloadPcap';
+import { downloadPcap } from './download/downloadPcap';
 
 export async function getPcap(event) {
     var fileName = event.currentTarget.getAttribute('file');
