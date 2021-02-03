@@ -12,10 +12,10 @@ import store from "../../store/index";
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import {elasticsearchConnection} from '../../helpers/elasticsearchConnection';
 import DashboardsTypes from '../../helpers/DashboardsTypes';
+import parseListData from '../../parse_data/parseListData.js';
 
 const parseStackedTimebar = require('../../parse_data/parseStackedbarTimeData.js');
 var parseQueryStringData = require('../../parse_data/parseQueryStringData.js');
-var parseListData = require('../../parse_data/parseListData.js');
 var parseAggData = require('../../parse_data/parseAggData.js');
 var parseAggQueryWithoutScriptValue = require('../../parse_data/parseAggQueryWithoutScriptValue.js');
 var parseListDataSort = require('../../parse_data/parseListDataSort.js');
@@ -89,7 +89,7 @@ componentWillUnmount() {
                 }
 
                 //TOP CONFERENCES
-                var topConferences = parseListData.parse(data.responses[5]);
+                var topConferences = parseListData(data.responses[5]);
 
                 //EVENT CALLS TIMELINE
                 var eventCallsTimeline = parseStackedTimebar.parse(data.responses[6]);
@@ -101,7 +101,7 @@ componentWillUnmount() {
                 var topActiveConferences = parseListDataSort.parse(data.responses[9]);           
                 
                 //TOP PARTICIPANTS
-                var topParticipants = parseListData.parse(data.responses[8]);
+                var topParticipants = parseListData(data.responses[8]);
                     
                 console.info(new Date() + " MOKI CALLS: finished paring data");
            

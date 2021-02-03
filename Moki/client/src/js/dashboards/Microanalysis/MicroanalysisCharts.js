@@ -12,7 +12,7 @@ import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import {
     elasticsearchConnection
 } from '../../helpers/elasticsearchConnection';
-var parseListData = require('../../parse_data/parseListData.js');
+import parseListData from '../../parse_data/parseListData.js';
 var parseListDataCardinality = require('../../parse_data/parseListDataCardinality.js');
 var parseBucketData = require('../../parse_data/parseBucketData.js');
 
@@ -88,64 +88,64 @@ class MicroanalysisCharts extends Component {
             var typesCount = parseBucketData.parse(data.responses[0]);
 
             //FROM UA
-            var fromUA = parseListData.parse(data.responses[1]);
+            var fromUA = parseListData(data.responses[1]);
 
             //SIP METHOD
-            var sipMethod = parseListData.parse(data.responses[2]);
+            var sipMethod = parseListData(data.responses[2]);
 
             //SIP CODE
-            var sipCode = parseListData.parse(data.responses[3]);
+            var sipCode = parseListData(data.responses[3]);
 
             //TOP SUBNETS
-            var topSubnets = parseListData.parse(data.responses[4]);
+            var topSubnets = parseListData(data.responses[4]);
 
             //r-URI PREFIX STRIPPED
-            var prefixStripped = parseListData.parse(data.responses[5]);
+            var prefixStripped = parseListData(data.responses[5]);
 
             //SOURCE IP ADDRESS
-            var sourceIP = parseListData.parse(data.responses[6]);
+            var sourceIP = parseListData(data.responses[6], true);
 
             //TOP 10 FROM
-            var top10from = parseListData.parse(data.responses[7]);
+            var top10from = parseListData(data.responses[7]);
 
             //CALLER DOMAIN
-            var callerDomain = parseListData.parse(data.responses[8]);
+            var callerDomain = parseListData(data.responses[8]);
 
             //TOP 10 TO
-            var top10to = parseListData.parse(data.responses[9]);
+            var top10to = parseListData(data.responses[9]);
 
             //DOMAIN STATS
             var distinctDestinations = parseListDataCardinality.parse(data.responses[10]);
 
             //TOP CALL ATTEMPTS
-            var topCallAttempts = parseListData.parse(data.responses[11]);
+            var topCallAttempts = parseListData(data.responses[11]);
 
             //TOP CALL ENDS
-            var topCallEnds = parseListData.parse(data.responses[12]);
+            var topCallEnds = parseListData(data.responses[12]);
 
             //DESTINATION BY R-URI
-            var destination = parseListData.parse(data.responses[13]);
+            var destination = parseListData(data.responses[13]);
 
             //SUM DURATION
-            var sumDuration = parseListDataCardinality.parse(data.responses[14]);
+            var sumDuration = parseListDataCardinality(data.responses[14]);
 
             //TOP DURATION
-            var topDuration = parseListDataCardinality.parse(data.responses[15]);
+            var topDuration = parseListDataCardinality(data.responses[15]);
 
             //TOP DURATION < 5 sec
-            var topDuration5 = parseListData.parse(data.responses[16]);
+            var topDuration5 = parseListData(data.responses[16]);
 
             //TOP SBCs
-            var topSBC = parseListData.parse(data.responses[17]);
+            var topSBC = parseListData(data.responses[17]);
 
             //SRC CA
-            var srcCA = parseListData.parse(data.responses[18]);
+            var srcCA = parseListData(data.responses[18]);
 
             //DST CA
-            var dstCA = parseListData.parse(data.responses[19]);
+            var dstCA = parseListData(data.responses[19]);
 
             //ORIGINATOR
-            var originator = parseListData.parse(data.responses[20]);
+            var originator = parseListData(data.responses[20]);
 
 
             console.info(new Date() + " MOKI MICROANALYSIS: finished parsíng data");

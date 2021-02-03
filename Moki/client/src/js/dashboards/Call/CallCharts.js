@@ -15,12 +15,12 @@ import store from "../../store/index";
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import {elasticsearchConnection} from '../../helpers/elasticsearchConnection';
 import DashboardsTypes from '../../helpers/DashboardsTypes';
+import parseListData from '../../parse_data/parseListData.js';
 
 const parseStackedTimebar = require('../../parse_data/parseStackedbarTimeData.js');
 var parseBucketData = require('../../parse_data/parseBucketData.js');
 var parseSunburstData = require('../../parse_data/parseSunburstData.js');
 var parseQueryStringData = require('../../parse_data/parseQueryStringData.js');
-var parseListData = require('../../parse_data/parseListData.js');
 var parseAggData = require('../../parse_data/parseAggData.js');
 var parseAggSumBucketData = require('../../parse_data/parseAggSumBucketData.js');
 
@@ -116,7 +116,7 @@ componentWillUnmount() {
                 var answerSeizureRatio = parseAggSumBucketData.parse(data.responses[8]);
 
                 //CALLING COUNTRIES
-                var callingCountries = parseListData.parse(data.responses[9]);
+                var callingCountries = parseListData(data.responses[9]);
 
                 //SUM DURATION OVER TIME
                 var sumDurationOverTime = parseBucketData.parse(data.responses[10]);
@@ -128,13 +128,13 @@ componentWillUnmount() {
                 var avgDuration = parseAggData.parse(data.responses[13]);
 
                 //DURATION GROUP
-                var durationGroup = parseListData.parse(data.responses[14]);
+                var durationGroup = parseListData(data.responses[14]);
 
                 //SIP-CODE COUNT
-                var sipcodeCount = parseListData.parse(data.responses[15]);
+                var sipcodeCount = parseListData(data.responses[15]);
 
                 //CALLED COUNTIRES
-                var calledCountries = parseListData.parse(data.responses[16]);
+                var calledCountries = parseListData(data.responses[16]);
 
                 //EVENT CALLS TIMELINE
                 var eventCallsTimeline = parseStackedTimebar.parse(data.responses[17]);

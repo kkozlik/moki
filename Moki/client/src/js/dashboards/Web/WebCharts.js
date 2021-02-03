@@ -15,9 +15,8 @@ import {
 } from '../../helpers/elasticsearchConnection';
 import CountUpChart from '../../charts/count_chart.js';
 import Geoipchart from '../../charts/geoip_map.js';
-
+import parseListData from '../../parse_data/parseListData.js';
 const parseStackedTimebar = require('../../parse_data/parseStackedbarTimeData.js');
-var parseListData = require('../../parse_data/parseListData.js');
 var parseQueryStringData = require('../../parse_data/parseQueryStringData.js');
 
 class WebCharts extends Component {
@@ -88,10 +87,10 @@ class WebCharts extends Component {
             var totalEvents = parseQueryStringData.parse(data.responses[2]);
 
             //EVENTS BY COUNTRY
-            var eventsByCountry = parseListData.parse(data.responses[3]);
+            var eventsByCountry = parseListData(data.responses[3]);
 
             //TOP USER AGENTS
-            var userAgents = parseListData.parse(data.responses[4]);
+            var userAgents = parseListData(data.responses[4]);
 
             console.info(new Date() + " MOKI Security: finished parsíng data");
 

@@ -15,8 +15,7 @@ import DashboardsTypes from '../../helpers/DashboardsTypes';
 import {
     elasticsearchConnection
 } from '../../helpers/elasticsearchConnection';
-
-var parseListData = require('../../parse_data/parseListData.js');
+import parseListData from '../../parse_data/parseListData.js';
 var parseBucketData = require('../../parse_data/parseBucketData.js');
 const parseStackedTimebar = require('../../parse_data/parseStackedbarTimeData.js');
 
@@ -84,13 +83,13 @@ class SecurityCharts extends Component {
             var eventRegsTimeline = parseStackedTimebar.parse(data.responses[1]);
 
             //EVENTS BY IP ADDR
-            var eventsByIP = parseListData.parse(data.responses[2]);
+            var eventsByIP = parseListData(data.responses[2], true);
 
             //TOP SUBNETS /24
-            var subnets = parseListData.parse(data.responses[3]);
+            var subnets = parseListData(data.responses[3]);
 
             //EVENTS BY COUNTRY
-            var eventsByCountry = parseListData.parse(data.responses[4]);
+            var eventsByCountry = parseListData(data.responses[4]);
 
             //SECURITY TYPES EVENTS
             var typesCount = parseBucketData.parse(data.responses[5]);

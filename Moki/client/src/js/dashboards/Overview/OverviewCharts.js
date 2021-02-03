@@ -13,10 +13,10 @@ import DashboardsTypes from '../../helpers/DashboardsTypes';
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import { elasticsearchConnection } from '../../helpers/elasticsearchConnection';
 import ListChart from '../../charts/list_chart.js';
+import parseListData from '../../parse_data/parseListData.js';
 var parseDateHeatmap = require('../../parse_data/parseDateHeatmap.js');
 const parseStackedbar = require('../../parse_data/parseStackedbarData.js');
 const parseStackedTimebar = require('../../parse_data/parseStackedbarTimeData.js');
-var parseListData = require('../../parse_data/parseListData.js');
 
 class OverviewCharts extends Component {
 
@@ -76,7 +76,7 @@ class OverviewCharts extends Component {
             var keepAlive = parseDateHeatmap.parse(data.responses[3]);
 
             //TAGS LIST
-            var tags = parseListData.parse(data.responses[5]);
+            var tags = parseListData(data.responses[5]);
 
 
             console.info(new Date() + " MOKI OVERVIEW: finished parsing data");

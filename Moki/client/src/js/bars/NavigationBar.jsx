@@ -1,11 +1,12 @@
 import React, {
-    Component
+    Component, lazy, Suspense
 } from 'react';
 import { Link } from 'react-router-dom';
 import logout from "../../styles/icons/log_out.png";
 import store from "../store/index";
 import { setWidthChart } from "../actions/index";
 import collapseIcon from "../../styles/icons/collapse.png";
+const DecryptPasswordPopup = lazy(() => import("../intuitive/decryptPasswordPopup"));
 
 class navBar extends Component {
     constructor(props) {
@@ -35,7 +36,7 @@ class navBar extends Component {
     componentDidMount() {
         window.addEventListener('scroll', this.handleScroll);
         var navBar = document.getElementById("sidebar-container");
-        if(navBar.clientHeight < window.innerHeight){
+        if (navBar.clientHeight < window.innerHeight) {
             navBar.style.position = "fixed";
             navBar.style.top = "0";
             navBar.style.bottom = "auto";
@@ -66,9 +67,9 @@ class navBar extends Component {
 
     capitalizeFirstLetter(string) {
         return string.charAt(0).toUpperCase() + string.slice(1);
-      }
+    }
 
-      togglebar() {
+    togglebar() {
         this.setState({
             collapsed: !this.state.collapsed
         });
@@ -132,28 +133,33 @@ class navBar extends Component {
     }
 
 
-    renderNavBar(dashboards){
+    renderNavBar(dashboards) {
         var navBar = [];
-        for(var i = 0; i < dashboards.length; i++){
-            navBar.push(<Link to={"/"+dashboards[i]} id={"/"+dashboards[i]} className="bg-dark list-group-myitem list-group-item-action" onClick={this.redirect} key={dashboards[i]}>
-            <div className="d-flex w-100 justify-content-start align-items-center">
-                <img src={require(`../../styles/icons/${dashboards[i]}.png`)} alt={dashboards[i]} className="marginRight" title={dashboards[i]} />
-                <span className={this.state.activeDashboard === dashboards[i] ? "menu-collapsed menuText activeDashboard" : "menu-collapsed menuText"}>{this.capitalizeFirstLetter(dashboards[i])}</span>
-            </div>
-        </Link>);
+        for (var i = 0; i < dashboards.length; i++) {
+            navBar.push(<Link to={"/" + dashboards[i]} id={"/" + dashboards[i]} className="bg-dark list-group-myitem list-group-item-action" onClick={this.redirect} key={dashboards[i]}>
+                <div className="d-flex w-100 justify-content-start align-items-center">
+                    <img src={require(`../../styles/icons/${dashboards[i]}.png`)} alt={dashboards[i]} className="marginRight" title={dashboards[i]} />
+                    <span className={this.state.activeDashboard === dashboards[i] ? "menu-collapsed menuText activeDashboard" : "menu-collapsed menuText"}>{this.capitalizeFirstLetter(dashboards[i])}</span>
+                </div>
+            </Link>);
         }
         return navBar;
     }
-    renderNavBarSettings(dashboards){
+    renderNavBarSettings(dashboards) {
+        console.log(dashboards);
         var navBar = [];
-        for(var i = 0; i < dashboards.length; i++){
-            navBar.push(<Link to={"/"+dashboards[i]} className="bg-dark list-group-myitem list-group-item-action" onClick={this.redirect} key={dashboards[i]}>
-            <div className="d-flex w-100 justify-content-start align-items-center">
-                <img className="marginRight" src={require(`../../styles/icons/${dashboards[i]}.png`)} alt={dashboards[i]} />
-                <span className={this.state.activeDashboard === dashboards[i] ? "menu-collapsed menuText activeDashboard" : "menu-collapsed menuText"}>{this.capitalizeFirstLetter(dashboards[i])}</span>
-            </div>
-        </Link>);
+        for (var i = 0; i < dashboards.length; i++) {
+            navBar.push(<Link to={"/" + dashboards[i]} className="bg-dark list-group-myitem list-group-item-action" onClick={this.redirect} key={dashboards[i]}>
+                <div className="d-flex w-100 justify-content-start align-items-center">
+                    <img className="marginRight" src={require(`../../styles/icons/${dashboards[i]}.png`)} alt={dashboards[i]} />
+                    <span className={this.state.activeDashboard === dashboards[i] ? "menu-collapsed menuText activeDashboard" : "menu-collapsed menuText"}>{this.capitalizeFirstLetter(dashboards[i])}</span>
+                </div>
+            </Link>);
         }
+      //  if (dashboards.includes("decrypt")) {
+            navBar.push(<Suspense fallback={<span></span>}><DecryptPasswordPopup /></Suspense>);
+            return navBar;
+     //   }
         return navBar;
     }
 
@@ -162,7 +168,7 @@ class navBar extends Component {
         var dashboardsSettings = this.state.dashboardsSettings;
         var dashboards = this.state.dashboards;
         var navbar = this.renderNavBar(dashboards);
-        var navbarSettings = this.renderNavBar(dashboardsSettings);
+        var navbarSettings = this.renderNavBarSettings(dashboardsSettings);
         return (
             <div id="sidebar-container" className="sidebar-expanded d-none d-md-block sticky-top">
                 <ul className="list-group">
@@ -170,7 +176,7 @@ class navBar extends Component {
                         <small className="menu-collapsed">DASHBOARDS</small>
                     </li>
                     {navbar}
-                    {dashboardsSettings.length !== 0 && <li className="list-group-myitem sidebar-separator-title d-flex align-items-center menu-collapsed">
+                    {<li className="list-group-myitem sidebar-separator-title d-flex align-items-center menu-collapsed">
 
                         <small className="menu-collapsed">SETTINGS</small>
                     </li>}
@@ -185,7 +191,7 @@ class navBar extends Component {
                             <span className="menu-collapsed menuText">Log out</span>
                         </div>
                     </Link>
-                    <button  onClick={this.togglebar} data-toggle="sidebar-colapse" className="noFormatButton bg-dark list-group-collaps list-group-item-action d-flex align-items-center" >
+                    <button onClick={this.togglebar} data-toggle="sidebar-colapse" className="noFormatButton bg-dark list-group-collaps list-group-item-action d-flex align-items-center" >
                         <div className="d-flex w-100 justify-content-start align-items-center">
                             <img className="marginRight" src={collapseIcon} alt="collapse" />
                             <span id="collapse-text" className="menu-collapsed">Collapse</span>

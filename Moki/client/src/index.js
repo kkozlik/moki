@@ -6,6 +6,7 @@ import {
 } from 'react-router-dom';
 import App from './App';
 import './styles/style.css';
+import './js/intuitive/style/intuitiveStyle.css';
 import 'jquery/src/jquery';
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import '../node_modules/bootstrap/dist/js/bootstrap.min.js';

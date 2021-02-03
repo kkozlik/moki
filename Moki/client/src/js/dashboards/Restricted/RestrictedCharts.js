@@ -15,11 +15,11 @@ import DashboardsTypes from '../../helpers/DashboardsTypes';
 import {
     elasticsearchConnection
 } from '../../helpers/elasticsearchConnection';
+import parseListData from '../../parse_data/parseListData.js';
 var parseQueryStringData = require('../../parse_data/parseQueryStringData.js');
 var parseAggData = require('../../parse_data/parseAggData.js');
 var parseAggSumBucketData = require('../../parse_data/parseAggSumBucketData.js');
 var parseBucketData = require('../../parse_data/parseBucketData.js');
-var parseListData = require('../../parse_data/parseListData.js');
 const parseStackedTimebar = require('../../parse_data/parseStackedbarTimeData.js');
 
 
@@ -91,7 +91,7 @@ class RestrictedCharts extends Component {
             var sumCallAttempt = parseQueryStringData.parse(data.responses[1]);
 
             //CALLING COUNTRIES
-            var callingCountries = parseListData.parse(data.responses[2]);
+            var callingCountries = parseListData(data.responses[2]);
 
             //DURATION SUM 
             var durationSum = parseAggData.parse(data.responses[3]);
@@ -106,10 +106,10 @@ class RestrictedCharts extends Component {
             var sumDurationOverTime = parseBucketData.parse(data.responses[6]);
 
             //FROM UA
-            var fromUA = parseListData.parse(data.responses[7]);
+            var fromUA = parseListData(data.responses[7]);
 
             //SOURCE IP ADDRESS
-            var sourceIP = parseListData.parse(data.responses[8]);
+            var sourceIP = parseListData(data.responses[8], true);
 
             //EVENT CALLS TIMELINE
             var eventCallsTimeline = parseStackedTimebar.parse(data.responses[9]);
@@ -118,7 +118,7 @@ class RestrictedCharts extends Component {
             var eventExceededTimeline = parseStackedTimebar.parse(data.responses[10]);
 
             //TOP 10 TO
-            var top10to = parseListData.parse(data.responses[11]);
+            var top10to = parseListData(data.responses[11]);
 
             //AVG MoS
             var avgMoS = parseAggData.parse(data.responses[12]);

@@ -15,10 +15,10 @@ import {
     elasticsearchConnection
 } from '../../helpers/elasticsearchConnection';
 import DashboardsTypes from '../../helpers/DashboardsTypes';
+import parseListData from '../../parse_data/parseListData.js';
 const parseStackedTimebar = require('../../parse_data/parseStackedbarTimeData.js');
 var parseBucketData = require('../../parse_data/parseBucketData.js');
 var parseQueryStringData = require('../../parse_data/parseQueryStringData.js');
-var parseListData = require('../../parse_data/parseListData.js');
 
 class ExceededCharts extends Component {
 
@@ -83,13 +83,13 @@ class ExceededCharts extends Component {
             var exceededType = parseBucketData.parse(data.responses[2]);
 
             //TOP OFFENDERS
-            var topOffenders = parseListData.parse(data.responses[3]);
+            var topOffenders = parseListData(data.responses[3]);
 
             //EVENTS BY IP ADDR 
-            var ipAddress = parseListData.parse(data.responses[4]);
+            var ipAddress = parseListData(data.responses[4], true);
 
             //TOP SUBNETS /24 EXCEEDED
-            var subnets = parseListData.parse(data.responses[5]);
+            var subnets = parseListData(data.responses[5]);
 
             this.setState({
                 eventCallsTimeline: eventCallsTimeline,

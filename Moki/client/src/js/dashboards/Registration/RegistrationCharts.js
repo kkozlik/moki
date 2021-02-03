@@ -16,8 +16,8 @@ import {
     elasticsearchConnection
 } from '../../helpers/elasticsearchConnection';
 import DashboardsTypes from '../../helpers/DashboardsTypes';
+import parseListData from '../../parse_data/parseListData.js';
 var parseBucketData = require('../../parse_data/parseBucketData.js');
-var parseListData = require('../../parse_data/parseListData.js');
 var parseMultipleLineDataShareAxis = require('../../parse_data/parseMultipleLineDataShareAxis.js');
 var parseAggQueryWithoutScriptValue = require('../../parse_data/parseAggQueryWithoutScriptValue.js');
 const parseStackedTimebar = require('../../parse_data/parseStackedbarTimeData.js');
@@ -86,7 +86,7 @@ class RegistrationCharts extends Component {
             var userAgents = parseBucketData.parse(data.responses[2]);
 
             //TOP REG. EXPIRED
-            var topRegExpired = parseListData.parse(data.responses[3]);
+            var topRegExpired = parseListData(data.responses[3]);
 
             //TRANSPORT PROTOCOL
             var transportProtocol = parseBucketData.parse(data.responses[4]);

@@ -11,7 +11,7 @@ import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import { elasticsearchConnection } from '../../helpers/elasticsearchConnection';
 import TableChart from '../../charts/table_chart.js';
 import ValueChart from '../../charts/value_chart.js';
-var parseListData = require('../../parse_data/parseListData.js');
+import parseListData from '../../parse_data/parseListData.js';
 
 
 class DomainsCharts extends Component {
@@ -62,7 +62,7 @@ class DomainsCharts extends Component {
         } else if (data) {
             //parse data
             //top domains
-            var topDomains = parseListData.parse(data.responses[0]);
+            var topDomains = parseListData(data.responses[0]);
 
             var table = data.responses[1];
             if (table && table.hits) {
