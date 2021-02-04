@@ -37,7 +37,7 @@ class Dashboard extends Component {
       return;
     }
     for(let i=0; (i<data.responses.length) && (i<this.callBacks.functors.length); i++) {
-      this.callBacks.functors[i].result = this.callBacks.functors[i].func(data.responses[i]);
+      this.state[this.callBacks.functors[i].result] = this.callBacks.functors[i].func(data.responses[i]);
     }
   }
   
@@ -55,7 +55,7 @@ class Dashboard extends Component {
         
     }else if(data){
       this.processESData(data);
-        
+      this.setState(this.state);  
       this.setState({isLoading: false}); 
       console.info(new Date() + " MOKI CALLS: finished parsíng data");
    

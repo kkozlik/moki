@@ -49,67 +49,67 @@ class MicroanalysisCharts extends Dashboard {
             functors: [
               //parse data
               //TYPES
-              {result: this.state.typesCount, func: parseBucketData.parse},
+              {result: 'typesCount', func: parseBucketData.parse},
 
               //FROM UA
-              {result: this.state.fromUA, func: parseListData},
+              {result: 'fromUA', func: parseListData},
 
               //SIP METHOD
-              {result: this.state.sipMethod, func: parseListData},
+              {result: 'sipMethod', func: parseListData},
 
               //SIP CODE
-              {result: this.state.sipCode, func: parseListData},
+              {result: 'sipCode', func: parseListData},
 
               //TOP SUBNETS
-              {result: this.state.topSubnets, func: parseListData},
+              {result: 'topSubnets', func: parseListData},
 
               //r-URI PREFIX STRIPPED
-              {result: this.state.prefixStripped, func: parseListData},
+              {result: 'prefixStripped', func: parseListData},
 
               //SOURCE IP ADDRESS
-              {result: this.state.sourceIP, func: this.parseListData},
+              {result: 'sourceIP', func: this.parseListData},
 
               //TOP 10 FROM
-              {result: this.state.top10from, func: parseListData},
+              {result: 'top10from', func: parseListData},
 
               //CALLER DOMAIN
-              {result: this.state.callerDomain, func: parseListData},
+              {result: 'callerDomain', func: parseListData},
 
               //TOP 10 TO
-              {result: this.state.top10to, func: parseListData},
+              {result: 'top10to', func: parseListData},
 
               //DOMAIN STATS
-              {result: this.state.distinctDestinations, func: parseListDataCardinality.parse},
+              {result: 'distinctDestinations', func: parseListDataCardinality.parse},
 
               //TOP CALL ATTEMPTS
-              {result: this.state.topCallAttempts, func: parseListData},
+              {result: 'topCallAttempts', func: parseListData},
 
               //TOP CALL ENDS
-              {result: this.state.topCallEnds, func: parseListData},
+              {result: 'topCallEnds', func: parseListData},
 
               //DESTINATION BY R-URI
-              {result: this.state.destination, func: parseListData},
+              {result: 'destination', func: parseListData},
 
               //SUM DURATION
-              {result: this.state.sumDuration, func: parseListDataCardinality.parse},
+              {result: 'sumDuration', func: parseListDataCardinality.parse},
 
               //TOP DURATION
-              {result: this.state.topDuration, func: parseListDataCardinality.parse},
+              {result: 'topDuration', func: parseListDataCardinality.parse},
 
               //TOP DURATION < 5 sec
-              {result: this.state.topDuration5, func: parseListData},
+              {result: 'topDuration5', func: parseListData},
 
               //TOP SBCs
-              {result: this.state.topSBC, func: parseListData},
+              {result: 'topSBC', func: parseListData},
 
               //SRC CA
-              {result: this.state.srcCA, func: parseListData},
+              {result: 'srcCA', func: parseListData},
 
               //DST CA
-              {result: this.state.dstCA, func: parseListData},
+              {result: 'dstCA', func: parseListData},
 
               //ORIGINATOR
-              {result: this.state.originator, func: parseListData}
+              {result: 'originator', func: parseListData}
             ]
         }
     }
