@@ -42,7 +42,7 @@ class Dashboard extends Component {
     
     this.setState({isLoading: true}); 
         
-    var data = await elasticsearchConnection("calls/charts");
+    var data = await elasticsearchConnection(this.state.dashboardName);
 
     if(typeof data === "string" && data.includes("ERROR:")){
     

@@ -34,6 +34,7 @@ class CallCharts extends Dashboard {
         super(props);
         this.specialLoadData = this.specialLoadData.bind(this);
         this.state = {
+            dashboardName: "calls/chart",
             eventCallsTimeline: [],
             callTerminated: [],
             callSuccessRatio: [],
