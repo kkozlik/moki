@@ -5,6 +5,7 @@ import React, {
     Component
 } from 'react';
 
+import Dashboard from '../Dashboard.js';
 import TimedateStackedChart from '../../charts/timedate_stackedbar.js';
 import SunburstChart from '../../charts/sunburst_chart.js';
 import DonutChart from '../../charts/donut_chart.js';
@@ -26,12 +27,12 @@ var parseAggSumBucketData = require('../../parse_data/parseAggSumBucketData.js')
 
 
 
-class CallCharts extends Component {
+class CallCharts extends Dashboard {
 
     // Initialize the state
     constructor(props) {
         super(props);
-        this.loadData = this.loadData.bind(this);
+        this.specialLoadData = this.specialLoadData.bind(this);
         this.state = {
             eventCallsTimeline: [],
             callTerminated: [],
@@ -52,121 +53,67 @@ class CallCharts extends Component {
             isLoading: false,
             asrDurationOverTime: []
         }
-        store.subscribe(() => this.loadData());
-}
-    
-    
-componentDidMount() {
-    this.loadData();
-}
-
-
-componentWillUnmount() {
-    // fix Warning: Can't perform a React state update on an unmounted component
-    this.setState = (state,callback)=>{
-        return;
-    };
-}
-
-
-  async loadData() {
-      
-            this.setState({isLoading: true}); 
-            
-            var data = await elasticsearchConnection("calls/charts");
-
-            if(typeof data === "string" && data.includes("ERROR:")){
-            
-                 this.props.showError(data);
-                 this.setState({isLoading: false});
-                 return; 
-                
-            }else if(data){
-                //parse data
+        this.callBacks = {
+            functors: [
                 //CALL TERMINATED
-                var callTerminated = parseBucketData.parse(data.responses[0]);
-
+                {this.state.callTerminated, parseBucketData.parse},
                 //CALL SUCCESS RATIO
-                var callSuccessRatio = parseSunburstData.parse(data.responses[1]);
-
+                {this.state.callSuccessRatio, parseSunburstData.parse},
                 //SUM CALL-ATTEMPT
-                var sumCallAttempt = parseQueryStringData.parse(data.responses[2]);
-
-
+                {this.state.sumCallAttempt, parseQueryStringData.parse},
                 //SUM CALL-END
-                var sumCallEnd = parseQueryStringData.parse(data.responses[3]);
-                
-                //hack - add sum of call end into success ratio
-                if(sumCallEnd){
-                       callSuccessRatio.children.push({
-                           key: "success",                     value: sumCallEnd, 
-                           children: []});
-                    }
-       
+                {this.state.sumCallEnd, parseQueryStringData.parse},
                 //SUM CALL-START
-                var sumCallStart = parseQueryStringData.parse(data.responses[4]);
-
-               //DURATION SUM 
-                var durationSum = parseAggData.parse(data.responses[5]);
-
+                {this.state.sumCallStart , parseQueryStringData.parse},
+                //DURATION SUM 
+                {this.state.durationSum , parseAggData.parse},
                 //AVG MoS
-                var avgMoS = parseAggData.parse(data.responses[7]);
-
+                {this.state.avgMoS , parseAggData.parse},
                 //ANSWER-SEIZURE RATIO
-                var answerSeizureRatio = parseAggSumBucketData.parse(data.responses[8]);
-
+                {this.state.answerSeizureRatio , parseAggSumBucketData.parse}
                 //CALLING COUNTRIES
-                var callingCountries = parseListData(data.responses[9]);
-
+                {this.state.callingCountries , parseListData}
                 //SUM DURATION OVER TIME
-                var sumDurationOverTime = parseBucketData.parse(data.responses[10]);
-
+                {this.state.sumDurationOverTime , parseBucketData.parse},
                 //MAX DURATION
-                var maxDuration = parseAggData.parse(data.responses[11]);
-
+                {this.state.maxDuration , parseAggData.parse},
                 //AVG DURATION
-                var avgDuration = parseAggData.parse(data.responses[13]);
-
+                {this.state.avgDuration , parseAggData.parse},
                 //DURATION GROUP
-                var durationGroup = parseListData(data.responses[14]);
-
+                {this.state.durationGroup , parseListData},
                 //SIP-CODE COUNT
-                var sipcodeCount = parseListData(data.responses[15]);
-
-                //CALLED COUNTIRES
-                var calledCountries = parseListData(data.responses[16]);
-
+                {this.state.sipcodeCount , parseListData},
+                //CALLED COUNTRIES
+                {this.state.calledCountries , parseListData},
                 //EVENT CALLS TIMELINE
-                var eventCallsTimeline = parseStackedTimebar.parse(data.responses[17]);
-                
-                
+                {this.state.eventCallsTimeline , parseStackedTimebar.parse},
                 //ASR OVER TIME
-                var asrDurationOverTime = parseBucketData.parse(data.responses[18]);
-                
-                console.info(new Date() + " MOKI CALLS: finished parsíng data");
-           
-                this.setState({
-                    eventCallsTimeline: eventCallsTimeline,
-                    callSuccessRatio: callSuccessRatio,
-                    callTerminated: callTerminated,
-                    sumDurationOverTime: sumDurationOverTime,
-                    callingCountries: callingCountries,
-                    sumCallAttempt: sumCallAttempt,
-                    sumCallEnd: sumCallEnd, 
-                    sumCallStart: sumCallStart,
-                    durationSum: durationSum,
-                    avgMoS: avgMoS,
-                    answerSeizureRatio: answerSeizureRatio,
-                    maxDuration: maxDuration,
-                    avgDuration: avgDuration,
-                    sipcodeCount: sipcodeCount,
-                    durationGroup: durationGroup,
-                    calledCountries: calledCountries,
-                    asrDurationOverTime: asrDurationOverTime,
-                    isLoading: false 
-                });
+                {this.state.asrDurationOverTime , parseBucketData.parse}
+            ] 
         }
+        store.subscribe(() => this.specialLoadData());
+}
+
+  async specialLoadData() {
+    
+    // call the superclass loadData()
+    await super.loadData();
+    
+    this.setState({
+        isLoading: true 
+    });
+
+    //hack - add sum of call end into success ratio
+    if(sumCallEnd){
+       callSuccessRatio.children.push({
+           key: "success",                     value: sumCallEnd, 
+           children: []});
     }
+
+    this.setState({
+        isLoading: false 
+    });
+  }
 
 
     //render GUI
