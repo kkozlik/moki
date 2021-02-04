@@ -57,39 +57,39 @@ class CallCharts extends Dashboard {
         this.callBacks = {
             functors: [
                 //CALL TERMINATED
-                {this.state.callTerminated, parseBucketData.parse},
+                {result: this.state.callTerminated, func: parseBucketData.parse},
                 //CALL SUCCESS RATIO
-                {this.state.callSuccessRatio, parseSunburstData.parse},
+                {result: this.state.callSuccessRatio, func: parseSunburstData.parse},
                 //SUM CALL-ATTEMPT
-                {this.state.sumCallAttempt, parseQueryStringData.parse},
+                {result: this.state.sumCallAttempt, func: parseQueryStringData.parse},
                 //SUM CALL-END
-                {this.state.sumCallEnd, parseQueryStringData.parse},
+                {result: this.state.sumCallEnd, func: parseQueryStringData.parse},
                 //SUM CALL-START
-                {this.state.sumCallStart , parseQueryStringData.parse},
+                {result: this.state.sumCallStart, func: parseQueryStringData.parse},
                 //DURATION SUM 
-                {this.state.durationSum , parseAggData.parse},
+                {result: this.state.durationSum, func: parseAggData.parse},
                 //AVG MoS
-                {this.state.avgMoS , parseAggData.parse},
+                {result: this.state.avgMoS, func: parseAggData.parse},
                 //ANSWER-SEIZURE RATIO
-                {this.state.answerSeizureRatio , parseAggSumBucketData.parse}
+                {result: this.state.answerSeizureRatio, func: parseAggSumBucketData.parse},
                 //CALLING COUNTRIES
-                {this.state.callingCountries , parseListData}
+                {result: this.state.callingCountries, func: parseListData},
                 //SUM DURATION OVER TIME
-                {this.state.sumDurationOverTime , parseBucketData.parse},
+                {result: this.state.sumDurationOverTime, func: parseBucketData.parse},
                 //MAX DURATION
-                {this.state.maxDuration , parseAggData.parse},
+                {result: this.state.maxDuration, func: parseAggData.parse},
                 //AVG DURATION
-                {this.state.avgDuration , parseAggData.parse},
+                {result: this.state.avgDuration, func: parseAggData.parse},
                 //DURATION GROUP
-                {this.state.durationGroup , parseListData},
+                {result: this.state.durationGroup, func: parseListData},
                 //SIP-CODE COUNT
-                {this.state.sipcodeCount , parseListData},
+                {result: this.state.sipcodeCount, func: parseListData},
                 //CALLED COUNTRIES
-                {this.state.calledCountries , parseListData},
+                {result: this.state.calledCountries, func: parseListData},
                 //EVENT CALLS TIMELINE
-                {this.state.eventCallsTimeline , parseStackedTimebar.parse},
+                {result: this.state.eventCallsTimeline, func: parseStackedTimebar.parse},
                 //ASR OVER TIME
-                {this.state.asrDurationOverTime , parseBucketData.parse}
+                {result: this.state.asrDurationOverTime, func: parseBucketData.parse}
             ] 
         }
         store.subscribe(() => this.specialLoadData());
@@ -105,10 +105,11 @@ class CallCharts extends Dashboard {
     });
 
     //hack - add sum of call end into success ratio
-    if(sumCallEnd){
-       callSuccessRatio.children.push({
-           key: "success",                     value: sumCallEnd, 
-           children: []});
+    if(this.state.sumCallEnd){
+       this.state.callSuccessRatio.children.push({
+          key: "success",
+          value: this.state.sumCallEnd, 
+          children: []});
     }
 
     this.setState({
