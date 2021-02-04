@@ -16,7 +16,6 @@ class Dashboard extends Component {
     this.loadData = this.loadData.bind(this);
     this.state = { };
     this.callBacks = { functors: [] }
-    store.subscribe(() => this.loadData());
   }
     
     

@@ -112,6 +112,7 @@ class MicroanalysisCharts extends Dashboard {
               {result: 'originator', func: parseListData}
             ]
         }
+        store.subscribe(() => this.loadData());
     }
   
   /* this.parseListData will call the exported one with encryption turned on */
