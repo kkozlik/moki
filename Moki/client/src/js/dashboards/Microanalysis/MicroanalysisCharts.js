@@ -5,25 +5,23 @@ import React, {
     Component
 } from 'react';
 
+import Dashboard from '../Dashboard.js';
 import store from "../../store/index";
 import ListChart from '../../charts/list_chart.js';
 import DonutChart from '../../charts/donut_chart.js';
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
-import {
-    elasticsearchConnection
-} from '../../helpers/elasticsearchConnection';
 import parseListData from '../../parse_data/parseListData.js';
 var parseListDataCardinality = require('../../parse_data/parseListDataCardinality.js');
 var parseBucketData = require('../../parse_data/parseBucketData.js');
 
 
-class MicroanalysisCharts extends Component {
+class MicroanalysisCharts extends Dashboard {
 
     // Initialize the state
     constructor(props) {
         super(props);
-        this.loadData = this.loadData.bind(this);
         this.state = {
+            dashboardName: "microanalysis/charts",
             typesCount: [],
             fromUA: [],
             sipMethod: [],
@@ -47,135 +45,72 @@ class MicroanalysisCharts extends Component {
             originator: [],
             isLoading: true
         }
-        store.subscribe(() => this.loadData());
+        this.callBacks = {
+            functors: [
+              //parse data
+              //TYPES
+              {result: this.state.typesCount, func: parseBucketData.parse},
 
-    }
+              //FROM UA
+              {result: this.state.fromUA, func: parseListData},
 
-    componentDidMount() {
-        this.loadData();
-    }
+              //SIP METHOD
+              {result: this.state.sipMethod, func: parseListData},
 
-    componentWillUnmount() {
-        // fix Warning: Can't perform a React state update on an unmounted component
-        this.setState = (state, callback) => {
-            return;
-        };
-    }
+              //SIP CODE
+              {result: this.state.sipCode, func: parseListData},
 
-    /*
-    Load data from elasticsearch
-    get filters, types and timerange from GUI
-    */
-    async loadData() {
+              //TOP SUBNETS
+              {result: this.state.topSubnets, func: parseListData},
 
-        this.setState({
-            isLoading: true
-        });
-        var data = await elasticsearchConnection("microanalysis/charts");
-        if (typeof data === "string" && data.includes("ERROR:")) {
-            console.log(typeof data === "string" && data.includes("ERROR:"));
+              //r-URI PREFIX STRIPPED
+              {result: this.state.prefixStripped, func: parseListData},
 
-            this.props.showError(data);
-            this.setState({
-                isLoading: false
-            });
-            return;
+              //SOURCE IP ADDRESS
+              {result: this.state.sourceIP, func: parseListData},
 
-        } else if (data) {
+              //TOP 10 FROM
+              {result: this.state.top10from, func: parseListData},
 
-            //parse data
-            //TYPES
-            var typesCount = parseBucketData.parse(data.responses[0]);
+              //CALLER DOMAIN
+              {result: this.state.callerDomain, func: parseListData},
 
-            //FROM UA
-            var fromUA = parseListData(data.responses[1]);
+              //TOP 10 TO
+              {result: this.state.top10to, func: parseListData},
 
-            //SIP METHOD
-            var sipMethod = parseListData(data.responses[2]);
+              //DOMAIN STATS
+              {result: this.state.distinctDestinations, func: parseListDataCardinality.parse},
 
-            //SIP CODE
-            var sipCode = parseListData(data.responses[3]);
+              //TOP CALL ATTEMPTS
+              {result: this.state.topCallAttempts, func: parseListData},
 
-            //TOP SUBNETS
-            var topSubnets = parseListData(data.responses[4]);
+              //TOP CALL ENDS
+              {result: this.state.topCallEnds, func: parseListData},
 
-            //r-URI PREFIX STRIPPED
-            var prefixStripped = parseListData(data.responses[5]);
+              //DESTINATION BY R-URI
+              {result: this.state.destination, func: parseListData},
 
-            //SOURCE IP ADDRESS
-            var sourceIP = parseListData(data.responses[6], true);
+              //SUM DURATION
+              {result: this.state.sumDuration, func: parseListDataCardinality},
 
-            //TOP 10 FROM
-            var top10from = parseListData(data.responses[7]);
+              //TOP DURATION
+              {result: this.state.topDuration, func: parseListDataCardinality},
 
-            //CALLER DOMAIN
-            var callerDomain = parseListData(data.responses[8]);
+              //TOP DURATION < 5 sec
+              {result: this.state.topDuration5, func: parseListData},
 
-            //TOP 10 TO
-            var top10to = parseListData(data.responses[9]);
+              //TOP SBCs
+              {result: this.state.topSBC, func: parseListData},
 
-            //DOMAIN STATS
-            var distinctDestinations = parseListDataCardinality.parse(data.responses[10]);
+              //SRC CA
+              {result: this.state.srcCA, func: parseListData},
 
-            //TOP CALL ATTEMPTS
-            var topCallAttempts = parseListData(data.responses[11]);
+              //DST CA
+              {result: this.state.dstCA, func: parseListData},
 
-            //TOP CALL ENDS
-            var topCallEnds = parseListData(data.responses[12]);
-
-            //DESTINATION BY R-URI
-            var destination = parseListData(data.responses[13]);
-
-            //SUM DURATION
-            var sumDuration = parseListDataCardinality(data.responses[14]);
-
-            //TOP DURATION
-            var topDuration = parseListDataCardinality(data.responses[15]);
-
-            //TOP DURATION < 5 sec
-            var topDuration5 = parseListData(data.responses[16]);
-
-            //TOP SBCs
-            var topSBC = parseListData(data.responses[17]);
-
-            //SRC CA
-            var srcCA = parseListData(data.responses[18]);
-
-            //DST CA
-            var dstCA = parseListData(data.responses[19]);
-
-            //ORIGINATOR
-            var originator = parseListData(data.responses[20]);
-
-
-            console.info(new Date() + " MOKI MICROANALYSIS: finished parsíng data");
-
-            this.setState({
-                typesCount: typesCount,
-                fromUA: fromUA,
-                sipMethod: sipMethod,
-                sipCode: sipCode,
-                topSubnets: topSubnets,
-                prefixStripped: prefixStripped,
-                sourceIP: sourceIP,
-                top10from: top10from,
-                callerDomain: callerDomain,
-                top10to: top10to,
-                distinctDestinations: distinctDestinations,
-                topCallAttempts: topCallAttempts,
-                topCallEnds: topCallEnds,
-                destination: destination,
-                sumDuration: sumDuration,
-                topDuration: topDuration,
-                topDuration5: topDuration5,
-                topSBC: topSBC,
-                srcCA: srcCA,
-                dstCA: dstCA,
-                originator: originator,
-                isLoading: false
-            });
-
-
+              //ORIGINATOR
+              {result: this.state.originator, func: parseListData}
+            ]
         }
     }
 
