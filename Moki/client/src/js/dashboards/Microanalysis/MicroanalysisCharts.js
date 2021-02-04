@@ -67,7 +67,7 @@ class MicroanalysisCharts extends Dashboard {
               {result: this.state.prefixStripped, func: parseListData},
 
               //SOURCE IP ADDRESS
-              {result: this.state.sourceIP, func: parseListData},
+              {result: this.state.sourceIP, func: this.parseListData},
 
               //TOP 10 FROM
               {result: this.state.top10from, func: parseListData},
@@ -91,10 +91,10 @@ class MicroanalysisCharts extends Dashboard {
               {result: this.state.destination, func: parseListData},
 
               //SUM DURATION
-              {result: this.state.sumDuration, func: parseListDataCardinality},
+              {result: this.state.sumDuration, func: parseListDataCardinality.parse},
 
               //TOP DURATION
-              {result: this.state.topDuration, func: parseListDataCardinality},
+              {result: this.state.topDuration, func: parseListDataCardinality.parse},
 
               //TOP DURATION < 5 sec
               {result: this.state.topDuration5, func: parseListData},
@@ -113,6 +113,11 @@ class MicroanalysisCharts extends Dashboard {
             ]
         }
     }
+  
+  /* this.parseListData will call the exported one with encryption turned on */
+  parseListData(data) {
+    return parseListData(data, true);
+  }
 
     //render GUI
     render() {
