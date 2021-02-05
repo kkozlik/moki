@@ -5,6 +5,7 @@ import React, {
     Component
 } from 'react';
 
+import Dashboard from '../Dashboard.js';
 import TopologyChart from '../../charts/topology_chart.js';
 import Heatmap from '../../charts/heatmap_chart.js';
 import store from "../../store/index";
@@ -16,88 +17,38 @@ const parseHeatmapData = require('../../parse_data/parseHeatmapData.js');
 var parseDateHeatmap = require('../../parse_data/parseDateHeatmap.js');
 var parseTopologyData = require('../../parse_data/parseTopologyData.js');
 
-class ConnectivityCharts extends Component {
+class ConnectivityCharts extends Dashboard {
 
-    // Initialize the state
-    constructor(props) {
-        super(props);
-        this.loadData = this.loadData.bind(this);
-        this.state = {
-            fromTo: [],
-            failure: [],
-            callAtempts: [],
-            duration: [],
-            callEnds: [],
-            isLoading: true
-        }
-        store.subscribe(() => this.loadData());
+  // Initialize the state
+  constructor(props) {
+    super(props);
+    this.state = {
+      fromTo: [],
+      failure: [],
+      callAtempts: [],
+      duration: [],
+      callEnds: [],
+      isLoading: true
+    };
+    this.callBacks = {
+      functors: [
+        //FROM TO 
+        {result: 'fromTo', func: parseTopologyData.parse},
 
-    }
+        //CONNECTION FAILURE RATIO 
+        {result: 'failure', func: parseHeatmapData.parse},
 
-    componentDidMount() {
-        this.loadData();
-    }
+        //NUMBER OF CALL-ATTEMPS 
+        {result: 'callAtempts', func: parseDateHeatmap.parse},
 
-    componentWillUnmount() {
-        // fix Warning: Can't perform a React state update on an unmounted component
-        this.setState = (state, callback) => {
-            return;
-        };
-    }
+        //DURATION 
+        {result: 'duration', func: parseHeatmapData.parse},
 
-    /*
-    Load data from elasticsearch
-    get filters, types and timerange
-    */
-    async loadData() {
-
-        this.setState({
-            isLoading: true
-        });
-
-        var data = await elasticsearchConnection("connectivity/charts");
-
-        if (typeof data === "string" && data.includes("ERROR:")) {
-            this.props.showError(data);
-            this.setState({
-                isLoading: false
-            });
-            return;
-
-        } else if (data) {
-
-            //parse data
-            //FROM TO 
-            var fromTo = parseTopologyData.parse(data.responses[0]);
-
-            //CONNECTION FAILURE RATIO 
-            var failure = parseHeatmapData.parse(data.responses[1]);
-
-            //NUMBER OF CALL-ATTEMPS 
-            var callAtempts = parseDateHeatmap.parse(data.responses[2]);
-
-            //DURATION 
-            var duration = parseHeatmapData.parse(data.responses[3]);
-
-            //NUMBER OF CALL-ENDS 
-            var callEnds = parseDateHeatmap.parse(data.responses[4]);
-
-
-            console.info(new Date() + " MOKI ConnectivityCA: finished parsing data");
-
-            this.setState({
-                fromTo: fromTo,
-                failure: failure,
-                callAtempts: callAtempts,
-                duration: duration,
-                callEnds: callEnds,
-                isLoading: false
-
-            });
-        }
-
-    }
-
+        //NUMBER OF CALL-ENDS 
+        {result: 'callEnds', func: parseDateHeatmap.parse},
+      ]
+    };
+  }
 
     //render GUI
     render() {
