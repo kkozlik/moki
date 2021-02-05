@@ -53,7 +53,7 @@ class CallCharts extends Dashboard {
             maxDuration: [],
             isLoading: false,
             asrDurationOverTime: []
-        }
+        };
         this.callBacks = {
             functors: [
                 //CALL TERMINATED
@@ -90,8 +90,8 @@ class CallCharts extends Dashboard {
                 {result: 'eventCallsTimeline', func: parseStackedTimebar.parse},
                 //ASR OVER TIME
                 {result: 'asrDurationOverTime', func: parseBucketData.parse}
-            ] 
-        }
+            ]
+        };
         store.subscribe(() => this.specialLoadData());
 }
 
