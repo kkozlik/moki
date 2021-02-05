@@ -5,6 +5,7 @@ import React, {
     Component
 } from 'react';
 
+import Dashboard from '../Dashboard.js';
 import TimedateStackedChart from '../../charts/timedate_stackedbar.js';
 import DonutChart from '../../charts/donut_chart.js';
 import ListChart from '../../charts/list_chart.js';
@@ -20,89 +21,48 @@ const parseStackedTimebar = require('../../parse_data/parseStackedbarTimeData.js
 var parseBucketData = require('../../parse_data/parseBucketData.js');
 var parseQueryStringData = require('../../parse_data/parseQueryStringData.js');
 
-class ExceededCharts extends Component {
+class ExceededCharts extends Dashboards {
 
-    // Initialize the state
-    constructor(props) {
-        super(props);
-        this.loadData = this.loadData.bind(this);
-        this.state = {
-            eventCallsTimeline: [],
-            exceededCount: [],
-            exceededType: [],
-            topOffenders: [],
-            subnets: [],
-            ipAddress: [],
-            isLoading: true
+  // Initialize the state
+  constructor(props) {
+    super(props);
+    this.state = {
+      dashboardName: "exceeded/charts",
+      eventCallsTimeline: [],
+      exceededCount: [],
+      exceededType: [],
+      topOffenders: [],
+      subnets: [],
+      ipAddress: [],
+      isLoading: true
+    };
+    this.callBacks = {
+      functors: [
+        //EVENT CALLS TIMELINE
+        [{result: 'eventCallsTimeline', func: parseStackedTimebar.parse}],
 
-        }
-        store.subscribe(() => this.loadData());
+        //EXCEEDED COUNT
+        [{result: 'exceededCount', func: parseQueryStringData.parse}],
 
-    }
+        //EXCEEDED TYPE
+        [{result: 'exceededType', func: parseBucketData.parse}],
 
-    componentWillUnmount() {
-        // fix Warning: Can't perform a React state update on an unmounted component
-        this.setState = (state, callback) => {
-            return;
-        };
-    }
+        //TOP OFFENDERS
+        [{result: 'topOffenders', func: parseListData}],
 
-    componentDidMount() {
-        this.loadData();
-    }
+        //EVENTS BY IP ADDR 
+        [{result: 'ipAddress', func: this.parseListData}],
 
-    /*
-    Load data from elasticsearch
-    get filters, types and timerange
-    */
-    async loadData() {
-        this.setState({
-            isLoading: true
-        });
-        var data = await elasticsearchConnection("exceeded/charts");
-
-        if (typeof data === "string" && data.includes("ERROR:")) {
-
-            this.props.showError(data);
-            this.setState({
-                isLoading: false
-            });
-            return;
-
-        } else if (data) {
-
-            //parse data
-            //EVENT CALLS TIMELINE
-            var eventCallsTimeline = parseStackedTimebar.parse(data.responses[0]);
-            console.info(new Date() + " MOKI CALLS: finished parsíng data");
-
-            //EXCEEDED COUNT
-            var exceededCount = parseQueryStringData.parse(data.responses[1]);
-
-            //EXCEEDED TYPE
-            var exceededType = parseBucketData.parse(data.responses[2]);
-
-            //TOP OFFENDERS
-            var topOffenders = parseListData(data.responses[3]);
-
-            //EVENTS BY IP ADDR 
-            var ipAddress = parseListData(data.responses[4], true);
-
-            //TOP SUBNETS /24 EXCEEDED
-            var subnets = parseListData(data.responses[5]);
-
-            this.setState({
-                eventCallsTimeline: eventCallsTimeline,
-                exceededCount: exceededCount,
-                exceededType: exceededType,
-                topOffenders: topOffenders,
-                subnets: subnets,
-                ipAddress: ipAddress,
-                isLoading: false
-            });
-        }
-    }
-
+        //TOP SUBNETS /24 EXCEEDED
+        [{result: 'subnets', func: parseListData}]
+      ]
+    };
+  }
+  
+  /* parseListData will call the exported one with encryption turned on */
+  parseListData(data) {
+    return parseListData(data, true);
+  }
 
     //render GUI
     render() {
