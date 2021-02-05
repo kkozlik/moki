@@ -66,6 +66,7 @@ cp -r Moki/client/src/styles/logo.png %{buildroot}/usr/share/Moki/styles/
 # install moki service file
 install -d %{buildroot}/usr/lib/systemd/system
 install -m 0644 etc/moki-server.service %{buildroot}/usr/lib/systemd/system/
+install -m 0644 etc/moki-client.service %{buildroot}/usr/lib/systemd/system/
 
 # perform moki API install
 cd %{buildroot}/usr/share/Moki/server
