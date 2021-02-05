@@ -67,11 +67,11 @@ class ConferenceCharts extends Dashboard {
                 //CONFERENCE ACTUAL
                 {result: 'activeConf', func: parseAggQueryWithoutScriptValue.parse},
                 
-                //TOP ACTVIVE CONF
-                {result: 'topActiveConferences', func: parseListDataSort.parse},           
-                
                 //TOP PARTICIPANTS
-                {result: 'topParticipants', func: parseListData}
+                {result: 'topParticipants', func: parseListData},
+                
+                //TOP ACTIVE CONF
+                {result: 'topActiveConferences', func: parseListDataSort.parse}
             ]
         };
     }
