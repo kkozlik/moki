@@ -5,6 +5,7 @@ import React, {
     Component
 } from 'react';
 
+import Dashboard from '../Dashboard.js';
 import ListChartPagination from '../../charts/list_chart_pagination.js';
 import store from "../../store/index";
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
@@ -12,89 +13,35 @@ import { elasticsearchConnection } from '../../helpers/elasticsearchConnection';
 import TableChart from '../../charts/table_chart.js';
 import ValueChart from '../../charts/value_chart.js';
 import parseListData from '../../parse_data/parseListData.js';
+import parseHits from '../../parse_data/parseHits.js';
+import parseHitsTotal from '../../parse_data/parseHitsTotal.js';
 
 
-class DomainsCharts extends Component {
+class DomainsCharts extends Dashboard {
 
     // Initialize the state
     constructor(props) {
         super(props);
-        this.loadData = this.loadData.bind(this);
         this.state = {
+            dashboardName: "/domains/charts",
             topDomains: [],
-            table: [],
+            domainsTable: [],
+            domainsTableTotal: 0,
             countAll: [],
-            total: 0,
             lastLogins: [],
             lastLoginsTotal: 0,
             isLoading: true
-        }
-        store.subscribe(() => this.loadData());
-    }
-
-    componentWillUnmount() {
-        // fix Warning: Can't perform a React state update on an unmounted component
-        this.setState = (state, callback) => {
-            return;
         };
-    }
-
-    componentDidMount() {
-        this.loadData();
-
-    }
-    /*
-    Load data from elasticsearch
-    get filters, types and timerange from GUI
-    */
-    async loadData() {
-
-        this.setState({ isLoading: true });
-        var data = await elasticsearchConnection("/domains/charts");
-
-        if (typeof data === "string" && data.includes("ERROR:")) {
-            console.log(typeof data === "string" && data.includes("ERROR:"));
-
-            this.props.showError(data);
-            this.setState({ isLoading: false });
-            return;
-
-        } else if (data) {
-            //parse data
-            //top domains
-            var topDomains = parseListData(data.responses[0]);
-
-            var table = data.responses[1];
-            if (table && table.hits) {
-                this.setState({
-                    table: table.hits.hits,
-                    total: table.hits.total.value
-                });
-            }
-            //all count
-            if (data.responses[2]) {
-                var countAll = data.responses[2].hits.total.value;
-            }
-
-            var lastLogins = data.responses[3];
-            if (lastLogins && lastLogins.hits) {
-                this.setState({
-                    lastLogins: lastLogins.hits.hits,
-                    lastLoginsTotal: lastLogins.hits.total.value
-                });
-            }
-
-            console.info(new Date() + " MOKI Domains: finished parsíng data");
-
-            this.setState({
-                countAll: countAll,
-                topDomains: topDomains,
-                isLoading: false
-
-            });
-
-
-        }
+        this.callBacks = {
+            functors: [
+              //top domains
+              [{result: 'topDomains', func: parseListData}],
+              //domainsTable, domainsTableTotal
+              [{result: 'domainsTable', func: parseHits}, {result: 'domainsTableTotal', func: parseHitsTotal}],
+              [{result: 'countAll', func: parseHitsTotal}],
+              [{result: 'lastLogins', func: parseHits}, {result: 'lastLoginsTotal', func: parseHitsTotal}],
+            ]
+        };
     }
 
     //render GUI
@@ -116,8 +63,8 @@ class DomainsCharts extends Component {
                 </div>
                 <div className="row no-gutters">
                     <TableChart tags={this.props.tags} data={
-                        this.state.table
-                    } total={this.state.total}
+                        this.state.domainsTable
+                    } total={this.state.domainsTableTotal}
                         name={
                             "domains"
                         }
