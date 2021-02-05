@@ -28,6 +28,7 @@ class ConferenceCharts extends Dashboard {
     constructor(props) {
         super(props);
         this.state = {
+           dashboardName: "conference/charts",
            sumCallEnd: [],
            sumCallStart: [],
            durationSum: [],

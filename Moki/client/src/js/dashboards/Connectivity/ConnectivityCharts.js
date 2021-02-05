@@ -23,6 +23,7 @@ class ConnectivityCharts extends Dashboard {
   constructor(props) {
     super(props);
     this.state = {
+      dashboardName: "connectivity/charts",
       fromTo: [],
       failure: [],
       callAtempts: [],

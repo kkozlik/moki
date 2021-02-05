@@ -33,6 +33,7 @@ class ConnectivityCACharts extends Dashboard {
   constructor(props) {
     super(props);
     this.state = {
+      dashboardName: "connectivityCA/charts",
       fromToCA: [],
       sumCallEnd: [],
       sumCallAttempt: [],
