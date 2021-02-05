@@ -53,6 +53,7 @@ install etc/sns.json %{buildroot}/var/lib/logstash/sns.json
 # install moki
 install -d %{buildroot}/usr/share/Moki
 cp -r Moki/server %{buildroot}/usr/share/Moki/
+cp -r Moki/client %{buildroot}/usr/share/Moki/
 cp -r Moki/client/build %{buildroot}/usr/share/Moki/
 
 # install moki def logo
