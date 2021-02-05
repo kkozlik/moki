@@ -2,7 +2,7 @@
 return avg_count of the aggregations
 */
 
-function parse(response) {
+export default function parseAggAvgCnt(response) {
   if (response &&
           response.aggregations &&
           response.aggregations["avg_count"] &&
@@ -11,7 +11,3 @@ function parse(response) {
   }
   return 0;
 }
-
-module.exports = {
-    parse: parse
-};

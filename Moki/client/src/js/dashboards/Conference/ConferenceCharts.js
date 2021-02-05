@@ -14,6 +14,7 @@ import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import {elasticsearchConnection} from '../../helpers/elasticsearchConnection';
 import DashboardsTypes from '../../helpers/DashboardsTypes';
 import parseListData from '../../parse_data/parseListData.js';
+import parseAggAvgCnt from '../../parse_data/parseAggAvgCnt.js';
 
 const parseStackedTimebar = require('../../parse_data/parseStackedbarTimeData.js');
 var parseQueryStringData = require('../../parse_data/parseQueryStringData.js');
