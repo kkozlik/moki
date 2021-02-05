@@ -19,6 +19,13 @@ Requires:	yarn
 %description
 ABC Monitor GUI
 
+%package	dev
+Summary:	Moki gui dev part
+
+%description dev
+GUI part of abc-monitor developement pack
+
+
 %prep
 
 %setup -q
@@ -63,6 +70,14 @@ install -m 0644 etc/moki-server.service %{buildroot}/usr/lib/systemd/system/
 cd %{buildroot}/usr/share/Moki/server
 NODE_ENV=production npm install --production # && npm ci --only=production
 
+# perform moki utils install
+cd %{buildroot}/usr/share/Moki/client
+npm install
+
+# dump flag file
+mkdir -p %{buildroot}/etc/abc-monitor
+touch %{buildroot}/etc/abc-monitor/debug.flag
+
 # fix absolute paths that npm leaves there due to npm feature/bug
 find %{buildroot}/usr/share/Moki -name "package.json" -exec sed -i 's#%{buildroot}##' '{}' \;
 
@@ -85,6 +100,13 @@ echo "Enabling and restarting moki services"
 systemctl -q enable moki-server
 systemctl -q restart moki-server
 
+% post dev
+systemctl daemon-reload
+echo "Enabling and restarting moki services"
+systemctl -q enable moki-server moki-client
+systemctl -q restart moki-server moki-client
+
+
 %files
 /opt/abc-monitor-gui/
 # empty dir
@@ -97,6 +119,12 @@ systemctl -q restart moki-server
 /usr/share/Moki/styles
 /usr/share/Moki/build
 /usr/lib/systemd/system/moki-server.service
+
+%files dev
+/usr/share/Moki/client
+/usr/lib/systemd/system/moki-client.service
+/etc/abc-monitor/debug.flag
+
 
 # TODO: remove old moki deps ?
 
