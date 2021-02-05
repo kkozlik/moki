@@ -57,39 +57,39 @@ class CallCharts extends Dashboard {
         this.callBacks = {
             functors: [
                 //CALL TERMINATED
-                {result: 'callTerminated', func: parseBucketData.parse},
+                [{result: 'callTerminated', func: parseBucketData.parse}],
                 //CALL SUCCESS RATIO
-                {result: 'callSuccessRatio', func: parseSunburstData.parse},
+                [{result: 'callSuccessRatio', func: parseSunburstData.parse}],
                 //SUM CALL-ATTEMPT
-                {result: 'sumCallAttempt', func: parseQueryStringData.parse},
+                [{result: 'sumCallAttempt', func: parseQueryStringData.parse}],
                 //SUM CALL-END
-                {result: 'sumCallEnd', func: parseQueryStringData.parse},
+                [{result: 'sumCallEnd', func: parseQueryStringData.parse}],
                 //SUM CALL-START
-                {result: 'sumCallStart', func: parseQueryStringData.parse},
+                [{result: 'sumCallStart', func: parseQueryStringData.parse}],
                 //DURATION SUM 
-                {result: 'durationSum', func: parseAggData.parse},
+                [{result: 'durationSum', func: parseAggData.parse}],
                 //AVG MoS
-                {result: 'avgMoS', func: parseAggData.parse},
+                [{result: 'avgMoS', func: parseAggData.parse}],
                 //ANSWER-SEIZURE RATIO
-                {result: 'answerSeizureRatio', func: parseAggSumBucketData.parse},
+                [{result: 'answerSeizureRatio', func: parseAggSumBucketData.parse}],
                 //CALLING COUNTRIES
-                {result: 'callingCountries', func: parseListData},
+                [{result: 'callingCountries', func: parseListData}],
                 //SUM DURATION OVER TIME
-                {result: 'sumDurationOverTime', func: parseBucketData.parse},
+                [{result: 'sumDurationOverTime', func: parseBucketData.parse}],
                 //MAX DURATION
-                {result: 'maxDuration', func: parseAggData.parse},
+                [{result: 'maxDuration', func: parseAggData.parse}],
                 //AVG DURATION
-                {result: 'avgDuration', func: parseAggData.parse},
+                [{result: 'avgDuration', func: parseAggData.parse}],
                 //DURATION GROUP
-                {result: 'durationGroup', func: parseListData},
+                [{result: 'durationGroup', func: parseListData}],
                 //SIP-CODE COUNT
-                {result: 'sipcodeCount', func: parseListData},
+                [{result: 'sipcodeCount', func: parseListData}],
                 //CALLED COUNTRIES
-                {result: 'calledCountries', func: parseListData},
+                [{result: 'calledCountries', func: parseListData}],
                 //EVENT CALLS TIMELINE
-                {result: 'eventCallsTimeline', func: parseStackedTimebar.parse},
+                [{result: 'eventCallsTimeline', func: parseStackedTimebar.parse}],
                 //ASR OVER TIME
-                {result: 'asrDurationOverTime', func: parseBucketData.parse}
+                [{result: 'asrDurationOverTime', func: parseBucketData.parse}]
             ]
         };
         store.subscribe(() => this.specialLoadData());

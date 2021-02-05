@@ -29,7 +29,7 @@ class DiagnosticsCharts extends Dashboard {
     this.callBacks = {
       functors: [
         //EVENT Diagnostic TIMELINE
-        {result: 'eventDiagnosticTimeline', func: parseStackedTimebar.parse}
+        [{result: 'eventDiagnosticTimeline', func: parseStackedTimebar.parse}]
       ]
     };
   }

@@ -34,19 +34,19 @@ class ConnectivityCharts extends Dashboard {
     this.callBacks = {
       functors: [
         //FROM TO 
-        {result: 'fromTo', func: parseTopologyData.parse},
+        [{result: 'fromTo', func: parseTopologyData.parse}],
 
         //CONNECTION FAILURE RATIO 
-        {result: 'failure', func: parseHeatmapData.parse},
+        [{result: 'failure', func: parseHeatmapData.parse}],
 
         //NUMBER OF CALL-ATTEMPS 
-        {result: 'callAtempts', func: parseDateHeatmap.parse},
+        [{result: 'callAtempts', func: parseDateHeatmap.parse}],
 
         //DURATION 
-        {result: 'duration', func: parseHeatmapData.parse},
+        [{result: 'duration', func: parseHeatmapData.parse}],
 
         //NUMBER OF CALL-ENDS 
-        {result: 'callEnds', func: parseDateHeatmap.parse},
+        [{result: 'callEnds', func: parseDateHeatmap.parse}]
       ]
     };
   }

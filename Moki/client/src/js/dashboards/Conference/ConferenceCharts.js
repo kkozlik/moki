@@ -44,34 +44,34 @@ class ConferenceCharts extends Dashboard {
         this.callBacks = {
             functors: [
                 //SUM CONF-LEAVE
-                {result: 'sumCallEnd', func: parseQueryStringData.parse},
+                [{result: 'sumCallEnd', func: parseQueryStringData.parse}],
        
                 //SUM CONF-JOIN
-                {result: 'sumCallStart', func: parseQueryStringData.parse},
+                [{result: 'sumCallStart', func: parseQueryStringData.parse}],
 
                 //DURATION SUM 
-                {result: 'durationSum', func: parseAggData.parse},
+                [{result: 'durationSum', func: parseAggData.parse}],
                 
                 //DURATION SUM 
-                {result: 'durationAvg', func: parseAggData.parse},
+                [{result: 'durationAvg', func: parseAggData.parse}],
 
                 //AVG PARTICIPANTS
-                {result: 'avgParticipants', func: parseAggAvgCnt.parse},
+                [{result: 'avgParticipants', func: parseAggAvgCnt.parse}],
 
                 //TOP CONFERENCES
-                {result: 'topConferences', func: parseListData},
+                [{result: 'topConferences', func: parseListData}],
 
                 //EVENT CALLS TIMELINE
-                {result: 'eventCallsTimeline', func: parseStackedTimebar.parse},
+                [{result: 'eventCallsTimeline', func: parseStackedTimebar.parse}],
                 
                 //CONFERENCE ACTUAL
-                {result: 'activeConf', func: parseAggQueryWithoutScriptValue.parse},
+                [{result: 'activeConf', func: parseAggQueryWithoutScriptValue.parse}],
                 
                 //TOP PARTICIPANTS
-                {result: 'topParticipants', func: parseListData},
+                [{result: 'topParticipants', func: parseListData}],
                 
                 //TOP ACTIVE CONF
-                {result: 'topActiveConferences', func: parseListDataSort.parse}
+                [{result: 'topActiveConferences', func: parseListDataSort.parse}]
             ]
         };
     }

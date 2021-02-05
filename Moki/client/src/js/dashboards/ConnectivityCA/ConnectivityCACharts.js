@@ -53,49 +53,49 @@ class ConnectivityCACharts extends Dashboard {
     this.callBacks = {
       functors: [
         //FROM TO CA
-        {result: 'fromToCA', func: parseTopologyData.parse},
+        [{result: 'fromToCA', func: parseTopologyData.parse}],
 
         //DURATION SUM
-        {result: 'durationSum', func: parseAggData.parse},
+        [{result: 'durationSum', func: parseAggData.parse}],
 
         //SUM CALL-ATTEMPT
-        {result: 'sumCallAttempt', func: parseQueryStringData.parse},
+        [{result: 'sumCallAttempt', func: parseQueryStringData.parse}],
 
         //SUM CALL-END
-        {result: 'sumCallEnd', func: parseQueryStringData.parse},
+        [{result: 'sumCallEnd', func: parseQueryStringData.parse}],
 
         //CONNECTION FAILURE RATIO CA
-        {result: 'failureCA', func: parseHeatmapAgg.parse},
+        [{result: 'failureCA', func: parseHeatmapAgg.parse}],
 
         //NUMBER OF CALL-ATTEMPS CA
-        {result: 'callAtemptsCA', func: parseDateHeatmap.parse},
+        [{result: 'callAtemptsCA', func: parseDateHeatmap.parse}],
 
         //NUMBER OF CALL-ENDA CA
-        {result: 'callEndsCA', func: parseDateHeatmap.parse},
+        [{result: 'callEndsCA', func: parseDateHeatmap.parse}],
 
         //ERROR CODE ANALYSIS
-        {result: 'codeAnalysis', func: parseHeatmapData.parse},
+        [{result: 'codeAnalysis', func: parseHeatmapData.parse}],
 
         //CA RATIO HISTORY
-        {result: 'ratioHistory', func: parseDateHeatmapAgg.parse},
+        [{result: 'ratioHistory', func: parseDateHeatmapAgg.parse}],
 
         //CA AVAILABILITY
-        {result: 'caAvailability', func: parseDateHeatmapAgg1.parse},
+        [{result: 'caAvailability', func: parseDateHeatmapAgg1.parse}],
 
         //DURATION CA
-        {result: 'durationCA', func: parseHeatmapDataAgg3.parse},
+        [{result: 'durationCA', func: parseHeatmapDataAgg3.parse}],
 
         //DESTINATIONS CAs STATISTICS
-        {result: 'statsCA', func: parseMultipleData.parse},
+        [{result: 'statsCA', func: parseMultipleData.parse}],
 
         //SOURCE CAs STATISTICS
-        {result: 'sourceStatsCA', func: parseMultipleData.parse},
+        [{result: 'sourceStatsCA', func: parseMultipleData.parse}],
 
         //NUMBER OF CALL-START CA
-        {result: 'sumCallStart', func: parseQueryStringData.parse},
+        [{result: 'sumCallStart', func: parseQueryStringData.parse}],
 
         //AVG MoS
-        {result: 'avgMoS', func: parseDateHeatmapAgg.parse},
+        [{result: 'avgMoS', func: parseDateHeatmapAgg.parse}]
       ]
     };
   }
