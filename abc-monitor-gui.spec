@@ -102,11 +102,11 @@ echo "Enabling and restarting moki services"
 systemctl -q enable moki-server
 systemctl -q restart moki-server
 
-% post dev
+%post dev
 systemctl daemon-reload
-echo "Enabling and restarting moki services"
-systemctl -q enable moki-server moki-client
-systemctl -q restart moki-server moki-client
+echo "Enabling and restarting moki dev service"
+systemctl -q enable moki-client
+systemctl -q restart moki-client
 
 
 %files
