@@ -17,8 +17,8 @@ class NetworkCharts extends Component {
     // Initialize the state
     constructor(props) {
         super(props);
-        this.loadData = this.loadData.bind(this);
         this.state = {
+            dashboardName: "network/charts",
             callsByHost: [],
             regsByHost: [],
             callStartsByHost: [],
@@ -37,14 +37,55 @@ class NetworkCharts extends Component {
             isLoading: true,
             hostnames: []
 
-        }
-        store.subscribe(() => this.loadData());
-    }
+        };
+        this.callBacks = {
+            functors: [
+              //CALLS BY HOST
+              [{result: 'callsByHost', func: parseMultipleLineData.parse}],
 
+              //REGS BY HOST
+              [{result: 'regsByHost', func: parseMultipleLineData.parse}],
 
-    componentDidMount() {
-        this.loadData();
+              //CALL STARTS BY HOST
+              [{result: 'callStartsByHost', func: parseMultipleLineData.parse}],
 
+              //RELAYED RTP BY HOST
+              [{result: 'relayedRtpByHost', func: parseMultipleLineData.parse}],
+
+              //RX BYTES BY HOST
+              [{result: 'rxBytesByHost', func: parseMultipleLineData.parse}],
+
+              //TX BYTES BY HOST
+              [{result: 'txBytesByHost', func: parseMultipleLineData.parse}],
+
+              //RX PACKET BY HOST
+              [{result: 'rxPacketByHost', func: parseMultipleLineData.parse}],
+
+              //TX PACKET BY HOST
+              [{result: 'txPacketByHost', func: parseMultipleLineData.parse}],
+
+              //RX BYTES BY INTERFACE
+              [{result: 'rxBytesByInterface', func: parseMultipleLineData.parse}],
+
+              //TX BYTES BY INTERFACE
+              [{result: 'txBytesByInterface', func: parseMultipleLineData.parse}],
+
+              //RX PACKETS BY INTERFACE
+              [{result: 'rxPacketByInterface', func: parseMultipleLineData.parse}],
+
+              //TX PACKETS BY INTERFACE
+              [{result: 'txPacketByInterface', func: parseMultipleLineData.parse}],
+
+              //IPS ON FW BLACKLIST BY HOST
+              [{result: 'blacklist', func: parseMultipleLineData.parse}],
+
+              //IPS ON FW GREYLIST BY HOST
+              [{result: 'greylist', func: parseMultipleLineData.parse}],
+
+              //IPS ON FW WHITELIST BY HOST
+              [{result: 'whitelist', func: parseMultipleLineData.parse}]
+            ]
+        };
     }
 
     static getDerivedStateFromProps(nextProps, prevState) {
@@ -65,93 +106,6 @@ class NetworkCharts extends Component {
         this.setState = (state, callback) => {
             return;
         };
-    }
-
-
-    /*
-    Load data from elasticsearch
-    get filters, types and timerange
-    */
-    async loadData() {
-        this.setState({ isLoading: true });
-        var data = await elasticsearchConnection("network/charts");
-        if (typeof data === "string" && data.includes("ERROR:")) {
-            this.props.showError(data);
-            this.setState({ isLoading: false });
-            return;
-
-        } else if (data) {
-
-            //parse data
-            //CALLS BY HOST
-            var callsByHost = parseMultipleLineData.parse(data.responses[0]);
-
-            //REGS BY HOST
-            var regsByHost = parseMultipleLineData.parse(data.responses[1]);
-
-            //CALL STARTS BY HOST
-            var callStartsByHost = parseMultipleLineData.parse(data.responses[2]);
-
-            //RELAYED RTP BY HOST
-            var relayedRtpByHost = parseMultipleLineData.parse(data.responses[3]);
-
-            //RX BYTES BY HOST
-            var rxBytesByHost = parseMultipleLineData.parse(data.responses[4]);
-
-            //TX BYTES BY HOST
-            var txBytesByHost = parseMultipleLineData.parse(data.responses[5]);
-
-            //RX PACKET BY HOST
-            var rxPacketByHost = parseMultipleLineData.parse(data.responses[6]);
-
-            //TX PACKET BY HOST
-            const txPacketByHost = parseMultipleLineData.parse(data.responses[7]);
-
-
-            //RX BYTES BY INTERFACE
-            var rxBytesByInterface = parseMultipleLineData.parse(data.responses[8]);
-
-            //TX BYTES BY INTERFACE
-            var txBytesByInterface = parseMultipleLineData.parse(data.responses[9]);
-
-            //RX PACKETS BY INTERFACE
-            var rxPacketByInterface = parseMultipleLineData.parse(data.responses[10]);
-
-            //TX PACKETS BY INTERFACE
-            var txPacketByInterface = parseMultipleLineData.parse(data.responses[11]);
-
-            //IPS ON FW BLACKLIST BY HOST
-            var blacklist = parseMultipleLineData.parse(data.responses[12]);
-
-            //IPS ON FW GREYLIST BY HOST
-            var greylist = parseMultipleLineData.parse(data.responses[13]);
-
-            //IPS ON FW WHITELIST BY HOST
-            const whitelist = parseMultipleLineData.parse(data.responses[14]);
-
-
-            console.info(new Date() + " MOKI NETWORK: finished parsíng data");
-
-            this.setState({
-                callsByHost: callsByHost,
-                regsByHost: regsByHost,
-                callStartsByHost: callStartsByHost,
-                relayedRtpByHost: relayedRtpByHost,
-                rxBytesByHost: rxBytesByHost,
-                txBytesByHost: txBytesByHost,
-                rxPacketByHost: rxPacketByHost,
-                txPacketByHost: txPacketByHost,
-                rxBytesByInterface: rxBytesByInterface,
-                txBytesByInterface: txBytesByInterface,
-                rxPacketByInterface: rxPacketByInterface,
-                txPacketByInterface: txPacketByInterface,
-                blacklist: blacklist,
-                greylist: greylist,
-                whitelist: whitelist,
-                isLoading: false
-
-            });
-        }
     }
 
 
