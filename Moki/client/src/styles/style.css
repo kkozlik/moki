@@ -175,6 +175,7 @@
 label {
     justify-content: flex-start !important;
     margin-bottom: 0px !important;
+    font: 14px Arial;
 }
 
 .activeDashboard {
@@ -346,7 +347,7 @@ h5 {
 .selectColumnButton {
     border: none;
     background-color: white;
-    font-size: small;
+    font-size: smaller;
     cursor: pointer;
 }
 
@@ -454,11 +455,6 @@ h6 {
 
 .grid path {
     stroke-width: 0;
-}
-
-.type {
-    cursor: pointer;
-    min-width: 100px;
 }
 
 select {
@@ -638,7 +634,7 @@ td {
 input[type=checkbox] {
     height: 20px;
     width: 17px;
-    /*margin-bottom: 7px;*/
+    margin-bottom: 7px;
 }
 
 #timeMenu input {
@@ -836,7 +832,7 @@ input[type=text] {
 }
 
 .list-group-myitem {
-    background-color: var(--main) !important;
+    background-color: var(--main);
     padding: .5rem 0 0 1rem;
     border: 0px;
 }
@@ -1055,17 +1051,23 @@ pre {
     color: black;
 }
 
+#user {
+    font-size: 1rem;
+}
+
 
 /*----------------------------type bar-------------------------------*/
 
 .type {
     border-width: 0px;
     color: white;
-    padding: 3px;
+    line-height: 24px;
     margin-left: 5px;
     border-radius: .25rem;
     margin-top: 5px;
-    font-size: 14px;
+    font-size: small;
+    cursor: pointer;
+    min-width: 100px;
 }
 
 .typeBar {
@@ -1087,6 +1089,7 @@ input {
     border: 1px solid #ced4da;
     border-radius: .25rem;
     transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+    vertical-align: middle;
 }
 
 .suggestionsTag {
@@ -1237,7 +1240,7 @@ input {
 
 thead th {
     font-family: inherit;
-    font-weight: 350;
+    font-weight: 200;
 }
 
 .spanTab {
@@ -1258,6 +1261,10 @@ thead th {
 th,
 td {
     border-bottom: 1px solid #ddd;
+}
+
+small {
+    font: 10px sans-serif;
 }
 
 
