@@ -25,6 +25,7 @@ class OverviewCharts extends Dashboard {
     constructor(props) {
         super(props);
         this.state = {
+            dashboardName: "overview/charts",
             eventCallsTimeline: [],
             totalEventsInInterval: [],
             activitySBC: [],
