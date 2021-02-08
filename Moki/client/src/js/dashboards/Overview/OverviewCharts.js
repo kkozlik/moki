@@ -5,6 +5,7 @@ import React, {
     Component
 } from 'react';
 
+import Dashboard from '../Dashboard.js';
 import TimedateHeatmap from '../../charts/timedate_heatmap.js';
 import TimedateStackedChart from '../../charts/timedate_stackedbar.js';
 import StackedChart from '../../charts/stackedbar.js';
@@ -18,13 +19,11 @@ var parseDateHeatmap = require('../../parse_data/parseDateHeatmap.js');
 const parseStackedbar = require('../../parse_data/parseStackedbarData.js');
 const parseStackedTimebar = require('../../parse_data/parseStackedbarTimeData.js');
 
-class OverviewCharts extends Component {
+class OverviewCharts extends Dashboard {
 
     // Initialize the state
     constructor(props) {
         super(props);
-        this.loadData = this.loadData.bind(this);
-
         this.state = {
             eventCallsTimeline: [],
             totalEventsInInterval: [],
@@ -32,67 +31,29 @@ class OverviewCharts extends Component {
             keepAlive: [],
             tags: [],
             isLoading: true
-        }
-        store.subscribe(() => this.loadData());
+        };
+        this.callBacks = {
+            functors: [
+                //EVENT OVERVIEW TIMELINE
+                [{result: 'eventOverviewTimeline', func: parseStackedTimebar.parse}],
 
-    }
+                //TOTAL EVENTS IN INTERVAL
+                [{result: 'totalEventsInInterval', func: parseStackedbar.parse}],
 
+                //ACTIVITY OF SBC
+                [{result: 'activitySBC', func: parseDateHeatmap.parse}],
 
-    componentDidMount() {
-        this.loadData();
-    }
+                //SBC - KEEP ALIVE
+                [{result: 'keepAlive', func: parseDateHeatmap.parse}],
+                
+                // empty
+                [],
 
-    componentWillUnmount() {
-        // fix Warning: Can't perform a React state update on an unmounted component
-        this.setState = (state, callback) => {
-            return;
+                //TAGS LIST
+                [{result: 'tags', func: parseListData}]
+            ]
         };
     }
-
-    /*
-    Load data from elasticsearch
-    get filters, types and timerange from GUI
-    */
-    async loadData() {
-        this.setState({ isLoading: true });
-        var data = await elasticsearchConnection("overview/charts");
-
-        if (typeof data === "string" && data.includes("ERROR:")) {
-            this.props.showError(data);
-            this.setState({ isLoading: false });
-            return;
-        } else if (data) {
-
-            //EVENT OVERVIEW TIMELINE
-            var eventOverviewTimeline = parseStackedTimebar.parse(data.responses[0]);
-
-            //TOTAL EVENTS IN INTERVAL
-            var totalEventsInInterval = parseStackedbar.parse(data.responses[1]);
-
-            //ACTIVITY OF SBC
-            var activitySBC = parseDateHeatmap.parse(data.responses[2]);
-
-            //SBC - KEEP ALIVE
-            var keepAlive = parseDateHeatmap.parse(data.responses[3]);
-
-            //TAGS LIST
-            var tags = parseListData(data.responses[5]);
-
-
-            console.info(new Date() + " MOKI OVERVIEW: finished parsing data");
-            this.setState({
-                eventCallsTimeline: eventOverviewTimeline,
-                totalEventsInInterval: totalEventsInInterval,
-                activitySBC: activitySBC,
-                keepAlive: keepAlive,
-                tags: tags,
-                isLoading: false
-            });
-
-        }
-    }
-
-
 
     //render GUI
     render() {
