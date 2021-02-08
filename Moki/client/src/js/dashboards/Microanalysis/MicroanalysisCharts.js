@@ -19,100 +19,99 @@ class MicroanalysisCharts extends Dashboard {
 
     // Initialize the state
     constructor(props) {
-        super(props);
-        this.state = {
-            dashboardName: "microanalysis/charts",
-            typesCount: [],
-            fromUA: [],
-            sipMethod: [],
-            sipCode: [],
-            topSubnets: [],
-            prefixStripped: [],
-            sourceIP: [],
-            top10from: [],
-            callerDomain: [],
-            top10to: [],
-            distinctDestinations: [],
-            topCallAttempts: [],
-            topCallEnds: [],
-            destination: [],
-            sumDuration: [],
-            topDuration: [],
-            topDuration5: [],
-            topSBC: [],
-            srcCA: [],
-            dstCA: [],
-            originator: [],
-            isLoading: true
-        }
-        this.callBacks = {
-            functors: [
-              //parse data
-              //TYPES
-              {result: 'typesCount', func: parseBucketData.parse},
+      super(props);
+      this.state = {
+        dashboardName: "microanalysis/charts",
+        typesCount: [],
+        fromUA: [],
+        sipMethod: [],
+        sipCode: [],
+        topSubnets: [],
+        prefixStripped: [],
+        sourceIP: [],
+        top10from: [],
+        callerDomain: [],
+        top10to: [],
+        distinctDestinations: [],
+        topCallAttempts: [],
+        topCallEnds: [],
+        destination: [],
+        sumDuration: [],
+        topDuration: [],
+        topDuration5: [],
+        topSBC: [],
+        srcCA: [],
+        dstCA: [],
+        originator: [],
+        isLoading: true
+      }
+      this.callBacks = {
+        functors: [
+          //parse data
+          //TYPES
+          {result: 'typesCount', func: parseBucketData.parse},
 
-              //FROM UA
-              {result: 'fromUA', func: parseListData},
+          //FROM UA
+          {result: 'fromUA', func: parseListData},
 
-              //SIP METHOD
-              {result: 'sipMethod', func: parseListData},
+          //SIP METHOD
+          {result: 'sipMethod', func: parseListData},
 
-              //SIP CODE
-              {result: 'sipCode', func: parseListData},
+          //SIP CODE
+          {result: 'sipCode', func: parseListData},
 
-              //TOP SUBNETS
-              {result: 'topSubnets', func: parseListData},
+          //TOP SUBNETS
+          {result: 'topSubnets', func: parseListData},
 
-              //r-URI PREFIX STRIPPED
-              {result: 'prefixStripped', func: parseListData},
+          //r-URI PREFIX STRIPPED
+          {result: 'prefixStripped', func: parseListData},
 
-              //SOURCE IP ADDRESS
-              {result: 'sourceIP', func: this.parseListData},
+          //SOURCE IP ADDRESS
+          {result: 'sourceIP', func: this.parseListData},
 
-              //TOP 10 FROM
-              {result: 'top10from', func: parseListData},
+          //TOP 10 FROM
+          {result: 'top10from', func: parseListData},
 
-              //CALLER DOMAIN
-              {result: 'callerDomain', func: parseListData},
+          //CALLER DOMAIN
+          {result: 'callerDomain', func: parseListData},
 
-              //TOP 10 TO
-              {result: 'top10to', func: parseListData},
+          //TOP 10 TO
+          {result: 'top10to', func: parseListData},
 
-              //DOMAIN STATS
-              {result: 'distinctDestinations', func: parseListDataCardinality.parse},
+          //DOMAIN STATS
+          {result: 'distinctDestinations', func: parseListDataCardinality.parse},
 
-              //TOP CALL ATTEMPTS
-              {result: 'topCallAttempts', func: parseListData},
+          //TOP CALL ATTEMPTS
+          {result: 'topCallAttempts', func: parseListData},
 
-              //TOP CALL ENDS
-              {result: 'topCallEnds', func: parseListData},
+          //TOP CALL ENDS
+          {result: 'topCallEnds', func: parseListData},
 
-              //DESTINATION BY R-URI
-              {result: 'destination', func: parseListData},
+          //DESTINATION BY R-URI
+          {result: 'destination', func: parseListData},
 
-              //SUM DURATION
-              {result: 'sumDuration', func: parseListDataCardinality.parse},
+          //SUM DURATION
+          {result: 'sumDuration', func: parseListDataCardinality.parse},
 
-              //TOP DURATION
-              {result: 'topDuration', func: parseListDataCardinality.parse},
+          //TOP DURATION
+          {result: 'topDuration', func: parseListDataCardinality.parse},
 
-              //TOP DURATION < 5 sec
-              {result: 'topDuration5', func: parseListData},
+          //TOP DURATION < 5 sec
+          {result: 'topDuration5', func: parseListData},
 
-              //TOP SBCs
-              {result: 'topSBC', func: parseListData},
+          //TOP SBCs
+          {result: 'topSBC', func: parseListData},
 
-              //SRC CA
-              {result: 'srcCA', func: parseListData},
+          //SRC CA
+          {result: 'srcCA', func: parseListData},
 
-              //DST CA
-              {result: 'dstCA', func: parseListData},
+          //DST CA
+          {result: 'dstCA', func: parseListData},
 
-              //ORIGINATOR
-              {result: 'originator', func: parseListData}
-            ]
-        }
-        store.subscribe(() => this.loadData());
+          //ORIGINATOR
+          {result: 'originator', func: parseListData}
+        ]
+      }
     }
   
   /* parseListData will call the exported one with encryption turned on */
