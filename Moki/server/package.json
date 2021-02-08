@@ -1,8 +1,8 @@
 {
   "name": "moki-express",
   "version": "1.1.0",
-  "description": "Monitor express server",
-  "author": "Frafos",
+  "description": "Moki express server",
+  "author":  "Frafos, Intuitive Labs",
   "license": "Apache-2.0",
   "licenses": [
     {
@@ -10,7 +10,7 @@
       "url": "http://www.apache.org/licenses/LICENSE-2.0"
     }
   ],
-  "homepage": "https://www.frafos.com/",
+  "homepage":  "https://www.frafos.com/  https://www.intuitivelabs.com/",
   "scripts": {
     "start": "node src/app.js",
     "dev": "nodemon",

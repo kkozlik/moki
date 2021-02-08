@@ -1,8 +1,8 @@
 {
   "name": "moki-react",
   "version": "1.1.0",
-  "description": "Monitor GUI",
-  "author": "Frafos",
+  "description": "Moki GUI",
+  "author": "Frafos, Intuitive Labs",
   "license": "Apache-2.0",
   "licenses": [
     {
@@ -10,7 +10,7 @@
       "url": "http://www.apache.org/licenses/LICENSE-2.0"
     }
   ],
-  "homepage": "https://www.frafos.com/",
+  "homepage": "https://www.frafos.com/  https://www.intuitivelabs.com/",
   "dependencies": {
     "bootstrap": "^4.6.0",
     "classnames": "^2.2.6",
@@ -22,7 +22,6 @@
     "jspdf": "^1.4.1",
     "jszip": "^3.5.0",
     "moment": "^2.29.1",
-    "phantomjs": "^2.1.7",
     "popper.js": "^1.14.6",
     "react": "^16.14.0",
     "react-bootstrap": "^1.4.3",
