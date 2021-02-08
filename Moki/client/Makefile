@@ -1,5 +1,10 @@
-NAME		= moki-react
-RELEASE	= dev
+NAME			= moki-client
+RPM_NAME	= $(NAME)
+RELEASE		= dev
+
+RELEASE			?= $(shell sed -n 's/^ *Version: *//p' frafos-sbc-$(NAME).spec 2> /dev/null || echo "alpha")
+GIT_COMMIT	:= $(shell git rev-parse --short HEAD 2> /dev/null || echo "dev")
+VERSION			?= "$(RELEASE)-$(GIT_COMMIT)"
 
 PORT	= 3000
 CMD	=
@@ -51,3 +56,22 @@ stop:
 	@echo " -- Stopping $(NAME) docker image ..."
 	@docker stop -t 0 $(NAME) 2> /dev/null ; true
 	@echo " -- Stopping $(NAME) docker image: done"
+
+.PHONY:		rpmtar
+## rpmtar: Build the rpm tar ball
+rpmtar:
+		RPM_VERSION=`cat $(RPM_NAME).spec|grep -e "^Version:"|awk '{print $$2}'`; \
+		RPM_RELEASE=`cat $(RPM_NAME).spec|grep -e "^Release:"|awk '{print $$2}'`; \
+		echo "RPM_VERSION=$${RPM_VERSION}"; \
+		echo "RPM_RELEASE=$${RPM_VERSION}"; \
+		cd ../ ; \
+		mkdir "$(RPM_NAME)-$${RPM_VERSION}" ; \
+		cp -r client "$(RPM_NAME)-$${RPM_VERSION}"/ ; \
+		tar -cf "$(RPM_NAME)-$${RPM_VERSION}-$${RPM_RELEASE}".tar.gz "$(RPM_NAME)-$${RPM_VERSION}" ; \
+		rm -rf "$(RPM_NAME)-$${RPM_VERSION}"
+
+.PHONY:		help
+## help: Prints this help message
+help:
+	@echo "Usage: \n"
+	@sed -n 's/^##//p' ${MAKEFILE_LIST} | column -t -s ':' |  sed -e 's/^/ /'

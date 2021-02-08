@@ -1,4 +1,10 @@
 NAME	= moki-express
+RPM_NAME	= $(NAME)
+
+
+RELEASE			?= $(shell sed -n 's/^ *Version: *//p' frafos-sbc-$(NAME).spec 2> /dev/null || echo "alpha")
+GIT_COMMIT	:= $(shell git rev-parse --short HEAD 2> /dev/null || echo "dev")
+VERSION			?= "$(RELEASE)-$(GIT_COMMIT)"
 
 # docker build target
 BUILD_TARGET	=	dev
@@ -34,11 +40,11 @@ run:
 	@echo " -- Running $(NAME) docker image ..."
 	@docker run	--rm -it \
 			--user "$(id -u):$(id -g)" \
-      $(VOLUMES) \
+			$(VOLUMES) \
 			--env-file .dockerenv \
-      -p $(PORT):$(PORT) \
+			-p $(PORT):$(PORT) \
 			--net=host \
-      --name $(NAME) \
+			--name $(NAME) \
 			$(NAME) $(CMD)
 	@echo " -- Running $(NAME) docker image: done"
 
@@ -48,17 +54,17 @@ run-prod: build-prod
 	@echo " -- Running $(NAME) docker image ..."
 	@docker run	--rm -it \
 			--env-file .dockerenv \
-      -p $(PORT):$(PORT) \
-      --name $(NAME) \
+			-p $(PORT):$(PORT) \
+			--name $(NAME) \
 			$(NAME) $(CMD)
 	@echo " -- Running $(NAME) docker image: done"
 
 # .PHONY: test
 # ## test: Run the mocha unit test
 # test:
-# 	@echo " -- Testing $(NAME) ..."
-# 	@ $(MAKE) run -e CMD="npm run test"
-# 	@echo " -- Testing $(NAME): done"
+#		@echo " -- Testing $(NAME) ..."
+#		@ $(MAKE) run -e CMD="npm run test"
+#		@echo " -- Testing $(NAME): done"
 
 .PHONY: exec
 ## exec: Run a custom command inside a running the docker container
@@ -98,6 +104,19 @@ docker.elastic.co/elasticsearch/elasticsearch:7.7.1
 ## stop-elastic: Stop the elastic container
 stop-elastic:
 	$(MAKE) stop -e NAME="$(NAME)-es"
+
+.PHONY:		rpmtar
+## rpmtar: Build the rpm tar ball
+rpmtar:
+		RPM_VERSION=`cat $(RPM_NAME).spec|grep -e "^Version:"|awk '{print $$2}'`; \
+		RPM_RELEASE=`cat $(RPM_NAME).spec|grep -e "^Release:"|awk '{print $$2}'`; \
+		echo "RPM_VERSION=$${RPM_VERSION}"; \
+		echo "RPM_RELEASE=$${RPM_VERSION}"; \
+		cd ../ ; \
+		mkdir "$(RPM_NAME)-$${RPM_VERSION}" ; \
+		cp -r server "$(RPM_NAME)-$${RPM_VERSION}"/ ; \
+		tar -cf "$(RPM_NAME)-$${RPM_VERSION}-$${RPM_RELEASE}".tar.gz "$(RPM_NAME)-$${RPM_VERSION}" ; \
+		rm -rf "$(RPM_NAME)-$${RPM_VERSION}"
 
 .PHONY: help
 ## help: Prints this help message
