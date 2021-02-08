@@ -5,6 +5,7 @@ import React, {
     Component
 } from 'react';
 
+import Dashboard from '../Dashboard.js';
 import store from "../../store/index";
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import MultipleLineChart from '../../charts/multipleLine_chart';
@@ -14,13 +15,13 @@ import {
 var parseMultipleLineData = require('../../parse_data/parseMultipleLineData.js');
 
 
-class RealmCharts extends Component {
+class RealmCharts extends Dashboard {
 
     // Initialize the state
     constructor(props) {
         super(props);
-        this.loadData = this.loadData.bind(this);
         this.state = {
+            dashboardName: "realm/charts";
             maxCallsFromByHost: [],
             maxCallsToByHost: [],
             maxCallsFromByrealm: [],
@@ -36,15 +37,45 @@ class RealmCharts extends Component {
             isLoading: true,
             hostnames: []
 
-        }
-        store.subscribe(() => this.loadData());
+        };
+        this.callBacks = {
+            functors: [
+              //MAX CALLS FROM BY HOST
+              [{result: 'maxCallsFromByHost', func: parseMultipleLineData.parse}],
 
-    }
+              //MAX CALLS To BY HOST
+              [{result: 'maxCallsToByHost', func: parseMultipleLineData.parse}],
 
-    componentWillUnmount() {
-        // fix Warning: Can't perform a React state update on an unmounted component
-        this.setState = (state, callback) => {
-            return;
+              ////MAX CALLS FROM BY REALM
+              [{result: 'maxCallsFromByrealm', func: parseMultipleLineData.parse}],
+
+              //MAX CALLS TO BY REALM
+              [{result: 'maxCallsToByrealm', func: parseMultipleLineData.parse}],
+
+              //MAX START CALLS FROM BY HOST
+              [{result: 'maxStartCallsFromByHost', func: parseMultipleLineData.parse}],
+
+              //MAX START CALLS To BY HOST
+              [{result: 'maxStartCallsToByHost', func: parseMultipleLineData.parse}],
+
+              //MAX START CALLS FROM BY REALM
+              [{result: 'maxStartCallsFromByrealm', func: parseMultipleLineData.parse}],
+
+              //MAX START CALLS TO BY REALM
+              [{result: 'maxStartCallsToByrealm', func: parseMultipleLineData.parse}],
+
+              //RTP RELAYED TO BY HOST
+              [{result: 'rtpToByHost', func: parseMultipleLineData.parse}],
+
+              //RTP RELAYED FROM BY HOST
+              [{result: 'rtpFromByHost', func: parseMultipleLineData.parse}],
+
+              //RTP RELAYED TO BY REALM
+              [{result: 'rtpToByRealm', func: parseMultipleLineData.parse}],
+
+              //RTP RELAYED FROM BY REALM
+              [{result: 'rtpFromByRealm', func: parseMultipleLineData.parse}]
+            ]
         };
     }
 
@@ -60,92 +91,6 @@ class RealmCharts extends Component {
             this.setState({ hostnames: this.props.hostnames });
         }
     }
-    componentDidMount() {
-        this.loadData();
-    }
-
-    /*
-    Load data from elasticsearch
-    get filters, types and timerange
-    */
-    async loadData() {
-        this.setState({
-            isLoading: true
-        });
-        var data = await elasticsearchConnection("realm/charts");
-
-        if (typeof data === "string" && data.includes("ERROR:")) {
-            this.props.showError(data);
-            this.setState({
-                isLoading: false
-            });
-            return;
-
-        } else if (data) {
-
-            //parse data
-            //MAX CALLS FROM BY HOST
-            var maxCallsFromByHost = parseMultipleLineData.parse(data.responses[0]);
-
-            //MAX CALLS To BY HOST
-            var maxCallsToByHost = parseMultipleLineData.parse(data.responses[1]);
-
-            ////MAX CALLS FROM BY REALM
-            var maxCallsFromByrealm = parseMultipleLineData.parse(data.responses[2]);
-
-            //MAX CALLS TO BY REALM
-            var maxCallsToByrealm = parseMultipleLineData.parse(data.responses[3]);
-
-            //MAX START CALLS FROM BY HOST
-            var maxStartCallsFromByHost = parseMultipleLineData.parse(data.responses[4]);
-
-            //MAX START CALLS To BY HOST
-            var maxStartCallsToByHost = parseMultipleLineData.parse(data.responses[5]);
-
-
-            //MAX START CALLS FROM BY REALM
-            const maxStartCallsFromByrealm = parseMultipleLineData.parse(data.responses[6]);
-
-
-            //MAX START CALLS TO BY REALM
-            var maxStartCallsToByrealm = parseMultipleLineData.parse(data.responses[7]);
-
-            //RTP RELAYED TO BY HOST
-            var rtpToByHost = parseMultipleLineData.parse(data.responses[8]);
-
-            //RTP RELAYED FROM BY HOST
-            var rtpFromByHost = parseMultipleLineData.parse(data.responses[9]);
-
-            //RTP RELAYED TO BY REALM
-            var rtpToByRealm = parseMultipleLineData.parse(data.responses[10]);
-
-            //RTP RELAYED FROM BY REALM
-            var rtpFromByRealm = parseMultipleLineData.parse(data.responses[11]);
-
-
-
-
-            console.info(new Date() + " MOKI NETWORK: finished parsíng data");
-
-            this.setState({
-                maxCallsFromByHost: maxCallsFromByHost,
-                maxCallsToByHost: maxCallsToByHost,
-                maxCallsFromByrealm: maxCallsFromByrealm,
-                maxCallsToByrealm: maxCallsToByrealm,
-                maxStartCallsFromByHost: maxStartCallsFromByHost,
-                maxStartCallsToByHost: maxStartCallsToByHost,
-                maxStartCallsFromByrealm: maxStartCallsFromByrealm,
-                maxStartCallsToByrealm: maxStartCallsToByrealm,
-                rtpToByHost: rtpToByHost,
-                rtpFromByHost: rtpFromByHost,
-                rtpToByRealm: rtpToByRealm,
-                rtpFromByRealm: rtpFromByRealm,
-                isLoading: false
-
-            });
-        }
-    }
-
 
     //render GUI
     render() {
