@@ -101,13 +101,15 @@ chown node-web /var/lib/logstash/sns.json
 
 echo "Cleaning possible develop pck"
 rm -rf /etc/abc-monitor/debug.flag
-echo "Stopping and disablinge moki-client"
+
+echo "Stopping and disabling moki-client if needed"
 systemctl daemon-reload
-systemctl -q stop moki-client
-systemctl -q disable moki-client
-systemctl -q remove moki-client
+if systemctl -q is-enabled moki-client 2>/dev/null ; then \
+    systemctl -q stop moki-client && systemctl -q disable moki-client ;\
+fi
 
 echo "Enabling and restarting moki services"
+
 systemctl -q enable moki-server
 systemctl -q restart moki-server
 
