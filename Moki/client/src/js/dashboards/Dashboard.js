@@ -21,11 +21,9 @@ class Dashboard extends Component {
     this.unsubscribe = store.subscribe(() => this.loadData());
   }
     
-    
   componentDidMount() {
     this.loadData();
   }
-
 
   componentWillUnmount() {
     // fix Warning: Can't perform a React state update on an unmounted component
