@@ -5,6 +5,7 @@ import React, {
     Component
 } from 'react';
 
+import Dashboard from '../Dashboard.js';
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import store from "../../store/index";
 import MultipleLineChart from '../../charts/multipleLine_chart';
@@ -12,8 +13,7 @@ import { elasticsearchConnection } from '../../helpers/elasticsearchConnection';
 var parseMultipleLineData = require('../../parse_data/parseMultipleLineData.js');
 
 
-class NetworkCharts extends Component {
-
+class NetworkCharts extends Dashboard {
     // Initialize the state
     constructor(props) {
         super(props);
