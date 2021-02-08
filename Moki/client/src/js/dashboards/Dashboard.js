@@ -16,7 +16,9 @@ class Dashboard extends Component {
     this.loadData = this.loadData.bind(this);
     this.state = { };
     this.transientState = { };
-    this.callBacks = { functors: [] }
+    this.callBacks = { functors: [] };
+    // call 'unsubscribe()' to deregister default loadData change listener
+    this.unsubscribe = store.subscribe(() => this.loadData());
   }
     
     
