@@ -97,10 +97,21 @@ set -o pipefail
 chown node-web /var/lib/logstash/users.json
 chown node-web /var/lib/logstash/sns.json
 
+
+
+echo "Cleaning possible develop pck"
+rm -rf /etc/abc-monitor/debug.flag
+echo "Stopping and disablinge moki-client"
 systemctl daemon-reload
+systemctl -q stop moki-client
+systemctl -q disable moki-client
+systemctl -q remove moki-client
+
 echo "Enabling and restarting moki services"
 systemctl -q enable moki-server
 systemctl -q restart moki-server
+
+
 
 %post dev
 systemctl daemon-reload
