@@ -16,6 +16,7 @@ import {
     elasticsearchConnection
 } from '../../helpers/elasticsearchConnection';
 import parseListData from '../../parse_data/parseListData.js';
+import parseAggCities from '../../parse_data/parseAggCities.js';
 var parseBucketData = require('../../parse_data/parseBucketData.js');
 const parseStackedTimebar = require('../../parse_data/parseStackedbarTimeData.js');
 
@@ -25,9 +26,8 @@ class SecurityCharts extends Component {
     // Initialize the state
     constructor(props) {
         super(props);
-        this.loadData = this.loadData.bind(this);
-
         this.state = {
+            dashboardName: "security/charts",
             geoipMap: [],
             eventRegsTimeline: [],
             eventsByIP: [],
@@ -36,78 +36,34 @@ class SecurityCharts extends Component {
             typesCount: [],
             sLoading: true
 
-        }
-        store.subscribe(() => this.loadData());
-
-    }
-
-    componentDidMount() {
-        this.loadData();
-    }
-
-    componentWillUnmount() {
-        // fix Warning: Can't perform a React state update on an unmounted component
-        this.setState = (state, callback) => {
-            return;
         };
+        this.callBacks = {
+            functors: [
+              //DISTRIBUTION GEOIP MAP
+              [{result: 'geoipMap', func: parseAggCities}],
+
+              //EVENT SECURITY TIMELINE
+              [{result: 'eventRegsTimeline', func: parseStackedTimebar.parse}],
+
+              //EVENTS BY IP ADDR
+              [{result: 'eventsByIP', func: this.parseListData}],
+
+              //TOP SUBNETS /24
+              [{result: 'subnets', func: parseListData}],
+
+              //EVENTS BY COUNTRY
+              [{result: 'eventsByCountry', func: parseListData}],
+
+              //SECURITY TYPES EVENTS
+              [{result: 'typesCount', func: parseBucketData.parse}]
+            ]
+        };
+
     }
 
-
-    /*
-    Load data from elasticsearch
-    get filters, types and timerange from GUI
-    */
-    async loadData() {
-
-        var data = await elasticsearchConnection("security/charts");
-
-        if (typeof data === "string" && data.includes("ERROR:")) {
-            console.log(typeof data === "string" && data.includes("ERROR:"));
-
-            this.props.showError(data);
-            this.setState({
-                isLoading: false
-            });
-            return;
-
-        } else if (data) {
-            //parse data
-            //DISTRIBUTION GEOIP MAP
-            var geoipMap = [];
-
-            if (data.responses[0].aggregations && data.responses[0].aggregations.cities && data.responses[0].aggregations.cities.buckets) {
-                geoipMap = data.responses[0].aggregations.cities.buckets;
-            }
-
-            //EVENT SECURITY TIMELINE
-            var eventRegsTimeline = parseStackedTimebar.parse(data.responses[1]);
-
-            //EVENTS BY IP ADDR
-            var eventsByIP = parseListData(data.responses[2], true);
-
-            //TOP SUBNETS /24
-            var subnets = parseListData(data.responses[3]);
-
-            //EVENTS BY COUNTRY
-            var eventsByCountry = parseListData(data.responses[4]);
-
-            //SECURITY TYPES EVENTS
-            var typesCount = parseBucketData.parse(data.responses[5]);
-
-            console.info(new Date() + " MOKI Security: finished parsíng data");
-
-            this.setState({
-                geoipMap: geoipMap,
-                eventRegsTimeline: eventRegsTimeline,
-                eventsByIP: eventsByIP,
-                subnets: subnets,
-                eventsByCountry: eventsByCountry,
-                typesCount: typesCount,
-                isLoading: false
-            });
-
-        }
-    }
+  parseListData(response) {
+    return parseListData(response, true);
+  }
 
 
     //render GUI
