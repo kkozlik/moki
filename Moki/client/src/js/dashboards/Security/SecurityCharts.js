@@ -5,6 +5,7 @@ import React, {
     Component
 } from 'react';
 
+import Dashboard from '../Dashboard.js';
 import TimedateStackedChart from '../../charts/timedate_stackedbar.js';
 import Geoipchart from '../../charts/geoip_map.js';
 import DonutChart from '../../charts/donut_chart.js';
@@ -21,7 +22,7 @@ var parseBucketData = require('../../parse_data/parseBucketData.js');
 const parseStackedTimebar = require('../../parse_data/parseStackedbarTimeData.js');
 
 
-class SecurityCharts extends Component {
+class SecurityCharts extends Dashboard {
 
     // Initialize the state
     constructor(props) {
