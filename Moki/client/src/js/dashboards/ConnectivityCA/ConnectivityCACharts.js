@@ -1,9 +1,7 @@
 /*
 Class to get data for all charts iin Call dashboard
 */
-import React, {
-    Component
-} from 'react';
+import React from 'react';
 
 import Dashboard from '../Dashboard.js';
 import TopologyChart from '../../charts/topology_chart.js';
@@ -13,9 +11,6 @@ import ValueChart from '../../charts/value_chart.js';
 import MultivalueChart from '../../charts/multivalue_chart.js';
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import store from "../../store/index";
-import {
-    elasticsearchConnection
-} from '../../helpers/elasticsearchConnection';
 const parseHeatmapData = require('../../parse_data/parseHeatmapData.js');
 var parseDateHeatmap = require('../../parse_data/parseDateHeatmap.js');
 var parseDateHeatmapAgg = require('../../parse_data/parseDateHeatmapAgg.js');

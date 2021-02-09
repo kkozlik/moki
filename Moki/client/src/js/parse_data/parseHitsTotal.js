@@ -7,7 +7,7 @@ export default function parseHitsTotal(response) {
           response.hits &&
           response.hits.total &&
           response.hits.total.value ) {
-    return responses.hits.total.value;
+    return response.hits.total.value;
   }
   return 0;
 }

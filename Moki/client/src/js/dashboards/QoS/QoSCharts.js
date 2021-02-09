@@ -1,18 +1,13 @@
 /*
 Class to get data for all charts iin Call dashboard
 */
-import React, {
-    Component
-} from 'react';
+import React from 'react';
 
 import Dashboard from '../Dashboard.js';
 import store from "../../store/index";
 import BarChart from '../../charts/bar_chart.js';
 import TimedateStackedChart from '../../charts/timedate_stackedbar.js';
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
-import {
-    elasticsearchConnection
-} from '../../helpers/elasticsearchConnection';
 const parseHistogramData = require('../../parse_data/parseHistogramData.js');
 const parseStackedTimebar = require('../../parse_data/parseStackedbarTimeData.js');
 
@@ -36,7 +31,7 @@ class QoSCharts extends Dashboard {
               //MoS STATS
               [{result: 'MoSStats', func: parseStackedTimebar.parse}]
             ]
-        }:
+        };
     }
 
     //render GUI

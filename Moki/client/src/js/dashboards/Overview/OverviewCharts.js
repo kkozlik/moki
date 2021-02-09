@@ -1,10 +1,8 @@
 /*
 Class to get data for all charts iin Call dashboard
 */
-import React, {
-    Component
-} from 'react';
 
+import React from 'react';
 import Dashboard from '../Dashboard.js';
 import TimedateHeatmap from '../../charts/timedate_heatmap.js';
 import TimedateStackedChart from '../../charts/timedate_stackedbar.js';
@@ -12,7 +10,6 @@ import StackedChart from '../../charts/stackedbar.js';
 import store from "../../store/index";
 import DashboardsTypes from '../../helpers/DashboardsTypes';
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
-import { elasticsearchConnection } from '../../helpers/elasticsearchConnection';
 import ListChart from '../../charts/list_chart.js';
 import parseListData from '../../parse_data/parseListData.js';
 var parseDateHeatmap = require('../../parse_data/parseDateHeatmap.js');

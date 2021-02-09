@@ -1,17 +1,12 @@
 /*
 Class to get data for all charts iin Call dashboard
 */
-import React, {
-    Component
-} from 'react';
+import React from 'react';
 
 import Dashboard from '../Dashboard.js';
 import TopologyChart from '../../charts/topology_chart.js';
 import Heatmap from '../../charts/heatmap_chart.js';
 import store from "../../store/index";
-import {
-    elasticsearchConnection
-} from '../../helpers/elasticsearchConnection';
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 const parseHeatmapData = require('../../parse_data/parseHeatmapData.js');
 var parseDateHeatmap = require('../../parse_data/parseDateHeatmap.js');

@@ -1,7 +1,7 @@
 /*
 Base class for all dashboards
 */
-import React, {
+import {
     Component
 } from 'react';
 

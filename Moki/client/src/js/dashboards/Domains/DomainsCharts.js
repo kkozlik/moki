@@ -1,15 +1,11 @@
 /*
 Class to get data for all charts iin Call dashboard
 */
-import React, {
-    Component
-} from 'react';
 
+import React from 'react';
 import Dashboard from '../Dashboard.js';
 import ListChartPagination from '../../charts/list_chart_pagination.js';
-import store from "../../store/index";
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
-import { elasticsearchConnection } from '../../helpers/elasticsearchConnection';
 import TableChart from '../../charts/table_chart.js';
 import ValueChart from '../../charts/value_chart.js';
 import parseListData from '../../parse_data/parseListData.js';

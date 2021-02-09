@@ -1,9 +1,7 @@
 /*
 Class to get data for all charts iin Call dashboard
 */
-import React, {
-    Component
-} from 'react';
+import React from 'react';
 
 import Dashboard from '../Dashboard.js';
 import store from "../../store/index";

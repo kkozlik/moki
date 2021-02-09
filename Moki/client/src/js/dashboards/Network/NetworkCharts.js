@@ -1,15 +1,12 @@
 /*
 Class to get data for all charts iin Call dashboard
 */
-import React, {
-    Component
-} from 'react';
 
+import React from 'react';
 import Dashboard from '../Dashboard.js';
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import store from "../../store/index";
 import MultipleLineChart from '../../charts/multipleLine_chart';
-import { elasticsearchConnection } from '../../helpers/elasticsearchConnection';
 var parseMultipleLineData = require('../../parse_data/parseMultipleLineData.js');
 
 

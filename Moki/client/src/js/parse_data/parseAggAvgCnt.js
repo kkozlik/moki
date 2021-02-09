@@ -7,7 +7,7 @@ export default function parseAggAvgCnt(response) {
           response.aggregations &&
           response.aggregations["avg_count"] &&
           response.aggregations["avg_count"].value) {
-    return responses.aggregations["avg_count"].value;
+    return response.aggregations["avg_count"].value;
   }
   return 0;
 }
