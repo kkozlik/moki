@@ -5,6 +5,7 @@ import React, {
     Component
 } from 'react';
 
+import Dashboard from '../Dashboard.js';
 import ValueChart from '../../charts/value_chart.js';
 import store from "../../store/index";
 import ListChart from '../../charts/list_chart.js';
@@ -23,13 +24,13 @@ var parseBucketData = require('../../parse_data/parseBucketData.js');
 const parseStackedTimebar = require('../../parse_data/parseStackedbarTimeData.js');
 
 
-class RestrictedCharts extends Component {
+class RestrictedCharts extends Dashboard {
 
     // Initialize the state
     constructor(props) {
         super(props);
-        this.loadData = this.loadData.bind(this);
         this.state = {
+            dashboardName: "restricted/home",
             sumCallAttempt: [],
             sumCallEnd: [],
             durationSum: [],
@@ -47,104 +48,54 @@ class RestrictedCharts extends Component {
             sipcodeCount: [],
             isLoading: true
 
-        }
-        store.subscribe(() => this.loadData());
+        };
+        this.callBacks = {
+            functors: [
+              //SUM CALL-END
+              [{result: 'sumCallEnd', func: parseQueryStringData.parse}],
 
-    }
+              //SUM CALL-ATTEMPT
+              [{result: 'sumCallAttempt', func: parseQueryStringData.parse}],
 
-    componentWillUnmount() {
-        // fix Warning: Can't perform a React state update on an unmounted component
-        this.setState = (state, callback) => {
-            return;
+              //CALLING COUNTRIES
+              [{result: 'callingCountries', func: parseListData}],
+
+              //DURATION SUM 
+              [{result: 'durationSum', func: parseAggData.parse}],
+
+              //ANSWER-SEIZURE RATIO
+              [{result: 'answerSeizureRatio', func: parseAggSumBucketData.parse}],
+
+              //AVG DURATION
+              [{result: 'avgDuration', func: parseAggData.parse}],
+
+              //SUM DURATION OVER TIME
+              [{result: 'sumDurationOverTime', func: parseBucketData.parse}],
+
+              //FROM UA
+              [{result: 'fromUA', func: parseListData}],
+
+              //SOURCE IP ADDRESS
+              [{result: 'sourceIP', func: this.parseListData}],
+
+              //EVENT CALLS TIMELINE
+              [{result: 'eventCallsTimeline', func: parseStackedTimebar.parse}],
+
+              //EVENT EXCEEDED TIMELINE
+              [{result: 'eventExceededTimeline', func: parseStackedTimebar.parse}],
+
+              //TOP 10 TO
+              [{result: 'top10to', func: parseListData}],
+
+              //AVG MoS
+              [{result: 'avgMoS', func: parseAggData.parse}]
+            ]
         };
     }
 
-    componentDidMount() {
-        this.loadData();
-    }
-
-    /*
-    Load data from elasticsearch
-    get filters, types and timerange from GUI
-    */
-    async loadData() {
-
-        this.setState({
-            isLoading: true
-        });
-        var data = await elasticsearchConnection("restricted/home");
-
-        if (typeof data === "string" && data.includes("ERROR:")) {
-
-            this.props.showError(data);
-            this.setState({
-                isLoading: false
-            });
-            return;
-
-        } else if (data) {
-            //parse data
-            //SUM CALL-END
-            var sumCallEnd = parseQueryStringData.parse(data.responses[0]);
-
-            //SUM CALL-ATTEMPT
-            var sumCallAttempt = parseQueryStringData.parse(data.responses[1]);
-
-            //CALLING COUNTRIES
-            var callingCountries = parseListData(data.responses[2]);
-
-            //DURATION SUM 
-            var durationSum = parseAggData.parse(data.responses[3]);
-
-            //ANSWER-SEIZURE RATIO
-            var answerSeizureRatio = parseAggSumBucketData.parse(data.responses[4]);
-
-            //AVG DURATION
-            var avgDuration = parseAggData.parse(data.responses[5]);
-
-            //SUM DURATION OVER TIME
-            var sumDurationOverTime = parseBucketData.parse(data.responses[6]);
-
-            //FROM UA
-            var fromUA = parseListData(data.responses[7]);
-
-            //SOURCE IP ADDRESS
-            var sourceIP = parseListData(data.responses[8], true);
-
-            //EVENT CALLS TIMELINE
-            var eventCallsTimeline = parseStackedTimebar.parse(data.responses[9]);
-
-            //EVENT EXCEEDED TIMELINE
-            var eventExceededTimeline = parseStackedTimebar.parse(data.responses[10]);
-
-            //TOP 10 TO
-            var top10to = parseListData(data.responses[11]);
-
-            //AVG MoS
-            var avgMoS = parseAggData.parse(data.responses[12]);
-
-            console.info(new Date() + " MOKI HOME: finished parsíng data");
-
-            this.setState({
-
-                sumCallAttempt: sumCallAttempt,
-                sumCallEnd: sumCallEnd,
-                durationSum: durationSum,
-                answerSeizureRatio: answerSeizureRatio,
-                avgDuration: avgDuration,
-                sumDurationOverTime: sumDurationOverTime,
-                fromUA: fromUA,
-                sourceIP: sourceIP,
-                eventCallsTimeline: eventCallsTimeline,
-                eventExceededTimeline: eventExceededTimeline,
-                top10to: top10to,
-                callingCountries: callingCountries,
-                avgMoS: avgMoS,
-                isLoading: false
-            });
-
-
-        }
+    /* parseListData will call the exported one with encryption turned on */
+    parseListData(data) {
+      return parseListData(data, true);
     }
 
     //render GUI
