@@ -5,6 +5,7 @@ import React, {
     Component
 } from 'react';
 
+import Dashboard from '../Dashboard.js';
 import TimedateStackedChart from '../../charts/timedate_stackedbar.js';
 import ListChart from '../../charts/list_chart.js';
 import store from "../../store/index";
@@ -16,17 +17,18 @@ import {
 import CountUpChart from '../../charts/count_chart.js';
 import Geoipchart from '../../charts/geoip_map.js';
 import parseListData from '../../parse_data/parseListData.js';
+import parseAggDistinct from '../../parse_data/parseAggDistinct.js';
+import parseAggCities from '../../parse_data/parseAggCities.js';
 const parseStackedTimebar = require('../../parse_data/parseStackedbarTimeData.js');
 var parseQueryStringData = require('../../parse_data/parseQueryStringData.js');
 
-class WebCharts extends Component {
+class WebCharts extends Dashboard {
 
     // Initialize the state
     constructor(props) {
         super(props);
-        this.loadData = this.loadData.bind(this);
-
         this.state = {
+            dashboardName: "web",
             eventRegsTimeline: [],
             eventsByIP: [],
             totalEvents: [],
@@ -35,78 +37,29 @@ class WebCharts extends Component {
             geoipMap: [],
             sLoading: true
 
-        }
-        store.subscribe(() => this.loadData());
+        };
+        this.callBacks = {
+            functors: [
+              //EVENT SECURITY TIMELINE
+              [{result: 'eventRegsTimeline', func: parseStackedTimebar.parse}],
 
-    }
+              //EVENTS BY IP ADDR
+              [{result: 'eventsByIP', func: parseAggDistinct}],
 
-    componentDidMount() {
-        this.loadData();
-    }
+              //TOTAL EVENT COUNT
+              [{result: 'totalEvents', func: parseQueryStringData.parse}],
 
-    componentWillUnmount() {
-        // fix Warning: Can't perform a React state update on an unmounted component
-        this.setState = (state, callback) => {
-            return;
+              //EVENTS BY COUNTRY
+              [{result: 'eventsByCountry', func: parseListData}],
+
+              //TOP USER AGENTS
+              [{result: 'userAgents', func: parseListData}],
+              
+              //DISTRIBUTION GEOIP MAP
+              [{result: 'geoipMap', func: parseAggCities}]
+            ]
         };
     }
-
-    /*
-    Load data from elasticsearch
-    get filters, types and timerange from GUI
-    */
-    async loadData() {
-
-        var data = await elasticsearchConnection("web");
-
-        if (typeof data === "string" && data.includes("ERROR:")) {
-            console.log(typeof data === "string" && data.includes("ERROR:"));
-
-            this.props.showError(data);
-            this.setState({
-                isLoading: false
-            });
-            return;
-
-        } else if (data) {
-            //parse data
-            //DISTRIBUTION GEOIP MAP
-            var geoipMap = [];
-
-            if (data.responses[5].aggregations && data.responses[5].aggregations.cities && data.responses[5].aggregations.cities.buckets) {
-                geoipMap = data.responses[5].aggregations.cities.buckets;
-            }
-
-            //EVENT SECURITY TIMELINE
-            var eventRegsTimeline = parseStackedTimebar.parse(data.responses[0]);
-
-            //EVENTS BY IP ADDR
-            var eventsByIP = data.responses[1].aggregations ? data.responses[1].aggregations.distinct.value : 0;
-
-            //TOTAL EVENT COUNT
-            var totalEvents = parseQueryStringData.parse(data.responses[2]);
-
-            //EVENTS BY COUNTRY
-            var eventsByCountry = parseListData(data.responses[3]);
-
-            //TOP USER AGENTS
-            var userAgents = parseListData(data.responses[4]);
-
-            console.info(new Date() + " MOKI Security: finished parsíng data");
-
-            this.setState({
-                eventRegsTimeline: eventRegsTimeline,
-                eventsByIP: eventsByIP,
-                totalEvents: totalEvents,
-                eventsByCountry: eventsByCountry,
-                userAgents: userAgents,
-                geoipMap: geoipMap,
-                isLoading: false
-            });
-
-        }
-    }
-
 
     //render GUI
     render() {
