@@ -5,6 +5,7 @@ import React, {
     Component
 } from 'react';
 
+import Dashboard from '../Dashboard.js';
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import store from "../../store/index";
 import MultipleLineChart from '../../charts/multipleLine_chart';
@@ -14,13 +15,13 @@ import {
 var parseMultipleLineData = require('../../parse_data/parseMultipleLineData.js');
 
 
-class SystemCharts extends Component {
+class SystemCharts extends Dashboard {
 
     // Initialize the state
     constructor(props) {
         super(props);
-        this.loadData = this.loadData.bind(this);
         this.state = {
+            dashboardName: "system/charts",
             shortterm: [],
             midterm: [],
             longterm: [],
@@ -36,18 +37,48 @@ class SystemCharts extends Component {
             isLoading: false,
             hostnames: []
 
-        }
-        store.subscribe(() => this.loadData());
+        };
+        this.callBacks = {
+            functors: [
+              //LOAD-SHORTTERM
+              [{result: 'shortterm', func: parseMultipleLineData.parse}],
 
-    }
+              //LOAD-midTERM
+              [{result: 'midterm', func: parseMultipleLineData.parse}],
 
-    componentWillUnmount() {
-        // fix Warning: Can't perform a React state update on an unmounted component
-        this.setState = (state,callback)=>{
-            return;
+              //LOAD-SHORTTERM
+              [{result: 'longterm', func: parseMultipleLineData.parse}],
+
+              //MEMORY FREE
+              [{result: 'memoryFree', func: parseMultipleLineData.parse}],
+
+              //MEMORY USED
+              [{result: 'memoryUsed', func: parseMultipleLineData.parse}],
+
+              //MEMORY CACHED
+              [{result: 'memoryCached', func: parseMultipleLineData.parse}],
+
+              //MEMORY BUFFERED
+              [{result: 'memoryBuffered', func: parseMultipleLineData.parse}],
+
+              //UAS
+              [{result: 'uas', func: parseMultipleLineData.parse}],
+
+              //UAC
+              [{result: 'uac', func: parseMultipleLineData.parse}],
+
+              //CPU-USER
+              [{result: 'cpuUser', func: parseMultipleLineData.parse}],
+
+              //CPU-SYSTEM
+              [{result: 'cpuSystem', func: parseMultipleLineData.parse}],
+
+              //CPU-IDLE
+              [{result: 'cpuIdle', func: parseMultipleLineData.parse}]
+            ]
         };
     }
-    
+
     static getDerivedStateFromProps(nextProps, prevState) {
         if (nextProps.hostnames !== prevState.hostnames) {
             return { hostnames: nextProps.hostnames };
@@ -60,88 +91,6 @@ class SystemCharts extends Component {
             this.setState({ hostnames: this.props.hostnames });
         }
     }
-    componentDidMount() {
-        this.loadData();
-    }
-
-    /*
-    Load data from elasticsearch
-    get filters, types and timerange
-    */
-    async loadData() {
-        this.setState({
-            isLoading: true
-        });
-        var data = await elasticsearchConnection("system/charts");
-
-        if (typeof data === "string" && data.includes("ERROR:")) {
-            console.log(typeof data === "string" && data.includes("ERROR:"));
-
-            this.props.showError(data);
-            this.setState({
-                isLoading: false
-            });
-            return;
-
-        } else if (data) {
-            //parse data
-            //LOAD-SHORTTERM
-            var shortterm = parseMultipleLineData.parse(data.responses[0]);
-
-            //LOAD-midTERM
-            var midterm = parseMultipleLineData.parse(data.responses[1]);
-
-            //LOAD-SHORTTERM
-            var longterm = parseMultipleLineData.parse(data.responses[2]);
-
-            //MEMORY FREE
-            var memoryFree = parseMultipleLineData.parse(data.responses[3]);
-
-            //MEMORY USED
-            var memoryUsed = parseMultipleLineData.parse(data.responses[4]);
-
-            //MEMORY CACHED
-            var memoryCached = parseMultipleLineData.parse(data.responses[5]);
-
-            //MEMORY BUFFERED
-            var memoryBuffered = parseMultipleLineData.parse(data.responses[6]);
-
-            //UAS
-            var uas = parseMultipleLineData.parse(data.responses[7]);
-
-
-            //UAC
-            var uac = parseMultipleLineData.parse(data.responses[8]);
-
-            //CPU-USER
-            var cpuUser = parseMultipleLineData.parse(data.responses[9]);
-            //CPU-SYSTEM
-            var cpuSystem = parseMultipleLineData.parse(data.responses[10]);
-
-            //CPU-IDLE
-            var cpuIdle = parseMultipleLineData.parse(data.responses[11]);
-
-            console.info(new Date() + " MOKI System: finished parsíng data");
-
-            this.setState({
-                shortterm: shortterm,
-                midterm: midterm,
-                longterm: longterm,
-                memoryFree: memoryFree,
-                memoryUsed: memoryUsed,
-                memoryCached: memoryCached,
-                memoryBuffered: memoryBuffered,
-                uas: uas,
-                uac: uac,
-                cpuUser: cpuUser,
-                cpuSystem: cpuSystem,
-                cpuIdle: cpuIdle,
-                isLoading: false
-
-            });
-        }
-    }
-
 
     //render GUI
     render() {
