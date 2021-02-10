@@ -43,7 +43,7 @@ class ExceededCharts extends Dashboard {
         [{result: 'topOffenders', func: parseListData}],
 
         //EVENTS BY IP ADDR 
-        [{result: 'ipAddress', func: thisListData}],
+        [{result: 'ipAddress', func: this.parseListData}],
 
         //TOP SUBNETS /24 EXCEEDED
         [{result: 'subnets', func: parseListData}]

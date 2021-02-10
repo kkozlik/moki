@@ -11,16 +11,7 @@ import ValueChart from '../../charts/value_chart.js';
 import MultivalueChart from '../../charts/multivalue_chart.js';
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import store from "../../store/index";
-import parseHeatmapData from '../../es-response-parser/index.js';
-import parseDateHeatmap from '../../es-response-parser/index.js';
-import parseDateHeatmapAgg from '../../es-response-parser/index.js';
-import parseHeatmapDataAgg1 from '../../es-response-parser/index.js';
-import parseHeatmapDataAgg3 from '../../es-response-parser/index.js';
-import parseQueryStringData from '../../es-response-parser/index.js';
-import parseAggData from '../../es-response-parser/index.js';
-import parseTopologyData from '../../es-response-parser/index.js';
-import parseMultipleData from '../../es-response-parser/index.js';
-import parseHeatmapDataAgg from '../../es-response-parser/index.js';
+import {parseHeatmapData, parseDateHeatmap, parseDateHeatmapAgg, parseHeatmapDataAgg1, parseHeatmapDataAgg3, parseQueryStringData, parseAggData, parseTopologyData, parseMultipleData, parseHeatmapDataAgg} from '../../es-response-parser/index.js';
 
 class ConnectivityCACharts extends Dashboard {
 
@@ -60,7 +51,7 @@ class ConnectivityCACharts extends Dashboard {
         [{result: 'sumCallEnd', func: parseQueryStringData}],
 
         //CONNECTION FAILURE RATIO CA
-        [{result: 'failureCA', func: parseHeatmapAgg}],
+        [{result: 'failureCA', func: parseHeatmapDataAgg}],
 
         //NUMBER OF CALL-ATTEMPS CA
         [{result: 'callAtemptsCA', func: parseDateHeatmap}],
@@ -75,7 +66,7 @@ class ConnectivityCACharts extends Dashboard {
         [{result: 'ratioHistory', func: parseDateHeatmapAgg}],
 
         //CA AVAILABILITY
-        [{result: 'caAvailability', func: parseDateHeatmapAgg1}],
+        [{result: 'caAvailability', func: parseHeatmapDataAgg1}],
 
         //DURATION CA
         [{result: 'durationCA', func: parseHeatmapDataAgg3}],

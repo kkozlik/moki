@@ -8,9 +8,7 @@ import TopologyChart from '../../charts/topology_chart.js';
 import Heatmap from '../../charts/heatmap_chart.js';
 import store from "../../store/index";
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
-import parseHeatmapData from '../../es-response-parser/index.js';
-import parseDateHeatmap from '../../es-response-parser/index.js';
-import parseTopologyData from '../../es-response-parser/index.js';
+import {parseHeatmapData, parseDateHeatmap, parseTopologyData} from '../../es-response-parser/index.js';
 
 class ConnectivityCharts extends Dashboard {
 

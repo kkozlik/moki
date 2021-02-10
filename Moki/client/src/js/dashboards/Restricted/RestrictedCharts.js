@@ -66,7 +66,7 @@ class RestrictedCharts extends Dashboard {
               [{result: 'fromUA', func: parseListData}],
 
               //SOURCE IP ADDRESS
-              [{result: 'sourceIP', func: thisListData}],
+              [{result: 'sourceIP', func: this.parseListData}],
 
               //EVENT CALLS TIMELINE
               [{result: 'eventCallsTimeline', func: parseStackedbarTimeData}],

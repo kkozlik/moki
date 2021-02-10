@@ -11,10 +11,7 @@ import ListChart from '../../charts/list_chart.js';
 import store from "../../store/index";
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import DashboardsTypes from '../../helpers/DashboardsTypes';
-import parseListData from '../../es-response-parser/index.js';
-import parseAggCities from '../../es-response-parser/index.js';
-import parseBucketData from '../../es-response-parser/index.js';
-import parseStackedbarTimeData from '../../es-response-parser/index.js';
+import {parseListData, parseAggCities, parseBucketData, parseStackedbarTimeData} from '../../es-response-parser/index.js';
 
 
 class SecurityCharts extends Dashboard {

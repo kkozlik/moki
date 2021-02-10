@@ -12,13 +12,7 @@ import MultipleAreaChart from '../../charts/multipleArea_chart';
 import store from "../../store/index";
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import { elasticsearchConnection } from '../../helpers/elasticsearchConnection';
-import parseQueryStringData from '../../es-response-parser/index.js';
-import parseDateHeatmap from '../../es-response-parser/index.js';
-import parseAggData from '../../es-response-parser/index.js';
-import parseAggSumBucketData from '../../es-response-parser/index.js';
-import parseMultipleLineDataShareAxis from '../../es-response-parser/index.js';
-import parseMultipleLineDataShareAxisWithoutAgg from '../../es-response-parser/index.js';
-import parseAggQueryWithoutScriptValue from '../../es-response-parser/index.js';
+import {parseQueryStringData, parseDateHeatmap, parseAggData, parseAggSumBucketData, parseMultipleLineDataShareAxis, parseMultipleLineDataShareAxisWithoutAgg, parseAggQueryWithoutScriptValue} from '../../es-response-parser/index.js';
 
 class HomeCharts extends Component {
 

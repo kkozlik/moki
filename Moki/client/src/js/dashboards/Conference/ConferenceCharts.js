@@ -10,14 +10,8 @@ import ValueChart from '../../charts/value_chart.js';
 import store from "../../store/index";
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import DashboardsTypes from '../../helpers/DashboardsTypes';
-import parseListData from '../../es-response-parser/index.js';
-import parseAggAvgCnt from '../../es-response-parser/index.js';
 
-import parseStackedbarTimeData from '../../es-response-parser/index.js';
-import parseQueryStringData from '../../es-response-parser/index.js';
-import parseAggData from '../../es-response-parser/index.js';
-import parseAggQueryWithoutScriptValue from '../../es-response-parser/index.js';
-import parseListDataSort from '../../es-response-parser/index.js';
+import {parseListData, parseAggAvgCnt, parseStackedbarTimeData, parseQueryStringData, parseAggData, parseAggQueryWithoutScriptValue, parseListDataSort} from '../../es-response-parser/index.js';
 
 
 class ConferenceCharts extends Dashboard {
@@ -60,7 +54,7 @@ class ConferenceCharts extends Dashboard {
                 [{result: 'topConferences', func: parseListData}],
 
                 //EVENT CALLS TIMELINE
-                [{result: 'eventCallsTimeline', func: parseStackedTimeData}],
+                [{result: 'eventCallsTimeline', func: parseStackedbarTimeData}],
                 
                 //CONFERENCE ACTUAL
                 [{result: 'activeConf', func: parseAggQueryWithoutScriptValue}],

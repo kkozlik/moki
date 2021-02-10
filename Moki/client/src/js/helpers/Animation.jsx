@@ -14,15 +14,7 @@ import {
     elasticsearchConnection
 } from '../helpers/elasticsearchConnection';
 import { setTimerange } from "../actions/index";
-import parseDateHeatmapAnimation from '../es-response-parser/index.js';
-import parseDateHeatmapDocCountAnimation from '../es-response-parser/index.js';
-import parseTwoAggAnimation from '../es-response-parser/index.js';
-import parseGeoipAnimation from '../es-response-parser/index.js';
-import parseTopologyDataAnimation from '../es-response-parser/index.js';
-import parseHistogramDataAnimation from '../es-response-parser/index.js';
-import parseListDataAnimation from '../es-response-parser/index.js';
-import parseQueryStringDataAnimation from '../es-response-parser/index.js';
-import parseDistinctDataAnimation from '../es-response-parser/index.js';
+import {parseDateHeatmapAnimation, parseDateHeatmapDocCountAnimation, parseTwoAggAnimation, parseGeoipAnimation, parseTopologyDataAnimation, parseHistogramDataAnimation, parseListDataAnimation, parseQueryStringDataAnimation, parseDistinctDataAnimation} from '../es-response-parser/index.js';
 
 class Animation extends Component {
     // Initialize the state

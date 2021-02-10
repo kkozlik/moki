@@ -16,11 +16,7 @@ import {
     elasticsearchConnection
 } from '../../helpers/elasticsearchConnection';
 import DashboardsTypes from '../../helpers/DashboardsTypes';
-import parseListData from '../../es-response-parser/index.js';
-import parseBucketData from '../../es-response-parser/index.js';
-import parseMultipleLineDataShareAxis from '../../es-response-parser/index.js';
-import parseAggQueryWithoutScriptValue from '../../es-response-parser/index.js';
-import parseStackedbarTimeData from '../../es-response-parser/index.js';
+import {parseListData, parseBucketData, parseMultipleLineDataShareAxis, parseAggQueryWithoutScriptValue, parseStackedbarTimeData} from '../../es-response-parser/index.js';
 
 
 class RegistrationCharts extends Component {

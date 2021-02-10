@@ -11,11 +11,7 @@ import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import DashboardsTypes from '../../helpers/DashboardsTypes';
 import CountUpChart from '../../charts/count_chart.js';
 import Geoipchart from '../../charts/geoip_map.js';
-import parseListData from '../../es-response-parser/index.js';
-import parseAggDistinct from '../../es-response-parser/index.js';
-import parseAggCities from '../../es-response-parser/index.js';
-import parseStackedbarTimeData from '../../es-response-parser/index.js';
-import parseQueryStringData from '../../es-response-parser/index.js';
+import {parseListData, parseAggDistinct, parseAggCities, parseStackedbarTimeData, parseQueryStringData} from '../../es-response-parser/index.js';
 
 class WebCharts extends Dashboard {
 
