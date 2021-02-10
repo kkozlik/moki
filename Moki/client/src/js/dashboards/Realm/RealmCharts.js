@@ -7,7 +7,7 @@ import Dashboard from '../Dashboard.js';
 import store from "../../store/index";
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import MultipleLineChart from '../../charts/multipleLine_chart';
-var parseMultipleLineData = require('../../parse_data/parseMultipleLineData.js');
+import parseMultipleLineData from '../../es-response-parser/index.js';
 
 
 class RealmCharts extends Dashboard {
@@ -36,40 +36,40 @@ class RealmCharts extends Dashboard {
         this.callBacks = {
             functors: [
               //MAX CALLS FROM BY HOST
-              [{result: 'maxCallsFromByHost', func: parseMultipleLineData.parse}],
+              [{result: 'maxCallsFromByHost', func: parseMultipleLineData}],
 
               //MAX CALLS To BY HOST
-              [{result: 'maxCallsToByHost', func: parseMultipleLineData.parse}],
+              [{result: 'maxCallsToByHost', func: parseMultipleLineData}],
 
               ////MAX CALLS FROM BY REALM
-              [{result: 'maxCallsFromByrealm', func: parseMultipleLineData.parse}],
+              [{result: 'maxCallsFromByrealm', func: parseMultipleLineData}],
 
               //MAX CALLS TO BY REALM
-              [{result: 'maxCallsToByrealm', func: parseMultipleLineData.parse}],
+              [{result: 'maxCallsToByrealm', func: parseMultipleLineData}],
 
               //MAX START CALLS FROM BY HOST
-              [{result: 'maxStartCallsFromByHost', func: parseMultipleLineData.parse}],
+              [{result: 'maxStartCallsFromByHost', func: parseMultipleLineData}],
 
               //MAX START CALLS To BY HOST
-              [{result: 'maxStartCallsToByHost', func: parseMultipleLineData.parse}],
+              [{result: 'maxStartCallsToByHost', func: parseMultipleLineData}],
 
               //MAX START CALLS FROM BY REALM
-              [{result: 'maxStartCallsFromByrealm', func: parseMultipleLineData.parse}],
+              [{result: 'maxStartCallsFromByrealm', func: parseMultipleLineData}],
 
               //MAX START CALLS TO BY REALM
-              [{result: 'maxStartCallsToByrealm', func: parseMultipleLineData.parse}],
+              [{result: 'maxStartCallsToByrealm', func: parseMultipleLineData}],
 
               //RTP RELAYED TO BY HOST
-              [{result: 'rtpToByHost', func: parseMultipleLineData.parse}],
+              [{result: 'rtpToByHost', func: parseMultipleLineData}],
 
               //RTP RELAYED FROM BY HOST
-              [{result: 'rtpFromByHost', func: parseMultipleLineData.parse}],
+              [{result: 'rtpFromByHost', func: parseMultipleLineData}],
 
               //RTP RELAYED TO BY REALM
-              [{result: 'rtpToByRealm', func: parseMultipleLineData.parse}],
+              [{result: 'rtpToByRealm', func: parseMultipleLineData}],
 
               //RTP RELAYED FROM BY REALM
-              [{result: 'rtpFromByRealm', func: parseMultipleLineData.parse}]
+              [{result: 'rtpFromByRealm', func: parseMultipleLineData}]
             ]
         };
     }

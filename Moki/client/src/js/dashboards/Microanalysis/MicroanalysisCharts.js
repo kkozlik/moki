@@ -8,9 +8,9 @@ import store from "../../store/index";
 import ListChart from '../../charts/list_chart.js';
 import DonutChart from '../../charts/donut_chart.js';
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
-import parseListData from '../../parse_data/parseListData.js';
-var parseListDataCardinality = require('../../parse_data/parseListDataCardinality.js');
-var parseBucketData = require('../../parse_data/parseBucketData.js');
+import parseListData from '../../es-response-parser/index.js';
+import parseListDataCardinality from '../../es-response-parser/index.js';
+import parseBucketData from '../../es-response-parser/index.js';
 
 
 class MicroanalysisCharts extends Dashboard {
@@ -47,7 +47,7 @@ class MicroanalysisCharts extends Dashboard {
         functors: [
           //parse data
           //TYPES
-          {result: 'typesCount', func: parseBucketData.parse},
+          {result: 'typesCount', func: parseBucketData},
 
           //FROM UA
           {result: 'fromUA', func: parseListData},
@@ -65,7 +65,7 @@ class MicroanalysisCharts extends Dashboard {
           {result: 'prefixStripped', func: parseListData},
 
           //SOURCE IP ADDRESS
-          {result: 'sourceIP', func: this.parseListData},
+          {result: 'sourceIP', func: thisListData},
 
           //TOP 10 FROM
           {result: 'top10from', func: parseListData},
@@ -77,7 +77,7 @@ class MicroanalysisCharts extends Dashboard {
           {result: 'top10to', func: parseListData},
 
           //DOMAIN STATS
-          {result: 'distinctDestinations', func: parseListDataCardinality.parse},
+          {result: 'distinctDestinations', func: parseListDataCardinality},
 
           //TOP CALL ATTEMPTS
           {result: 'topCallAttempts', func: parseListData},
@@ -89,10 +89,10 @@ class MicroanalysisCharts extends Dashboard {
           {result: 'destination', func: parseListData},
 
           //SUM DURATION
-          {result: 'sumDuration', func: parseListDataCardinality.parse},
+          {result: 'sumDuration', func: parseListDataCardinality},
 
           //TOP DURATION
-          {result: 'topDuration', func: parseListDataCardinality.parse},
+          {result: 'topDuration', func: parseListDataCardinality},
 
           //TOP DURATION < 5 sec
           {result: 'topDuration5', func: parseListData},

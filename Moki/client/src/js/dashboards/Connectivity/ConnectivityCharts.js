@@ -8,9 +8,9 @@ import TopologyChart from '../../charts/topology_chart.js';
 import Heatmap from '../../charts/heatmap_chart.js';
 import store from "../../store/index";
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
-const parseHeatmapData = require('../../parse_data/parseHeatmapData.js');
-var parseDateHeatmap = require('../../parse_data/parseDateHeatmap.js');
-var parseTopologyData = require('../../parse_data/parseTopologyData.js');
+import parseHeatmapData from '../../es-response-parser/index.js';
+import parseDateHeatmap from '../../es-response-parser/index.js';
+import parseTopologyData from '../../es-response-parser/index.js';
 
 class ConnectivityCharts extends Dashboard {
 
@@ -29,19 +29,19 @@ class ConnectivityCharts extends Dashboard {
     this.callBacks = {
       functors: [
         //FROM TO 
-        [{result: 'fromTo', func: parseTopologyData.parse}],
+        [{result: 'fromTo', func: parseTopologyData}],
 
         //CONNECTION FAILURE RATIO 
-        [{result: 'failure', func: parseHeatmapData.parse}],
+        [{result: 'failure', func: parseHeatmapData}],
 
         //NUMBER OF CALL-ATTEMPS 
-        [{result: 'callAtempts', func: parseDateHeatmap.parse}],
+        [{result: 'callAtempts', func: parseDateHeatmap}],
 
         //DURATION 
-        [{result: 'duration', func: parseHeatmapData.parse}],
+        [{result: 'duration', func: parseHeatmapData}],
 
         //NUMBER OF CALL-ENDS 
-        [{result: 'callEnds', func: parseDateHeatmap.parse}]
+        [{result: 'callEnds', func: parseDateHeatmap}]
       ]
     };
   }

@@ -11,10 +11,10 @@ import ListChart from '../../charts/list_chart.js';
 import store from "../../store/index";
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import DashboardsTypes from '../../helpers/DashboardsTypes';
-import parseListData from '../../parse_data/parseListData.js';
-import parseAggCities from '../../parse_data/parseAggCities.js';
-var parseBucketData = require('../../parse_data/parseBucketData.js');
-const parseStackedTimebar = require('../../parse_data/parseStackedbarTimeData.js');
+import parseListData from '../../es-response-parser/index.js';
+import parseAggCities from '../../es-response-parser/index.js';
+import parseBucketData from '../../es-response-parser/index.js';
+import parseStackedbarTimeData from '../../es-response-parser/index.js';
 
 
 class SecurityCharts extends Dashboard {
@@ -39,7 +39,7 @@ class SecurityCharts extends Dashboard {
               [{result: 'geoipMap', func: parseAggCities}],
 
               //EVENT SECURITY TIMELINE
-              [{result: 'eventRegsTimeline', func: parseStackedTimebar.parse}],
+              [{result: 'eventRegsTimeline', func: parseStackedbarTimeData}],
 
               //EVENTS BY IP ADDR
               [{result: 'eventsByIP', func: this.parseListData}],
@@ -51,7 +51,7 @@ class SecurityCharts extends Dashboard {
               [{result: 'eventsByCountry', func: parseListData}],
 
               //SECURITY TYPES EVENTS
-              [{result: 'typesCount', func: parseBucketData.parse}]
+              [{result: 'typesCount', func: parseBucketData}]
             ]
         };
 

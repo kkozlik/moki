@@ -14,15 +14,15 @@ import {
     elasticsearchConnection
 } from '../helpers/elasticsearchConnection';
 import { setTimerange } from "../actions/index";
-var parseDateHeatmapAnimation = require('../parse_data/parseDateHeatmapAnimation.js');
-var parseDateHeatmapDocCountAnimation = require('../parse_data/parseDateHeatmapDocCountAnimation.js');
-var parseTwoAggAnimation = require('../parse_data/parseTwoAggAnimation.js');
-var parseGeoipAnimation = require('../parse_data/parseGeoipAnimation.js');
-var parseTopologyDataAnimation = require('../parse_data/parseTopologyDataAnimation.js');
-var parseHistogramDataAnimation = require('../parse_data/parseHistogramDataAnimation.js');
-var parseListDataAnimation = require('../parse_data/parseListDataAnimation.js');
-var parseQueryStringDataAnimation = require('../parse_data/parseQueryStringDataAnimation.js');
-var parseDistinctDataAnimation = require('../parse_data/parseDistinctDataAnimation.js');
+import parseDateHeatmapAnimation from '../es-response-parser/index.js';
+import parseDateHeatmapDocCountAnimation from '../es-response-parser/index.js';
+import parseTwoAggAnimation from '../es-response-parser/index.js';
+import parseGeoipAnimation from '../es-response-parser/index.js';
+import parseTopologyDataAnimation from '../es-response-parser/index.js';
+import parseHistogramDataAnimation from '../es-response-parser/index.js';
+import parseListDataAnimation from '../es-response-parser/index.js';
+import parseQueryStringDataAnimation from '../es-response-parser/index.js';
+import parseDistinctDataAnimation from '../es-response-parser/index.js';
 
 class Animation extends Component {
     // Initialize the state
@@ -90,31 +90,31 @@ class Animation extends Component {
             } else if (data) {
                 //get the right data format and parse it
                 if (this.props.type === "4agg") {
-                    data = parseDateHeatmapAnimation.parse(data.responses[0]);
+                    data = parseDateHeatmapAnimation(data.responses[0]);
                 }
                 else if (this.props.type === "2agg") {
-                    data = parseTwoAggAnimation.parse(data.responses[0]);
+                    data = parseTwoAggAnimation(data.responses[0]);
                 }
                 else if (this.props.type === "geoip") {
-                    data = parseGeoipAnimation.parse(data.responses[0]);
+                    data = parseGeoipAnimation(data.responses[0]);
                 }
                 else if (this.props.type === "4aggdoc") {
-                    data = parseDateHeatmapDocCountAnimation.parse(data.responses[0]);
+                    data = parseDateHeatmapDocCountAnimation(data.responses[0]);
                 }
                 else if (this.props.type === "topology") {
-                    data = parseTopologyDataAnimation.parse(data.responses[0]);
+                    data = parseTopologyDataAnimation(data.responses[0]);
                 }
                 else if (this.props.type === "histogram") {
-                    data = parseHistogramDataAnimation.parse(data.responses[0]);
+                    data = parseHistogramDataAnimation(data.responses[0]);
                 }
                 else if (this.props.type === "list") {
-                    data = parseListDataAnimation.parse(data.responses[0]);
+                    data = parseListDataAnimation(data.responses[0]);
                 }
                 else if (this.props.type === "countUP") {
-                    data = parseQueryStringDataAnimation.parse(data.responses[0]);
+                    data = parseQueryStringDataAnimation(data.responses[0]);
                 }
                 else if (this.props.type === "distinct") {
-                    data = parseDistinctDataAnimation.parse(data.responses[0]);
+                    data = parseDistinctDataAnimation(data.responses[0]);
                 }
                 else {
                     alert("Problem with parsing data.");

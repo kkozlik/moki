@@ -13,14 +13,14 @@ import ValueChart from '../../charts/value_chart.js';
 import store from "../../store/index";
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import DashboardsTypes from '../../helpers/DashboardsTypes';
-import parseListData from '../../parse_data/parseListData.js';
+import parseListData from '../../es-response-parser/index.js';
 
-const parseStackedTimebar = require('../../parse_data/parseStackedbarTimeData.js');
-var parseBucketData = require('../../parse_data/parseBucketData.js');
-var parseSunburstData = require('../../parse_data/parseSunburstData.js');
-var parseQueryStringData = require('../../parse_data/parseQueryStringData.js');
-var parseAggData = require('../../parse_data/parseAggData.js');
-var parseAggSumBucketData = require('../../parse_data/parseAggSumBucketData.js');
+import parseStackedbarTimeData from '../../es-response-parser/index.js';
+import parseBucketData from '../../es-response-parser/index.js';
+import parseSunburstData from '../../es-response-parser/index.js';
+import parseQueryStringData from '../../es-response-parser/index.js';
+import parseAggData from '../../es-response-parser/index.js';
+import parseAggSumBucketData from '../../es-response-parser/index.js';
 
 
 
@@ -54,29 +54,29 @@ class CallCharts extends Dashboard {
       this.callBacks = {
         functors: [
           //CALL TERMINATED
-          [{result: 'callTerminated', func: parseBucketData.parse}],
+          [{result: 'callTerminated', func: parseBucketData}],
           //CALL SUCCESS RATIO
-          [{result: 'callSuccessRatio', func: parseSunburstData.parse}],
+          [{result: 'callSuccessRatio', func: parseSunburstData}],
           //SUM CALL-ATTEMPT
-          [{result: 'sumCallAttempt', func: parseQueryStringData.parse}],
+          [{result: 'sumCallAttempt', func: parseQueryStringData}],
           //SUM CALL-END
-          [{result: 'sumCallEnd', func: parseQueryStringData.parse}],
+          [{result: 'sumCallEnd', func: parseQueryStringData}],
           //SUM CALL-START
-          [{result: 'sumCallStart', func: parseQueryStringData.parse}],
+          [{result: 'sumCallStart', func: parseQueryStringData}],
           //DURATION SUM 
-          [{result: 'durationSum', func: parseAggData.parse}],
+          [{result: 'durationSum', func: parseAggData}],
           //AVG MoS
-          [{result: 'avgMoS', func: parseAggData.parse}],
+          [{result: 'avgMoS', func: parseAggData}],
           //ANSWER-SEIZURE RATIO
-          [{result: 'answerSeizureRatio', func: parseAggSumBucketData.parse}],
+          [{result: 'answerSeizureRatio', func: parseAggSumBucketData}],
           //CALLING COUNTRIES
           [{result: 'callingCountries', func: parseListData}],
           //SUM DURATION OVER TIME
-          [{result: 'sumDurationOverTime', func: parseBucketData.parse}],
+          [{result: 'sumDurationOverTime', func: parseBucketData}],
           //MAX DURATION
-          [{result: 'maxDuration', func: parseAggData.parse}],
+          [{result: 'maxDuration', func: parseAggData}],
           //AVG DURATION
-          [{result: 'avgDuration', func: parseAggData.parse}],
+          [{result: 'avgDuration', func: parseAggData}],
           //DURATION GROUP
           [{result: 'durationGroup', func: parseListData}],
           //SIP-CODE COUNT
@@ -84,9 +84,9 @@ class CallCharts extends Dashboard {
           //CALLED COUNTRIES
           [{result: 'calledCountries', func: parseListData}],
           //EVENT CALLS TIMELINE
-          [{result: 'eventCallsTimeline', func: parseStackedTimebar.parse}],
+          [{result: 'eventCallsTimeline', func: parseStackedbarTimeData}],
           //ASR OVER TIME
-          [{result: 'asrDurationOverTime', func: parseBucketData.parse}]
+          [{result: 'asrDurationOverTime', func: parseBucketData}]
         ]
       };
       /* override Dashboard.loadData() */ 

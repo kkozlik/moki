@@ -1,4 +1,4 @@
-import { decrypt} from "../intuitive/decrypt";
+import { decrypt} from "../../intuitive/decrypt";
 
 export default function parseListData(response, isDecrypt = false){
     if (response.aggregations && response.aggregations.agg && response.aggregations.agg.buckets && response.aggregations.nested) {

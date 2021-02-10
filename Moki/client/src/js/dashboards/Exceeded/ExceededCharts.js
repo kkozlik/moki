@@ -11,10 +11,7 @@ import ValueChart from '../../charts/value_chart.js';
 import store from "../../store/index";
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import DashboardsTypes from '../../helpers/DashboardsTypes';
-import parseListData from '../../parse_data/parseListData.js';
-const parseStackedTimebar = require('../../parse_data/parseStackedbarTimeData.js');
-var parseBucketData = require('../../parse_data/parseBucketData.js');
-var parseQueryStringData = require('../../parse_data/parseQueryStringData.js');
+import {parseListData, parseStackedbarTimeData, parseBucketData, parseQueryStringData } from '../../es-response-parser/index.js';
 
 class ExceededCharts extends Dashboard {
 
@@ -34,19 +31,19 @@ class ExceededCharts extends Dashboard {
     this.callBacks = {
       functors: [
         //EVENT CALLS TIMELINE
-        [{result: 'eventCallsTimeline', func: parseStackedTimebar.parse}],
+        [{result: 'eventCallsTimeline', func: parseStackedbarTimeData}],
 
         //EXCEEDED COUNT
-        [{result: 'exceededCount', func: parseQueryStringData.parse}],
+        [{result: 'exceededCount', func: parseQueryStringData}],
 
         //EXCEEDED TYPE
-        [{result: 'exceededType', func: parseBucketData.parse}],
+        [{result: 'exceededType', func: parseBucketData}],
 
         //TOP OFFENDERS
         [{result: 'topOffenders', func: parseListData}],
 
         //EVENTS BY IP ADDR 
-        [{result: 'ipAddress', func: this.parseListData}],
+        [{result: 'ipAddress', func: thisListData}],
 
         //TOP SUBNETS /24 EXCEEDED
         [{result: 'subnets', func: parseListData}]

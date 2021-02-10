@@ -11,11 +11,11 @@ import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import DashboardsTypes from '../../helpers/DashboardsTypes';
 import CountUpChart from '../../charts/count_chart.js';
 import Geoipchart from '../../charts/geoip_map.js';
-import parseListData from '../../parse_data/parseListData.js';
-import parseAggDistinct from '../../parse_data/parseAggDistinct.js';
-import parseAggCities from '../../parse_data/parseAggCities.js';
-const parseStackedTimebar = require('../../parse_data/parseStackedbarTimeData.js');
-var parseQueryStringData = require('../../parse_data/parseQueryStringData.js');
+import parseListData from '../../es-response-parser/index.js';
+import parseAggDistinct from '../../es-response-parser/index.js';
+import parseAggCities from '../../es-response-parser/index.js';
+import parseStackedbarTimeData from '../../es-response-parser/index.js';
+import parseQueryStringData from '../../es-response-parser/index.js';
 
 class WebCharts extends Dashboard {
 
@@ -36,13 +36,13 @@ class WebCharts extends Dashboard {
         this.callBacks = {
             functors: [
               //EVENT SECURITY TIMELINE
-              [{result: 'eventRegsTimeline', func: parseStackedTimebar.parse}],
+              [{result: 'eventRegsTimeline', func: parseStackedbarTimeData}],
 
               //EVENTS BY IP ADDR
               [{result: 'eventsByIP', func: parseAggDistinct}],
 
               //TOTAL EVENT COUNT
-              [{result: 'totalEvents', func: parseQueryStringData.parse}],
+              [{result: 'totalEvents', func: parseQueryStringData}],
 
               //EVENTS BY COUNTRY
               [{result: 'eventsByCountry', func: parseListData}],

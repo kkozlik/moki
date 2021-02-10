@@ -16,11 +16,11 @@ import {
     elasticsearchConnection
 } from '../../helpers/elasticsearchConnection';
 import DashboardsTypes from '../../helpers/DashboardsTypes';
-import parseListData from '../../parse_data/parseListData.js';
-var parseBucketData = require('../../parse_data/parseBucketData.js');
-var parseMultipleLineDataShareAxis = require('../../parse_data/parseMultipleLineDataShareAxis.js');
-var parseAggQueryWithoutScriptValue = require('../../parse_data/parseAggQueryWithoutScriptValue.js');
-const parseStackedTimebar = require('../../parse_data/parseStackedbarTimeData.js');
+import parseListData from '../../es-response-parser/index.js';
+import parseBucketData from '../../es-response-parser/index.js';
+import parseMultipleLineDataShareAxis from '../../es-response-parser/index.js';
+import parseAggQueryWithoutScriptValue from '../../es-response-parser/index.js';
+import parseStackedbarTimeData from '../../es-response-parser/index.js';
 
 
 class RegistrationCharts extends Component {
@@ -80,22 +80,22 @@ class RegistrationCharts extends Component {
             }
 
             //EVENT REGS TIMELINE
-            var eventRegsTimeline = parseStackedTimebar.parse(data.responses[1]);
+            var eventRegsTimeline = parseStackedbarTimeData(data.responses[1]);
 
             //USER-AGENTS IN REG. NEW
-            var userAgents = parseBucketData.parse(data.responses[2]);
+            var userAgents = parseBucketData(data.responses[2]);
 
             //TOP REG. EXPIRED
             var topRegExpired = parseListData(data.responses[3]);
 
             //TRANSPORT PROTOCOL
-            var transportProtocol = parseBucketData.parse(data.responses[4]);
+            var transportProtocol = parseBucketData(data.responses[4]);
 
             //PARALLEL REGS
-            var parallelRegs = parseMultipleLineDataShareAxis.parse("Regs", data.responses[5], "Regs-1d", data.responses[6]);
+            var parallelRegs = parseMultipleLineDataShareAxis("Regs", data.responses[5], "Regs-1d", data.responses[6]);
 
             //ACTUALL REGS
-            var regsActual = parseAggQueryWithoutScriptValue.parse(data.responses[7]);
+            var regsActual = parseAggQueryWithoutScriptValue(data.responses[7]);
 
             console.info(new Date() + " MOKI REGISTRATION: finished parsing data");
 

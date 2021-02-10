@@ -8,8 +8,8 @@ import store from "../../store/index";
 import BarChart from '../../charts/bar_chart.js';
 import TimedateStackedChart from '../../charts/timedate_stackedbar.js';
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
-const parseHistogramData = require('../../parse_data/parseHistogramData.js');
-const parseStackedTimebar = require('../../parse_data/parseStackedbarTimeData.js');
+import parseHistogramData from '../../es-response-parser/index.js';
+import parseStackedbarTimeData from '../../es-response-parser/index.js';
 
 
 class QoSCharts extends Dashboard {
@@ -26,10 +26,10 @@ class QoSCharts extends Dashboard {
         this.callBacks = {
             functors: [
               //QoS HISTOGRAM
-              [{result: 'QoSHistogram', func: parseHistogramData.parse}],
+              [{result: 'QoSHistogram', func: parseHistogramData}],
 
               //MoS STATS
-              [{result: 'MoSStats', func: parseStackedTimebar.parse}]
+              [{result: 'MoSStats', func: parseStackedbarTimeData}]
             ]
         };
     }

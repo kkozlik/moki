@@ -7,7 +7,7 @@ import Dashboard from '../Dashboard.js';
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import store from "../../store/index";
 import MultipleLineChart from '../../charts/multipleLine_chart';
-var parseMultipleLineData = require('../../parse_data/parseMultipleLineData.js');
+import parseMultipleLineData from '../../es-response-parser/index.js';
 
 
 class NetworkCharts extends Dashboard {
@@ -38,49 +38,49 @@ class NetworkCharts extends Dashboard {
         this.callBacks = {
             functors: [
               //CALLS BY HOST
-              [{result: 'callsByHost', func: parseMultipleLineData.parse}],
+              [{result: 'callsByHost', func: parseMultipleLineData}],
 
               //REGS BY HOST
-              [{result: 'regsByHost', func: parseMultipleLineData.parse}],
+              [{result: 'regsByHost', func: parseMultipleLineData}],
 
               //CALL STARTS BY HOST
-              [{result: 'callStartsByHost', func: parseMultipleLineData.parse}],
+              [{result: 'callStartsByHost', func: parseMultipleLineData}],
 
               //RELAYED RTP BY HOST
-              [{result: 'relayedRtpByHost', func: parseMultipleLineData.parse}],
+              [{result: 'relayedRtpByHost', func: parseMultipleLineData}],
 
               //RX BYTES BY HOST
-              [{result: 'rxBytesByHost', func: parseMultipleLineData.parse}],
+              [{result: 'rxBytesByHost', func: parseMultipleLineData}],
 
               //TX BYTES BY HOST
-              [{result: 'txBytesByHost', func: parseMultipleLineData.parse}],
+              [{result: 'txBytesByHost', func: parseMultipleLineData}],
 
               //RX PACKET BY HOST
-              [{result: 'rxPacketByHost', func: parseMultipleLineData.parse}],
+              [{result: 'rxPacketByHost', func: parseMultipleLineData}],
 
               //TX PACKET BY HOST
-              [{result: 'txPacketByHost', func: parseMultipleLineData.parse}],
+              [{result: 'txPacketByHost', func: parseMultipleLineData}],
 
               //RX BYTES BY INTERFACE
-              [{result: 'rxBytesByInterface', func: parseMultipleLineData.parse}],
+              [{result: 'rxBytesByInterface', func: parseMultipleLineData}],
 
               //TX BYTES BY INTERFACE
-              [{result: 'txBytesByInterface', func: parseMultipleLineData.parse}],
+              [{result: 'txBytesByInterface', func: parseMultipleLineData}],
 
               //RX PACKETS BY INTERFACE
-              [{result: 'rxPacketByInterface', func: parseMultipleLineData.parse}],
+              [{result: 'rxPacketByInterface', func: parseMultipleLineData}],
 
               //TX PACKETS BY INTERFACE
-              [{result: 'txPacketByInterface', func: parseMultipleLineData.parse}],
+              [{result: 'txPacketByInterface', func: parseMultipleLineData}],
 
               //IPS ON FW BLACKLIST BY HOST
-              [{result: 'blacklist', func: parseMultipleLineData.parse}],
+              [{result: 'blacklist', func: parseMultipleLineData}],
 
               //IPS ON FW GREYLIST BY HOST
-              [{result: 'greylist', func: parseMultipleLineData.parse}],
+              [{result: 'greylist', func: parseMultipleLineData}],
 
               //IPS ON FW WHITELIST BY HOST
-              [{result: 'whitelist', func: parseMultipleLineData.parse}]
+              [{result: 'whitelist', func: parseMultipleLineData}]
             ]
         };
     }

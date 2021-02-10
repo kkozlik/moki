@@ -10,14 +10,14 @@ import ValueChart from '../../charts/value_chart.js';
 import store from "../../store/index";
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import DashboardsTypes from '../../helpers/DashboardsTypes';
-import parseListData from '../../parse_data/parseListData.js';
-import parseAggAvgCnt from '../../parse_data/parseAggAvgCnt.js';
+import parseListData from '../../es-response-parser/index.js';
+import parseAggAvgCnt from '../../es-response-parser/index.js';
 
-const parseStackedTimebar = require('../../parse_data/parseStackedbarTimeData.js');
-var parseQueryStringData = require('../../parse_data/parseQueryStringData.js');
-var parseAggData = require('../../parse_data/parseAggData.js');
-var parseAggQueryWithoutScriptValue = require('../../parse_data/parseAggQueryWithoutScriptValue.js');
-var parseListDataSort = require('../../parse_data/parseListDataSort.js');
+import parseStackedbarTimeData from '../../es-response-parser/index.js';
+import parseQueryStringData from '../../es-response-parser/index.js';
+import parseAggData from '../../es-response-parser/index.js';
+import parseAggQueryWithoutScriptValue from '../../es-response-parser/index.js';
+import parseListDataSort from '../../es-response-parser/index.js';
 
 
 class ConferenceCharts extends Dashboard {
@@ -42,34 +42,34 @@ class ConferenceCharts extends Dashboard {
         this.callBacks = {
             functors: [
                 //SUM CONF-LEAVE
-                [{result: 'sumCallEnd', func: parseQueryStringData.parse}],
+                [{result: 'sumCallEnd', func: parseQueryStringData}],
        
                 //SUM CONF-JOIN
-                [{result: 'sumCallStart', func: parseQueryStringData.parse}],
+                [{result: 'sumCallStart', func: parseQueryStringData}],
 
                 //DURATION SUM 
-                [{result: 'durationSum', func: parseAggData.parse}],
+                [{result: 'durationSum', func: parseAggData}],
                 
                 //DURATION SUM 
-                [{result: 'durationAvg', func: parseAggData.parse}],
+                [{result: 'durationAvg', func: parseAggData}],
 
                 //AVG PARTICIPANTS
-                [{result: 'avgParticipants', func: parseAggAvgCnt.parse}],
+                [{result: 'avgParticipants', func: parseAggAvgCnt}],
 
                 //TOP CONFERENCES
                 [{result: 'topConferences', func: parseListData}],
 
                 //EVENT CALLS TIMELINE
-                [{result: 'eventCallsTimeline', func: parseStackedTimebar.parse}],
+                [{result: 'eventCallsTimeline', func: parseStackedTimeData}],
                 
                 //CONFERENCE ACTUAL
-                [{result: 'activeConf', func: parseAggQueryWithoutScriptValue.parse}],
+                [{result: 'activeConf', func: parseAggQueryWithoutScriptValue}],
                 
                 //TOP PARTICIPANTS
                 [{result: 'topParticipants', func: parseListData}],
                 
                 //TOP ACTIVE CONF
-                [{result: 'topActiveConferences', func: parseListDataSort.parse}]
+                [{result: 'topActiveConferences', func: parseListDataSort}]
             ]
         };
     }

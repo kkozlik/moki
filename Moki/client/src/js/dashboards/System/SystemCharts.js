@@ -7,7 +7,7 @@ import Dashboard from '../Dashboard.js';
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import store from "../../store/index";
 import MultipleLineChart from '../../charts/multipleLine_chart';
-var parseMultipleLineData = require('../../parse_data/parseMultipleLineData.js');
+import parseMultipleLineData from '../../es-response-parser/index.js';
 
 
 class SystemCharts extends Dashboard {
@@ -36,40 +36,40 @@ class SystemCharts extends Dashboard {
         this.callBacks = {
             functors: [
               //LOAD-SHORTTERM
-              [{result: 'shortterm', func: parseMultipleLineData.parse}],
+              [{result: 'shortterm', func: parseMultipleLineData}],
 
               //LOAD-midTERM
-              [{result: 'midterm', func: parseMultipleLineData.parse}],
+              [{result: 'midterm', func: parseMultipleLineData}],
 
               //LOAD-SHORTTERM
-              [{result: 'longterm', func: parseMultipleLineData.parse}],
+              [{result: 'longterm', func: parseMultipleLineData}],
 
               //MEMORY FREE
-              [{result: 'memoryFree', func: parseMultipleLineData.parse}],
+              [{result: 'memoryFree', func: parseMultipleLineData}],
 
               //MEMORY USED
-              [{result: 'memoryUsed', func: parseMultipleLineData.parse}],
+              [{result: 'memoryUsed', func: parseMultipleLineData}],
 
               //MEMORY CACHED
-              [{result: 'memoryCached', func: parseMultipleLineData.parse}],
+              [{result: 'memoryCached', func: parseMultipleLineData}],
 
               //MEMORY BUFFERED
-              [{result: 'memoryBuffered', func: parseMultipleLineData.parse}],
+              [{result: 'memoryBuffered', func: parseMultipleLineData}],
 
               //UAS
-              [{result: 'uas', func: parseMultipleLineData.parse}],
+              [{result: 'uas', func: parseMultipleLineData}],
 
               //UAC
-              [{result: 'uac', func: parseMultipleLineData.parse}],
+              [{result: 'uac', func: parseMultipleLineData}],
 
               //CPU-USER
-              [{result: 'cpuUser', func: parseMultipleLineData.parse}],
+              [{result: 'cpuUser', func: parseMultipleLineData}],
 
               //CPU-SYSTEM
-              [{result: 'cpuSystem', func: parseMultipleLineData.parse}],
+              [{result: 'cpuSystem', func: parseMultipleLineData}],
 
               //CPU-IDLE
-              [{result: 'cpuIdle', func: parseMultipleLineData.parse}]
+              [{result: 'cpuIdle', func: parseMultipleLineData}]
             ]
         };
     }

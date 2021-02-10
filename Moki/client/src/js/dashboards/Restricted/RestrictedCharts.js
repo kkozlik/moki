@@ -11,12 +11,7 @@ import TimedateStackedChart from '../../charts/timedate_stackedbar.js';
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import DashboardsTypes from '../../helpers/DashboardsTypes';
 //import StackedLineChart from '../../charts/timedate_stackedbar_with_line_chart.js';
-import parseListData from '../../parse_data/parseListData.js';
-var parseQueryStringData = require('../../parse_data/parseQueryStringData.js');
-var parseAggData = require('../../parse_data/parseAggData.js');
-var parseAggSumBucketData = require('../../parse_data/parseAggSumBucketData.js');
-var parseBucketData = require('../../parse_data/parseBucketData.js');
-const parseStackedTimebar = require('../../parse_data/parseStackedbarTimeData.js');
+import {parseListData , parseQueryStringData , parseAggData , parseAggSumBucketData , parseBucketData , parseStackedbarTimeData} from '../../es-response-parser/index.js';
 
 
 class RestrictedCharts extends Dashboard {
@@ -47,43 +42,43 @@ class RestrictedCharts extends Dashboard {
         this.callBacks = {
             functors: [
               //SUM CALL-END
-              [{result: 'sumCallEnd', func: parseQueryStringData.parse}],
+              [{result: 'sumCallEnd', func: parseQueryStringData}],
 
               //SUM CALL-ATTEMPT
-              [{result: 'sumCallAttempt', func: parseQueryStringData.parse}],
+              [{result: 'sumCallAttempt', func: parseQueryStringData}],
 
               //CALLING COUNTRIES
               [{result: 'callingCountries', func: parseListData}],
 
               //DURATION SUM 
-              [{result: 'durationSum', func: parseAggData.parse}],
+              [{result: 'durationSum', func: parseAggData}],
 
               //ANSWER-SEIZURE RATIO
-              [{result: 'answerSeizureRatio', func: parseAggSumBucketData.parse}],
+              [{result: 'answerSeizureRatio', func: parseAggSumBucketData}],
 
               //AVG DURATION
-              [{result: 'avgDuration', func: parseAggData.parse}],
+              [{result: 'avgDuration', func: parseAggData}],
 
               //SUM DURATION OVER TIME
-              [{result: 'sumDurationOverTime', func: parseBucketData.parse}],
+              [{result: 'sumDurationOverTime', func: parseBucketData}],
 
               //FROM UA
               [{result: 'fromUA', func: parseListData}],
 
               //SOURCE IP ADDRESS
-              [{result: 'sourceIP', func: this.parseListData}],
+              [{result: 'sourceIP', func: thisListData}],
 
               //EVENT CALLS TIMELINE
-              [{result: 'eventCallsTimeline', func: parseStackedTimebar.parse}],
+              [{result: 'eventCallsTimeline', func: parseStackedbarTimeData}],
 
               //EVENT EXCEEDED TIMELINE
-              [{result: 'eventExceededTimeline', func: parseStackedTimebar.parse}],
+              [{result: 'eventExceededTimeline', func: parseStackedbarTimeData}],
 
               //TOP 10 TO
               [{result: 'top10to', func: parseListData}],
 
               //AVG MoS
-              [{result: 'avgMoS', func: parseAggData.parse}]
+              [{result: 'avgMoS', func: parseAggData}]
             ]
         };
     }

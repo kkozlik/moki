@@ -11,16 +11,16 @@ import ValueChart from '../../charts/value_chart.js';
 import MultivalueChart from '../../charts/multivalue_chart.js';
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import store from "../../store/index";
-const parseHeatmapData = require('../../parse_data/parseHeatmapData.js');
-var parseDateHeatmap = require('../../parse_data/parseDateHeatmap.js');
-var parseDateHeatmapAgg = require('../../parse_data/parseDateHeatmapAgg.js');
-var parseDateHeatmapAgg1 = require('../../parse_data/parseHeatmapDataAgg1.js');
-var parseHeatmapDataAgg3 = require('../../parse_data/parseHeatmapDataAgg3.js');
-var parseQueryStringData = require('../../parse_data/parseQueryStringData.js');
-var parseAggData = require('../../parse_data/parseAggData.js');
-var parseTopologyData = require('../../parse_data/parseTopologyData.js');
-var parseMultipleData = require('../../parse_data/parseMultipleData.js');
-var parseHeatmapAgg = require('../../parse_data/parseHeatmapDataAgg.js');
+import parseHeatmapData from '../../es-response-parser/index.js';
+import parseDateHeatmap from '../../es-response-parser/index.js';
+import parseDateHeatmapAgg from '../../es-response-parser/index.js';
+import parseHeatmapDataAgg1 from '../../es-response-parser/index.js';
+import parseHeatmapDataAgg3 from '../../es-response-parser/index.js';
+import parseQueryStringData from '../../es-response-parser/index.js';
+import parseAggData from '../../es-response-parser/index.js';
+import parseTopologyData from '../../es-response-parser/index.js';
+import parseMultipleData from '../../es-response-parser/index.js';
+import parseHeatmapDataAgg from '../../es-response-parser/index.js';
 
 class ConnectivityCACharts extends Dashboard {
 
@@ -48,49 +48,49 @@ class ConnectivityCACharts extends Dashboard {
     this.callBacks = {
       functors: [
         //FROM TO CA
-        [{result: 'fromToCA', func: parseTopologyData.parse}],
+        [{result: 'fromToCA', func: parseTopologyData}],
 
         //DURATION SUM
-        [{result: 'durationSum', func: parseAggData.parse}],
+        [{result: 'durationSum', func: parseAggData}],
 
         //SUM CALL-ATTEMPT
-        [{result: 'sumCallAttempt', func: parseQueryStringData.parse}],
+        [{result: 'sumCallAttempt', func: parseQueryStringData}],
 
         //SUM CALL-END
-        [{result: 'sumCallEnd', func: parseQueryStringData.parse}],
+        [{result: 'sumCallEnd', func: parseQueryStringData}],
 
         //CONNECTION FAILURE RATIO CA
-        [{result: 'failureCA', func: parseHeatmapAgg.parse}],
+        [{result: 'failureCA', func: parseHeatmapAgg}],
 
         //NUMBER OF CALL-ATTEMPS CA
-        [{result: 'callAtemptsCA', func: parseDateHeatmap.parse}],
+        [{result: 'callAtemptsCA', func: parseDateHeatmap}],
 
         //NUMBER OF CALL-ENDA CA
-        [{result: 'callEndsCA', func: parseDateHeatmap.parse}],
+        [{result: 'callEndsCA', func: parseDateHeatmap}],
 
         //ERROR CODE ANALYSIS
-        [{result: 'codeAnalysis', func: parseHeatmapData.parse}],
+        [{result: 'codeAnalysis', func: parseHeatmapData}],
 
         //CA RATIO HISTORY
-        [{result: 'ratioHistory', func: parseDateHeatmapAgg.parse}],
+        [{result: 'ratioHistory', func: parseDateHeatmapAgg}],
 
         //CA AVAILABILITY
-        [{result: 'caAvailability', func: parseDateHeatmapAgg1.parse}],
+        [{result: 'caAvailability', func: parseDateHeatmapAgg1}],
 
         //DURATION CA
-        [{result: 'durationCA', func: parseHeatmapDataAgg3.parse}],
+        [{result: 'durationCA', func: parseHeatmapDataAgg3}],
 
         //DESTINATIONS CAs STATISTICS
-        [{result: 'statsCA', func: parseMultipleData.parse}],
+        [{result: 'statsCA', func: parseMultipleData}],
 
         //SOURCE CAs STATISTICS
-        [{result: 'sourceStatsCA', func: parseMultipleData.parse}],
+        [{result: 'sourceStatsCA', func: parseMultipleData}],
 
         //NUMBER OF CALL-START CA
-        [{result: 'sumCallStart', func: parseQueryStringData.parse}],
+        [{result: 'sumCallStart', func: parseQueryStringData}],
 
         //AVG MoS
-        [{result: 'avgMoS', func: parseDateHeatmapAgg.parse}]
+        [{result: 'avgMoS', func: parseDateHeatmapAgg}]
       ]
     };
   }

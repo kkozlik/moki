@@ -11,10 +11,10 @@ import store from "../../store/index";
 import DashboardsTypes from '../../helpers/DashboardsTypes';
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import ListChart from '../../charts/list_chart.js';
-import parseListData from '../../parse_data/parseListData.js';
-var parseDateHeatmap = require('../../parse_data/parseDateHeatmap.js');
-const parseStackedbar = require('../../parse_data/parseStackedbarData.js');
-const parseStackedTimebar = require('../../parse_data/parseStackedbarTimeData.js');
+import parseListData from '../../es-response-parser/index.js';
+import parseDateHeatmap from '../../es-response-parser/index.js';
+import parseStackedbarData from '../../es-response-parser/index.js';
+import parseStackedbarTimeData from '../../es-response-parser/index.js';
 
 class OverviewCharts extends Dashboard {
 
@@ -33,16 +33,16 @@ class OverviewCharts extends Dashboard {
         this.callBacks = {
             functors: [
                 //EVENT OVERVIEW TIMELINE
-                [{result: 'eventOverviewTimeline', func: parseStackedTimebar.parse}],
+                [{result: 'eventOverviewTimeline', func: parseStackedbarTimeData}],
 
                 //TOTAL EVENTS IN INTERVAL
-                [{result: 'totalEventsInInterval', func: parseStackedbar.parse}],
+                [{result: 'totalEventsInInterval', func: parseStackedbarData}],
 
                 //ACTIVITY OF SBC
-                [{result: 'activitySBC', func: parseDateHeatmap.parse}],
+                [{result: 'activitySBC', func: parseDateHeatmap}],
 
                 //SBC - KEEP ALIVE
-                [{result: 'keepAlive', func: parseDateHeatmap.parse}],
+                [{result: 'keepAlive', func: parseDateHeatmap}],
                 
                 // empty
                 [],

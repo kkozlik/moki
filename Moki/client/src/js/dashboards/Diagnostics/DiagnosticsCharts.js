@@ -8,7 +8,7 @@ import TimedateStackedChart from '../../charts/timedate_stackedbar.js';
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import store from "../../store/index";
 import DashboardsTypes from '../../helpers/DashboardsTypes';
-const parseStackedTimebar = require('../../parse_data/parseStackedbarTimeData.js');
+import parseStackedbarTimeData from '../../es-response-parser/index.js';
 
 
 class DiagnosticsCharts extends Dashboard {
@@ -24,7 +24,7 @@ class DiagnosticsCharts extends Dashboard {
     this.callBacks = {
       functors: [
         //EVENT Diagnostic TIMELINE
-        [{result: 'eventDiagnosticTimeline', func: parseStackedTimebar.parse}]
+        [{result: 'eventDiagnosticTimeline', func: parseStackedbarTimeData}]
       ]
     };
   }

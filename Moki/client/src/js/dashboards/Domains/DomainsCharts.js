@@ -8,9 +8,9 @@ import ListChartPagination from '../../charts/list_chart_pagination.js';
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import TableChart from '../../charts/table_chart.js';
 import ValueChart from '../../charts/value_chart.js';
-import parseListData from '../../parse_data/parseListData.js';
-import parseHits from '../../parse_data/parseHits.js';
-import parseHitsTotal from '../../parse_data/parseHitsTotal.js';
+import parseListData from '../../es-response-parser/index.js';
+import parseHits from '../../es-response-parser/index.js';
+import parseHitsTotal from '../../es-response-parser/index.js';
 
 
 class DomainsCharts extends Dashboard {
