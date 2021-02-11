@@ -16,7 +16,7 @@ import { getDisplayFields } from "../helpers/DisplayFields.js";
 import ToolkitProvider from 'react-bootstrap-table2-toolkit';
 import filter from "../../styles/icons/filter.png";
 import unfilter from "../../styles/icons/unfilter.png";
-import { createFilter } from "../helpers/createFilter";
+import { createFilter } from '@moki-client/gui';
 import emptyIcon from "../../styles/icons/empty.png";
 import tagIcon from "../../styles/icons/tag.png";
 import downloadIcon from "../../styles/icons/download.png";

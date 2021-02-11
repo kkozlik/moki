@@ -11,7 +11,7 @@ import {
 } from "../actions/index";
 import {
     createFilter
-} from "../helpers/createFilter";
+} from '@moki-client/gui';
 import emptyIcon from "../../styles/icons/empty_small.png";
 import {
     getTimeBucket
