@@ -463,7 +463,8 @@ function dragElement(elmnt) {
   }
 
   function dragMouseDown(e) {
-      if(e.path[0].getAttribute("class") === "tooltipDiagramHeader"){
+    var path = e.path || (e.composedPath && e.composedPath());
+      if(path && path[0].getAttribute("class") === "tooltipDiagramHeader"){
      
     e = e || window.event;
     e.preventDefault();
@@ -480,7 +481,7 @@ function dragElement(elmnt) {
       for(var j = 0; j < allTooltips.length; j++){
         allTooltips[j].style['z-index'] = 10; 
       }
-    e.path[0].parentElement.style['z-index'] = 20;   
+    path[0].parentElement.style['z-index'] = 20;   
      
 
   function elementDrag(e) {
