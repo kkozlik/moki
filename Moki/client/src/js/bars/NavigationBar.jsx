@@ -1,12 +1,12 @@
 import React, {
-    Component, lazy, Suspense
+    Component
 } from 'react';
 import { Link } from 'react-router-dom';
 import logout from "../../styles/icons/log_out.png";
 import store from "../store/index";
 import { setWidthChart } from "../actions/index";
 import collapseIcon from "../../styles/icons/collapse.png";
-const DecryptPasswordPopup = lazy(() => import("../intuitive/decryptPasswordPopup"));
+import { renderNavBarSettings } from '@moki-client/gui';
 
 class navBar extends Component {
     constructor(props) {
@@ -138,37 +138,19 @@ class navBar extends Component {
         for (var i = 0; i < dashboards.length; i++) {
             navBar.push(<Link to={"/" + dashboards[i]} id={"/" + dashboards[i]} className="bg-dark list-group-myitem list-group-item-action" onClick={this.redirect} key={dashboards[i]}>
                 <div className="d-flex w-100 justify-content-start align-items-center">
-                    <img src={require(`../../styles/icons/${dashboards[i]}.png`)} alt={dashboards[i]} className="marginRight" title={dashboards[i]} />
+                    <img src={require(`../../styles/icons/${dashboards[i]}.png`).default} alt={dashboards[i]} className="marginRight" title={dashboards[i]} />
                     <span className={this.state.activeDashboard === dashboards[i] ? "menu-collapsed menuText activeDashboard" : "menu-collapsed menuText"}>{this.capitalizeFirstLetter(dashboards[i])}</span>
                 </div>
             </Link>);
         }
         return navBar;
     }
-    renderNavBarSettings(dashboards) {
-        console.log(dashboards);
-        var navBar = [];
-        for (var i = 0; i < dashboards.length; i++) {
-            navBar.push(<Link to={"/" + dashboards[i]} className="bg-dark list-group-myitem list-group-item-action" onClick={this.redirect} key={dashboards[i]}>
-                <div className="d-flex w-100 justify-content-start align-items-center">
-                    <img className="marginRight" src={require(`../../styles/icons/${dashboards[i]}.png`)} alt={dashboards[i]} />
-                    <span className={this.state.activeDashboard === dashboards[i] ? "menu-collapsed menuText activeDashboard" : "menu-collapsed menuText"}>{this.capitalizeFirstLetter(dashboards[i])}</span>
-                </div>
-            </Link>);
-        }
-      //  if (dashboards.includes("decrypt")) {
-            navBar.push(<Suspense fallback={<span></span>}><DecryptPasswordPopup /></Suspense>);
-            return navBar;
-     //   }
-        return navBar;
-    }
-
 
     render() {
         var dashboardsSettings = this.state.dashboardsSettings;
         var dashboards = this.state.dashboards;
         var navbar = this.renderNavBar(dashboards);
-        var navbarSettings = this.renderNavBarSettings(dashboardsSettings);
+        var navbarSettings = renderNavBarSettings(dashboardsSettings);
         return (
             <div id="sidebar-container" className="sidebar-expanded d-none d-md-block sticky-top">
                 <ul className="list-group">
