@@ -46,39 +46,43 @@ class CallCharts extends Dashboard {
       };
       this.callBacks = {
         functors: [
-          //CALL TERMINATED
+          //CALL TERMINATED 0
           [{result: 'callTerminated', func: parseBucketData}],
-          //CALL SUCCESS RATIO
+          //CALL SUCCESS RATIO 1
           [{result: 'callSuccessRatio', func: parseSunburstData}],
-          //SUM CALL-ATTEMPT
+          //SUM CALL-ATTEMPT 2
           [{result: 'sumCallAttempt', func: parseQueryStringData}],
-          //SUM CALL-END
+          //SUM CALL-END 3
           [{result: 'sumCallEnd', func: parseQueryStringData}],
-          //SUM CALL-START
+          //SUM CALL-START 4
           [{result: 'sumCallStart', func: parseQueryStringData}],
-          //DURATION SUM 
+          //DURATION SUM 5
           [{result: 'durationSum', func: parseAggData}],
-          //AVG MoS
+          //NOT USED 6
+          [],
+          //AVG MoS 7
           [{result: 'avgMoS', func: parseAggData}],
-          //ANSWER-SEIZURE RATIO
+          //ANSWER-SEIZURE RATIO 8
           [{result: 'answerSeizureRatio', func: parseAggSumBucketData}],
-          //CALLING COUNTRIES
+          //CALLING COUNTRIES 9
           [{result: 'callingCountries', func: parseListData}],
-          //SUM DURATION OVER TIME
+          //SUM DURATION OVER TIME 10
           [{result: 'sumDurationOverTime', func: parseBucketData}],
-          //MAX DURATION
+          //MAX DURATION 11
           [{result: 'maxDuration', func: parseAggData}],
-          //AVG DURATION
+          //NOT USED 12
+          [],
+          //AVG DURATION 13
           [{result: 'avgDuration', func: parseAggData}],
-          //DURATION GROUP
+          //DURATION GROUP 14
           [{result: 'durationGroup', func: parseListData}],
-          //SIP-CODE COUNT
+          //SIP-CODE COUNT 15
           [{result: 'sipcodeCount', func: parseListData}],
-          //CALLED COUNTRIES
+          //CALLED COUNTRIES 16
           [{result: 'calledCountries', func: parseListData}],
-          //EVENT CALLS TIMELINE
+          //EVENT CALLS TIMELINE 17
           [{result: 'eventCallsTimeline', func: parseStackedbarTimeData}],
-          //ASR OVER TIME
+          //ASR OVER TIME 18
           [{result: 'asrDurationOverTime', func: parseBucketData}]
         ]
       };
