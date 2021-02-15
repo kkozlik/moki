@@ -12,7 +12,7 @@ import {
 import Colors from '../helpers/style/Colors';
 import emptyIcon from "../../styles/icons/empty.png";
 import {
-    getTimeBucket
+    getTimeBucket, getTimeBucketInt
 } from "../helpers/getTimeBucket";
 import {
     durationFormat
@@ -66,7 +66,7 @@ export default class datebarChart extends Component {
         var colorScale = d3.scaleOrdinal(Colors);
 
         //max and min date
-        var maxTime = store.getState().timerange[1];
+        var maxTime = store.getState().timerange[1] + getTimeBucketInt();
         var minTime = store.getState().timerange[0] - (60 * 1000); //minus one minute fix for round up
 
 

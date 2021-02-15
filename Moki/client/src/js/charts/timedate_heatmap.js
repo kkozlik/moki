@@ -14,7 +14,7 @@ import {
 } from "../helpers/createFilter";
 import emptyIcon from "../../styles/icons/empty_small.png";
 import {
-    getTimeBucket
+    getTimeBucket, getTimeBucketInt
 } from "../helpers/getTimeBucket";
 import {
     ColorsRedGreen
@@ -81,7 +81,7 @@ export default class timedateHeatmap extends Component {
             colorOneShade = ColorsRedGreen;
         }
         //max and min date
-        var maxTime = store.getState().timerange[1];
+        var maxTime = store.getState().timerange[1]+getTimeBucketInt();
         var minTime = store.getState().timerange[0] - (60 * 1000); //minus one minute fix for round up
 
         //scale for brush function

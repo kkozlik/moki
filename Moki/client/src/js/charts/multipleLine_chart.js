@@ -19,6 +19,9 @@ import {
 } from "../actions/index";
 import Colors from '../helpers/style/Colors';
 import emptyIcon from "../../styles/icons/empty_small.png";
+import {
+    getTimeBucketInt
+} from "../helpers/getTimeBucket";
 
 export default class MultipleLineChart extends Component {
     constructor(props) {
@@ -52,7 +55,7 @@ export default class MultipleLineChart extends Component {
         }
 
         //max and min date
-        var maxTime = store.getState().timerange[1];
+        var maxTime = store.getState().timerange[1] + getTimeBucketInt();
         var minTime = store.getState().timerange[0];
 
         // Clean up lost tooltips
