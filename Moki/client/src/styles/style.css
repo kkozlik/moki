@@ -312,6 +312,8 @@ h5 {
 .btn-small {
     vertical-align: baseline !important;
     min-width: 50px !important;
+    border-radius: .25rem !important;
+    border-width: 0;
 }
 
 .btn-primary {
@@ -858,6 +860,7 @@ input[type=text] {
     margin-left: 10px;
     border-radius: 4px;
     min-width: 150px;
+    min-height: 30px;
 }
 
 .filter:hover .buttonHover {
@@ -929,7 +932,7 @@ input[type=text] {
 
 .buttonHover {
     display: none;
-    margin-top: -28px;
+    margin-top: -18px;
     padding: 2px;
 }
 
@@ -1147,7 +1150,7 @@ input {
 #searchBar {
     margin-top: 10px;
     height: 30px;
-    margin-left: 25px;
+    margin-left: 10px;
     padding: 0;
     display: table-cell;
     font-size: 1rem;
