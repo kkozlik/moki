@@ -1,3 +1,3 @@
-export default parseTableHits(hits) {
-    return hits
+export default function parseTableHits(hits) {
+    return hits;
 }

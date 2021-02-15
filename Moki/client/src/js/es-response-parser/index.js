@@ -38,3 +38,4 @@ export {default as parseTimerangeData} from './src/parseTimerangeData.js';
 export {default as parseTopologyDataAnimation} from './src/parseTopologyDataAnimation.js';
 export {default as parseTopologyData} from './src/parseTopologyData.js';
 export {default as parseTwoAggAnimation} from './src/parseTwoAggAnimation.js';
+export {default as parseTableHits} from './src/parseTableHits.js';
