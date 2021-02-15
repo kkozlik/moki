@@ -4,7 +4,7 @@ import React, {
 import * as d3 from "d3";
 import {
     createFilter
-} from "../helpers/createFilter";
+} from '@moki-client/gui';
 import Colors from '../helpers/style/Colors';
 import emptyIcon from "../../styles/icons/empty_small.png";
 

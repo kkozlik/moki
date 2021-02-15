@@ -7,7 +7,7 @@ import ColorType from '../helpers/style/ColorType';
 import Colors from '../helpers/style/Colors';
 import {
     createFilter
-} from "../helpers/createFilter";
+} from '@moki-client/gui';
 import emptyIcon from "../../styles/icons/empty_small.png";
 
 /*

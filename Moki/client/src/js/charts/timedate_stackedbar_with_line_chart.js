@@ -8,7 +8,7 @@ import Colors from '../helpers/style/Colors';
 import { timestampBucket } from '../bars/TimestampBucket.js';
 import store from "../store/index";
 import { setTimerange } from "../actions/index";
-import { createFilter } from "../helpers/createFilter";
+import { createFilter } from '@moki-client/gui';
 import emptyIcon from "../../styles/icons/empty.png";
 
 /*

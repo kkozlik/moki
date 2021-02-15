@@ -6,7 +6,7 @@ import * as topojson from "topojson-client";
 import map from "./world_map.json";
 import {
     createFilter
-} from "../helpers/createFilter";
+} from '@moki-client/gui';
 //import cities from "./world_cities.json";
 //import cities from "./worldcities-limit500.csv";
 import cities from "./cities_11.csv";

@@ -3,7 +3,7 @@ import { ASSIGN_TYPE } from "../constants/action-types";
 import { SET_TIMERANGE } from "../constants/action-types";
 import { SET_USER } from "../constants/action-types";
 import { SET_WIDTH_CHART } from "../constants/action-types";
-
+import {IS_SET_DECRYPT_PASSWORD } from  "../constants/action-types";
 
 const initialState = {
   types: [],
@@ -11,7 +11,8 @@ const initialState = {
   timerange: [(Math.round(new Date().getTime() / 1000) - (6 * 3600)) * 1000, (Math.round(new Date().getTime() / 1000)) * 1000, new Date(Math.trunc(Math.round(new Date().getTime() / 1000) - (6 * 3600)) * 1000).toLocaleString() + " + 6 hours"],
   user: null,
   width: window.innerWidth,
-  error: ""
+  error: "",
+  isDecryptPassword: false
 };
 
 
@@ -44,6 +45,12 @@ function rootReducer(state = initialState, action) {
   else if (action.type === SET_WIDTH_CHART) {
     return Object.assign({}, state, {
       width: action.payload
+    });
+  }
+
+  else if (action.type === IS_SET_DECRYPT_PASSWORD) {
+    return Object.assign({}, state, {
+      isDecryptPassword: action.payload
     });
   }
 

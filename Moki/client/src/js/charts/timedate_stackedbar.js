@@ -14,7 +14,7 @@ import {
 } from "../actions/index";
 import {
     createFilter
-} from "../helpers/createFilter";
+} from '@moki-client/gui';
 import {
     getTimeBucket
 } from "../helpers/getTimeBucket";
