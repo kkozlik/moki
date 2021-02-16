@@ -11,7 +11,7 @@ import store from "../../store/index";
 import DashboardsTypes from '../../helpers/DashboardsTypes';
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import ListChart from '../../charts/list_chart.js';
-import {parseListData, parseDateHeatmap, parseStackedbarData, parseStackedbarTimeData} from '../../es-response-parser/index.js';
+import {parseListData, parseDateHeatmap, parseStackedbarData, parseStackedbarTimeData} from 'es-response-parser';
 
 class OverviewCharts extends Dashboard {
 

@@ -8,7 +8,7 @@ import store from "../../store/index";
 import {
     elasticsearchConnection
 } from '../../helpers/elasticsearchConnection';
-import {parseTableHits} from '../../es-response-parser/index.js';
+import {parseTableHits} from 'es-response-parser';
 
 class CallsTable extends Component {
 

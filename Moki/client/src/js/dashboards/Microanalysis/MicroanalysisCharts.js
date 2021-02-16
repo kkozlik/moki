@@ -8,7 +8,7 @@ import store from "../../store/index";
 import ListChart from '../../charts/list_chart.js';
 import DonutChart from '../../charts/donut_chart.js';
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
-import {parseListData, parseListDataCardinality, parseBucketData} from '../../es-response-parser/index.js';
+import {parseListData, parseListDataCardinality, parseBucketData} from 'es-response-parser';
 
 
 class MicroanalysisCharts extends Dashboard {
