@@ -5,18 +5,22 @@
     "description": "Monitor GUI",
     "author": "Frafos",
     "license": "Apache-2.0",
-    "licenses": [{
-        "type": "Apache-2.0",
-        "url": "http://www.apache.org/licenses/LICENSE-2.0"
-    }],
+    "licenses": [
+        {
+            "type": "Apache-2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0"
+        }
+    ],
     "homepage": "https://www.frafos.com/",
     "dependencies": {
-        "anonym-js": "git+ssh://git@github.com/intuitivelabs/anonym-js.git#d85e13f",
-        "@moki-client/gui": "git+ssh://git@github.com/intuitivelabs/moki-gui",
+        "@babel/plugin-syntax-jsx": "^7.12.13",
+        "@babel/preset-react": "^7.12.13",
+        "@moki-client/gui": "git+https://dd17275664282d305496332b497725461587c6db@github.com/intuitivelabs/moki-gui-intuitive.git#f0fc5f8",
         "bootstrap": "4.0.0",
         "classnames": "^2.2.6",
         "d3": "^5.7.0",
         "d3-scale-chromatic": "^1.3.3",
+        "es-response-parser": "git+https://dd17275664282d305496332b497725461587c6db@github.com/intuitivelabs/es-response-parser-private.git#beaddd5058cefb8495760f5b65275e0adb41f72f",
         "file-saver": "^2.0.2",
         "html2canvas": "^1.0.0-rc.5",
         "jquery": "^3.3.1",
@@ -36,10 +40,11 @@
         "react-redux": "^6.0.1",
         "react-router": "^4.3.1",
         "react-router-dom": "^4.3.1",
-        "react-scripts": "2.1.1",
+        "react-scripts": "^4.0.2",
         "reactjs-popup": "^1.4.1",
         "redux": "^4.0.5",
         "sockjs-client": "^1.3.0",
+        "terser-webpack-plugin": "^5.1.1",
         "topojson-client": "^3.0.0"
     },
     "scripts": {
