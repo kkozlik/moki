@@ -7,7 +7,7 @@ import Dashboard from '../Dashboard.js';
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import store from "../../store/index";
 import MultipleLineChart from '../../charts/multipleLine_chart';
-import {parseMultipleLineData} from '../../es-response-parser/index.js';
+import {parseMultipleLineData} from 'es-response-parser';
 
 
 class SystemCharts extends Dashboard {

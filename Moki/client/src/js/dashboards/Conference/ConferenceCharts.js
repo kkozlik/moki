@@ -11,7 +11,7 @@ import store from "../../store/index";
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import DashboardsTypes from '../../helpers/DashboardsTypes';
 
-import {parseListData, parseAggAvgCnt, parseStackedbarTimeData, parseQueryStringData, parseAggData, parseAggQueryWithoutScriptValue, parseListDataSort} from '../../es-response-parser/index.js';
+import {parseListData, parseAggAvgCnt, parseStackedbarTimeData, parseQueryStringData, parseAggData, parseAggQueryWithoutScriptValue, parseListDataSort} from 'es-response-parser';
 
 
 class ConferenceCharts extends Dashboard {

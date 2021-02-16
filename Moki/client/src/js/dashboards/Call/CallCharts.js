@@ -13,7 +13,7 @@ import ValueChart from '../../charts/value_chart.js';
 import store from "../../store/index";
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import DashboardsTypes from '../../helpers/DashboardsTypes';
-import {parseListData, parseStackedbarTimeData, parseBucketData, parseSunburstData, parseQueryStringData, parseAggData, parseAggSumBucketData} from '../../es-response-parser/index.js';
+import {parseListData, parseStackedbarTimeData, parseBucketData, parseSunburstData, parseQueryStringData, parseAggData, parseAggSumBucketData} from 'es-response-parser';
 
 
 

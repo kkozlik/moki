@@ -11,7 +11,7 @@ import TimedateStackedChart from '../../charts/timedate_stackedbar.js';
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import DashboardsTypes from '../../helpers/DashboardsTypes';
 //import StackedLineChart from '../../charts/timedate_stackedbar_with_line_chart.js';
-import {parseListData , parseQueryStringData , parseAggData , parseAggSumBucketData , parseBucketData , parseStackedbarTimeData} from '../../es-response-parser/index.js';
+import {parseListData , parseQueryStringData , parseAggData , parseAggSumBucketData , parseBucketData , parseStackedbarTimeData} from 'es-response-parser';
 
 
 class RestrictedCharts extends Dashboard {
