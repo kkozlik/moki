@@ -265,12 +265,11 @@ async getDiagram(event){
           
         function  syntaxHighlight(data) {
             var result = ["<div><b>"+data.msg+"</b></div>"];
-
             data = data.details;
             for(var j = 0; j < data.length; j++){
                   var nameIndex = data[j].indexOf(":");
                 if(nameIndex !== -1){
-                result = result + "<div><span className='key'><b>"+data[j].substring(0, nameIndex)+": </b></span><span className='value'>"+data[j].substring(nameIndex+2)+"<span></div>";
+                result = result + "<div><span className='key'><b>"+data[j].substring(0, nameIndex)+": </b></span><span className='value'>"+data[j].substring(nameIndex+1)+"<span></div>";
                 }
                 else if(data[j].includes("c=") || data[j].includes("m=") ){
                      result = result + "<div><span className='value' style='color:green'>"+data[j]+"<span></div>";
