@@ -9,7 +9,7 @@ import {
     elasticsearchConnection
 } from '../../helpers/elasticsearchConnection';
 
-import {parseTableHits} from 'es-response-parser';
+import {parseTableHits} from '@moki-client/es-reponse-parser';
 
 class QoSTable extends Component {
 

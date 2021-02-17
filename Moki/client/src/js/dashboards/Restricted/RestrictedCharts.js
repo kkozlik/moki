@@ -11,7 +11,7 @@ import TimedateStackedChart from '../../charts/timedate_stackedbar.js';
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import DashboardsTypes from '../../helpers/DashboardsTypes';
 //import StackedLineChart from '../../charts/timedate_stackedbar_with_line_chart.js';
-import {parseListData , parseIp, parseQueryStringData , parseAggData , parseAggSumBucketData , parseBucketData , parseStackedbarTimeData} from 'es-response-parser';
+import {parseListData , parseIp, parseQueryStringData , parseAggData , parseAggSumBucketData , parseBucketData , parseStackedbarTimeData} from '@moki-client/es-reponse-parser';
 
 
 class RestrictedCharts extends Dashboard {

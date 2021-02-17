@@ -11,7 +11,7 @@ import store from "../../store/index";
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import DashboardsTypes from '../../helpers/DashboardsTypes';
 
-import {parseListData, parseAggAvgCnt, parseStackedbarTimeData, parseQueryStringData, parseAggData, parseAggQueryWithoutScriptValue, parseListDataSort} from 'es-response-parser';
+import {parseListData, parseAggAvgCnt, parseStackedbarTimeData, parseQueryStringData, parseAggData, parseAggQueryWithoutScriptValue, parseListDataSort} from '@moki-client/es-reponse-parser';
 
 
 class ConferenceCharts extends Dashboard {

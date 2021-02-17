@@ -7,7 +7,7 @@ import TableChart from '../../charts/table_chart.js';
 import store from "../../store/index";
 import { elasticsearchConnection } from '../../helpers/elasticsearchConnection';
 
-import {parseTableHits} from 'es-response-parser';
+import {parseTableHits} from '@moki-client/es-reponse-parser';
 
 class OverviewTable extends Component {
 

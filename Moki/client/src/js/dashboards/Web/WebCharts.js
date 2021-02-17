@@ -11,7 +11,7 @@ import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import DashboardsTypes from '../../helpers/DashboardsTypes';
 import CountUpChart from '../../charts/count_chart.js';
 import Geoipchart from '../../charts/geoip_map.js';
-import {parseListData, parseAggDistinct, parseAggCities, parseStackedbarTimeData, parseQueryStringData} from 'es-response-parser';
+import {parseListData, parseAggDistinct, parseAggCities, parseStackedbarTimeData, parseQueryStringData} from '@moki-client/es-reponse-parser';
 
 class WebCharts extends Dashboard {
 

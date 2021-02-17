@@ -8,7 +8,7 @@ import store from "../../store/index";
 import BarChart from '../../charts/bar_chart.js';
 import TimedateStackedChart from '../../charts/timedate_stackedbar.js';
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
-import {parseHistogramData, parseStackedbarTimeData} from 'es-response-parser';
+import {parseHistogramData, parseStackedbarTimeData} from '@moki-client/es-reponse-parser';
 
 
 class QoSCharts extends Dashboard {

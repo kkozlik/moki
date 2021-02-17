@@ -11,7 +11,7 @@ import ListChart from '../../charts/list_chart.js';
 import store from "../../store/index";
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import DashboardsTypes from '../../helpers/DashboardsTypes';
-import {parseListData, parseIp, parseAggCities, parseBucketData, parseStackedbarTimeData} from 'es-response-parser';
+import {parseListData, parseIp, parseAggCities, parseBucketData, parseStackedbarTimeData} from '@moki-client/es-reponse-parser';
 
 
 class SecurityCharts extends Dashboard {

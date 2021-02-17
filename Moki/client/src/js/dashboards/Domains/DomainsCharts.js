@@ -8,7 +8,7 @@ import ListChartPagination from '../../charts/list_chart_pagination.js';
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import TableChart from '../../charts/table_chart.js';
 import ValueChart from '../../charts/value_chart.js';
-import {parseListData, parseHits, parseHitsTotal} from 'es-response-parser';
+import {parseListData, parseHits, parseHitsTotal} from '@moki-client/es-reponse-parser';
 
 
 class DomainsCharts extends Dashboard {

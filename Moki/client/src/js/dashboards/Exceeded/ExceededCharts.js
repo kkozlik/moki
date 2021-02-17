@@ -11,7 +11,7 @@ import ValueChart from '../../charts/value_chart.js';
 import store from "../../store/index";
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import DashboardsTypes from '../../helpers/DashboardsTypes';
-import {parseListData, parseIp, parseStackedbarTimeData, parseBucketData, parseQueryStringData } from 'es-response-parser';
+import {parseListData, parseIp, parseStackedbarTimeData, parseBucketData, parseQueryStringData } from '@moki-client/es-reponse-parser';
 
 class ExceededCharts extends Dashboard {
 
