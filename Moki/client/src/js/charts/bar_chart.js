@@ -128,7 +128,7 @@ export default class barChart extends Component {
                     y = text.attr("y"),
                     dy = parseFloat(text.attr("dy")),
                     tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em");
-                while (word = words.pop()) {
+                while (word) {
                     line.push(word);
                     tspan.text(line.join(" "));
                     if (tspan.node().getComputedTextLength() > width) {
@@ -137,6 +137,7 @@ export default class barChart extends Component {
                         line = [word];
                         tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word);
                     }
+                    word  = words.pop();
                 }
             });
         }
