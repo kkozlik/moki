@@ -97,8 +97,6 @@ set -o pipefail
 chown node-web /var/lib/logstash/users.json
 chown node-web /var/lib/logstash/sns.json
 
-
-
 echo "Cleaning possible develop pck"
 rm -rf /etc/abc-monitor/debug.flag
 
@@ -113,13 +111,17 @@ echo "Enabling and restarting moki services"
 systemctl -q enable moki-server
 systemctl -q restart moki-server
 
-
+echo "Re-creating config files and restarting needed services..."
+abc-monitor-activate-config
 
 %post dev
 systemctl daemon-reload
 echo "Enabling and restarting moki dev service"
 systemctl -q enable moki-client
 systemctl -q restart moki-client
+
+echo "Re-creating config files and restarting needed services..."
+abc-monitor-activate-config
 
 
 %files
