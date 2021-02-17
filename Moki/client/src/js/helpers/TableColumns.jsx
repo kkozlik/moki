@@ -8,7 +8,7 @@ import unfilterIcon from "../../styles/icons/unfilter.png";
 import downloadPcapIcon from "../../styles/icons/downloadPcap.png";
 import downloadIcon from "../../styles/icons/download.png";
 import viewIcon from "../../styles/icons/view.png";
-import { createFilter } from "./createFilter";
+import { createFilter } from "@moki-client/gui"
 import { formatDuration } from "./getDurationFormat";
 import { downloadAll } from "./download/downloadAll";
 import { exportJSON } from "./export";
