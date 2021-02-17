@@ -11,7 +11,7 @@ import TimedateStackedChart from '../../charts/timedate_stackedbar.js';
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import DashboardsTypes from '../../helpers/DashboardsTypes';
 //import StackedLineChart from '../../charts/timedate_stackedbar_with_line_chart.js';
-import {parseListData , parseQueryStringData , parseAggData , parseAggSumBucketData , parseBucketData , parseStackedbarTimeData} from 'es-response-parser';
+import {parseListData , parseIp, parseQueryStringData , parseAggData , parseAggSumBucketData , parseBucketData , parseStackedbarTimeData} from 'es-response-parser';
 
 
 class RestrictedCharts extends Dashboard {
@@ -66,7 +66,7 @@ class RestrictedCharts extends Dashboard {
               [{result: 'fromUA', func: parseListData}],
 
               //SOURCE IP ADDRESS
-              [{result: 'sourceIP', func: this.parseListData}],
+              [{result: 'sourceIP', func: parseIp}],
 
               //EVENT CALLS TIMELINE
               [{result: 'eventCallsTimeline', func: parseStackedbarTimeData}],
@@ -81,11 +81,6 @@ class RestrictedCharts extends Dashboard {
               [{result: 'avgMoS', func: parseAggData}]
             ]
         };
-    }
-
-    /* parseListData will call the exported one with encryption turned on */
-    parseListData(data) {
-      return parseListData(data, true);
     }
 
     //render GUI

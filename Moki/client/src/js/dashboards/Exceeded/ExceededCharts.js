@@ -11,7 +11,7 @@ import ValueChart from '../../charts/value_chart.js';
 import store from "../../store/index";
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import DashboardsTypes from '../../helpers/DashboardsTypes';
-import {parseListData, parseStackedbarTimeData, parseBucketData, parseQueryStringData } from 'es-response-parser';
+import {parseListData, parseIp, parseStackedbarTimeData, parseBucketData, parseQueryStringData } from 'es-response-parser';
 
 class ExceededCharts extends Dashboard {
 
@@ -43,7 +43,7 @@ class ExceededCharts extends Dashboard {
         [{result: 'topOffenders', func: parseListData}],
 
         //EVENTS BY IP ADDR 
-        [{result: 'ipAddress', func: this.parseListData}],
+        [{result: 'ipAddress', func: parseIp}],
 
         //TOP SUBNETS /24 EXCEEDED
         [{result: 'subnets', func: parseListData}]
@@ -51,11 +51,6 @@ class ExceededCharts extends Dashboard {
     };
   }
   
-  /* parseListData will call the exported one with encryption turned on */
-  parseListData(data) {
-    return parseListData(data, true);
-  }
-
     //render GUI
     render() {
         return (<

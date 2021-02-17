@@ -8,7 +8,7 @@ import store from "../../store/index";
 import ListChart from '../../charts/list_chart.js';
 import DonutChart from '../../charts/donut_chart.js';
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
-import {parseListData, parseListDataCardinality, parseBucketData} from 'es-response-parser';
+import {parseListData, parseIp, parseListDataCardinality, parseBucketData} from 'es-response-parser';
 
 
 class MicroanalysisCharts extends Dashboard {
@@ -63,7 +63,7 @@ class MicroanalysisCharts extends Dashboard {
           [{result: 'prefixStripped', func: parseListData}],
 
           //SOURCE IP ADDRESS 6
-          [{result: 'sourceIP', func: this.parseListData}],
+          [{result: 'sourceIP', func: parseIp}],
 
           //TOP 10 FROM 7
           [{result: 'top10from', func: parseListData}],
@@ -110,11 +110,6 @@ class MicroanalysisCharts extends Dashboard {
       }
     }
   
-  /* parseListData will call the exported one with encryption turned on */
-  parseListData(data) {
-    return parseListData(data, true);
-  }
-
     //render GUI
     render() {
         console.log("------------------");

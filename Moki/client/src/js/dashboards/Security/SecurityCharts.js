@@ -11,7 +11,7 @@ import ListChart from '../../charts/list_chart.js';
 import store from "../../store/index";
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import DashboardsTypes from '../../helpers/DashboardsTypes';
-import {parseListData, parseAggCities, parseBucketData, parseStackedbarTimeData} from 'es-response-parser';
+import {parseListData, parseIp, parseAggCities, parseBucketData, parseStackedbarTimeData} from 'es-response-parser';
 
 
 class SecurityCharts extends Dashboard {
@@ -39,7 +39,7 @@ class SecurityCharts extends Dashboard {
               [{result: 'eventRegsTimeline', func: parseStackedbarTimeData}],
 
               //EVENTS BY IP ADDR
-              [{result: 'eventsByIP', func: this.parseListData}],
+              [{result: 'eventsByIP', func: parseIp}],
 
               //TOP SUBNETS /24
               [{result: 'subnets', func: parseListData}],
@@ -53,11 +53,6 @@ class SecurityCharts extends Dashboard {
         };
 
     }
-
-  parseListData(response) {
-    return parseListData(response, true);
-  }
-
 
     //render GUI
     render() {
