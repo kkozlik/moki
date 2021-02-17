@@ -8,7 +8,7 @@ import store from "../../store/index";
 import ListChart from '../../charts/list_chart.js';
 import DonutChart from '../../charts/donut_chart.js';
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
-import {parseListData, parseIp, parseListDataCardinality, parseBucketData} from '@moki-client/es-reponse-parser';
+import {parseListData, parseIp, parseListDataCardinality, parseBucketData} from '@moki-client/es-response-parser';
 
 
 class MicroanalysisCharts extends Dashboard {

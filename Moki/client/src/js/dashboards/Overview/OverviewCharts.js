@@ -11,7 +11,7 @@ import store from "../../store/index";
 import DashboardsTypes from '../../helpers/DashboardsTypes';
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import ListChart from '../../charts/list_chart.js';
-import {parseListData, parseDateHeatmap, parseStackedbarData, parseStackedbarTimeData} from '@moki-client/es-reponse-parser';
+import {parseListData, parseDateHeatmap, parseStackedbarData, parseStackedbarTimeData} from '@moki-client/es-response-parser';
 
 class OverviewCharts extends Dashboard {
 

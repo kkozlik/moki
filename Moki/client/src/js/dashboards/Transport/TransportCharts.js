@@ -8,7 +8,7 @@ import TimedateStackedChart from '../../charts/timedate_stackedbar.js';
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import store from "../../store/index";
 import DashboardsTypes from '../../helpers/DashboardsTypes';
-import {parseStackedbarTimeData} from '@moki-client/es-reponse-parser';
+import {parseStackedbarTimeData} from '@moki-client/es-response-parser';
 
 
 class TransportCharts extends Dashboard {

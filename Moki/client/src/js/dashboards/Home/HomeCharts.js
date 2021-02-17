@@ -12,7 +12,7 @@ import MultipleAreaChart from '../../charts/multipleArea_chart';
 import store from "../../store/index";
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import { elasticsearchConnection } from '../../helpers/elasticsearchConnection';
-import {parseQueryStringData, parseDateHeatmap, parseAggData, parseAggSumBucketData, parseMultipleLineDataShareAxis, parseMultipleLineDataShareAxisWithoutAgg, parseAggQueryWithoutScriptValue} from '@moki-client/es-reponse-parser';
+import {parseQueryStringData, parseDateHeatmap, parseAggData, parseAggSumBucketData, parseMultipleLineDataShareAxis, parseMultipleLineDataShareAxisWithoutAgg, parseAggQueryWithoutScriptValue} from '@moki-client/es-response-parser';
 
 class HomeCharts extends Component {
 

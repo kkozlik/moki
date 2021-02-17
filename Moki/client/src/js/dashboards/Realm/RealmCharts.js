@@ -7,7 +7,7 @@ import Dashboard from '../Dashboard.js';
 import store from "../../store/index";
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import MultipleLineChart from '../../charts/multipleLine_chart';
-import {parseMultipleLineData} from '@moki-client/es-reponse-parser';
+import {parseMultipleLineData} from '@moki-client/es-response-parser';
 
 
 class RealmCharts extends Dashboard {

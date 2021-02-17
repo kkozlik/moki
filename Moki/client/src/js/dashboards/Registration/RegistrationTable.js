@@ -9,7 +9,7 @@ import {
     elasticsearchConnection
 } from '../../helpers/elasticsearchConnection';
 
-import {parseTableHits} from '@moki-client/es-reponse-parser';
+import {parseTableHits} from '@moki-client/es-response-parser';
 
 class RegistrationTable extends Component {
 

@@ -14,7 +14,7 @@ import {
     elasticsearchConnection
 } from '../helpers/elasticsearchConnection';
 import { setTimerange } from "../actions/index";
-import {parseDateHeatmapAnimation, parseDateHeatmapDocCountAnimation, parseTwoAggAnimation, parseGeoipAnimation, parseTopologyDataAnimation, parseHistogramDataAnimation, parseListDataAnimation, parseQueryStringDataAnimation, parseDistinctDataAnimation} from '@moki-client/es-reponse-parser';
+import {parseDateHeatmapAnimation, parseDateHeatmapDocCountAnimation, parseTwoAggAnimation, parseGeoipAnimation, parseTopologyDataAnimation, parseHistogramDataAnimation, parseListDataAnimation, parseQueryStringDataAnimation, parseDistinctDataAnimation} from '@moki-client/es-response-parser';
 
 class Animation extends Component {
     // Initialize the state

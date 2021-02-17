@@ -11,7 +11,7 @@ import ValueChart from '../../charts/value_chart.js';
 import MultivalueChart from '../../charts/multivalue_chart.js';
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import store from "../../store/index";
-import {parseHeatmapData, parseDateHeatmap, parseDateHeatmapAgg, parseHeatmapDataAgg1, parseHeatmapDataAgg3, parseQueryStringData, parseAggData, parseTopologyData, parseMultipleData, parseHeatmapDataAgg} from '@moki-client/es-reponse-parser';
+import {parseHeatmapData, parseDateHeatmap, parseDateHeatmapAgg, parseHeatmapDataAgg1, parseHeatmapDataAgg3, parseQueryStringData, parseAggData, parseTopologyData, parseMultipleData, parseHeatmapDataAgg} from '@moki-client/es-response-parser';
 
 class ConnectivityCACharts extends Dashboard {
 
