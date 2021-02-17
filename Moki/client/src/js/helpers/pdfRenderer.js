@@ -1,7 +1,5 @@
 import React from "react";
-import { PDFDownloadLink, Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
-import ReactDOM from 'react-dom';
-import { PDFViewer } from '@react-pdf/renderer';
+import { PDFDownloadLink,  StyleSheet } from '@react-pdf/renderer';
 
 const styles = StyleSheet.create({
   page: {
@@ -15,19 +13,6 @@ const styles = StyleSheet.create({
   }
 });
 
-// Create Document Component
-// {document.getElementById("context")}
-/*const MyDocument = () => (
-  <Document>
-	<Page size="A4" style={styles.page}>
-	  <View style={styles.section}>
-        {document.getElementById("context")}
-	  </View>
-	</Page>
-  </Document>
-);
-
-*/
 class renderPDF extends React.Component {
   state = { url: null };
 
