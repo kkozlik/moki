@@ -195,7 +195,7 @@ class Filter extends Component {
                             src={
                                 this.state.icon
                             }
-                            title="disable" /> </span>
+                            title={this.state.enable === "true" ? "disable" : "enable"} /> </span>
                     <span className="iconNoMargin marginRight"
                         idedit={
                             this.props.id
@@ -231,7 +231,7 @@ class Filter extends Component {
                                 src={
                                     this.state.pinIcon
                                 }
-                                title="pin" /> </span>
+                                title={this.state.pinned === "true" ? "pin" : "unpin"}/> </span>
                     }
                 </div></button>
         </span>
