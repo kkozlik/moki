@@ -15,7 +15,7 @@
     "dependencies": {
         "@babel/plugin-syntax-jsx": "^7.12.13",
         "@babel/preset-react": "^7.12.13",
-        "@moki-client/gui": "git+https://dd17275664282d305496332b497725461587c6db@github.com/intuitivelabs/moki-gui-intuitive.git#f0fc5f8",
+        "@moki-client/gui": "git+https://dd17275664282d305496332b497725461587c6db@github.com/intuitivelabs/moki-gui-intuitive.git#be353fb",
         "bootstrap": "4.0.0",
         "classnames": "^2.2.6",
         "d3": "^5.7.0",
