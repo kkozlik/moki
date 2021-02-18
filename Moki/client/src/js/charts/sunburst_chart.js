@@ -48,8 +48,8 @@ export default class sunburst extends Component {
         var radius = Math.min(width, height) / 2;
         var colorScale = d3.scaleOrdinal(Colors);
 
-        if (data.length === 0 || data.children.length === 0) {
-            var g = d3.select('#sunburstChart')
+        if (!data || data.length === 0 || !data.children || data.children.length === 0) {
+           var g = d3.select('#sunburstChart')
                 .append("svg")
                 .attr('width', svgWidth)
                 .attr('height', height)

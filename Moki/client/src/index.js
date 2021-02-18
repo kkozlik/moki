@@ -8,6 +8,8 @@ import App from './App';
 import 'jquery/src/jquery';
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import '../node_modules/bootstrap/dist/js/bootstrap.min.js';
+import './styles/style.css';
+
 
 ReactDOM.render(( 
     <BrowserRouter>
