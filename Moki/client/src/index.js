@@ -1,17 +1,20 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import * as serviceWorker from './serviceWorker';
-import {
-    BrowserRouter
-} from 'react-router-dom';
-import App from './App';
-import 'jquery/src/jquery';
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 import '../node_modules/bootstrap/dist/js/bootstrap.min.js';
+import 'jquery/src/jquery';
+
+import React from 'react';
+import ReactDOM from 'react-dom';
+import {
+  BrowserRouter
+} from 'react-router-dom';
+
 import './styles/style.css';
+import App from './App';
+
+import * as serviceWorker from './serviceWorker';
 
 
-ReactDOM.render(( 
+ReactDOM.render((
     <BrowserRouter>
         < App />
     </BrowserRouter>
