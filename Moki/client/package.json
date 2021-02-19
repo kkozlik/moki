@@ -2,8 +2,8 @@
   "name": "moki-react",
   "version": "1.1.0",
   "proxy": "http://localhost:5000/",
-  "description": "Monitor GUI",
-  "author": "Frafos",
+  "description": "Moki GUI",
+  "author": "Frafos, Intuitive Labs",
   "license": "Apache-2.0",
   "licenses": [
     {
@@ -11,10 +11,8 @@
       "url": "http://www.apache.org/licenses/LICENSE-2.0"
     }
   ],
-  "homepage": "https://www.frafos.com/",
+  "homepage": "https://www.frafos.com/  https://www.intuitivelabs.com/",
   "dependencies": {
-    "@babel/plugin-syntax-jsx": "^7.12.13",
-    "@babel/preset-react": "^7.12.13",
     "@moki-client/gui": "git+https://dd17275664282d305496332b497725461587c6db@github.com/intuitivelabs/moki-gui-intuitive.git#be353fb",
     "bootstrap": "4.0.0",
     "classnames": "^2.2.6",
