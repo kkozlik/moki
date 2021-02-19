@@ -36,7 +36,7 @@ class navBar extends Component {
     componentDidMount() {
         window.addEventListener('scroll', this.handleScroll);
         var navBar = document.getElementById("sidebar-container");
-        if (navBar.clientHeight < window.innerHeight) {
+        if(navBar.clientHeight < window.innerHeight){
             navBar.style.position = "fixed";
             navBar.style.top = "0";
             navBar.style.bottom = "auto";
@@ -133,9 +133,9 @@ class navBar extends Component {
     }
 
 
-    renderNavBar(dashboards) {
+    renderNavBar(dashboards){
         var navBar = [];
-        for (var i = 0; i < dashboards.length; i++) {
+        for(var i = 0; i < dashboards.length; i++){
             navBar.push(<Link to={"/" + dashboards[i]} id={"/" + dashboards[i]} className="bg-dark list-group-myitem list-group-item-action" onClick={this.redirect} key={dashboards[i]}>
                 <div className="d-flex w-100 justify-content-start align-items-center">
                     <img src={require(`../../styles/icons/${dashboards[i]}.png`).default} alt={dashboards[i]} className="marginRight" title={dashboards[i]} />
@@ -173,7 +173,7 @@ class navBar extends Component {
                             <span className="menu-collapsed menuText">Log out</span>
                         </div>
                     </Link>
-                    <button onClick={this.togglebar} data-toggle="sidebar-colapse" className="noFormatButton bg-dark list-group-collaps list-group-item-action d-flex align-items-center" >
+                    <button  onClick={this.togglebar} data-toggle="sidebar-colapse" className="noFormatButton bg-dark list-group-collaps list-group-item-action d-flex align-items-center" >
                         <div className="d-flex w-100 justify-content-start align-items-center">
                             <img className="marginRight" src={collapseIcon} alt="collapse" />
                             <span id="collapse-text" className="menu-collapsed">Collapse</span>
