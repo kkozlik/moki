@@ -1,7 +1,6 @@
 {
   "name": "moki-react",
   "version": "1.1.0",
-  "proxy": "http://localhost:5000/",
   "description": "Moki GUI",
   "author": "Frafos, Intuitive Labs",
   "license": "Apache-2.0",
