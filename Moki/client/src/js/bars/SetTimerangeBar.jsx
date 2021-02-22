@@ -59,6 +59,7 @@ class timerangeBar extends Component {
         this.exportCSV = this.exportCSV.bind(this);
         this.exportJSONclose = this.exportJSONclose.bind(this);
         this.exportCSVclose = this.exportCSVclose.bind(this);
+        this.toggleMenu = this.toggleMenu.bind(this);
         store.subscribe(() => this.rerenderTimerange());
 
 
@@ -183,6 +184,11 @@ class timerangeBar extends Component {
         setTimeout(function () {
             document.getElementById("tooltipshare").style.display = "none";
         }, 1000);
+    }
+
+    //show time select menu
+    toggleMenu() {
+        this.setState({ click: true });
     }
 
     //set refresh

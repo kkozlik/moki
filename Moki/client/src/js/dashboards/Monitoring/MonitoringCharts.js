@@ -204,205 +204,152 @@ class MonitoringCharts extends Component {
             this.state.isLoading && < LoadingScreenCharts />
         }
 
-            <
-            h4 > CPU < /h4> <
-            div className="row no-gutters bottomMargin" >
+            <h4> CPU </h4> <div className="row no-gutters bottomMargin" >
+                <GaugeChart data={
+                    this.state.cpu
+                }
+                    name={
+                        "CPU USAGE (%)"
+                    }
+                    id={
+                        "used_cpu"
+                    }
+                    width={
+                        300
+                    }
+                />
+
+                <ValueChart data={
+                    this.state.loadAverage1m
+                }
+                    name={
+                        "1-MIN LOAD AVG"
+                    }
+                />
+
+                <ValueChart data={
+                    this.state.loadAverage5m
+                }
+                    name={
+                        "5-MIN LOAD AVG"
+                    }
+                />
+
+                <ValueChart data={
+                    this.state.loadAverage15m
+                }
+                    name={
+                        "15-MIN LOAD AVG"
+                    }
+                /> </div>
+            <h4> MEMORY </h4> <div className="row no-gutters bottomMargin" >
+               <ValueChart data={
+                    this.state.memoryBytes
+                }
+                    name={
+                        "TOTAL MEMORY (MB)"
+                    }
+                />
+
+            </div> <h4> DISK(Linux only) </h4> <div className="row no-gutters bottomMargin" >
+
+                <MultiListChart data={
+                    this.state.disk
+                }
+                    name={
+                        "DISK STATS"
+                    }
+                />  </div>
+
+
+            <div className="row no-gutters bottomMargin" >
+                <span> <h4 style={
+                    {
+                        "marginTop": "20px"
+                    }
+                } >
+                    LOGSTASH < CircleChart data={
+                        this.state.logstashStatus
+                    }
+                        id={
+                            "logstash"
+                        }
+                    /></h4>
+
+
                     <
                         GaugeChart data={
-                            this.state.cpu
+                            this.state.heapUsedPercent
                         }
                         name={
-                            "CPU USAGE (%)"
+                            "HEAP USED (%)"
                         }
                         id={
-                            "used_cpu"
+                            "used_heap"
                         }
                         width={
                             300
                         }
-                    />
-
-                    <
-                        ValueChart data={
-                            this.state.loadAverage1m
+                    /> </span> <span> <h4 style={
+                        {
+                            "marginTop": "20px"
                         }
-                        name={
-                            "1-MIN LOAD AVG"
-                        }
-                    />
+                    } > EVENTS STATS </h4>
 
-                    <
-                        ValueChart data={
-                            this.state.loadAverage5m
-                        }
-                        name={
-                            "5-MIN LOAD AVG"
-                        }
-                    />
+                    <MonitoringListChart data={
+                        this.state.eventStats
+                    }
+                    /></span>
 
-                    <
-                        ValueChart data={
-                            this.state.loadAverage15m
-                        }
-                        name={
-                            "15-MIN LOAD AVG"
-                        }
-                    /> < /
-            div > <
-            h4 > MEMORY < /h4> <
-            div className="row no-gutters bottomMargin" >
-                            <
-                                GaugeChart data={
-                                    this.state.memoryUsed
-                                }
-                                name={
-                                    "USED MEMORY (%)"
-                                }
-                                id={
-                                    "memoryUsed"
-                                }
-                                width={
-                                    300
-                                }
-                            /> <
-                                GaugeChart data={
-                                    this.state.memoryFree
-                                }
-                                name={
-                                    "FREE MEMORY (%)"
-                                }
-                                id={
-                                    "memoryFree"
-                                }
-                                width={
-                                    300
-                                }
-                            /> <
-                                ValueChart data={
-                                    this.state.memoryBytes
-                                }
-                                name={
-                                    "TOTAL MEMORY (MB)"
-                                }
-                            />
+            </div>
 
-                            <
-            /div> <h4 > DISK(Linux only) < /h4 > < div className="row no-gutters bottomMargin" >
-
-                                <
-                                    MultiListChart data={
-                                        this.state.disk
-                                    }
-                                    name={
-                                        "DISK STATS"
-                                    }
-                                />  <
-            /div>
-
-
-            <
-            div className="row no-gutters bottomMargin" >
-                                    <
-            span > < h4 style={
-                                            {
-                                                "marginTop": "20px"
-                                            }
-                                        } >
-                                            LOGSTASH < CircleChart data={
-                                                this.state.logstashStatus
-                                            }
-                                                id={
-                                                    "logstash"
-                                                }
-                                            /></h4 >
-
-
-                                        <
-                                            GaugeChart data={
-                                                this.state.heapUsedPercent
-                                            }
-                                            name={
-                                                "HEAP USED (%)"
-                                            }
-                                            id={
-                                                "used_heap"
-                                            }
-                                            width={
-                                                300
-                                            }
-                                        /> <
-            /span> <
-            span > < h4 style={
-                                                {
-                                                    "marginTop": "20px"
-                                                }
-                                            } > EVENTS STATS < /h4>
-
-            <
-                                                    MonitoringListChart data={
-                                                        this.state.eventStats
-                                                    }
-                                                /></span >
-
-                                            <
-            /div>
-
-            <
-                                                h4 >
-                                                ELASTICSEARCH < CircleChart data={
-                                                    this.state.elasticsearchStatus
-                                                }
-                                                    id={
-                                                        "elasticsearch"
-                                                    }
-                                                /></h4 >
-                                            <
-            div className="row no-gutters bottomMargin" >
-                                                <
-                                                    GaugeChart data={
-                                                        this.state.usedDiskSpace
-                                                    }
-                                                    name={
-                                                        "USED DISK SPACE (%)"
-                                                    }
-                                                    id={
-                                                        "used_disc"
-                                                    }
-                                                    width={
-                                                        300
-                                                    }
-                                                /> <
-                                                    ValueChart data={
-                                                        this.state.availableDiskSpace
-                                                    }
-                                                    name={
-                                                        "AVAILABLE DISK SPACE (MB)"
-                                                    }
-                                                />              <
-                                                    ValueChart data={
-                                                        this.state.avgResponseTime
-                                                    }
-                                                    name={
-                                                        "AVG RESPONSE (ms)"
-                                                    }
-                                                /> < /
-            div > <
-                                                    div className="row no-gutters bottomMargin" >
-                                                    <
-                                                        ListChartMonitoring data={
-                                                            this.state.indices
-                                                        }
-                                                        name={
-                                                            "INDICES STATS"
-                                                        }
-                                                    /> < /
-            div >
-                 <div className="row no-gutters">
-                                                        <MultiListChart data={
-                                                            this.state.sbcTypeCount
-                                                        } name={"SBC EVENTS COUNT"} field={"attrs.type"} />
-                                                    </div>
-                                                </div>
+            <h4>
+                ELASTICSEARCH < CircleChart data={
+                    this.state.elasticsearchStatus
+                }
+                    id={
+                        "elasticsearch"
+                    }
+                /></h4>
+            <div className="row no-gutters bottomMargin" >
+                <GaugeChart data={
+                    this.state.usedDiskSpace
+                }
+                    name={
+                        "USED DISK SPACE (%)"
+                    }
+                    id={
+                        "used_disc"
+                    }
+                    width={
+                        300
+                    }
+                /> <ValueChart data={
+                    this.state.availableDiskSpace
+                }
+                    name={
+                        "AVAILABLE DISK SPACE (MB)"
+                    }
+                />              <ValueChart data={
+                    this.state.avgResponseTime
+                }
+                    name={
+                        "AVG RESPONSE (ms)"
+                    }
+                /> </div> <div className="row no-gutters bottomMargin" >
+                <ListChartMonitoring data={
+                    this.state.indices
+                }
+                    name={
+                        "INDICES STATS"
+                    }
+                /> </div>
+            <div className="row no-gutters">
+                <MultiListChart data={
+                    this.state.sbcTypeCount
+                } name={"SBC EVENTS COUNT"} field={"attrs.type"} />
+            </div>
+        </div>
         );
     }
 }

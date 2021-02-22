@@ -94,12 +94,12 @@ class AdminController {
             })
         }
         // localhost query -- open up
-        if (req.connection.remoteAddress === '127.0.0.1') {
-            console.log("ACCESS getJWTsipUserFilter: permitted for localhost source");
+       // if (req.connection.remoteAddress === '127.0.0.1') {
+        //    console.log("ACCESS getJWTsipUserFilter: permitted for localhost source");
             // see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function
             // this is implicit Promise like if there was "return Promise.resolve("*")
-            return res.json({ user: 'localhost', aws: false });
-        }
+       //     return res.json({ user: 'localhost', aws: false });
+       // }
 
         // check config if JWT required
         var isAccept;

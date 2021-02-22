@@ -1,4 +1,4 @@
-ARG img=docker.frafos.net/nginx:alpine
+ARG img=nginx:alpine
 FROM ${img} as dev
 
 RUN apk add apache2-utils

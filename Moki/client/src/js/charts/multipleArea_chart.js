@@ -20,7 +20,7 @@ import {
 import Colors from '../helpers/style/Colors';
 import emptyIcon from "../../styles/icons/empty_small.png";
 import {
-    getTimeBucket
+    getTimeBucket, getTimeBucketInt
 } from "../helpers/getTimeBucket";
 
 export default class MultipleAreaChart extends Component {
@@ -110,7 +110,7 @@ export default class MultipleAreaChart extends Component {
 
 
         //max and min date
-        var maxTime = store.getState().timerange[1];
+        var maxTime = store.getState().timerange[1] + getTimeBucketInt();
         var minTime = store.getState().timerange[0];
 
         for (var i = 0; i < data.length; i++) {

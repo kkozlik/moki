@@ -1,5 +1,4 @@
 NAME		= moki-nginx
-URL			= docker.frafos.net
 RELEASE	= dev
 
 IMG_NAME	= $(URL)/$(NAME):$(RELEASE)
@@ -34,7 +33,7 @@ keys: $(CERT)
 $(CERT): $(KEY)
 $(KEY):
 	openssl req -new -newkey rsa:4096 -sha256 -days 365 -nodes \
-		-subj "/C=DE/ST=Berlin/L=Berlin/O=Frafos GmbH/OU=IT Department/CN=localhost" \
+		-subj "/C=DE/ST=Berlin/L=Berlin/O=NoOne GmbH/OU=IT Department/CN=localhost" \
 		 -out $(CERT) -keyout $(KEY)
 
 .PHONY: clean

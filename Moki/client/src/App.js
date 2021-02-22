@@ -1,7 +1,15 @@
+import'bootstrap/dist/css/bootstrap.min.css';
+import'bootstrap/dist/js/bootstrap.min.js';
+import'jquery/src/jquery';
+// import'bootstrap/dist/css/bootstrap-theme.css';
+
 import React, {
     Component
 } from 'react';
+
+
 import './App.css';
+
 import Calls from './js/dashboards/Call/Calls';
 import Web from './js/dashboards/Web/Web';
 import Connectivity from './js/dashboards/Connectivity/Connectivity';

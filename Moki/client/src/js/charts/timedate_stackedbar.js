@@ -16,7 +16,7 @@ import {
     createFilter
 } from '@moki-client/gui';
 import {
-    getTimeBucket
+    getTimeBucket, getTimeBucketInt
 } from "../helpers/getTimeBucket";
 import emptyIcon from "../../styles/icons/empty_small.png";
 
@@ -86,7 +86,7 @@ export default class StackedChart extends Component {
         //  .append('g');
 
         //max and min date
-        var maxTime = store.getState().timerange[1];
+        var maxTime = store.getState().timerange[1]+getTimeBucketInt();
         var minTime = store.getState().timerange[0] - (60 * 1000); //minus one minute fix for round up
 
         var x = d3.scaleBand().range([0, width]).padding(0.1);
