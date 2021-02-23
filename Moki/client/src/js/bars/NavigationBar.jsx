@@ -6,20 +6,18 @@ import logout from "../../styles/icons/log_out.png";
 import store from "../store/index";
 import { setWidthChart } from "../actions/index";
 import collapseIcon from "../../styles/icons/collapse.png";
-import { renderNavBarSettings } from '@moki-client/gui';
+import { renderNavBar } from '@moki-client/gui';
 
 class navBar extends Component {
     constructor(props) {
         super(props);
         this.state = {
             collapsed: false,
-            activeDashboard: "",
             dashboards: this.props.dashboards,
             dashboardsSettings: this.props.dashboardsSettings
 
         };
         this.togglebar = this.togglebar.bind(this);
-        this.redirect = this.redirect.bind(this);
         this.logout = this.logout.bind(this);
     }
 
@@ -63,10 +61,6 @@ class navBar extends Component {
             }
         }
 
-    }
-
-    capitalizeFirstLetter(string) {
-        return string.charAt(0).toUpperCase() + string.slice(1);
     }
 
     togglebar() {
@@ -121,38 +115,11 @@ class navBar extends Component {
         }
     }
 
-    redirect(event) {
-
-        //toggle active dashboards
-        var newDashboard = event.currentTarget.getElementsByTagName("span")[0];
-        this.setState({
-            activeDashboard: newDashboard.innerHTML
-        });
-
-        // this.props.redirect();
-    }
-
-
-    renderNavBar(dashboards){
-        var navBar = [];
-        for(var i = 0; i < dashboards.length; i++){
-            if(dashboards[i] !== "web"){
-                navBar.push(<Link to={"/"+dashboards[i]} id={"/"+dashboards[i]} className="bg-dark list-group-myitem list-group-item-action" onClick={this.redirect} key={dashboards[i]}>
-                <div className="d-flex w-100 justify-content-start align-items-center">
-                    <img src={require(`../../styles/icons/${dashboards[i]}.png`).default} alt={dashboards[i]} className="marginRight" title={dashboards[i]} />
-                    <span className={this.state.activeDashboard === dashboards[i] ? "menu-collapsed menuText activeDashboard" : "menu-collapsed menuText"}>{this.capitalizeFirstLetter(dashboards[i])}</span>
-                </div>
-            </Link>);
-            }
-        }
-        return navBar;
-    }
-
     render() {
         var dashboardsSettings = this.state.dashboardsSettings;
         var dashboards = this.state.dashboards;
-        var navbar = this.renderNavBar(dashboards);
-        var navbarSettings = renderNavBarSettings(dashboardsSettings, this.redirect);
+        var navbar = renderNavBar(dashboards);
+        var navbarSettings = renderNavBar(dashboardsSettings);
         return (
             <div id="sidebar-container" className="sidebar-expanded d-none d-md-block sticky-top">
                 <ul className="list-group">

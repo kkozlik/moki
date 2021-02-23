@@ -92,7 +92,7 @@ export default class geoIpMap extends Component {
 
                 //get max value
                 var maxValue = 0;
-                var minValue = data[0].doc_count;
+                var minValue = data.length > 0 ? data[0].doc_count : 0;
                 for (var i = 0; i < data.length; i++) {
 
 
@@ -254,7 +254,7 @@ export default class geoIpMap extends Component {
 
         //get max value
         var maxValue = 0;
-        var minValue = data[0].doc_count;
+        var minValue = data.length > 0 ? data[0].doc_count : 0;
         for (var i = 0; i < data.length; i++) {
 
 
