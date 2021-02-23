@@ -152,7 +152,7 @@ class navBar extends Component {
         var dashboardsSettings = this.state.dashboardsSettings;
         var dashboards = this.state.dashboards;
         var navbar = this.renderNavBar(dashboards);
-        var navbarSettings = renderNavBarSettings(dashboardsSettings);
+        var navbarSettings = renderNavBarSettings(dashboardsSettings, redirect);
         return (
             <div id="sidebar-container" className="sidebar-expanded d-none d-md-block sticky-top">
                 <ul className="list-group">
