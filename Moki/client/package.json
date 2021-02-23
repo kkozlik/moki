@@ -13,7 +13,7 @@
   "homepage": "https://www.frafos.com/  https://www.intuitivelabs.com/",
   "dependencies": {
     "bootstrap": "^4.6.0",
-    "@moki-client/gui": "git+ssh://git@github.com/intuitivelabs/moki-gui-intuitive.git#98e93e2",
+    "@moki-client/gui": "git+ssh://git@github.com/intuitivelabs/moki-gui-intuitive.git#69a5dc3c",
     "classnames": "^2.2.6",
     "d3": "^5.7.0",
     "d3-scale-chromatic": "^1.3.3",
