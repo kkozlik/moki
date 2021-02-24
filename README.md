@@ -8,7 +8,7 @@ Two npm modules are provided currently for the client component:
 The modules are configured as GIT URL (`git+ssh`) depencies in the [package.json](https://github.com/intuitivelabs/moki/blob/master/Moki/client/package.json) file. They are downloaded from their repositories by calling `npm install` in the `client` directory. For more details on npm dependencies using GIT URL see
 [online npm documentation](https://docs.npmjs.com/cli/v7/configuring-npm/package-json#git-urls-as-dependencies) or `man package.json`.
 
-Public vs. [intuitivelabs](https://www.intuitivelabs.com) private versions are installed by specifying the respective GIT URL in the [package.json](https://github.com/intuitivelabs/moki/blob/master/Moki/client/package.json) file. Currently these are the GIT URLs:
+Public vs. [intuitivelabs](https://www.intuitivelabs.com) private versions are installed by specifying their respective GIT URL in the [package.json](https://github.com/intuitivelabs/moki/blob/master/Moki/client/package.json) file. Currently these are the GIT repositories of these modules:
 1. public version:
   * [es-response-parser](https://github.com/intuitivelabs/es-response-parser);
   * [moki-gui](https://github.com/intuitivelabs/moki-gui);
