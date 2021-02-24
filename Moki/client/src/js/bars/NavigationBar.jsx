@@ -120,6 +120,7 @@ class navBar extends Component {
         var dashboards = this.state.dashboards;
         var navbar = renderNavBar(dashboards);
         var navbarSettings = renderNavBar(dashboardsSettings);
+        var navbarUser = renderNavBar(["account"]);
         return (
             <div id="sidebar-container" className="sidebar-expanded d-none d-md-block sticky-top">
                 <ul className="list-group">
@@ -136,6 +137,8 @@ class navBar extends Component {
                     <li className="list-group-myitem sidebar-separator-title d-flex align-items-center menu-collapsed">
                         <small className="menu-collapsed">USER</small>
                     </li>
+
+                    {navbarUser}
                     <Link to={this.props.aws === true ? "/logout" : "/"} className="bg-dark list-group-myitem list-group-item-action" onClick={this.logout}>
                         <div className="d-flex w-100 justify-content-start align-items-center">
                             <img className="marginRight" src={logout} alt="transport" />
