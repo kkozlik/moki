@@ -21,6 +21,7 @@ run `npm install` in the `client` directory.
 
 ### build everything
 run `npm run-scripts build` in the `client` directory.
+
 `@moki-client/gui` requires `jsx` file translation (i.e. translating react `jsx` files into `js` files by using `babel`). this translation is triggered automatically when `npm run-scripts build` is run. it is driven by the `scripts` session of [package.json](https://github.com/intuitivelabs/moki/blob/master/Moki/client/package.json):
 ```
 "scripts": {
