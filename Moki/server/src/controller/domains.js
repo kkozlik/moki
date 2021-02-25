@@ -89,7 +89,7 @@ class DomainsController {
             //TOP DOMAINS
             const topDomains = agg_filter.getTemplate('tls-cn', getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, '*', domainFilter), supress);
 
-            //TABLE
+            //TABLE TODO: specific type
             var table = timerange_query.getTemplate(getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, "*", domainFilter), supress);
 
             //SUM ALL EVENTS

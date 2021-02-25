@@ -18,10 +18,7 @@ import {
 import TimerangeBar from './js/bars/SetTimerangeBar';
 import FilterBar from './js/bars/FilterBar';
 import Restricted from './js/dashboards/Restricted/Restricted';
-import Alarms from './js/pages/alarms_settings';
-import SNS from './js/pages/sns_settings';
 import Sequence from './js/pages/sequenceDiagram';
-import General from './js/pages/general_settings';
 import store from "./js/store/index";
 import {
     setUser
@@ -141,7 +138,7 @@ class App extends Component {
                         if (data.attrs[j].attribute === "settings") {
                             if (this.state.admin) {
                                 this.setState({
-                                    dashboardsSettings: ["alarms", "sns", "general", "monitoring", "decrypt"]
+                                    dashboardsSettings: ["alarms", "general", "monitoring", "decrypt"]
                                 });
                             }
                             else {
@@ -432,7 +429,6 @@ class App extends Component {
 
     render() {
         var dashboards = this.state.dashboards;
-        var dashboardsSettings = this.state.dashboardsSettings;
         var loadingScreen = <span> <div className="errorBar" > {
             this.state.error
         } </div> <div style={

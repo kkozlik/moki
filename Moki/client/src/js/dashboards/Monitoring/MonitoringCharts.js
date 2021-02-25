@@ -133,13 +133,19 @@ class MonitoringCharts extends Component {
             }
 
             //use disc space
-            var usedDiskSpace = data[0].nodes[node].fs.least_usage_estimate.used_disk_percent;
+            if (data[0].nodes[node].fs.least_usage_estimate && data[0].nodes[node].fs.least_usage_estimate.used_disk_percent) {
+                var usedDiskSpace = data[0].nodes[node].fs.least_usage_estimate.used_disk_percent;
+            }
 
             // available disk space
-            var availableDiskSpace = data[0].nodes[node].fs.least_usage_estimate.available_in_bytes / 1000000;
+            if (data[0].nodes[node].fs.least_usage_estimate && data[0].nodes[node].fs.least_usage_estimate.available_in_bytes) {
+                var availableDiskSpace = data[0].nodes[node].fs.least_usage_estimate.available_in_bytes / 1000000;
+            }
 
             // heap used
-            var heapUsedPercent = data[0].nodes[node].jvm.mem.heap_used_percent;
+            if (data[0].nodes[node].jvm.mem && data[0].nodes[node].jvm.mem.heap_used_percent) {
+                var heapUsedPercent = data[0].nodes[node].jvm.mem.heap_used_percent;
+            }
         }
 
         if (data && data[1] && data[1].hasOwnProperty("elasticsearch")) {
@@ -243,7 +249,7 @@ class MonitoringCharts extends Component {
                     }
                 /> </div>
             <h4> MEMORY </h4> <div className="row no-gutters bottomMargin" >
-               <ValueChart data={
+                <ValueChart data={
                     this.state.memoryBytes
                 }
                     name={

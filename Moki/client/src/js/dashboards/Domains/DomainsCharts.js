@@ -57,18 +57,6 @@ class DomainsCharts extends Dashboard {
                 </div>
                 <div className="row no-gutters">
                     <TableChart tags={this.props.tags} data={
-                        this.state.domainsTable
-                    } total={this.state.domainsTableTotal}
-                        name={
-                            "domains"
-                        }
-                        id={
-                            "DOMAINS EVENTS"
-                        }
-                    />
-                </div>
-                <div className="row no-gutters">
-                    <TableChart tags={this.props.tags} data={
                         this.state.lastLogins
                     } total={this.state.lastLoginsTotal}
                         name={

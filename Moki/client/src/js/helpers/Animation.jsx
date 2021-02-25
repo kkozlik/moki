@@ -71,7 +71,7 @@ class Animation extends Component {
             var name = this.props.name.replace(/ /g, "_").toLowerCase();
             var dashboard = window.location.pathname.substring(1);
             //check of path name end with "/", if so remove it
-            if (dashboard.substring(dashboard.length - 1) == "/") {
+            if (dashboard.substring(dashboard.length - 1) === "/") {
                 dashboard = dashboard.substring(0, dashboard.length - 1);
             }
             //get format is "dashboardName/chartName"
