@@ -269,148 +269,149 @@ export default class geoIpMap extends Component {
         rScale.domain([minValue - 1, maxValue + 1]).range([0, 8]);
         //remove old pins if exists
         var pins = document.getElementsByClassName("pins");
-        if (pins) {
-            while (pins.length > 0) {
-                pins[0].parentNode.removeChild(pins[0]);
-            }
-        }
-
-        var pinsPulse = document.getElementsByClassName("pinsPulse");
-        if (pinsPulse) {
-            while (pinsPulse.length > 0) {
-                pinsPulse[0].parentNode.removeChild(pinsPulse[0]);
-            }
-        }
-
-        var color = name === "REGISTRATIONS MAP" ? "#caa547" : "#c41d03";
-        pins = g.selectAll(".pin")
-            .data(data)
-            .enter().append("circle")
-            .attr("r", function (d) {
-                if (rScale(d.doc_count) < 2) return 2;
-                return rScale(d.doc_count);
-            })
-            .attr("fill", "transparent")
-            .attr("class", "pinsPulse")
-            .style("stroke", color)
-            .attr("transform", function (d) {
-                if (d.centroid && d.centroid.location && d.centroid.location.lon && d.centroid.location.lat) {
-                    return "translate(" + projection([
-                        d.centroid.location.lon,
-                        d.centroid.location.lat
-                    ]) + ")";
+        if (pins.length > 0) {
+            if (pins) {
+                while (pins.length > 0) {
+                    pins[0].parentNode.removeChild(pins[0]);
                 }
-                return "translate(-10,-10)";
-            });
+            }
 
-        g.selectAll(".pin")
-            .data(data)
-            .enter().append("circle")
-            .attr("r", function (d) {
-                return rScale(d.doc_count) < 2 ? 2 : rScale(d.doc_count);
-            })
-            .attr("fill", color)
-            .attr("class", "pins")
-            .attr("transform", function (d) {
-                if (d.centroid && d.centroid.location && d.centroid.location.lon && d.centroid.location.lat) {
-                    return "translate(" + projection([
-                        d.centroid.location.lon,
-                        d.centroid.location.lat
-                    ]) + ")";
+            var pinsPulse = document.getElementsByClassName("pinsPulse");
+            if (pinsPulse) {
+                while (pinsPulse.length > 0) {
+                    pinsPulse[0].parentNode.removeChild(pinsPulse[0]);
                 }
-                return "translate(-10,-10)";
-            })
-            .on("mouseover", function (d) {
-                tooltip.style("visibility", "visible");
-                d3.select(this).style("cursor", "pointer");
-                tooltip.select("div").html("<strong>City: </strong>" + d.key + " <br/><strong>Value: </strong>" + d3.format(',')(d.doc_count) + units);
-            })
-            .on("mouseout", function (d) {
-                tooltip.style("visibility", "hidden")
-            })
-            .on("mousemove", function (d) {
-                tooltip
-                    .style("left", (d3.event.layerX - 20) + "px")
-                    .style("top", (d3.event.layerY - 100) + "px");
+            }
 
-            })
-            .on("click", el => {
-                createFilter("geoip.city_name:" + el.key);
-
-                //bug fix: if you click but not move out
-                tooltip.style("visibility", "hidden")
-            });
-
-        function transition() {
-
-            var i = 0;
-            // Grow circles
-            pins
-                .transition()
-                .ease(d3.easeLinear)
-                .attr("r", function (d) { if (d.doc_count) return rScale(d.doc_count) + 10 })
-                .style("opacity", function (d) { return d === 60 ? 0 : 1 })
-                .duration(500)
-                .on("end", function () { if (++i === pins.size() - 1) { transition(); } });
-
-
-            // Reset circles where r == 0
-            pins
-                .attr("r", 0)
-                .style("opacity", 1);
-
-        }
-
-        transition();
-
-        // zoom and pan
-        const zoom = d3.zoom()
-            .scaleExtent([1, 20])
-            .extent([[0, 0], [width, height]])
-            .on('zoom', () => {
-                g.style('stroke-width', `${1.5 / d3.event.transform.k}px`);
-                g.attr('transform', d3.event.transform);
-
-                // draw the circles in their new positions
-                d3.selectAll("circle").attr("r", d => d.doc_count ?
-                    rScale(d.doc_count) / d3.event.transform.k : 2 / d3.event.transform.k
-                );
-
-                //display names 
-                var first = true;
-                if (d3.event.transform.k >= 4 && first) {
-                    first = false;
-                    d3.csv(cities).then(function (city) {
-                        g.selectAll(".city_label")
-                            .data(city)
-                            .enter()
-                            .append("text")
-                            .attr("class", "city_label")
-                            .text(function (d) {
-                                return d.city_ascii
-                            })
-                            .style("font-size", "2px")
-                            .attr("transform", function (d) {
-                                if (d.lng && d.lat) {
-                                    return "translate(" + projection([
-                                        d.lng,
-                                        d.lat
-                                    ]) + ")";
-                                }
-                            })
+            var color = name === "REGISTRATIONS MAP" ? "#caa547" : "#c41d03";
+            pins = g.selectAll(".pin")
+                .data(data)
+                .enter().append("circle")
+                .attr("r", function (d) {
+                    if (rScale(d.doc_count) < 2) return 2;
+                    return rScale(d.doc_count);
+                })
+                .attr("fill", "transparent")
+                .attr("class", "pinsPulse")
+                .style("stroke", color)
+                .attr("transform", function (d) {
+                    if (d.centroid && d.centroid.location && d.centroid.location.lon && d.centroid.location.lat) {
+                        return "translate(" + projection([
+                            d.centroid.location.lon,
+                            d.centroid.location.lat
+                        ]) + ")";
                     }
-                    )
-                }
-                //zooming out
-                if (d3.event.transform.k < 4 && !first) {
-                    first = true;
-                    g.selectAll(".city_label").remove();
-                }
+                    return "translate(-10,-10)";
+                });
 
-            })
-        svg.call(zoom);
+            g.selectAll(".pin")
+                .data(data)
+                .enter().append("circle")
+                .attr("r", function (d) {
+                    return rScale(d.doc_count) < 2 ? 2 : rScale(d.doc_count);
+                })
+                .attr("fill", color)
+                .attr("class", "pins")
+                .attr("transform", function (d) {
+                    if (d.centroid && d.centroid.location && d.centroid.location.lon && d.centroid.location.lat) {
+                        return "translate(" + projection([
+                            d.centroid.location.lon,
+                            d.centroid.location.lat
+                        ]) + ")";
+                    }
+                    return "translate(-10,-10)";
+                })
+                .on("mouseover", function (d) {
+                    tooltip.style("visibility", "visible");
+                    d3.select(this).style("cursor", "pointer");
+                    tooltip.select("div").html("<strong>City: </strong>" + d.key + " <br/><strong>Value: </strong>" + d3.format(',')(d.doc_count) + units);
+                })
+                .on("mouseout", function (d) {
+                    tooltip.style("visibility", "hidden")
+                })
+                .on("mousemove", function (d) {
+                    tooltip
+                        .style("left", (d3.event.layerX - 20) + "px")
+                        .style("top", (d3.event.layerY - 100) + "px");
+
+                })
+                .on("click", el => {
+                    createFilter("geoip.city_name:" + el.key);
+
+                    //bug fix: if you click but not move out
+                    tooltip.style("visibility", "hidden")
+                });
+
+            function transition() {
+
+                var i = 0;
+                // Grow circles
+                pins
+                    .transition()
+                    .ease(d3.easeLinear)
+                    .attr("r", function (d) { if (d.doc_count) return rScale(d.doc_count) + 10 })
+                    .style("opacity", function (d) { return d === 60 ? 0 : 1 })
+                    .duration(500)
+                    .on("end", function () { if (++i === pins.size() - 1) { transition(); } });
 
 
+                // Reset circles where r == 0
+                pins
+                    .attr("r", 0)
+                    .style("opacity", 1);
+
+            }
+
+            transition();
+
+            // zoom and pan
+            const zoom = d3.zoom()
+                .scaleExtent([1, 20])
+                .extent([[0, 0], [width, height]])
+                .on('zoom', () => {
+                    g.style('stroke-width', `${1.5 / d3.event.transform.k}px`);
+                    g.attr('transform', d3.event.transform);
+
+                    // draw the circles in their new positions
+                    d3.selectAll("circle").attr("r", d => d.doc_count ?
+                        rScale(d.doc_count) / d3.event.transform.k : 2 / d3.event.transform.k
+                    );
+
+                    //display names 
+                    var first = true;
+                    if (d3.event.transform.k >= 4 && first) {
+                        first = false;
+                        d3.csv(cities).then(function (city) {
+                            g.selectAll(".city_label")
+                                .data(city)
+                                .enter()
+                                .append("text")
+                                .attr("class", "city_label")
+                                .text(function (d) {
+                                    return d.city_ascii
+                                })
+                                .style("font-size", "2px")
+                                .attr("transform", function (d) {
+                                    if (d.lng && d.lat) {
+                                        return "translate(" + projection([
+                                            d.lng,
+                                            d.lat
+                                        ]) + ")";
+                                    }
+                                })
+                        }
+                        )
+                    }
+                    //zooming out
+                    if (d3.event.transform.k < 4 && !first) {
+                        first = true;
+                        g.selectAll(".city_label").remove();
+                    }
+
+                })
+            svg.call(zoom);
+
+        }
     }
 
     render() {
