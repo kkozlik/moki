@@ -2,7 +2,7 @@ NAME			= moki-client
 RPM_NAME	= $(NAME)
 RELEASE		= dev
 
-RELEASE			?= $(shell sed -n 's/^ *Version: *//p' frafos-sbc-$(NAME).spec 2> /dev/null || echo "alpha")
+RELEASE			?= $(shell sed -n 's/^ *Version: *//p' $(NAME).spec 2> /dev/null || echo "alpha")
 GIT_COMMIT	:= $(shell git rev-parse --short HEAD 2> /dev/null || echo "dev")
 VERSION			?= "$(RELEASE)-$(GIT_COMMIT)"
 
