@@ -1,7 +1,7 @@
 // list of controllers for router path
 
 import React from 'react';
-import * as componentList from '@moki-client/gui/paths/index.js'
+import * as componentList from '@moki-client/gui/src/paths/index.js'
 import {
     Route
 } from 'react-router-dom';
