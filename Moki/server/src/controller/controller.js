@@ -78,17 +78,12 @@ class Controller {
                 if (requests[i].timestamp_gte) {
                     //last time bucket
                     if (requests[i].timestamp_gte == "lastTimebucket") {
-                        console.log("lastTimebucket " + lastTimebucket);
                         timestamp_gte = lastTimebucket;
                     }
                     //timestamp_lte is depending on timestamp_gte
                     else if (requests[i].timestamp_gte.includes("timestamp_lte")) {
                         requests[i].timestamp_gte.replace('timestamp_lte', timestamp_lte);
-                        console.log("---------------");
-                        console.log(requests[i].timestamp_gte);
                         timestamp_gte = eval(requests[i].timestamp_gte);
-                        console.log(timestamp_gte);
-
                     }
                     //count it
                     else {
@@ -115,7 +110,6 @@ class Controller {
                         var timebucketAnimation = (timestamp_lte - timestamp_gte) / 30000;
                         timebucketAnimation = Math.round(timebucketAnimation) + "s";
                         params = params.map(function (item) { return item == "timebucketAnimation" ? timebucketAnimation : item; });
-                        console.log("timebucketAnimation " + timebucketAnimation);
                     }
                     requests[i].query = requests[i].template.getTemplate(...params, getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, requests[i].filter, domainFilter), supress);
 
@@ -133,8 +127,7 @@ class Controller {
                     timestamp_gte = Math.round(req.body.timerange_gte);
                 }
             }
-            console.log("-----------------");
-            console.log(JSON.stringify(requests));
+
             console.log(new Date + " send msearch");
 
             var requestList = [];
@@ -150,8 +143,6 @@ class Controller {
                 )
             }
 
-            console.log("++++++++++++++++++++++");
-            console.log(JSON.stringify(requestList));
             const response = await client.msearch({
                 body: requestList
             }).catch((err) => {
