@@ -32,7 +32,7 @@ export default class barChart extends Component {
 
     setData(data) {
         this.setState({ data: data });
-        this.draw(this.state.data, this.props.width, this.props.units, this.props.name);
+        this.draw(data, this.props.width, this.props.units, this.props.name);
     }
 
 

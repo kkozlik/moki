@@ -43,6 +43,7 @@ export default class heatmap extends Component {
 
     setData(data) {
         this.setState({ data: data });
+        this.draw(data, this.props.id, this.props.field, this.props.field2, this.props.width, this.props.name, this.props.units);
     }
 
     draw(data, id, field, field2, passWidth, name, units) {

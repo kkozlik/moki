@@ -24,7 +24,7 @@ class timerangeBar extends Component {
             sipUser: store.getState().user.user,
             timestamp_gte: store.getState().timerange[0],
             timestamp_lte: store.getState().timerange[1],
-            refreshInterval: 15000,
+            refreshInterval: 30000,
             refreshIcon: refreshIcon,
             historyIcon: historyIconGrey,
             timer: "",
@@ -210,7 +210,15 @@ class timerangeBar extends Component {
             refreshUnit: e.options[e.selectedIndex].value,
             refreshValue: document.getElementById("refresh").value,
             click: false
-        });
+        }, () => this.clearAndStartNewRefresh());
+    }
+
+    //runs only if refresh is already running
+    clearAndStartNewRefresh() {
+        if (this.state.timer !== -1) {
+            clearInterval(this.state.timer);
+            this.startRefresh();
+        }
     }
 
     //refresh
@@ -218,32 +226,35 @@ class timerangeBar extends Component {
         //stop refresh
         if (this.state.refreshIcon === refreshStopIcon) {
             clearInterval(this.state.timer);
-            this.setState({ refreshIcon: refreshIcon });
+            this.setState({
+                refreshIcon: refreshIcon,
+                timer: -1
+            });
         }
         //start refresh
         else {
-
-            var refreshInterval = this.state.refreshInterval;
-            console.info("Refresh started. Interval is " + refreshInterval);
-            function refresh() {
-                var timestamp_lteOld = store.getState().timerange[1];
-                var timestamp_lte = Math.round((new Date()).getTime() / 1000) * 1000;
-                var timestamp_gte = store.getState().timerange[0];
-                timestamp_gte = timestamp_lte - (timestamp_lteOld - timestamp_gte);
-                var timestamp_readiable = new Date(timestamp_gte).toLocaleString() + " - " + new Date(timestamp_lte).toLocaleString();
-                store.dispatch(setTimerange([timestamp_gte, timestamp_lte, timestamp_readiable]))
-            }
-
-            refresh();
-            var timer = window.setInterval(refresh, refreshInterval);
-            this.setState({
-                refreshIcon: refreshStopIcon,
-                timer: timer
-            });
-
+            this.startRefresh();
         }
+    }
 
-
+    //refresh
+    startRefresh() {
+        var refreshInterval = this.state.refreshInterval;
+        console.info("Refresh started. Interval is " + refreshInterval);
+        function refresh() {
+            var timestamp_lteOld = store.getState().timerange[1];
+            var timestamp_lte = Math.round((new Date()).getTime() / 1000) * 1000;
+            var timestamp_gte = store.getState().timerange[0];
+            timestamp_gte = timestamp_lte - (timestamp_lteOld - timestamp_gte);
+            var timestamp_readiable = new Date(timestamp_gte).toLocaleString() + " - " + new Date(timestamp_lte).toLocaleString();
+            store.dispatch(setTimerange([timestamp_gte, timestamp_lte, timestamp_readiable]))
+        }
+        refresh();
+        var timer = window.setInterval(refresh, refreshInterval);
+        this.setState({
+            refreshIcon: refreshStopIcon,
+            timer: timer
+        });
     }
 
     //reload data
@@ -605,14 +616,14 @@ class timerangeBar extends Component {
                     <button className="close" onClick={this.exportCSVclose}>
                         &times;
                         </button>
-                    <Export type="CSV" exportOpen={this.state.exportCSVOpen} />
+                    <Export type="CSV" exportOpen={this.state.exportCSVOpen} close={this.exportCSVclose} />
                 </div>
                 }
                 {name !== "web" && <div className="export" id="JSONexport">
                     <button className="close" onClick={this.exportJSONclose}>
                         &times;
                         </button>
-                    <Export type="JSON" exportOpen={this.state.exportJSONOpen} />
+                    <Export type="JSON" exportOpen={this.state.exportJSONOpen} close={this.exportJSONclose} />
                 </div>
                 }
             </div>

@@ -28,19 +28,11 @@ class TableChart extends Component {
     createFilter("NOT " + event.currentTarget.getAttribute('field') + ":\"" + event.currentTarget.getAttribute('value') + "\"");
   }
 
-  static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.data !== prevState.data) {
-      return { data: nextProps.data };
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.data !== this.state.data) {
+      this.setState({ data: nextProps.data });
     }
-    else return null;
-  }
 
-  componentDidUpdate(prevProps, prevState) {
-    if (prevProps.data !== this.props.data) {
-      this.setState({ data: this.props.data });
-
-    }
-  }
 
   setData(data) {
     this.setState({ data: data });
