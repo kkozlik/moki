@@ -1,22 +1,4 @@
-// calls.js hold the calls endpoint
-
-const {
-    getFiltersConcat,
-    getTypesConcat,
-    getQueries
-} = require('../utils/metrics');
-const {
-    connectToES
-} = require('../modules/elastic');
-
-let {
-    getTimestampBucket,
-    timestamp_gte,
-    timestamp_lte
-} = require('../utils/ts');
-const { getJWTsipUserFilter } = require('../modules/jwt');
-
-
+const Controller = require('./controller.js');
 const query_string = require('../../js/template_queries/query_string.js');
 const agg_sum_bucket_query = require('../../js/template_queries/agg_sum_bucket_query.js');
 const agg_query = require('../../js/template_queries/agg_query.js');
@@ -25,13 +7,8 @@ var two_agg_no_order_query = require('../../js/template_queries/two_agg_no_order
 var date_bar = require('../../js/template_queries/date_bar_query.js');
 var datehistogram_agg_filter_query = require('../../js/template_queries/datehistogram_agg_filter_query.js');
 var datehistogram_agg_sum_bucket_query = require('../../js/template_queries/datehistogram_agg_sum_bucket_query.js');
-var timerange_query = require('../../js/template_queries/timerange_query.js');
 
-supress = "nofield";
-var userFilter = "*";
-var domainFilter = "*";
-
-class CallsController {
+class CallsController extends Controller {
 
     /**
      * @swagger
@@ -69,227 +46,46 @@ class CallsController {
      *               $ref: '#/definitions/ChartResponseError'
      */
     static getCharts(req, res, next) {
-        async function search() {
-            const client = connectToES();
-
-            const filters = getFiltersConcat(req.body.filters);
-            const types = getTypesConcat(req.body.types);
-
-            if (req.body.timerange_lte) {
-                timestamp_lte = Math.round(req.body.timerange_lte);
-            }
-
-            if (req.body.timerange_gte) {
-                timestamp_gte = Math.round(req.body.timerange_gte);
-            }
-
-            var timebucket = getTimestampBucket(timestamp_gte, timestamp_lte);
-            //check if domain fiter should be use
-            var isDomainFilter = await getJWTsipUserFilter(req);
-            if (isDomainFilter.domain) {
-                domainFilter = isDomainFilter.domain;
-            }
-
-            console.info("SERVER search with filters: " + filters + " types: " + types + " timerange: " + timestamp_gte + "-" + timestamp_lte + " timebucket: " + timebucket + " userFilter: " + userFilter + " domainFilter: " + domainFilter);
-
-
+        super.request(req, res, next, [
             //CALL TERMINATED
-            const callTerminated = agg_filter.getTemplate('attrs.originator', getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, 'attrs.type:call-end', domainFilter), supress);
-
+            { index: "logstash*", template: agg_filter, params: ["attrs.originator", 10], filter: 'attrs.type:call-end' },
             //CALL SUCCESS RATIO
-            const callSuccessRatio = two_agg_no_order_query.getTemplate("termination", "terms", "attrs.sip-code", getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, "*", domainFilter), supress);
-
+            { index: "logstash*", template: two_agg_no_order_query, params: ["termination", "terms", "attrs.sip-code"], filter: "*" },
             //SUM CALL-ATTEMPT
-            const queryStringTemplate = query_string.getTemplate(getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, "attrs.type:call-attempt", domainFilter), supress);
-
+            { index: "logstash*", template: query_string, filter: "attrs.type:call-attempt" },
             //SUM CALL-END
-            const sumCallEnd = query_string.getTemplate(getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, "attrs.type:call-end", domainFilter), supress);
-
+            { index: "logstash*", template: query_string, filter: "attrs.type:call-end" },
             //SUM CALL-START
-            const sumCallStart = query_string.getTemplate(getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, "attrs.type:call-start", domainFilter), supress);
-
+            { index: "logstash*", template: query_string, filter: "attrs.type:call-start" },
             //DURATION SUM
-            const durationSum = agg_query.getTemplate("sum", "attrs.duration", getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, "*", domainFilter), supress);
-
+            { index: "logstash*", template: agg_query, params: ["sum", "attrs.duration"], filter: "*" },
             //AVERAGE FAILURE RATIO
-            const avgFailureRatio = agg_sum_bucket_query.getTemplate("SumFailureSuccess", "failure", getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, "*", domainFilter), supress);
-
+            { index: "logstash*", template: agg_sum_bucket_query, params: ["SumFailureSuccess", "failure"], filter: "*" },
             //AVG MoS
-            const avgMoS = agg_query.getTemplate("avg", "attrs.rtp-MOScqex-avg", getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, "*", domainFilter), supress);
-
+            { index: "logstash*", template: agg_query, params: ["avg", "attrs.rtp-MOScqex-avg"], filter: "*" },
             //ANSWER-SEIZURE RATIO
-            const answerSeizureRatio = agg_sum_bucket_query.getTemplate("CallEnd", "AnsweredCalls", getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, "*", domainFilter), supress);
-
-
+            { index: "logstash*", template: agg_sum_bucket_query, params: ["CallEnd", "AnsweredCalls"], filter: "*" },
             //CALLING COUNTRIES
-            const callingCountries = agg_query.getTemplate("terms", "geoip.country_code2", getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, "*", domainFilter), supress);
-
+            { index: "logstash*", template: agg_query, params: ["terms", "geoip.country_code2"], filter: "*" },
             //SUM DURATION OVER TIME
-            const sumDurationOverTime = date_bar.getTemplate("attrs.duration", timebucket, getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, "*", domainFilter), supress);
-
+            { index: "logstash*", template: date_bar, params: ["attrs.duration", "timebucket"], filter: "*" },
             //MAX DURATION
-            const maxDuration = agg_query.getTemplate("max", "attrs.duration", getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, "*", domainFilter), supress);
-
+            { index: "logstash*", template: agg_query, params: ["max", "attrs.duration"], filter: "*" },
             //MIN DURATION
-            const minDuration = agg_query.getTemplate("min", "attrs.duration", getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, "*", domainFilter), supress);
-
+            { index: "logstash*", template: agg_query, params: ["min", "attrs.duration"], filter: "*" },
             //AVG DURATION
-            const avgDuration = agg_query.getTemplate("avg", "attrs.duration", getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, "*", domainFilter), supress);
-
-
+            { index: "logstash*", template: agg_query, params: ["avg", "attrs.duration"], filter: "*" },
             //DURATION GROUP
-            const durationGroup = agg_query.getTemplate("terms", "attrs.durationGroup", getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, "*", domainFilter), supress);
-
+            { index: "logstash*", template: agg_query, params: ["terms", "attrs.durationGroup"], filter: "*" },
             //SIP-CODE COUNT
-            const sipCodeCount = agg_query.getTemplate("terms", "attrs.sip-code", getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, "*", domainFilter), supress);
-
+            { index: "logstash*", template: agg_query, params: ["terms", "attrs.sip-code"], filter: "*" },
             //CALLED COUNTIRES
-            const calledCountries = agg_query.getTemplate("terms", "attrs.dst_cc", getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, "*", domainFilter), supress);
-
+            { index: "logstash*", template: agg_query, params: ["terms", "attrs.tst_cc"], filter: "*" },
             //EVENT CALLS TIMELINE
-            const eventsOverTime = datehistogram_agg_filter_query.getTemplate("attrs.type", timebucket, getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, "attrs.type:call-end OR attrs.type:call-start OR attrs.type:call-attempt", domainFilter), supress);
-
-            //ANSWER-SEIZURE RATIO TIMELINE
-            const answerSeizureRatioTimeline = datehistogram_agg_sum_bucket_query.getTemplate("CallEnd", "AnsweredCalls", timebucket, getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, "*", domainFilter), supress);
-
-
-            console.log(new Date + " send msearch");
-            console.log(JSON.stringify(eventsOverTime));
-
-            const response = await client.msearch({
-                body: [
-                    {
-                        index: 'logstash*',
-                        "ignore_unavailable": true,
-                        "preference": 1542895076143
-                    },
-                    callTerminated,
-                    {
-                        index: 'logstash*',
-                        "ignore_unavailable": true,
-                        "preference": 1542895076143
-                    },
-                    callSuccessRatio,
-                    {
-                        index: 'logstash*',
-                        "ignore_unavailable": true,
-                        "preference": 1542895076143
-                    },
-                    queryStringTemplate,
-                    {
-                        index: 'logstash*',
-                        "ignore_unavailable": true,
-                        "preference": 1542895076143
-                    },
-                    sumCallEnd,
-                    {
-                        index: 'logstash*',
-                        "ignore_unavailable": true,
-                        "preference": 1542895076143
-                    },
-                    sumCallStart,
-                    {
-                        index: 'logstash*',
-                        "ignore_unavailable": true,
-                        "preference": 1542895076143
-                    },
-                    durationSum,
-                    {
-                        index: 'logstash*',
-                        "ignore_unavailable": true,
-                        "preference": 1542895076143
-                    },
-                    avgFailureRatio,
-                    {
-                        index: 'logstash*',
-                        "ignore_unavailable": true,
-                        "preference": 1542895076143
-                    },
-                    avgMoS,
-                    {
-                        index: 'logstash*',
-                        "ignore_unavailable": true,
-                        "preference": 1542895076143
-                    },
-                    answerSeizureRatio,
-                    {
-                        index: 'logstash*',
-                        "ignore_unavailable": true,
-                        "preference": 1542895076143
-                    },
-                    callingCountries,
-                    {
-                        index: 'logstash*',
-                        "ignore_unavailable": true,
-                        "preference": 1542895076143
-                    },
-                    sumDurationOverTime,
-                    {
-                        index: 'logstash*',
-                        "ignore_unavailable": true,
-                        "preference": 1542895076143
-                    },
-                    maxDuration,
-                    {
-                        index: 'logstash*',
-                        "ignore_unavailable": true,
-                        "preference": 1542895076143
-                    },
-                    minDuration,
-                    {
-                        index: 'logstash*',
-                        "ignore_unavailable": true,
-                        "preference": 1542895076143
-                    },
-                    avgDuration,
-                    {
-                        index: 'logstash*',
-                        "ignore_unavailable": true,
-                        "preference": 1542895076143
-                    },
-                    durationGroup,
-                    {
-                        index: 'logstash*',
-                        "ignore_unavailable": true,
-                        "preference": 1542895076143
-                    },
-                    sipCodeCount,
-                    {
-                        index: 'logstash*',
-                        "ignore_unavailable": true,
-                        "preference": 1542895076143
-                    },
-                    calledCountries,
-                    {
-                        index: 'logstash*',
-                        "ignore_unavailable": true,
-                        "preference": 1542895076143
-                    },
-                    eventsOverTime,
-                    {
-                        index: 'logstash*',
-                        "ignore_unavailable": true,
-                        "preference": 1542895076143
-                    },
-                    answerSeizureRatioTimeline
-                ]
-            }).catch((err) => {
-                /*res.render('error_view', {
-                  title: 'Error',
-                  error: err
-                  });*/
-                err.status = 400
-                return next(err);
-            });
-
-            console.log(new Date + " got elastic data");
-            client.close();
-            return res.json(response);
-        }
-
-        return search().catch(e => {
-            return next(e);
-        });
+            { index: "logstash*", template: datehistogram_agg_filter_query, params: ["attrs.type", "timebucket"], filter: "attrs.type:call-end OR attrs.type:call-start OR attrs.type:call-attempt" },
+            //EVENT CALLS TIMELINE
+            { index: "logstash*", template: datehistogram_agg_sum_bucket_query, params: ["CallEnd", "AnsweredCalls", "timebucket"], filter: "*" }
+        ]);
     }
 
     /**
@@ -328,50 +124,8 @@ class CallsController {
      *               $ref: '#/definitions/ChartResponseError'
      */
     static getTable(req, res, next) {
-        async function search() {
-            const client = connectToES();
-
-            const filters = getFiltersConcat(req.body.filters);
-            const types = getTypesConcat(req.body.types);
-
-            if (req.body.timerange_lte) {
-                timestamp_lte = Math.round(req.body.timerange_lte);
-            }
-
-            if (req.body.timerange_gte) {
-                timestamp_gte = Math.round(req.body.timerange_gte);
-            }
-
-            var timebucket = getTimestampBucket(timestamp_gte, timestamp_lte);
-            //check if domain fiter should be use
-            var isDomainFilter = await getJWTsipUserFilter(req);
-            if (isDomainFilter.domain) {
-                domainFilter = isDomainFilter.domain;
-            }
-
-            var calls = timerange_query.getTemplate(getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, "attrs.type:call-end OR attrs.type:call-start OR attrs.type:call-attempt", domainFilter), supress);
-
-
-            const response = await client.search({
-                index: 'logstash*',
-                "ignore_unavailable": true,
-                "preference": 1542895076143,
-                body: calls
-
-            });
-
-            console.log(new Date + " got elastic data");
-            client.close();
-            return res.json(response);
-        }
-
-        return search().catch(e => {
-            return next(e);
-        });
-
-
+        super.requestTable(req, res, next, { index: "logstash*", filter: "attrs.type:call-end OR attrs.type:call-start OR attrs.type:call-attempt" });
     }
-
 }
 
 module.exports = CallsController;
