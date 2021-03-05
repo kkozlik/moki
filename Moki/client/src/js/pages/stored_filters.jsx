@@ -40,71 +40,77 @@ class StoredFilters extends Component {
                     "Access-Control-Allow-Credentials": "include"
                 }
             });
-            jsonData =  await response.json();
-            if(jsonData.general.m_filters){
+            jsonData = await response.json();
+            if (jsonData && jsonData.hits && jsonData.hits.hits) {
+                //change format {id: XX, attribute: YY, title:ZZ}
+                var newFormat = [];
+                for(var i =0; i < jsonData.hits.hits.length; i++){
+                    newFormat.push( {
+                        id: jsonData.hits.hits[i]._source.id,
+                        title: jsonData.hits.hits[i]._source.title,
+                        attribute: eval(jsonData.hits.hits[i]._source.attribute)
+                    });
+                }
+ 
                 this.setState({
-                    filters: jsonData.general.m_filters
+                    filters: newFormat
                 });
+                console.info("Got stored filters " + JSON.stringify(jsonData));
             }
-            console.info("Got stored filters "+JSON.stringify(jsonData));
         } catch (error) {
             console.error(error);
             alert("Problem with receiving data. " + error);
         }
 
     }
-   
+
     //redirect to dashboard stored in filters, active  stored types, filters and timerange
-    activateFilter(event){         
-       var filterID = event.currentTarget.getAttribute("filterid");
-       var storedFilters =  this.state.filters;
-       var filters = "";
+    activateFilter(event) {
+        var filterID = event.currentTarget.getAttribute("filterid");
+        var storedFilters = this.state.filters;
+        var filters = "";
         var newFilters = [];
-        
-        for(var i =0; i < storedFilters.length; i++){
-            if(storedFilters[i].id === filterID)
-               filters = storedFilters[i];
-            }
-        
+
+        for (var i = 0; i < storedFilters.length; i++) {
+            if (storedFilters[i].id === filterID)
+                filters = storedFilters[i];
+        }
+
         document.getElementsByClassName("close")[0].click();
         //redirect according to dashboard name
         var name = filters.attribute[1].name;
         document.getElementById(name).click();
-        
+
         //filters
-        if(filters.attribute[0].filters){
-            for(i =0; i < filters.attribute[0].filters.length; i++){
-                 newFilters.push(createFilterNoDispatch(filters.attribute[0].filters[i][0].title, i));
+        if (filters.attribute[0].filters) {
+            for (i = 0; i < filters.attribute[0].filters.length; i++) {
+                newFilters.push(createFilterNoDispatch(filters.attribute[0].filters[i][0].title, i));
             }
             store.dispatch(setFilters(newFilters));
         }
-        
+
         //types
-        if(filters.attribute[2].types){
+        if (filters.attribute[2].types) {
             store.dispatch(assignType(filters.attribute[2].types));
         }
 
         //timerange
-         if(filters.attribute[3]){
-             var timestamp_readiable = new Date(filters.attribute[3].timerange[0]).toLocaleString() + " - " + new Date(filters.attribute[3].timerange[1]).toLocaleString();
-             store.dispatch(setTimerange( [filters.attribute[3].timerange[0], filters.attribute[3].timerange[1], timestamp_readiable]));
+        if (filters.attribute[3]) {
+            var timestamp_readiable = new Date(filters.attribute[3].timerange[0]).toLocaleString() + " - " + new Date(filters.attribute[3].timerange[1]).toLocaleString();
+            store.dispatch(setTimerange([filters.attribute[3].timerange[0], filters.attribute[3].timerange[1], timestamp_readiable]));
         }
+        document.getElementById("storedFiltersClose").click();
     }
 
-    
-    async deleteFilter(event){
-       
-        var filter = event.currentTarget.getAttribute("id");  
-         console.info("Delete filter "+filter)
-        var filters =this.state.filters;
-        filters = filters.filter(function( obj ) {
-          return obj.id !== filter;
-        }); 
+
+    async deleteFilter(event) {
+        var filter = event.currentTarget.getAttribute("id");
+        console.info("Delete filter " + filter)
         var Url = "api/filters/delete";
         try {
             const response = await fetch(Url, {
                 method: "POST",
-                body: JSON.stringify(filters),
+                body: JSON.stringify({id: filter}),
                 credentials: 'include',
                 headers: {
                     "Content-Type": "application/json",
@@ -112,51 +118,52 @@ class StoredFilters extends Component {
                 }
             });
             var jsonData = await response.json();
-            
-            console.info("Filter deleted "+JSON.stringify(jsonData));
+
+            console.info("Filter deleted " + JSON.stringify(jsonData));
         } catch (error) {
             console.error(error);
             alert("Problem with deleting filter " + error);
         }
-        
+
         //load new filters at the end
         this.load();
     }
-    
-    
-    render() {    
-        var filters =  this.state.filters;
- if(filters.length !== 0){
-        return ( 
-             <React.Fragment>
-            {filters.map((item, key) =>
-            <div className = "rowFilter" key={item.id} >
-                    <span className = "iconsStoredFilter" onClick={this.activateFilter} filterid={item.id}>
-                                    <img  style={{"width": "10px"}} alt = "activateIcon" src ={enableIcon} title = "activate filter"  />
+
+
+    render() {
+        var filters = this.state.filters;
+        if (filters.length !== 0) {
+            return (
+                <React.Fragment>
+                    {filters.map((item, key) =>
+                        <div className="rowFilter" key={item.id} >
+                            <span className="iconsStoredFilter" onClick={this.activateFilter} filterid={item.id}>
+                                <img style={{ "width": "10px" }} alt="activateIcon" src={enableIcon} title="activate filter" />
                             </span >
-                             <span className = "iconsStoredFilter iconsDelete" onClick={this.deleteFilter} id={item.id}>
-                                    <img style={{"width": "10px"}} alt = "deleteIcon" src = {disableIcon} title = "delete filter" />
+                            <span className="iconsStoredFilter iconsDelete" onClick={this.deleteFilter} id={item.id}>
+                                <img style={{ "width": "10px" }} alt="deleteIcon" src={disableIcon} title="delete filter" />
                             </span >
-                            <b style={{"marginLeft": "20px"}}>{item.id}: </b>
-                     {item.attribute[0].filters.length > 0 &&
-                item.attribute[0].filters[0].map((subitem, i) => {
-                    if(i <=3){
-                      return (
-                          <span className="tab" key={i}>{subitem.title}</span>
-                      )
-                    }
-                    return "";
-                })}
-                             
-                             
-                </div>
-            )}
-        </React.Fragment>
-        
-    );}
-    else {
-     return <span>No stored filters </span>
-     }
+                            <b style={{ "marginLeft": "20px" }}>{item.title}: </b>
+                            {item.attribute[0].filters.length > 0 &&
+                                item.attribute[0].filters[0].map((subitem, i) => {
+                                    if (i <= 3) {
+                                        return (
+                                            <span className="tab" key={i}>{subitem.title}</span>
+                                        )
+                                    }
+                                    return "";
+                                })}
+
+
+                        </div>
+                    )}
+                </React.Fragment>
+
+            );
+        }
+        else {
+            return <span>No stored filters </span>
+        }
     }
 }
 

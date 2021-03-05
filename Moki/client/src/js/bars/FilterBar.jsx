@@ -326,7 +326,7 @@ class filterBar extends Component {
                         {<Popup trigger={<img className="icon iconMain" alt="storeIcon" src={loadIcon} title="stored filters" />} modal>
                         {close => (
                           <div className="Advanced">
-                            <button className="close" onClick={close}>
+                            <button className="close" id="storedFiltersClose" onClick={close}>
                               &times;
                             </button>
                             <div className="contentAdvanced">
@@ -340,7 +340,7 @@ class filterBar extends Component {
                     {<Popup trigger={<img className="icon iconMain" alt="storeIcon" src={saveIcon} title="save filters" />} modal>
                         {close => (
                           <div className="Advanced">
-                            <button className="close" onClick={close}>
+                            <button className="close" id="saveFiltersClose" onClick={close}>
                               &times;
                             </button>
                             <div className="contentAdvanced">

@@ -356,6 +356,8 @@ class App extends Component {
                     }
 
                     console.info("MOKI: sip user: " + sip.user);
+
+                    //set user info :  email:email, domainID:domainID, jwt: jwtbit
                     store.dispatch(setUser(sip));
                     //set admin
                     if (sip.user === "ADMIN" && sip.user !== "SITE ADMIN") {
