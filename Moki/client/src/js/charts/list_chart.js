@@ -28,17 +28,9 @@ class TableChart extends Component {
     createFilter("NOT " + event.currentTarget.getAttribute('field') + ":\"" + event.currentTarget.getAttribute('value') + "\"");
   }
 
-  static getDerivedStateFromProps(nextProps, prevState) {
-    if (nextProps.data !== prevState.data) {
-      return { data: nextProps.data };
-    }
-    else return null;
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    if (prevProps.data !== this.props.data) {
-      this.setState({ data: this.props.data });
-
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.data !== this.state.data) {
+      this.setState({ data: nextProps.data });
     }
   }
 
@@ -83,40 +75,40 @@ class TableChart extends Component {
     }
     if (window.location.pathname === "/web") {
       var data = this.state.data[0];
-      while (data && data.length < 3) {
-        data.push({ "key": "", "doc_count": "" });
+      while(data && data.length < 3){
+        data.push({"key": "", "doc_count": ""});
 
       }
       return (
-        <div className="tableChart">
-          <h3 className="alignLeft title">{this.props.name}</h3>
-          <Animation display="none" name={this.props.name} type={this.props.type} setData={this.setData} dataAll={this.state.data} autoplay={this.props.autoplay} />
-          {this.state.data[0] && this.state.data[0].length > 0 &&
-            <table>
-              <tbody>{data.map((item, key) => {
-                return (
-                  <tr key={key} style={{ "height": "30px" }}>
-                    <td className="listChart filterToggleActiveWhite" id={item.key} style={{ "borderBottom": "none" }}>
-                      {(this.props.name.includes("COUNTRY") || this.props.name.includes("COUNTRIES")) && item.key !== "unknown" && item.key !== "" ? <ReactCountryFlag style={{ "marginRight": "5px" }} countryCode={item.key} svg /> : <span />}
-                      {item.key.substring(0, 16)}
-                    </td>
-                    <td className="listChart" style={{ "borderBottom": "none" }}>{item.doc_count !== "" && roundNumber(item.doc_count / this.state.data[1] * 100) + "%"}</td>
-                  </tr>
-                )
+       <div className="tableChart">
+        <h3 className="alignLeft title">{this.props.name}</h3>
+        <Animation display="none" name={this.props.name} type={this.props.type} setData={this.setData} dataAll={this.state.data} autoplay={this.props.autoplay}/>
+        {this.state.data[0] && this.state.data[0].length > 0 &&
+          <table>
+            <tbody>{data.map((item, key) => {
+              return (
+                <tr key={key} style={{ "height": "30px" }}>
+                  <td className="listChart filterToggleActiveWhite" id={item.key} style={{ "borderBottom": "none" }}>
+                    {(this.props.name.includes("COUNTRY") || this.props.name.includes("COUNTRIES")) && item.key !== "unknown" && item.key !== "" ? <ReactCountryFlag style={{ "marginRight": "5px" }} countryCode={item.key} svg /> : <span />}
+                    {item.key.substring(0, 16)}
+                  </td>
+                  <td className="listChart" style={{ "borderBottom": "none" }}>{item.doc_count !=="" && roundNumber(item.doc_count / this.state.data[1] * 100) + "%"}</td>
+                </tr>
+              )
 
-              })}</tbody>
-            </table>
-          }
-          {((this.state.data[0] && this.state.data[0].length === 0) || this.state.data[0] === "") &&
-            <table style={{ "minWidth": "17em" }}>
-              <tbody>
-                <tr><td><span></span></td></tr>
+            })}</tbody>
+          </table>
+        }
+        {((this.state.data[0] && this.state.data[0].length === 0) || this.state.data[0] === "") &&
+          <table style={{ "minWidth": "17em" }}>
+            <tbody>
+              <tr><td><span></span></td></tr>
 
-                <tr><td> <span className="noDataIcon"> <img alt="nodata" src={emptyIcon} className="noDataList" />  </span></td></tr>
-              </tbody>
-            </table>
-          }
-        </div>)
+              <tr><td> <span className="noDataIcon"> <img alt="nodata" src={emptyIcon} className="noDataList" />  </span></td></tr>
+            </tbody>
+          </table>
+        }
+      </div>)
 
     }
     else {

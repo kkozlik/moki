@@ -388,7 +388,6 @@ export default class listChart extends Component {
 
     render() {
         var thiss = this;
-
         //download merge pcaps
         async function getPcaps(event) {
             var selectedData = thiss.state.selected;

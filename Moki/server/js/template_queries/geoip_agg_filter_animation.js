@@ -5,7 +5,7 @@ aggregations.filter_agg.agg.buckets
 - agg.location (lat, lon)
 - agg.doc_count
 */
-var getTemplate = function (queries, timebucket, timestamp_gte, timestamp_lte, supress) {
+var getTemplate = function ( timebucket, timestamp_gte, timestamp_lte, queries, supress) {
     var template = {
         "size": 0,
         track_total_hits: true,

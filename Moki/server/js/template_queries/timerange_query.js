@@ -1,6 +1,6 @@
-var getTemplate = function (queries, supress) {
+var getTemplate = function (queries, supress, size = 500) {
     var template = {
-        size: 500,
+        size: size,
         "track_total_hits": true,
         "sort": [
             {

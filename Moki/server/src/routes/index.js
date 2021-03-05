@@ -13,7 +13,7 @@ const {
   SettingController, SecurityController, SystemController,
   TransportController, DomainsController, WebController
 } = require('../controller');
-const ReportController = require('../controller/report');
+//const ReportController = require('../controller/report');
 const { nodeEnv } = require('../modules/config');
 
 module.exports = () => {
@@ -133,9 +133,9 @@ module.exports = () => {
     .post('/monitoring/events', MonitoringController.getEvents)
     .post('/monitoring/sbc', MonitoringController.getSbc);
 
-  router
+  /*router
     .post('/report', ReportController.getReport);
-
+*/
   if (nodeEnv !== 'test') {
     router.use('/docs', swaggerUi.serve);
     router.get('/docs', swaggerUi.setup(specs, { explorer: true }));

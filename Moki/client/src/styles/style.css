@@ -563,6 +563,15 @@ text {
     z-index: 100000;
 }
 
+.overlayPopup {
+    position: fixed;
+    height: 100%;
+    top: 0;
+    bottom: 0;
+    background-color: rgb(220, 220, 220, 0.3);
+    z-index: 100000;
+}
+
 .export {
     font-size: 0.8rem !important;
     margin-right: 30px;

@@ -1,6 +1,7 @@
-Name:		moki-server
-Version:       10.0.0
-Release:	1%{?dist}
+Name:		  moki-server
+Version:  10.0.1
+#Release:	1%{dist}
+Release:	1.amzn2
 Summary:	API part of moki
 
 Group:		Applications/Internet
@@ -9,13 +10,14 @@ License:	Commercial
 Source:		%{name}-%{version}-%{release}.tar.gz
 BuildArch:	x86_64
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root
-Requires:	nodejs >= 8.9.4
-BuildRequires:  npm, yarn
-Requires:	yarn
+Requires:	nodejs >= 14.15.5
+#BuildRequires:  npm, yarn
+#Requires:	nodejs
 
 %description
 moki-server aka express API
 
+#DEV package
 %package	dev
 Summary:	moki-server express API dev
 
@@ -33,7 +35,7 @@ moki-server express API developement pack
 install -d %{buildroot}/usr/share/Moki/server
 cp -r js %{buildroot}/usr/share/Moki/server/
 cp -r src %{buildroot}/usr/share/Moki/server/
-cp -r report %{buildroot}/usr/share/Moki/server/
+#cp -r report %{buildroot}/usr/share/Moki/server/
 cp package*.json %{buildroot}/usr/share/Moki/server
 
 # install moki service file
@@ -74,15 +76,15 @@ ln -rfs \
 
 systemctl daemon-reload
 echo "Enabling and restarting moki-server dev"
-systemctl -q enable moki-client
-systemctl -q restart moki-client
+systemctl -q enable moki-server
+systemctl -q restart moki-server
 
 
 %files
 /usr/share/Moki/server/node_modules_prod
 /usr/share/Moki/server/js
 /usr/share/Moki/server/src
-/usr/share/Moki/server/report
+#/usr/share/Moki/server/report
 /usr/share/Moki/server/package*.json
 /usr/lib/systemd/system/moki-server.service
 
@@ -90,11 +92,13 @@ systemctl -q restart moki-client
 /usr/share/Moki/server/node_modules_dev
 /usr/share/Moki/server/js
 /usr/share/Moki/server/src
-/usr/share/Moki/server/report
+#/usr/share/Moki/server/report
 /usr/share/Moki/server/package*.json
-/usr/share/Moki/server/node_modules_dev
 /usr/lib/systemd/system/moki-server.service
 
 %changelog
+* Fri Feb 19 2021 Vladimir Broz <vlada@intuitivelabs.com> 10.0.1
+- init version after modules implemenration and dev pkg fixes
+
 * Fri Feb 5 2021 Quentin Burgess <qutn.burgess@gmail.com> 10.0.0
 - initial spec file
