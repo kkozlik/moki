@@ -1,109 +1,56 @@
 /*
 Class to get data for all charts iin Call dashboard
 */
-import React, {
-    Component
-} from 'react';
+import React from 'react';
 
+import Dashboard from '../Dashboard.js';
 import TimedateStackedChart from '../../charts/timedate_stackedbar.js';
 import DonutChart from '../../charts/donut_chart.js';
 import ListChart from '../../charts/list_chart.js';
 import ValueChart from '../../charts/value_chart.js';
 import store from "../../store/index";
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
-import {
-    elasticsearchConnection
-} from '../../helpers/elasticsearchConnection';
 import DashboardsTypes from '../../helpers/DashboardsTypes';
-const parseStackedTimebar = require('../../parse_data/parseStackedbarTimeData.js');
-var parseBucketData = require('../../parse_data/parseBucketData.js');
-var parseQueryStringData = require('../../parse_data/parseQueryStringData.js');
-var parseListData = require('../../parse_data/parseListData.js');
+import {parseListData, parseIp, parseStackedbarTimeData, parseBucketData, parseQueryStringData } from '@moki-client/es-response-parser';
 
-class ExceededCharts extends Component {
+class ExceededCharts extends Dashboard {
 
-    // Initialize the state
-    constructor(props) {
-        super(props);
-        this.loadData = this.loadData.bind(this);
-        this.state = {
-            eventCallsTimeline: [],
-            exceededCount: [],
-            exceededType: [],
-            topOffenders: [],
-            subnets: [],
-            ipAddress: [],
-            isLoading: true
+  // Initialize the state
+  constructor(props) {
+    super(props);
+    this.state = {
+      dashboardName: "exceeded/charts",
+      eventCallsTimeline: [],
+      exceededCount: [],
+      exceededType: [],
+      topOffenders: [],
+      subnets: [],
+      ipAddress: [],
+      isLoading: true
+    };
+    this.callBacks = {
+      functors: [
+        //EVENT CALLS TIMELINE
+        [{result: 'eventCallsTimeline', func: parseStackedbarTimeData}],
 
-        }
-        store.subscribe(() => this.loadData());
+        //EXCEEDED COUNT
+        [{result: 'exceededCount', func: parseQueryStringData}],
 
-    }
+        //EXCEEDED TYPE
+        [{result: 'exceededType', func: parseBucketData}],
 
-    componentWillUnmount() {
-        // fix Warning: Can't perform a React state update on an unmounted component
-        this.setState = (state, callback) => {
-            return;
-        };
-    }
+        //TOP OFFENDERS
+        [{result: 'topOffenders', func: parseListData}],
 
-    componentDidMount() {
-        this.loadData();
-    }
+        //EVENTS BY IP ADDR 
+        [{result: 'ipAddress', func: parseIp}],
 
-    /*
-    Load data from elasticsearch
-    get filters, types and timerange
-    */
-    async loadData() {
-        this.setState({
-            isLoading: true
-        });
-        var data = await elasticsearchConnection("exceeded/charts");
-
-        if (typeof data === "string" && data.includes("ERROR:")) {
-
-            this.props.showError(data);
-            this.setState({
-                isLoading: false
-            });
-            return;
-
-        } else if (data) {
-
-            //parse data
-            //EVENT CALLS TIMELINE
-            var eventCallsTimeline = parseStackedTimebar.parse(data.responses[0]);
-            console.info(new Date() + " MOKI CALLS: finished parsíng data");
-
-            //EXCEEDED COUNT
-            var exceededCount = parseQueryStringData.parse(data.responses[1]);
-
-            //EXCEEDED TYPE
-            var exceededType = parseBucketData.parse(data.responses[2]);
-
-            //TOP OFFENDERS
-            var topOffenders = parseListData.parse(data.responses[3]);
-
-            //EVENTS BY IP ADDR 
-            var ipAddress = parseListData.parse(data.responses[4]);
-
-            //TOP SUBNETS /24 EXCEEDED
-            var subnets = parseListData.parse(data.responses[5]);
-
-            this.setState({
-                eventCallsTimeline: eventCallsTimeline,
-                exceededCount: exceededCount,
-                exceededType: exceededType,
-                topOffenders: topOffenders,
-                subnets: subnets,
-                ipAddress: ipAddress,
-                isLoading: false
-            });
-        }
-    }
-
-
+        //TOP SUBNETS /24 EXCEEDED
+        [{result: 'subnets', func: parseListData}]
+      ]
+    };
+  }
+  
     //render GUI
     render() {
         return (<

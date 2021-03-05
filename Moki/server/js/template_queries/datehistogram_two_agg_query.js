@@ -1,4 +1,4 @@
-var getTemplate = function (field, field2, timebucket, queries, timestamp_gte, timestamp_lte, supress, agg_type="avg") {
+var getTemplate = function (field, field2, timebucket, timestamp_gte, timestamp_lte,  agg_type, queries, supress) {
     var template = {
         "size": 0,
         track_total_hits: true,

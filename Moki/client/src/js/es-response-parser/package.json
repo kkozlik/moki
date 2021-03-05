@@ -1,0 +1,14 @@
+{
+  "author": {
+    "name": "cristian.constantin@intuitivelabs.com"
+  },
+  "deprecated": false,
+  "description": "ElasticSearch reponse post processor",
+  "license": "ISC",
+  "main": "index.js",
+  "name": "es-response-parser",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "version": "1.0.0"
+}

@@ -182,6 +182,10 @@ label {
     color: var(--main);
 }
 
+.activeDashboardDiv {
+    background-color: #1D2124 !important;
+}
+
 .deleteColumn:after {
     content: "";
     display: inline;
@@ -559,6 +563,15 @@ text {
     z-index: 100000;
 }
 
+.overlayPopup {
+    position: fixed;
+    height: 100%;
+    top: 0;
+    bottom: 0;
+    background-color: rgb(220, 220, 220, 0.3);
+    z-index: 100000;
+}
+
 .export {
     font-size: 0.8rem !important;
     margin-right: 30px;
@@ -840,7 +853,6 @@ input[type=text] {
 }
 
 .list-group-collaps {
-    background-color: var(--main) !important;
     padding: 0 0 0 1rem;
     border: 0px;
     height: 40px;
@@ -1150,7 +1162,7 @@ input {
 #searchBar {
     margin-top: 10px;
     height: 30px;
-    margin-left: 10px;
+    margin-left: 20px;
     padding: 0;
     display: table-cell;
     font-size: 1rem;

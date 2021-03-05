@@ -1,98 +1,54 @@
 /*
 Class to get data for all charts iin Call dashboard
 */
-import React, {
-    Component
-} from 'react';
 
+import React from 'react';
+import Dashboard from '../Dashboard.js';
 import TimedateHeatmap from '../../charts/timedate_heatmap.js';
 import TimedateStackedChart from '../../charts/timedate_stackedbar.js';
 import StackedChart from '../../charts/stackedbar.js';
 import store from "../../store/index";
 import DashboardsTypes from '../../helpers/DashboardsTypes';
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
-import { elasticsearchConnection } from '../../helpers/elasticsearchConnection';
 import ListChart from '../../charts/list_chart.js';
-var parseDateHeatmap = require('../../parse_data/parseDateHeatmap.js');
-const parseStackedbar = require('../../parse_data/parseStackedbarData.js');
-const parseStackedTimebar = require('../../parse_data/parseStackedbarTimeData.js');
-var parseListData = require('../../parse_data/parseListData.js');
+import {parseListData, parseDateHeatmap, parseStackedbarData, parseStackedbarTimeData} from '@moki-client/es-response-parser';
 
-class OverviewCharts extends Component {
+class OverviewCharts extends Dashboard {
 
     // Initialize the state
     constructor(props) {
         super(props);
-        this.loadData = this.loadData.bind(this);
-
         this.state = {
+            dashboardName: "overview/charts",
             eventCallsTimeline: [],
             totalEventsInInterval: [],
             activitySBC: [],
             keepAlive: [],
             tags: [],
             isLoading: true
-        }
-        store.subscribe(() => this.loadData());
+        };
+        this.callBacks = {
+            functors: [
+                //EVENT OVERVIEW TIMELINE
+                [{result: 'eventOverviewTimeline', func: parseStackedbarTimeData}],
 
-    }
+                //TOTAL EVENTS IN INTERVAL
+                [{result: 'totalEventsInInterval', func: parseStackedbarData}],
 
+                //ACTIVITY OF SBC
+                [{result: 'activitySBC', func: parseDateHeatmap}],
 
-    componentDidMount() {
-        this.loadData();
-    }
+                //SBC - KEEP ALIVE
+                [{result: 'keepAlive', func: parseDateHeatmap}],
+                
+                // empty
+                [],
 
-    componentWillUnmount() {
-        // fix Warning: Can't perform a React state update on an unmounted component
-        this.setState = (state, callback) => {
-            return;
+                //TAGS LIST
+                [{result: 'tags', func: parseListData}]
+            ]
         };
     }
-
-    /*
-    Load data from elasticsearch
-    get filters, types and timerange from GUI
-    */
-    async loadData() {
-        this.setState({ isLoading: true });
-        var data = await elasticsearchConnection("overview/charts");
-
-        if (typeof data === "string" && data.includes("ERROR:")) {
-            this.props.showError(data);
-            this.setState({ isLoading: false });
-            return;
-        } else if (data) {
-
-            //EVENT OVERVIEW TIMELINE
-            var eventOverviewTimeline = parseStackedTimebar.parse(data.responses[0]);
-
-            //TOTAL EVENTS IN INTERVAL
-            var totalEventsInInterval = parseStackedbar.parse(data.responses[1]);
-
-            //ACTIVITY OF SBC
-            var activitySBC = parseDateHeatmap.parse(data.responses[2]);
-
-            //SBC - KEEP ALIVE
-            var keepAlive = parseDateHeatmap.parse(data.responses[3]);
-
-            //TAGS LIST
-            var tags = parseListData.parse(data.responses[5]);
-
-
-            console.info(new Date() + " MOKI OVERVIEW: finished parsing data");
-            this.setState({
-                eventCallsTimeline: eventOverviewTimeline,
-                totalEventsInInterval: totalEventsInInterval,
-                activitySBC: activitySBC,
-                keepAlive: keepAlive,
-                tags: tags,
-                isLoading: false
-            });
-
-        }
-    }
-
-
 
     //render GUI
     render() {

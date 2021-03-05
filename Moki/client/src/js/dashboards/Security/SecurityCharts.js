@@ -1,10 +1,9 @@
 /*
 Class to get data for all charts iin Call dashboard
 */
-import React, {
-    Component
-} from 'react';
+import React from 'react';
 
+import Dashboard from '../Dashboard.js';
 import TimedateStackedChart from '../../charts/timedate_stackedbar.js';
 import Geoipchart from '../../charts/geoip_map.js';
 import DonutChart from '../../charts/donut_chart.js';
@@ -12,23 +11,16 @@ import ListChart from '../../charts/list_chart.js';
 import store from "../../store/index";
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import DashboardsTypes from '../../helpers/DashboardsTypes';
-import {
-    elasticsearchConnection
-} from '../../helpers/elasticsearchConnection';
-
-var parseListData = require('../../parse_data/parseListData.js');
-var parseBucketData = require('../../parse_data/parseBucketData.js');
-const parseStackedTimebar = require('../../parse_data/parseStackedbarTimeData.js');
+import {parseListData, parseIp, parseAggCities, parseBucketData, parseStackedbarTimeData} from '@moki-client/es-response-parser';
 
 
-class SecurityCharts extends Component {
+class SecurityCharts extends Dashboard {
 
     // Initialize the state
     constructor(props) {
         super(props);
-        this.loadData = this.loadData.bind(this);
-
         this.state = {
+            dashboardName: "security/charts",
             geoipMap: [],
             eventRegsTimeline: [],
             eventsByIP: [],
@@ -37,79 +29,30 @@ class SecurityCharts extends Component {
             typesCount: [],
             sLoading: true
 
-        }
-        store.subscribe(() => this.loadData());
-
-    }
-
-    componentDidMount() {
-        this.loadData();
-    }
-
-    componentWillUnmount() {
-        // fix Warning: Can't perform a React state update on an unmounted component
-        this.setState = (state, callback) => {
-            return;
         };
+        this.callBacks = {
+            functors: [
+              //DISTRIBUTION GEOIP MAP
+              [{result: 'geoipMap', func: parseAggCities}],
+
+              //EVENT SECURITY TIMELINE
+              [{result: 'eventRegsTimeline', func: parseStackedbarTimeData}],
+
+              //EVENTS BY IP ADDR
+              [{result: 'eventsByIP', func: parseIp}],
+
+              //TOP SUBNETS /24
+              [{result: 'subnets', func: parseListData}],
+
+              //EVENTS BY COUNTRY
+              [{result: 'eventsByCountry', func: parseListData}],
+
+              //SECURITY TYPES EVENTS
+              [{result: 'typesCount', func: parseBucketData}]
+            ]
+        };
+
     }
-
-
-    /*
-    Load data from elasticsearch
-    get filters, types and timerange from GUI
-    */
-    async loadData() {
-
-        var data = await elasticsearchConnection("security/charts");
-
-        if (typeof data === "string" && data.includes("ERROR:")) {
-            console.log(typeof data === "string" && data.includes("ERROR:"));
-
-            this.props.showError(data);
-            this.setState({
-                isLoading: false
-            });
-            return;
-
-        } else if (data) {
-            //parse data
-            //DISTRIBUTION GEOIP MAP
-            var geoipMap = [];
-
-            if (data.responses[0].aggregations && data.responses[0].aggregations.cities && data.responses[0].aggregations.cities.buckets) {
-                geoipMap = data.responses[0].aggregations.cities.buckets;
-            }
-
-            //EVENT SECURITY TIMELINE
-            var eventRegsTimeline = parseStackedTimebar.parse(data.responses[1]);
-
-            //EVENTS BY IP ADDR
-            var eventsByIP = parseListData.parse(data.responses[2]);
-
-            //TOP SUBNETS /24
-            var subnets = parseListData.parse(data.responses[3]);
-
-            //EVENTS BY COUNTRY
-            var eventsByCountry = parseListData.parse(data.responses[4]);
-
-            //SECURITY TYPES EVENTS
-            var typesCount = parseBucketData.parse(data.responses[5]);
-
-            console.info(new Date() + " MOKI Security: finished parsíng data");
-
-            this.setState({
-                geoipMap: geoipMap,
-                eventRegsTimeline: eventRegsTimeline,
-                eventsByIP: eventsByIP,
-                subnets: subnets,
-                eventsByCountry: eventsByCountry,
-                typesCount: typesCount,
-                isLoading: false
-            });
-
-        }
-    }
-
 
     //render GUI
     render() {

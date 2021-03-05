@@ -1,186 +1,119 @@
 /*
 Class to get data for all charts iin Call dashboard
 */
-import React, {
-    Component
-} from 'react';
+import React from 'react';
 
+import Dashboard from '../Dashboard.js';
 import store from "../../store/index";
 import ListChart from '../../charts/list_chart.js';
 import DonutChart from '../../charts/donut_chart.js';
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
-import {
-    elasticsearchConnection
-} from '../../helpers/elasticsearchConnection';
-var parseListData = require('../../parse_data/parseListData.js');
-var parseListDataCardinality = require('../../parse_data/parseListDataCardinality.js');
-var parseBucketData = require('../../parse_data/parseBucketData.js');
+import {parseListData, parseIp, parseListDataCardinality, parseBucketData} from '@moki-client/es-response-parser';
 
 
-class MicroanalysisCharts extends Component {
+class MicroanalysisCharts extends Dashboard {
 
     // Initialize the state
     constructor(props) {
-        super(props);
-        this.loadData = this.loadData.bind(this);
-        this.state = {
-            typesCount: [],
-            fromUA: [],
-            sipMethod: [],
-            sipCode: [],
-            topSubnets: [],
-            prefixStripped: [],
-            sourceIP: [],
-            top10from: [],
-            callerDomain: [],
-            top10to: [],
-            distinctDestinations: [],
-            topCallAttempts: [],
-            topCallEnds: [],
-            destination: [],
-            sumDuration: [],
-            topDuration: [],
-            topDuration5: [],
-            topSBC: [],
-            srcCA: [],
-            dstCA: [],
-            originator: [],
-            isLoading: true
-        }
-        store.subscribe(() => this.loadData());
+      super(props);
+      this.state = {
+        dashboardName: "microanalysis/charts",
+        typesCount: [],
+        fromUA: [],
+        sipMethod: [],
+        sipCode: [],
+        topSubnets: [],
+        prefixStripped: [],
+        sourceIP: [],
+        top10from: [],
+        callerDomain: [],
+        top10to: [],
+        distinctDestinations: [],
+        topCallAttempts: [],
+        topCallEnds: [],
+        destination: [],
+        sumDuration: [],
+        topDuration: [],
+        topDuration5: [],
+        topSBC: [],
+        srcCA: [],
+        dstCA: [],
+        originator: [],
+        isLoading: true
+      }
+      this.callBacks = {
+        functors: [
+          //parse data
+          //TYPES 0
+          [{result: 'typesCount', func: parseBucketData}],
 
+          //FROM UA 1
+          [{result: 'fromUA', func: parseListData}],
+
+          //SIP METHOD 2
+          [{result: 'sipMethod', func: parseListData}],
+
+          //SIP CODE 3
+          [{result: 'sipCode', func: parseListData}],
+
+          //TOP SUBNETS 4
+          [{result: 'topSubnets', func: parseListData}],
+
+          //r-URI PREFIX STRIPPED 5
+          [{result: 'prefixStripped', func: parseListData}],
+
+          //SOURCE IP ADDRESS 6
+          [{result: 'sourceIP', func: parseIp}],
+
+          //TOP 10 FROM 7
+          [{result: 'top10from', func: parseListData}],
+
+          //CALLER DOMAIN 8
+          [{result: 'callerDomain', func: parseListData}],
+
+          //TOP 10 TO 9
+          [{result: 'top10to', func: parseListData}],
+
+          //DOMAIN STATS 10
+          [{result: 'distinctDestinations', func: parseListDataCardinality}],
+
+          //TOP CALL ATTEMPTS 11
+          [{result: 'topCallAttempts', func: parseListData}],
+
+          //TOP CALL ENDS 12
+          [{result: 'topCallEnds', func: parseListData}],
+
+          //DESTINATION BY R-URI 13
+          [{result: 'destination', func: parseListData}],
+
+          //SUM DURATION 14
+          [{result: 'sumDuration', func: parseListDataCardinality}],
+
+          //TOP DURATION 15
+          [{result: 'topDuration', func: parseListDataCardinality}],
+
+          //TOP DURATION < 5 sec 16
+          [{result: 'topDuration5', func: parseListData}],
+
+          //TOP SBCs 17
+          [{result: 'topSBC', func: parseListData}],
+
+          //SRC CA 18
+          [{result: 'srcCA', func: parseListData}],
+
+          //DST CA 19
+          [{result: 'dstCA', func: parseListData}],
+
+          //ORIGINATOR 20
+          [{result: 'originator', func: parseListData}]
+        ]
+      }
     }
-
-    componentDidMount() {
-        this.loadData();
-    }
-
-    componentWillUnmount() {
-        // fix Warning: Can't perform a React state update on an unmounted component
-        this.setState = (state, callback) => {
-            return;
-        };
-    }
-
-    /*
-    Load data from elasticsearch
-    get filters, types and timerange from GUI
-    */
-    async loadData() {
-
-        this.setState({
-            isLoading: true
-        });
-        var data = await elasticsearchConnection("microanalysis/charts");
-        if (typeof data === "string" && data.includes("ERROR:")) {
-            console.log(typeof data === "string" && data.includes("ERROR:"));
-
-            this.props.showError(data);
-            this.setState({
-                isLoading: false
-            });
-            return;
-
-        } else if (data) {
-
-            //parse data
-            //TYPES
-            var typesCount = parseBucketData.parse(data.responses[0]);
-
-            //FROM UA
-            var fromUA = parseListData.parse(data.responses[1]);
-
-            //SIP METHOD
-            var sipMethod = parseListData.parse(data.responses[2]);
-
-            //SIP CODE
-            var sipCode = parseListData.parse(data.responses[3]);
-
-            //TOP SUBNETS
-            var topSubnets = parseListData.parse(data.responses[4]);
-
-            //r-URI PREFIX STRIPPED
-            var prefixStripped = parseListData.parse(data.responses[5]);
-
-            //SOURCE IP ADDRESS
-            var sourceIP = parseListData.parse(data.responses[6]);
-
-            //TOP 10 FROM
-            var top10from = parseListData.parse(data.responses[7]);
-
-            //CALLER DOMAIN
-            var callerDomain = parseListData.parse(data.responses[8]);
-
-            //TOP 10 TO
-            var top10to = parseListData.parse(data.responses[9]);
-
-            //DOMAIN STATS
-            var distinctDestinations = parseListDataCardinality.parse(data.responses[10]);
-
-            //TOP CALL ATTEMPTS
-            var topCallAttempts = parseListData.parse(data.responses[11]);
-
-            //TOP CALL ENDS
-            var topCallEnds = parseListData.parse(data.responses[12]);
-
-            //DESTINATION BY R-URI
-            var destination = parseListData.parse(data.responses[13]);
-
-            //SUM DURATION
-            var sumDuration = parseListDataCardinality.parse(data.responses[14]);
-
-            //TOP DURATION
-            var topDuration = parseListDataCardinality.parse(data.responses[15]);
-
-            //TOP DURATION < 5 sec
-            var topDuration5 = parseListData.parse(data.responses[16]);
-
-            //TOP SBCs
-            var topSBC = parseListData.parse(data.responses[17]);
-
-            //SRC CA
-            var srcCA = parseListData.parse(data.responses[18]);
-
-            //DST CA
-            var dstCA = parseListData.parse(data.responses[19]);
-
-            //ORIGINATOR
-            var originator = parseListData.parse(data.responses[20]);
-
-
-            console.info(new Date() + " MOKI MICROANALYSIS: finished parsíng data");
-
-            this.setState({
-                typesCount: typesCount,
-                fromUA: fromUA,
-                sipMethod: sipMethod,
-                sipCode: sipCode,
-                topSubnets: topSubnets,
-                prefixStripped: prefixStripped,
-                sourceIP: sourceIP,
-                top10from: top10from,
-                callerDomain: callerDomain,
-                top10to: top10to,
-                distinctDestinations: distinctDestinations,
-                topCallAttempts: topCallAttempts,
-                topCallEnds: topCallEnds,
-                destination: destination,
-                sumDuration: sumDuration,
-                topDuration: topDuration,
-                topDuration5: topDuration5,
-                topSBC: topSBC,
-                srcCA: srcCA,
-                dstCA: dstCA,
-                originator: originator,
-                isLoading: false
-            });
-
-
-        }
-    }
-
+  
     //render GUI
     render() {
+        console.log("------------------");
+        console.log(this.state.sourceIP);
         return (<
             div > {
                 this.state.isLoading && < LoadingScreenCharts />

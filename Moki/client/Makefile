@@ -2,7 +2,7 @@ NAME			= moki-client
 RPM_NAME	= $(NAME)
 RELEASE		= dev
 
-RELEASE			?= $(shell sed -n 's/^ *Version: *//p' frafos-sbc-$(NAME).spec 2> /dev/null || echo "alpha")
+RELEASE			?= $(shell sed -n 's/^ *Version: *//p' $(NAME).spec 2> /dev/null || echo "alpha")
 GIT_COMMIT	:= $(shell git rev-parse --short HEAD 2> /dev/null || echo "dev")
 VERSION			?= "$(RELEASE)-$(GIT_COMMIT)"
 
@@ -60,15 +60,31 @@ stop:
 .PHONY:		rpmtar
 ## rpmtar: Build the rpm tar ball
 rpmtar:
-		RPM_VERSION=`cat $(RPM_NAME).spec|grep -e "^Version:"|awk '{print $$2}'`; \
-		RPM_RELEASE=`cat $(RPM_NAME).spec|grep -e "^Release:"|awk '{print $$2}'`; \
-		echo "RPM_VERSION=$${RPM_VERSION}"; \
-		echo "RPM_RELEASE=$${RPM_VERSION}"; \
-		cd ../ ; \
-		mkdir "$(RPM_NAME)-$${RPM_VERSION}" ; \
-		cp -r client "$(RPM_NAME)-$${RPM_VERSION}"/ ; \
-		tar -cf "$(RPM_NAME)-$${RPM_VERSION}-$${RPM_RELEASE}".tar.gz "$(RPM_NAME)-$${RPM_VERSION}" ; \
-		rm -rf "$(RPM_NAME)-$${RPM_VERSION}"
+	RPM_VERSION=`cat $(RPM_NAME).spec|grep -e "^Version:"|awk '{print $$2}'`; \
+  RPM_RELEASE=`cat $(RPM_NAME).spec|grep -e "^Release:"|awk '{print $$2}'`; \
+  	echo "RPM_VERSION=$${RPM_VERSION}"; \
+  	echo "RPM_RELEASE=$${RPM_VERSION}"; \
+  	tar -C .. \
+  	--exclude=$(notdir $(CURDIR))/tmp \
+  	--exclude=.svn* \
+  	--exclude=.git* \
+  	--exclude=.\#* \
+  	--exclude=*.[do] \
+  	--exclude=*.la \
+  	--exclude=*.lo \
+  	--exclude=*.so \
+  	--exclude=*.il \
+  	--exclude=*.gz \
+  	--exclude=*.bz2 \
+  	--exclude=*.tar \
+  	--exclude=*~ \
+  	-cf - $(notdir $(CURDIR)) | \
+  	(mkdir -p tmp/_tar1; mkdir -p tmp/_tar2 ; \
+  	cd tmp/_tar1; tar -xf - ) && \
+  	mv tmp/_tar1/$(notdir $(CURDIR)) \
+  	tmp/_tar2/"$(RPM_NAME)-$${RPM_VERSION}" && \
+  	(cd tmp/_tar2 && tar -zcf ../../"$(RPM_NAME)-$${RPM_VERSION}-$${RPM_RELEASE}".tar.gz "$(RPM_NAME)-$${RPM_VERSION}" ) ; \
+  	rm -rf tmp
 
 .PHONY:		help
 ## help: Prints this help message

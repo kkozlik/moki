@@ -1,103 +1,48 @@
 /*
 Class to get data for all charts iin Call dashboard
 */
-import React, {
-    Component
-} from 'react';
+import React from 'react';
 
+import Dashboard from '../Dashboard.js';
 import TopologyChart from '../../charts/topology_chart.js';
 import Heatmap from '../../charts/heatmap_chart.js';
 import store from "../../store/index";
-import {
-    elasticsearchConnection
-} from '../../helpers/elasticsearchConnection';
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
-const parseHeatmapData = require('../../parse_data/parseHeatmapData.js');
-var parseDateHeatmap = require('../../parse_data/parseDateHeatmap.js');
-var parseTopologyData = require('../../parse_data/parseTopologyData.js');
+import {parseHeatmapData, parseDateHeatmap, parseTopologyData} from '@moki-client/es-response-parser';
 
-class ConnectivityCharts extends Component {
+class ConnectivityCharts extends Dashboard {
 
-    // Initialize the state
-    constructor(props) {
-        super(props);
-        this.loadData = this.loadData.bind(this);
-        this.state = {
-            fromTo: [],
-            failure: [],
-            callAtempts: [],
-            duration: [],
-            callEnds: [],
-            isLoading: true
-        }
-        store.subscribe(() => this.loadData());
+  // Initialize the state
+  constructor(props) {
+    super(props);
+    this.state = {
+      dashboardName: "connectivity/charts",
+      fromTo: [],
+      failure: [],
+      callAtempts: [],
+      duration: [],
+      callEnds: [],
+      isLoading: true
+    };
+    this.callBacks = {
+      functors: [
+        //FROM TO 
+        [{result: 'fromTo', func: parseTopologyData}],
 
-    }
+        //CONNECTION FAILURE RATIO 
+        [{result: 'failure', func: parseHeatmapData}],
 
-    componentDidMount() {
-        this.loadData();
-    }
+        //NUMBER OF CALL-ATTEMPS 
+        [{result: 'callAtempts', func: parseDateHeatmap}],
 
-    componentWillUnmount() {
-        // fix Warning: Can't perform a React state update on an unmounted component
-        this.setState = (state, callback) => {
-            return;
-        };
-    }
+        //DURATION 
+        [{result: 'duration', func: parseHeatmapData}],
 
-    /*
-    Load data from elasticsearch
-    get filters, types and timerange
-    */
-    async loadData() {
-
-        this.setState({
-            isLoading: true
-        });
-
-        var data = await elasticsearchConnection("connectivity/charts");
-
-        if (typeof data === "string" && data.includes("ERROR:")) {
-            this.props.showError(data);
-            this.setState({
-                isLoading: false
-            });
-            return;
-
-        } else if (data) {
-
-            //parse data
-            //FROM TO 
-            var fromTo = parseTopologyData.parse(data.responses[0]);
-
-            //CONNECTION FAILURE RATIO 
-            var failure = parseHeatmapData.parse(data.responses[1]);
-
-            //NUMBER OF CALL-ATTEMPS 
-            var callAtempts = parseDateHeatmap.parse(data.responses[2]);
-
-            //DURATION 
-            var duration = parseHeatmapData.parse(data.responses[3]);
-
-            //NUMBER OF CALL-ENDS 
-            var callEnds = parseDateHeatmap.parse(data.responses[4]);
-
-
-            console.info(new Date() + " MOKI ConnectivityCA: finished parsing data");
-
-            this.setState({
-                fromTo: fromTo,
-                failure: failure,
-                callAtempts: callAtempts,
-                duration: duration,
-                callEnds: callEnds,
-                isLoading: false
-
-            });
-        }
-
-    }
-
+        //NUMBER OF CALL-ENDS 
+        [{result: 'callEnds', func: parseDateHeatmap}]
+      ]
+    };
+  }
 
     //render GUI
     render() {

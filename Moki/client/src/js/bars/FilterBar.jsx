@@ -8,7 +8,7 @@ import Autocomplete from "./Autocomplete";
 import {getSearchableFields} from "../helpers/SearchableFields.js";
 import store from "../store/index";
 import { setFilters } from "../actions/index";
-import { createFilter } from "../helpers/createFilter";
+import { createFilter }  from '@moki-client/gui';
 import { createFilterNoDispatch } from "../helpers/createFilterNoDispatch";
 import StoredFilters from "../pages/stored_filters";
 import SaveFilters from "../pages/save_filters";

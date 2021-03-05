@@ -1,81 +1,32 @@
 /*
 Class to get data for all charts iin Call dashboard
 */
-import React, {
-    Component
-} from 'react';
+import React from 'react';
 
+import Dashboard from '../Dashboard.js';
 import TimedateStackedChart from '../../charts/timedate_stackedbar.js';
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import store from "../../store/index";
-import {
-    elasticsearchConnection
-} from '../../helpers/elasticsearchConnection';
 import DashboardsTypes from '../../helpers/DashboardsTypes';
-const parseStackedTimebar = require('../../parse_data/parseStackedbarTimeData.js');
+import {parseStackedbarTimeData} from '@moki-client/es-response-parser';
 
 
-class TransportCharts extends Component {
+class TransportCharts extends Dashboard {
 
     // Initialize the state
     constructor(props) {
         super(props);
-        this.loadData = this.loadData.bind(this);
-
         this.state = {
+            dashboardName: "transport/charts",
             eventRegsTimeline: [],
             isLoading: true
-        }
-        store.subscribe(() => this.loadData());
-
-    }
-
-    componentWillUnmount() {
-        // fix Warning: Can't perform a React state update on an unmounted component
-        this.setState = (state, callback) => {
-            return;
+        };
+        this.callBacks = {
+            functors: [
+              [{result: 'eventRegsTimeline', func: parseStackedbarTimeData}]
+            ]
         };
     }
-
-    componentDidMount() {
-        this.loadData();
-    }
-
-    /*
-    Load data from elasticsearch
-    get filters, types and timerange from GUI
-    */
-    async loadData() {
-        var data = await elasticsearchConnection("transport/charts");
-
-        if (typeof data === "string" && data.includes("ERROR:")) {
-            console.log(typeof data === "string" && data.includes("ERROR:"));
-
-            this.props.showError(data);
-            this.setState({
-                isLoading: false
-            });
-            return;
-
-        } else if (data) {
-
-            //parse data
-            //EVENT REGS TIMELINE
-            var eventRegsTimeline = parseStackedTimebar.parse(data.responses[0]);
-
-
-            console.log(new Date() + " MOKI REGISTRATION: finished parsíng data");
-
-            this.setState({
-                eventRegsTimeline: eventRegsTimeline,
-                isLoading: false
-            });
-
-        }
-    }
-
-
-
     //render GUI
     render() {
         return (<

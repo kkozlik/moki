@@ -2,7 +2,7 @@
 Properties:
 index, timestamp from, timestamp to, type of aggregation, type filter, search query, types filter
 */
-var getTemplate = function (agg, queries, timebucket, timestamp_gte, timestamp_lte, supress, size = 10) {
+var getTemplate = function (agg, timebucket, timestamp_gte, timestamp_lte, size, queries, supress) {
     var template = {
         "size": 0,
         track_total_hits: true,

@@ -1,6 +1,6 @@
-import'bootstrap/dist/css/bootstrap.min.css';
-import'bootstrap/dist/js/bootstrap.min.js';
-import'jquery/src/jquery';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.min.js';
+import 'jquery/src/jquery';
 // import'bootstrap/dist/css/bootstrap-theme.css';
 
 import React, {
@@ -9,26 +9,6 @@ import React, {
 
 
 import './App.css';
-
-import Calls from './js/dashboards/Call/Calls';
-import Web from './js/dashboards/Web/Web';
-import Connectivity from './js/dashboards/Connectivity/Connectivity';
-import Exceeded from './js/dashboards/Exceeded/Exceeded';
-import Security from './js/dashboards/Security/Security';
-import Transport from './js/dashboards/Transport/Transport';
-import Microanalysis from './js/dashboards/Microanalysis/Microanalysis';
-import Diagnostics from './js/dashboards/Diagnostics/Diagnostics';
-import Registration from './js/dashboards/Registration/Registration';
-import Overview from './js/dashboards/Overview/Overview';
-import Network from './js/dashboards/Network/Network';
-import System from './js/dashboards/System/System';
-import QoS from './js/dashboards/QoS/QoS';
-import Home from './js/dashboards/Home/Home';
-import Domains from './js/dashboards/Domains/Domains';
-import Conference from './js/dashboards/Conference/Conference';
-import Realm from './js/dashboards/Realm/Realm';
-import Monitoring from './js/dashboards/Monitoring/Monitoring';
-import ConnectivityCA from './js/dashboards/ConnectivityCA/ConnectivityCA';
 import NavBar from './js/bars/NavigationBar';
 import {
     BrowserRouter as Router,
@@ -38,10 +18,7 @@ import {
 import TimerangeBar from './js/bars/SetTimerangeBar';
 import FilterBar from './js/bars/FilterBar';
 import Restricted from './js/dashboards/Restricted/Restricted';
-import Alarms from './js/pages/alarms_settings';
-import SNS from './js/pages/sns_settings';
 import Sequence from './js/pages/sequenceDiagram';
-import General from './js/pages/general_settings';
 import store from "./js/store/index";
 import {
     setUser
@@ -50,6 +27,7 @@ import {
     setWidthChart
 } from "./js/actions/index";
 import { Redirect } from 'react-router';
+import { paths } from "./js/controllers/paths.jsx";
 
 class App extends Component {
     // Initialize the state
@@ -69,6 +47,7 @@ class App extends Component {
             tagsFull: [],
             srcRealms: [],
             dashboards: [],
+            dashboardsUser: ["account"],
             dashboardsSettings: [],
             logo: ""
         }
@@ -88,7 +67,7 @@ class App extends Component {
 
     componentWillUnmount() {
         window.removeEventListener('resize', this.windowResize);
-      }
+    }
 
     //get monitor name
     async getMonitorName() {
@@ -159,7 +138,7 @@ class App extends Component {
                         if (data.attrs[j].attribute === "settings") {
                             if (this.state.admin) {
                                 this.setState({
-                                    dashboardsSettings: ["alarms", "sns", "general", "monitoring"]
+                                    dashboardsSettings: ["alarms", "general", "monitoring", "decrypt"]
                                 });
                             }
                             else {
@@ -338,9 +317,9 @@ class App extends Component {
 
     //change charts width if windows width changes 
     windowResize() {
-        if(window.innerWidth !== store.getState().width ) store.dispatch(setWidthChart(window.innerWidth));
-  }
-  
+        if (window.innerWidth !== store.getState().width) store.dispatch(setWidthChart(window.innerWidth));
+    }
+
     //get sip user
     async getSipUser() {
         var response = "";
@@ -450,7 +429,6 @@ class App extends Component {
 
     render() {
         var dashboards = this.state.dashboards;
-        var dashboardsSettings = this.state.dashboardsSettings;
         var loadingScreen = <span> <div className="errorBar" > {
             this.state.error
         } </div> <div style={
@@ -515,222 +493,10 @@ class App extends Component {
                                 } /> </div>
                         <div className="row" >
                             <Switch >
-                                {dashboards.includes("calls") && <Route exact path='/calls'
-                                    render={
-                                        () => <Calls tags={
-                                            this.state.tags
-                                        }
-                                            name="calls"
-                                            showError={
-                                                this.showError
-                                            }
-                                        />} />
-                                }
-                                <Route exact path='/web'
-                                    render={
-                                        () => <Web tags={
-                                            this.state.tags
-                                        }
-                                            name="web"
-                                            showError={
-                                                this.showError
-                                            }
-                                        />} />
+                                {paths(this.state.dashboards, this.state.tags, this.state.hostnames, this.state.dstRealms, this.state.srcRealms, this.showError)}
+                                {paths(this.state.dashboardsSettings, this.state.tags, this.state.hostnames, this.state.dstRealms, this.state.srcRealms, this.showError)}
+                                {paths(this.state.dashboardsUser, this.state.tags, this.state.hostnames, this.state.dstRealms, this.state.srcRealms, this.showError)}
 
-                                {dashboards.includes("overview") && <Route exact path='/overview'
-                                    render={
-                                        () => < Overview name="overview"
-                                            showError={
-                                                this.showError
-                                            }
-                                            tags={
-                                                this.state.tags
-                                            }
-                                        />} />
-                                }
-                                {dashboards.includes("home") && <Route exact path='/home'
-                                    render={
-                                        () => < Home name="home"
-                                            showError={
-                                                this.showError
-                                            }
-                                            tags={this.state.tags}
-                                        />} />
-                                }
-                                {dashboards.includes("conference") && <Route exact path='/conference'
-                                    render={
-                                        () => < Conference name="conference"
-                                            showError={
-                                                this.showError
-                                            }
-                                            tags={
-                                                this.state.tags
-                                            }
-                                        />} />
-                                }
-
-                                {dashboards.includes("diagnostics") && <Route exact path='/diagnostics'
-                                    render={
-                                        () => < Diagnostics name="diagnostics"
-                                            showError={
-                                                this.showError
-                                            }
-                                            tags={this.state.tags}
-                                        />} />
-                                }
-                                {dashboards.includes("registration") && <Route exact path='/registration'
-                                    render={
-                                        () => < Registration name="registration"
-                                            showError={
-                                                this.showError
-                                            }
-                                            tags={this.state.tags}
-                                        />} />
-                                }
-                                {dashboards.includes("qos") && <Route exact path='/qos'
-                                    render={
-                                        () => < QoS name="qos"
-                                            showError={
-                                                this.showError
-                                            }
-                                            tags={this.props.tags}
-                                        />} />
-                                }
-                                {dashboards.includes("microanalysis") && <Route exact path='/microanalysis'
-                                    render={
-                                        () => < Microanalysis name="microanalysis"
-                                            showError={
-                                                this.showError
-                                            }
-                                            tags={this.state.tags}
-                                        />} />
-                                }
-                                {dashboards.includes("domains") && <Route exact path='/domains'
-                                    render={
-                                        () => < Domains name="domains"
-                                            showError={
-                                                this.showError
-                                            }
-                                            tags={this.state.tags}
-                                        />} />
-                                }
-                                {dashboards.includes("security") && <Route exact path='/security'
-                                    render={
-                                        () => < Security name="security"
-                                            showError={
-                                                this.showError
-                                            }
-                                            tags={this.state.tags}
-                                        />} />
-                                }
-                                {dashboards.includes("transport") && <Route exact path='/transport'
-                                    render={
-                                        () => < Transport name="transport"
-                                            showError={
-                                                this.showError
-                                            }
-                                            tags={this.state.tags}
-                                        />} />
-                                }
-                                {dashboardsSettings.includes("monitoring") && <Route exact path='/monitoring'
-                                    render={
-                                        () => < Monitoring name="monitoring"
-                                            showError={
-                                                this.showError
-                                            }
-                                        />} />
-                                }
-                                {dashboards.includes("connectivityCA") && <Route exact path='/connectivityCA'
-                                    render={
-                                        () => < ConnectivityCA name="ConnectivityCA"
-                                            showError={
-                                                this.showError
-                                            }
-                                            dstRealms={
-                                                this.state.dstRealms
-                                            }
-                                            srcRealms={
-                                                this.state.srcRealms
-                                            }
-                                            tags={this.state.tags}
-                                        />} />
-                                }
-                                {dashboards.includes("exceeded") && <Route exact path='/exceeded'
-                                    render={
-                                        () => < Exceeded name="exceeded"
-                                            showError={
-                                                this.showError
-                                            }
-                                            tags={this.state.tags}
-                                        />} />
-                                }
-                                {dashboards.includes("network") && <Route exact path='/network'
-                                    render={
-                                        () => < Network name="network"
-                                            showError={
-                                                this.showError
-                                            }
-                                            hostnames={
-                                                this.state.hostnames
-                                            }
-                                        />} />
-                                }
-                                {dashboards.includes("system") && <Route exact path='/system'
-                                    render={
-                                        () => < System name="system"
-                                            showError={
-                                                this.showError
-                                            }
-                                            tags={this.state.tags}
-                                            hostnames={
-                                                this.state.hostnames
-                                            }
-                                        />} />
-                                }
-                                {dashboards.includes("connectivity") && <Route exact path='/connectivity'
-                                    render={
-                                        () => < Connectivity name="connectivity"
-                                            showError={
-                                                this.showError
-                                            }
-                                            tags={this.state.tags}
-                                        />} />
-
-                                }
-                                {dashboards.includes("realm") && <Route exact path='/realm'
-                                    render={
-                                        () => < Realm name="realm"
-                                            showError={
-                                                this.showError
-                                            }
-                                            hostnames={
-                                                this.state.hostnames
-                                            }
-                                            tags={this.state.tags}
-                                        />} />
-                                }
-                                {dashboardsSettings.includes("alarms") && <Route exact path='/alarms'
-                                    render={
-                                        () => < Alarms />
-                                    }
-                                />
-                                }
-                                {dashboardsSettings.includes("sns") && <Route exact path='/sns'
-                                    render={
-                                        () => < SNS />
-                                    }
-                                />
-                                }
-                                {dashboardsSettings.includes("general") && <Route exact path='/general'
-                                    render={
-                                        () => < General tags={
-                                            this.state.tagsFull
-                                        }
-                                            getTags={
-                                                () => this.getTags()
-                                            }
-                                        />} />
-                                }
                                 {aws && <Route path="/logout" />}
                                 {aws && <Route path="/passwdd" />}
                                 <Redirect to={dashboards.includes("home") ? "/home" : "/" + dashboards[0]} />
@@ -822,12 +588,12 @@ class App extends Component {
         }
         return (
             (this.state.isLoading && this.state.dashboards.length === 0) ? loadingScreen :
-                    <Router>
-                        <div className="container-fluid"> {
-                            sipUserSwitch
-                        }
-                        </div>
-                    </Router>
+                <Router>
+                    <div className="container-fluid"> {
+                        sipUserSwitch
+                    }
+                    </div>
+                </Router>
 
         );
     }

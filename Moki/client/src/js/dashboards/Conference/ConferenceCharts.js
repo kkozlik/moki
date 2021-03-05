@@ -1,33 +1,26 @@
 /*
 Class to get data for all charts in Conference dashboard
 */
-import React, {
-    Component
-} from 'react';
+import React from 'react';
 
+import Dashboard from '../Dashboard.js';
 import TimedateStackedChart from '../../charts/timedate_stackedbar.js';
 import ListChart from '../../charts/list_chart.js';
 import ValueChart from '../../charts/value_chart.js';
 import store from "../../store/index";
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
-import {elasticsearchConnection} from '../../helpers/elasticsearchConnection';
 import DashboardsTypes from '../../helpers/DashboardsTypes';
 
-const parseStackedTimebar = require('../../parse_data/parseStackedbarTimeData.js');
-var parseQueryStringData = require('../../parse_data/parseQueryStringData.js');
-var parseListData = require('../../parse_data/parseListData.js');
-var parseAggData = require('../../parse_data/parseAggData.js');
-var parseAggQueryWithoutScriptValue = require('../../parse_data/parseAggQueryWithoutScriptValue.js');
-var parseListDataSort = require('../../parse_data/parseListDataSort.js');
+import {parseListData, parseAggAvgCnt, parseStackedbarTimeData, parseQueryStringData, parseAggData, parseAggQueryWithoutScriptValue, parseListDataSort} from '@moki-client/es-response-parser';
 
 
-class ConferenceCharts extends Component {
+class ConferenceCharts extends Dashboard {
 
     // Initialize the state
     constructor(props) {
         super(props);
-        this.loadData = this.loadData.bind(this);
         this.state = {
+           dashboardName: "conference/charts",
            sumCallEnd: [],
            sumCallStart: [],
            durationSum: [],
@@ -40,90 +33,41 @@ class ConferenceCharts extends Component {
            topParticipants: [],
            isLoading: false,
         }
-        store.subscribe(() => this.loadData());
-}
-    
-    
-componentDidMount() {
-    this.loadData();
-}
-
-componentWillUnmount() {
-    // fix Warning: Can't perform a React state update on an unmounted component
-    this.setState = (state,callback)=>{
-        return;
-    };
-}
-
-
-  async loadData() {
-      
-            this.setState({isLoading: true}); 
-            
-            var data = await elasticsearchConnection("conference/charts");
-
-            if(typeof data === "string" && data.includes("ERROR:")){
-            
-                 this.props.showError(data);
-                 this.setState({isLoading: false});
-                 return; 
-                
-            }else if(data){
-
+        this.callBacks = {
+            functors: [
                 //SUM CONF-LEAVE
-                var sumCallEnd = parseQueryStringData.parse(data.responses[0]);
+                [{result: 'sumCallEnd', func: parseQueryStringData}],
        
                 //SUM CONF-JOIN
-                var sumCallStart = parseQueryStringData.parse(data.responses[1]);
+                [{result: 'sumCallStart', func: parseQueryStringData}],
 
-               //DURATION SUM 
-                var durationSum = parseAggData.parse(data.responses[2]);
+                //DURATION SUM 
+                [{result: 'durationSum', func: parseAggData}],
                 
-                 //DURATION SUM 
-                var durationAvg = parseAggData.parse(data.responses[3]);
+                //DURATION SUM 
+                [{result: 'durationAvg', func: parseAggData}],
 
                 //AVG PARTICIPANTS
-                var avgParticipants = [];
-                if(data.responses[4] && data.responses[4].aggregations && data.responses[4].aggregations["avg_count"] &&  data.responses[4].aggregations["avg_count"].value){
-                    avgParticipants = data.responses[4].aggregations["avg_count"].value;
-                }
+                [{result: 'avgParticipants', func: parseAggAvgCnt}],
 
                 //TOP CONFERENCES
-                var topConferences = parseListData.parse(data.responses[5]);
+                [{result: 'topConferences', func: parseListData}],
 
                 //EVENT CALLS TIMELINE
-                var eventCallsTimeline = parseStackedTimebar.parse(data.responses[6]);
+                [{result: 'eventCallsTimeline', func: parseStackedbarTimeData}],
                 
                 //CONFERENCE ACTUAL
-                var activeConf = parseAggQueryWithoutScriptValue.parse(data.responses[7]);
-                
-                //TOP ACTVIVE CONF
-                var topActiveConferences = parseListDataSort.parse(data.responses[9]);           
+                [{result: 'activeConf', func: parseAggQueryWithoutScriptValue}],
                 
                 //TOP PARTICIPANTS
-                var topParticipants = parseListData.parse(data.responses[8]);
-                    
-                console.info(new Date() + " MOKI CALLS: finished paring data");
-           
-                this.setState({
-                   sumCallEnd: sumCallEnd,
-                   sumCallStart: sumCallStart,
-                   durationSum: durationSum,
-                   avgParticipants: avgParticipants,
-                   topConferences: topConferences,
-                   eventCallsTimeline: eventCallsTimeline, 
-                   durationAvg: durationAvg,
-                   activeConf: activeConf,
-                   topParticipants: topParticipants,
-                   topActiveConferences: topActiveConferences,
-                   isLoading: false 
-                });
+                [{result: 'topParticipants', func: parseListData}],
                 
-        }
-        
+                //TOP ACTIVE CONF
+                [{result: 'topActiveConferences', func: parseListDataSort}]
+            ]
+        };
     }
-
-
+    
     //render GUI
     render() {
          

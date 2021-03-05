@@ -1,4 +1,4 @@
-var getTemplate = function (field, queries, timebucket, timestamp_gte, timestamp_lte, supress) {
+var getTemplate = function (field, timebucket, timestamp_gte, timestamp_lte, queries, supress) {
     var template = {
         "size": 0,
         track_total_hits: true,

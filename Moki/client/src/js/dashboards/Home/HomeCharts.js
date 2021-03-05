@@ -12,13 +12,7 @@ import MultipleAreaChart from '../../charts/multipleArea_chart';
 import store from "../../store/index";
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import { elasticsearchConnection } from '../../helpers/elasticsearchConnection';
-var parseQueryStringData = require('../../parse_data/parseQueryStringData.js');
-var parseDateHeatmap = require('../../parse_data/parseDateHeatmap.js');
-var parseAggData = require('../../parse_data/parseAggData.js');
-var parseAggSumBucketData = require('../../parse_data/parseAggSumBucketData.js');
-var parseMultipleLineDataShareAxis = require('../../parse_data/parseMultipleLineDataShareAxis.js');
-var parseMultipleLineDataShareAxisWithoutAgg = require('../../parse_data/parseMultipleLineDataShareAxisWithoutAgg.js');
-var parseAggQueryWithoutScriptValue = require('../../parse_data/parseAggQueryWithoutScriptValue.js');
+import {parseQueryStringData, parseDateHeatmap, parseAggData, parseAggSumBucketData, parseMultipleLineDataShareAxis, parseMultipleLineDataShareAxisWithoutAgg, parseAggQueryWithoutScriptValue} from '@moki-client/es-response-parser';
 
 class HomeCharts extends Component {
 
@@ -78,49 +72,49 @@ class HomeCharts extends Component {
         } else if (data) {
             //parse data
             //SUM CALL-END
-            var sumCallEnd = parseQueryStringData.parse(data.responses[0]);
+            var sumCallEnd = parseQueryStringData(data.responses[0]);
 
             //SUM CALL-ATTEMPT
-            var sumCallAttempt = parseQueryStringData.parse(data.responses[1]);
+            var sumCallAttempt = parseQueryStringData(data.responses[1]);
 
             //DURATION SUM 
-            var durationSum = parseAggData.parse(data.responses[3]);
+            var durationSum = parseAggData(data.responses[3]);
 
             //ANSWER-SEIZURE RATIO
-            var answerSeizureRatio = parseAggSumBucketData.parse(data.responses[4]);
+            var answerSeizureRatio = parseAggSumBucketData(data.responses[4]);
 
             //AVG DURATION
-            var avgDuration = parseAggData.parse(data.responses[5]);
+            var avgDuration = parseAggData(data.responses[5]);
 
             // DATE HEATMAP
-            var typeDateHeatmap = parseDateHeatmap.parse(data.responses[6]);
+            var typeDateHeatmap = parseDateHeatmap(data.responses[6]);
 
             //PARALLEL CALLS
-            var parallelCalls = parseMultipleLineDataShareAxis.parse("Calls", data.responses[7], "Calls-1d", data.responses[8]);
+            var parallelCalls = parseMultipleLineDataShareAxis("Calls", data.responses[7], "Calls-1d", data.responses[8]);
 
             //PARALLEL REGS
-            var parallelRegs = parseMultipleLineDataShareAxis.parse("Regs", data.responses[9], "Regs-1d", data.responses[10]);
+            var parallelRegs = parseMultipleLineDataShareAxis("Regs", data.responses[9], "Regs-1d", data.responses[10]);
 
             //ACTUALL REGS
-            var regsActual = parseAggQueryWithoutScriptValue.parse(data.responses[11]);
+            var regsActual = parseAggQueryWithoutScriptValue(data.responses[11]);
 
             //ACTUALL CALLS
-            var callsActual = parseAggQueryWithoutScriptValue.parse(data.responses[12]);
+            var callsActual = parseAggQueryWithoutScriptValue(data.responses[12]);
 
             //INCIDENT COUNT
-            var incidentCount = parseMultipleLineDataShareAxisWithoutAgg.parse("Incident", data.responses[13], "Incident-1d", data.responses[14]);
+            var incidentCount = parseMultipleLineDataShareAxisWithoutAgg("Incident", data.responses[13], "Incident-1d", data.responses[14]);
 
             //ACTUALL INCIDENT
-            var incidentActual = parseQueryStringData.parse(data.responses[15]);
+            var incidentActual = parseQueryStringData(data.responses[15]);
 
             //ACTUALL REGS MINUTE AGO
-            var callsActualMinuteAgo = parseAggQueryWithoutScriptValue.parse(data.responses[16]);
+            var callsActualMinuteAgo = parseAggQueryWithoutScriptValue(data.responses[16]);
 
             //ACTUALL CALLS MINUTE AGO
-            var regsActualMinuteAgo = parseAggQueryWithoutScriptValue.parse(data.responses[17]);
+            var regsActualMinuteAgo = parseAggQueryWithoutScriptValue(data.responses[17]);
 
             //ACTUALL INCIDENT MINUTE AGO
-            var incidentActualMinuteAgo = parseQueryStringData.parse(data.responses[18]);
+            var incidentActualMinuteAgo = parseQueryStringData(data.responses[18]);
 
             console.info(new Date() + " MOKI HOME: finished parsíng data");
 

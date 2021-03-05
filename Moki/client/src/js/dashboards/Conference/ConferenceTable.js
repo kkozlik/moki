@@ -9,6 +9,8 @@ import {
     elasticsearchConnection
 } from '../../helpers/elasticsearchConnection';
 
+import {parseTableHits} from '@moki-client/es-response-parser';
+
 class ConferenceTable extends Component {
 
     // Initialize the state
@@ -40,7 +42,7 @@ class ConferenceTable extends Component {
 
             return;
         } else if (calls) {
-            var data = calls.hits.hits;
+            var data = parseTableHits(calls.hits.hits);
             var total = calls.hits.total.value;
             this.setState({
                 calls: data,

@@ -12,6 +12,8 @@
   ],
   "homepage": "https://www.frafos.com/  https://www.intuitivelabs.com/",
   "dependencies": {
+    "@moki-client/es-response-parser": "git+ssh://git@github.com/intuitivelabs/es-response-parser-private.git#add-tls-parser",
+    "@moki-client/gui": "git+ssh://git@github.com/intuitivelabs/moki-gui-intuitive.git#fix_import",
     "bootstrap": "^4.6.0",
     "classnames": "^2.2.6",
     "d3": "^5.7.0",
@@ -35,17 +37,35 @@
     "react-redux": "^6.0.1",
     "react-router": "^4.3.1",
     "react-router-dom": "^4.3.1",
-    "react-scripts": "2.1.1",
+    "react-scripts": "^4.0.2",
     "reactjs-popup": "^1.4.1",
     "redux": "^4.0.5",
     "sockjs-client": "^1.5.0",
     "topojson-client": "^3.0.0"
   },
+  "devDependencies": {
+    "@babel/cli": "^7.12.16",
+    "@babel/core": "^7.12.16",
+    "@babel/plugin-syntax-jsx": "^7.12.13",
+    "@babel/preset-react": "^7.12.13",
+    "eslint": "^7.20.0",
+    "eslint-plugin-react": "^7.22.0"
+  },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "(cd ./node_modules/@moki-client/gui/; npm run build) && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
+  },
+  "babel": {
+    "presets": [
+      [
+        "@babel/preset-react",
+        {
+          "runtime": "automatic"
+        }
+      ]
+    ]
   },
   "eslintConfig": {
     "extends": "react-app"

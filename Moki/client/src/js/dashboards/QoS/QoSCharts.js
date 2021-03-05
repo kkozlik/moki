@@ -1,86 +1,37 @@
 /*
 Class to get data for all charts iin Call dashboard
 */
-import React, {
-    Component
-} from 'react';
+import React from 'react';
 
+import Dashboard from '../Dashboard.js';
 import store from "../../store/index";
 import BarChart from '../../charts/bar_chart.js';
 import TimedateStackedChart from '../../charts/timedate_stackedbar.js';
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
-import {
-    elasticsearchConnection
-} from '../../helpers/elasticsearchConnection';
-const parseHistogramData = require('../../parse_data/parseHistogramData.js');
-const parseStackedTimebar = require('../../parse_data/parseStackedbarTimeData.js');
+import {parseHistogramData, parseStackedbarTimeData} from '@moki-client/es-response-parser';
 
 
-class QoSCharts extends Component {
+class QoSCharts extends Dashboard {
 
     // Initialize the state
     constructor(props) {
         super(props);
-        this.loadData = this.loadData.bind(this);
-
         this.state = {
-            eventDiagnosticTimeline: [],
+            dashboardName: "qos/charts",
+            QoSHistogram: [],
+            MoSStats: [],
             isLoading: true
+        };
+        this.callBacks = {
+            functors: [
+              //QoS HISTOGRAM
+              [{result: 'QoSHistogram', func: parseHistogramData}],
 
-        }
-        store.subscribe(() => this.loadData());
-
-    }
-
-    componentWillUnmount() {
-        // fix Warning: Can't perform a React state update on an unmounted component
-        this.setState = (state, callback) => {
-            return;
+              //MoS STATS
+              [{result: 'MoSStats', func: parseStackedbarTimeData}]
+            ]
         };
     }
-
-    componentDidMount() {
-        this.loadData();
-    }
-
-    /*
-    Load data from elasticsearch
-    get filters, types and timerange from GUI
-    */
-    async loadData() {
-        this.setState({
-            isLoading: true
-        });
-
-        var data = await elasticsearchConnection("qos/charts");
-
-        if (typeof data === "string" && data.includes("ERROR:")) {
-
-            this.props.showError(data);
-            this.setState({
-                isLoading: false
-            });
-            return;
-
-        } else if (data) {
-
-            //QoS HISTOGRAM
-            var QoSHistogram = parseHistogramData.parse(data.responses[0]);
-
-            //MoS STATS
-            var MoSStats = parseStackedTimebar.parse(data.responses[1]);
-
-
-            console.info(new Date() + " MOKI QoS: finished parsíng data");
-            this.setState({
-                QoSHistogram: QoSHistogram,
-                MoSStats: MoSStats,
-                isLoading: false
-            });
-        }
-    }
-
-
 
     //render GUI
     render() {

@@ -2,7 +2,7 @@ import React, {
     Component
 } from 'react';
 import sortIcon from "../../styles/icons/sort.png";
-import { createFilter } from "../helpers/createFilter";
+import { createFilter } from '@moki-client/gui';
 import filter from "../../styles/icons/filter.png";
 import unfilter from "../../styles/icons/unfilter.png";
 import {
