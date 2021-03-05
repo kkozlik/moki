@@ -37,7 +37,8 @@ module.exports = () => {
     .post('/tag', SettingController.tag)
     .get('/tags', SettingController.tags)
     .post('/tag/delete', SettingController.deleteTag)
-    .post('/filters/delete', SettingController.deleteFilter);
+    .post('/filters/delete', SettingController.deleteFilter)
+    .post('/filters/save', SettingController.saveFilter);
 
   router
     .post('/download/pcap', DiagramController.downloadPcap)

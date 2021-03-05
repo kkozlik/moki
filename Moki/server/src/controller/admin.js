@@ -94,12 +94,12 @@ class AdminController {
             })
         }
         // localhost query -- open up
-       // if (req.connection.remoteAddress === '127.0.0.1') {
+        // if (req.connection.remoteAddress === '127.0.0.1') {
         //    console.log("ACCESS getJWTsipUserFilter: permitted for localhost source");
-            // see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function
-            // this is implicit Promise like if there was "return Promise.resolve("*")
-       //     return res.json({ user: 'localhost', aws: false });
-       // }
+        // see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function
+        // this is implicit Promise like if there was "return Promise.resolve("*")
+        //     return res.json({ user: 'localhost', aws: false });
+        // }
 
         // check config if JWT required
         var isAccept;
@@ -164,7 +164,7 @@ class AdminController {
         // Root SuperAdmin Level
         if (jwtbit == 0) {
             console.log(`ACCESS: JWT admin level 0, NO FILTERS for user ${subId}`);
-            return res.json({ user: `ADMIN`, aws: true });
+            return res.json({ user: `ADMIN`, aws: true, email: email, domainID: domainID, jwt: jwtbit, "tls-cn": subId });
         }
         // less privileged users must belong to a domain
         if (domainID === undefined) {
@@ -174,7 +174,7 @@ class AdminController {
         // Site-Admin level
         if (jwtbit == 1) {
             console.log(`ACCESS: USER LEVEL 1, Domain Filter Applied: ${domainID} for user ${subId}`);
-            return res.json({ user: `SITE ADMIN`, aws: true });
+            return res.json({ user: `SITE ADMIN`, aws: true, email: email, domainID: domainID, jwt: jwtbit, "tls-cn": subId });
         }
         // End-User level
         if (jwtbit == 2) {
@@ -190,11 +190,34 @@ class AdminController {
             const colon = sip.indexOf(':');
             const user = [sip.substr(0, colon), String.fromCharCode(92), sip.substr(colon)].join('');
             console.log(`ACCESS: User Level 2, Activating Domain -${domainID}- and SIP -${user}- Filter for user ${subId}`);
-            return res.json({ user: `USER`, aws: true, name: sip });
+            return res.json({ user: `USER`, aws: true, name: sip, email: email, domainID: domainID, jwt: jwtbit, "tls-cn": subId });
         }
         // no well-known admin-level found exit with error
         console.log(`ACCESS getJWTsipUserFilter: unexpected admin level ${jwtbit} for user ${subId}`);
         return res.json({ redirect: "unexcpectedAdminLevel" });
+    }
+
+    /*
+    return login user info
+    */
+    static getUser(req) {
+        var parsedHeader;
+        try {
+          parsedHeader = parseBase64(req.headers[hfName]);
+        } catch (e) {
+          console.log("ACCESS getJWTsipUserFilter: JWT parsing failed");
+          throw new Error("ACCESS: JWT parsing error");
+        }
+        const sip = parsedHeader['custom:sip'];
+        const jwtbit = parsedHeader['custom:adminlevel'];
+        const domainID = parsedHeader['custom:domainid'];
+        const subId = parsedHeader['sub'];
+        return {
+            sip: sip,
+            jwtbit: jwtbit,
+            domain: domainID,
+            "tls-cn":subId
+        }
     }
 
 

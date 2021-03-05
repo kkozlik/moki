@@ -31,13 +31,13 @@ function parseBase64(token) {
 async function getJWTsipUserFilter(req) {
 
         // localhost query -- open up
-        if (req.connection.remoteAddress === '127.0.0.1') {
+       /* if (req.connection.remoteAddress === '127.0.0.1') {
             console.log("ACCESS getJWTsipUserFilter: permitted for localhost source");
             // see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function
             // this is implicit Promise like if there was "return Promise.resolve("*")
             return  "*";
         }
-
+*/
         // check config if JWT required
         var isAccept;
         try {
