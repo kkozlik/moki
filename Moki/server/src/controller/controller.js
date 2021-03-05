@@ -27,7 +27,6 @@ Request - array of object. {template, params, filter, index}
 
 class Controller {
     static request(req, res, next, requests) {
-        var thiss = this;
         async function search() {
             const client = connectToES();
             var filters = getFiltersConcat(req.body.filters);

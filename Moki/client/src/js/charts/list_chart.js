@@ -1,7 +1,7 @@
 import React, {
   Component
 } from 'react';
-import { createFilter } from "../helpers/createFilter";
+import { createFilter } from '@moki-client/gui';
 import filter from "../../styles/icons/filter.png";
 import unfilter from "../../styles/icons/unfilter.png";
 import emptyIcon from "../../styles/icons/empty_small.png";
