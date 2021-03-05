@@ -39,9 +39,9 @@ class Export extends Component {
     async loadData() {
         try {
 
-            var name = "overview";
-            if (name === "exceeded" || name === "network" || name === "system" || name === "realm") {
-                name = window.location.pathname.substr(1);
+            var name = window.location.pathname.substr(1);
+            if (name === "connectivityCA" || name === "connectivity" || name === "home" || name === "microanalysis") {
+                name = "overview";
             }
             // Retrieves the list of calls
             const response = await fetch("/api/" + name + "/table", {
@@ -50,6 +50,7 @@ class Export extends Component {
                 body: JSON.stringify({
                     filters: store.getState().filters,
                     types: getTypes(),
+                    size: 10000,
                     timerange_gte: store.getState().timerange[0],
                     timerange_lte: store.getState().timerange[1]
                 }),
@@ -155,6 +156,8 @@ class Export extends Component {
             element.href = URL.createObjectURL(file);
             document.body.appendChild(element); // Required for this to work in FireFox
             element.click();
+            //close export window
+            this.props.close();
         }
 
     }
@@ -180,7 +183,7 @@ class Export extends Component {
                     <hr />
                 </div>
                 <div className="row">
-                    {this.state.attributes.length === 0 && <span className="tab">No data</span>}
+                    {this.state.attributes.length === 0 && <span className="tab">Getting list of attributes...</span>}
                     {this.state.attributes.map((attribute, i) => {
                         return (<div className="col-3" key={i}><input type="checkbox" id={attribute} className="exportCheckbox" defaultChecked={isSearchable("attrs." + attribute) ? true : false} /><label key={i}>{attribute}</label></div>)
                     })}

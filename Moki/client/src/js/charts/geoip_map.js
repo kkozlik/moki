@@ -40,7 +40,7 @@ export default class geoIpMap extends Component {
 
     setData(data) {
         this.setState({ data: data });
-        this.draw(this.state.data, this.props.width, this.props.units, this.props.name);
+        this.draw(data, this.props.width, this.props.units, this.props.name);
     }
 
     draw(data, width, units, name) {
