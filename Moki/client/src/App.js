@@ -16,6 +16,7 @@ import {
     Route
 } from 'react-router-dom';
 import TimerangeBar from './js/bars/SetTimerangeBar';
+import {getLayoutSettings} from './js/helpers/getLayout';
 import FilterBar from './js/bars/FilterBar';
 import Restricted from './js/dashboards/Restricted/Restricted';
 import Sequence from './js/pages/sequenceDiagram';
@@ -89,82 +90,65 @@ class App extends Component {
             console.error(error);
         }
 
-        //get monitor name stored in m_config
-        url = "/api/layout";
-        var jsonData;
-        try {
-            const response = await fetch(url, {
-                method: "GET",
-                credentials: 'include',
-                headers: {
-                    "Content-Type": "application/json",
-                    "Access-Control-Allow-Credentials": "include"
-                }
-            });
-            jsonData = await response.json();
 
-            //get dashboard list
-            var dashboards = Object.keys(jsonData.dashboards);
-            if (this.state.aws && !this.state.admin) {
-                dashboards = dashboards.filter(dashboard => jsonData.dashboards[dashboard]);
-            }
-            this.setState({
-                dashboards: dashboards
-            });
-
-            //get settings dashboard list
-            var dashboardsSettings = Object.keys(jsonData.settingsDashboards);
-            if (!this.state.aws && !this.state.admin) {
-                dashboardsSettings = dashboardsSettings.filter(dashboard => jsonData.settingsDashboards[dashboard]);
-            }
-            this.setState({
-                dashboardsSettings: dashboardsSettings
-            });
-
-            //get user dashboard list
-            var userSettings = Object.keys(jsonData.userDashboards);
-            if (!this.state.aws && !this.state.admin) {
-                userSettings = userSettings.filter(dashboard => jsonData.userDashboards[dashboard]);
-            }
-            this.setState({
-                dashboardsUser: userSettings
-            });
-
-            //set logo
-            this.setState({
-                logo: jsonData.logo
-            });
-
-            //set favicon
-            this.setState({ logo: "data:;base64," + await this.getLogo(jsonData.logo) });
-            document.getElementById("favicon").href = "data:;base64," + await this.getLogo(jsonData.favicon);
-
-            //set main color
-            document.body.style.setProperty('--main', jsonData.color);
-
-            //set monitor name
-            /*  var monitorName = this.getUserSetting("monitor-name");
-              if (monitorName.status !== 200) {
-                  */
-            this.setState({
-                monitorName: jsonData.name + " " + monitorVersion
-            });
-
-            this.setState({
-                isLoading: false
-            })
-            /*   }
-               else {
-                   this.setState({
-                       monitorName: monitorName.hits.hits + " " + monitorVersion
-                   });
-               }
-               */
-
-        } catch (error) {
-            console.error(error);
-            //alert("Problem with receiving data. " + error.responseText.message);
+        var jsonData = await getLayoutSettings();
+        //get dashboard list
+        var dashboards = Object.keys(jsonData.dashboards);
+        if (this.state.aws && !this.state.admin) {
+            dashboards = dashboards.filter(dashboard => jsonData.dashboards[dashboard]);
         }
+        this.setState({
+            dashboards: dashboards
+        });
+
+        //get settings dashboard list
+        var dashboardsSettings = Object.keys(jsonData.settingsDashboards);
+        if (!this.state.aws && !this.state.admin) {
+            dashboardsSettings = dashboardsSettings.filter(dashboard => jsonData.settingsDashboards[dashboard]);
+        }
+        this.setState({
+            dashboardsSettings: dashboardsSettings
+        });
+
+        //get user dashboard list
+        var userSettings = Object.keys(jsonData.userDashboards);
+        if (!this.state.aws && !this.state.admin) {
+            userSettings = userSettings.filter(dashboard => jsonData.userDashboards[dashboard]);
+        }
+        this.setState({
+            dashboardsUser: userSettings
+        });
+
+        //set logo
+        this.setState({
+            logo: jsonData.logo
+        });
+
+        //set favicon
+        this.setState({ logo: "data:;base64," + await this.getLogo(jsonData.logo) });
+        document.getElementById("favicon").href = "data:;base64," + await this.getLogo(jsonData.favicon);
+
+        //set main color
+        document.body.style.setProperty('--main', jsonData.color);
+
+        //set monitor name
+        /*  var monitorName = this.getUserSetting("monitor-name");
+          if (monitorName.status !== 200) {
+              */
+        this.setState({
+            monitorName: jsonData.name + " " + monitorVersion
+        });
+
+        this.setState({
+            isLoading: false
+        })
+        /*   }
+           else {
+               this.setState({
+                   monitorName: monitorName.hits.hits + " " + monitorVersion
+               });
+           }
+           */
     }
 
     //get logo img
@@ -599,7 +583,7 @@ class App extends Component {
             }
         }
         return (
-            (this.state.isLoading ) ? loadingScreen :
+            (this.state.isLoading) ? loadingScreen :
                 <Router>
                     <div className="container-fluid"> {
                         sipUserSwitch
