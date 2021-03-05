@@ -27,7 +27,9 @@ module.exports = () => {
     .post('/calls/table', CallsController.getTable);
 
   router
+    .get('/layout', SettingController.loadGUILayout)
     .get('/setting', SettingController.load)
+    .get('/setting/user', SettingController.storeUserSettings)
     .get('/defaults', SettingController.defaults)
     .get('/monitor/version', SettingController.loadMonitorVersion)
     .post('/monitor/logo', SettingController.loadLogo)

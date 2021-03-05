@@ -14,7 +14,8 @@ class navBar extends Component {
         this.state = {
             collapsed: false,
             dashboards: this.props.dashboards,
-            dashboardsSettings: this.props.dashboardsSettings
+            dashboardsSettings: this.props.dashboardsSettings,
+            dashboardsUser: this.props.dashboardsUser
 
         };
         this.togglebar = this.togglebar.bind(this);
@@ -27,6 +28,9 @@ class navBar extends Component {
         }
         if (nextProps.dashboardsSettings !== this.props.dashboardsSettings) {
             this.setState({ dashboardsSettings: nextProps.dashboardsSettings });
+        }
+        if (nextProps.dashboardsUser !== this.props.dashboardsUser) {
+            this.setState({ dashboardsUser: nextProps.dashboardsUser });
         }
 
     }
@@ -120,7 +124,7 @@ class navBar extends Component {
         var dashboards = this.state.dashboards;
         var navbar = renderNavBar(dashboards);
         var navbarSettings = renderNavBar(dashboardsSettings);
-        var navbarUser = renderNavBar(["account"]);
+        var navbarUser = renderNavBar(this.state.dashboardsUser);
         return (
             <div id="sidebar-container" className="sidebar-expanded d-none d-md-block sticky-top">
                 <ul className="list-group">
