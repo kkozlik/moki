@@ -11,7 +11,7 @@ import store from "../../store/index";
 import DashboardsTypes from '../../helpers/DashboardsTypes';
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import ListChart from '../../charts/list_chart.js';
-import {parseListData, parseDateHeatmap, parseStackedbarData, parseStackedbarTimeData} from '@moki-client/es-response-parser';
+import { parseListData, parseDateHeatmap, parseStackedbarData, parseStackedbarTimeData } from '@moki-client/es-response-parser';
 
 class OverviewCharts extends Dashboard {
 
@@ -19,55 +19,62 @@ class OverviewCharts extends Dashboard {
     constructor(props) {
         super(props);
         this.state = {
+            ...this.state,
             dashboardName: "overview/charts",
-            eventCallsTimeline: [],
+            eventOverviewTimeline: [],
             totalEventsInInterval: [],
             activitySBC: [],
             keepAlive: [],
             tags: [],
+            charts: [],
             isLoading: true
         };
         this.callBacks = {
             functors: [
                 //EVENT OVERVIEW TIMELINE
-                [{result: 'eventOverviewTimeline', func: parseStackedbarTimeData}],
+                [{ result: 'eventOverviewTimeline', func: parseStackedbarTimeData }],
 
                 //TOTAL EVENTS IN INTERVAL
-                [{result: 'totalEventsInInterval', func: parseStackedbarData}],
+                [{ result: 'totalEventsInInterval', func: parseStackedbarData }],
 
                 //ACTIVITY OF SBC
-                [{result: 'activitySBC', func: parseDateHeatmap}],
+                [{ result: 'activitySBC', func: parseDateHeatmap }],
 
                 //SBC - KEEP ALIVE
-                [{result: 'keepAlive', func: parseDateHeatmap}],
-                
+                [{ result: 'keepAlive', func: parseDateHeatmap }],
+
                 // empty
                 [],
 
                 //TAGS LIST
-                [{result: 'tags', func: parseListData}]
+                [{ result: 'tags', func: parseListData }]
             ]
         };
     }
+
+
 
     //render GUI
     render() {
         return (
             <div>
                 { this.state.isLoading && <LoadingScreenCharts />}
-                <div className="row no-gutters" >
+                { this.state.charts["EVENTS OVER TIME"] && <div className="row no-gutters" >
                     <TimedateStackedChart units={"count"} data={
-                        this.state.eventCallsTimeline
+                        this.state.eventOverviewTimeline
                     } id="eventsOverTime" name={"EVENTS OVER TIME"} keys={DashboardsTypes["overview"]} width={store.getState().width - 300}
                     />
                 </div>
+                }
                 <div className="row no-gutters" >
-                    <div className="col">
+                    {this.state.charts["TOTAL EVENTS IN INTERVAL"] && <div className="col">
                         <StackedChart data={
                             this.state.totalEventsInInterval
                         } units={"count"} id="totalEvents" bottomMargin={80} keys={DashboardsTypes["overview"]} name={"TOTAL EVENTS IN INTERVAL"} width={store.getState().width / 2}
                         />
-                    </div> <div className="col" >
+                    </div>
+                    }
+                    {this.state.charts["TOP TAGS"] && <div className="col" >
                         <ListChart data={
                             this.state.tags
                         }
@@ -79,17 +86,19 @@ class OverviewCharts extends Dashboard {
                             }
                         />
                     </div>
+                    }
                 </div>
-                <div className="row no-gutters">
+                {this.state.charts["NODES - ACTIVITY"] && <div className="row no-gutters">
                     <TimedateHeatmap data={
                         this.state.activitySBC
                     } marginLeft={"250"} name={"NODES - ACTIVITY"} units={"any event count"} id="activitySBC" field={"attrs.sbc"} width={store.getState().width - 300} />
                 </div>
-                <div className="row no-gutters">
+                }
+                {this.state.charts["NODES - KEEP ALIVE"] && <div className="row no-gutters">
                     <TimedateHeatmap units={"system event count"} data={
                         this.state.keepAlive
                     } marginLeft={"250"} name={"NODES - KEEP ALIVE"} id="keepAlive" field={"attrs.sbc"} width={store.getState().width - 300} />
-                </div>
+                </div>}
             </div>
         );
     }
