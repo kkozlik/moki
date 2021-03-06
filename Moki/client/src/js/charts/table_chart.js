@@ -218,26 +218,27 @@ export default class listChart extends Component {
 
 
         //store already exclude alarms list
-        try {
-            const response = await fetch("/api/setting", {
-                method: "GET",
-                credentials: 'include',
-                headers: {
-                    "Content-Type": "application/json",
-                    "Access-Control-Allow-Credentials": "include"
-                }
-            });
-            var jsonData = await response.json();
-            var thiss = this;
-            jsonData.forEach(data => {
-                if (data.app === "m_alarms")
-                    thiss.setState({ excludeList: data.attrs });
-            });
-        } catch (error) {
-            console.error(error);
-            alert("Problem with receiving alarms data. " + error);
+        if (window.location.pathname === "/exceeded") {
+            try {
+                const response = await fetch("/api/setting", {
+                    method: "GET",
+                    credentials: 'include',
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Access-Control-Allow-Credentials": "include"
+                    }
+                });
+                var jsonData = await response.json();
+                var thiss = this;
+                jsonData.forEach(data => {
+                    if (data.app === "m_alarms")
+                        thiss.setState({ excludeList: data.attrs });
+                });
+            } catch (error) {
+                console.error(error);
+                alert("Problem with receiving alarms data. " + error);
+            }
         }
-
     }
 
     //check if alarms is already exclude -> don't display exclude icon
