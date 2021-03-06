@@ -2,13 +2,13 @@ import React, {
     Component
 } from 'react'; 
 
-import Filter from './Filter';
 import { Navbar } from 'react-bootstrap'; 
 import Autocomplete from "./Autocomplete";
 import {getSearchableFields} from "../helpers/SearchableFields.js";
 import store from "../store/index";
 import { setFilters } from "../actions/index";
 import { createFilter }  from '@moki-client/gui';
+import { renderFilters }  from '@moki-client/gui';
 import { createFilterNoDispatch } from "../helpers/createFilterNoDispatch";
 import StoredFilters from "../pages/stored_filters";
 import SaveFilters from "../pages/save_filters";
@@ -287,15 +287,8 @@ class filterBar extends Component {
     let filters = null;
     var url = window.location.pathname; 
         
-    filters = (
-         <div>
-              { store.getState().filters.map((filter, index) => {
-                   return <Filter key={filter.id} state={filter.state}
-                   title={filter.title} id={"filter"+filter.id} deleteFilter={this.deleteFilter}  disableFilter={this.disableFilter}  enableFilter={this.enableFilter} pinFilter={this.pinFilter} negationFilter={this.negationFilter} unpinFilter={this.unpinFilter} 
-                   editFilter={this.editFilter}/>
-              })}
-     </div>
-     )
+    filters = renderFilters(this.deleteFilter, this.disableFilter, this.enableFilter, this.pinFilter, this.editFilter, this.negationFilter, this.unpinFilter);
+    
     var srcRealms = (<select className="text-left form-control form-check-input filter-right" id="srcRealms" placeholder="SRC REALMS" onChange={this.specFilter}> <option value="" disabled selected>SRC REALM</option>
               { this.state.srcRealms.map((realm) => {
                 return <option value={realm.key} key={realm.key+"src"}>{realm.key}</option>
