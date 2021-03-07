@@ -16,13 +16,10 @@ const OverviewController = require('./overview');
 const QoSController = require('./qos');
 const RealmController = require('./realm');
 const RegistrationController = require('./registration');
-const RestrictedController = require('./restricted');
 const SettingController = require('./setting');
 const SecurityController = require('./security');
 const SystemController = require('./system');
 const TransportController = require('./transport');
-const DomainsController = require('./domains');
-const WebController = require('./web');
 
 // controller boilerplate code
 
@@ -42,7 +39,6 @@ module.exports = {
     newBadRequest: () => newBadRequest,
     AdminController,
     CallsController,
-    WebController,
     ConferenceController,
     ConnectivityCAController,
     ConnectivityController,
@@ -57,10 +53,9 @@ module.exports = {
     QoSController,
     RealmController,
     RegistrationController,
-    RestrictedController,
     SettingController,
     SecurityController,
     SystemController,
-    DomainsController,
     TransportController,
+
 };

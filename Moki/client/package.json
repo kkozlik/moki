@@ -13,7 +13,7 @@
   "homepage": "https://www.frafos.com/  https://www.intuitivelabs.com/",
   "dependencies": {
     "@moki-client/es-response-parser": "git+ssh://git@github.com/intuitivelabs/es-response-parser-private.git#add-tls-parser",
-    "@moki-client/gui": "git+ssh://git@github.com/intuitivelabs/moki-gui-intuitive.git#fix_import",
+    "@moki-client/gui": "git+ssh://git@github.com/intuitivelabs/moki-gui-intuitive.git#117-multidomain",
     "bootstrap": "^4.6.0",
     "classnames": "^2.2.6",
     "d3": "^5.7.0",
