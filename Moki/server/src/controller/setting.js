@@ -16,6 +16,7 @@ const {
 } = require('../modules/elastic');
 const distinct_query = require('../../js/template_queries/distinct_query.js');
 const { getJWTsipUserFilter } = require('../modules/jwt');
+const AdminController = require('../controller/admin');
 var domainFilter = "*";
 var path = require('path');
 var monitorVersion = "4.6";
@@ -111,6 +112,45 @@ class SettingController {
         });
     }
 
+    /**
+ * @swagger
+ * /api/gui/setting:
+ *   get:
+ *     description: Fetch GUI settings (style and dashboard settings)
+ *     tags: [Setting]
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Return monitor_layout.json
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/definitions/Settings'
+ *       400:
+ *         description: processing error
+ *         content:
+ *           application/json:
+ *             example: { "error": "Problem reading data file: no such file or directory, open '/etc/abc-monitor/defaults.json'" }
+ *       500:
+ *         description: internal error
+ *         content:
+ *           application/json:
+ *             example:
+ *               error: "bash: not found"
+ */
+    static loadGUILayout(req, res, next) {
+        fs.readFile(cfg.fileGUILayout, function (err, defaults) {
+            if (err) {
+                res.status(400).send({
+                    msg: "Problem with reading data: " + err
+                });
+                console.error("Problem with reading monitor layout file. " + err);
+            }
+            return res.status(200).send(defaults);
+
+        });
+    }
 
     /**
      * @swagger
@@ -151,7 +191,7 @@ class SettingController {
      * @swagger
      * /api/filters:
      *   get:
-     *     description: Return settings payload with stored filters.
+     *     description: return stored filter in ES
      *     tags: [Setting]
      *     produces:
      *       - application/json
@@ -169,17 +209,180 @@ class SettingController {
      *             example:
      *               error: "bash: not found"
      */
-    static loadFilters(request, respond) {
-        fs.readFile(cfg.fileMonitor, function (err, filters) {
-            if (err) {
-                respond.status(400).send({
-                    msg: "Problem with reading data: " + err
-                });
-                console.error("Problem with reading monitor file. " + err);
-            }
-            return respond.status(200).send(filters);
+    static loadFilters(req, res) {
+        //get user's right to load correct filters
+        var user = AdminController.getUser(req);
+        var condition;
+        //admin, show everything
+        if (user.jwtbit == 0) {
+            condition = {
+                index: 'filters',
+                type: '_doc'
 
+            };
+        }
+        //site admin, show only domain
+        else if (user.jwtbit == 1) {
+            condition = {
+                index: 'filters',
+                type: '_doc',
+                body: {
+                    query: {
+                        bool: {
+                            must: [
+                                { query_string: { "query": "domain:" + user.domain } }
+                            ],
+                        }
+                    }
+                }
+            }
+
+        }
+        //user, show domain and user filter
+        else {
+            condition = {
+                index: 'filters',
+                type: '_doc',
+                body: {
+                    query: {
+                        bool: {
+                            must: [
+                                { query_string: { "query": "domain:" + user.domain } },
+                                { query_string: { "query": "tls-cn:" + user["tls-cn"] } }
+                            ],
+                        }
+                    }
+                }
+            }
+
+        }
+        var client = connectToES(res);
+        console.info("Getting filters for user level: " + user.jwtbit);
+        client.search(condition, (error, response, status) => {
+            if (error) {
+                res.json(400, error);
+            }
+            else {
+                res.json(200, response);
+            }
         });
+    }
+
+    /**
+ * @swagger
+ * /api/filters/save:
+ *   post:
+ *     description: save new filter in ES index
+ *     tags: [Setting]
+ *     consumes:
+ *       - application/json
+ *     parameters:
+ *       - in: body
+ *         name: filter
+ *         description: new filter to save
+ *         schema:
+ *           type: object
+ *           properties:
+ *             id:
+ *               type: string
+ *               example: {"id":"Myfilter"}
+ *             attribute:
+ *               type: array
+ *               description: array of filters
+ *               example: {"attribute":[]}
+    *             name:
+    *               type: string
+    *               description: name of dashboard where filter was created
+    *               example: {"name":"/connectivityCA"}
+    *             types:
+    *               type: array
+    *               description: array of types
+    *               example: {"types":[]}
+    *             timerange:
+    *               type: array
+    *               description: timestamp from and to
+    *               example: {"timerange":[1610683132626,1610683145434]}
+ *         required: true
+ *         type: application/json 
+ *     responses:
+ *       200:
+ *         description: new settings file
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/definitions/SettingFile'
+ *       400:
+ *         description: problem with writing data to file 
+ *         content:
+ *           application/json:
+ *             example:
+ *               error: "Config checked failed. Writing old config back."
+ */
+    static saveFilter(req, res, next) {
+        async function search() {
+            var client = connectToES(res);
+            var user = AdminController.getUser(req);
+            var tls = user["tls-cn"];
+            var indexName = "filters";
+
+            //check if it is neccesary to create new index
+            const existIndex = await client.indices.exists({ index: indexName });
+            //if not, create new one
+            if (!existIndex) {
+                var newIndex = await client.indices.create({
+                    index: indexName,
+                    body: {
+                        mappings: {
+                            properties: {
+                                "tls-cn": { "type": "keyword", "index": "true" },
+                                "domain": { "type": "keyword", "index": "true" },
+                                "id": { "type": "keyword", "index": "true" },
+                                "title": { "type": "keyword", "index": "false" },
+                                "attribute": { "type": "text", "index": "false" }
+                            }
+                        }
+                    }
+                }, function (err, resp, respcode) {
+                    newIndex = false;
+                    console.error(err, resp, respcode);
+                });
+                newIndex = true;
+
+            }
+
+            if (newIndex || existIndex) {
+                //add new event
+                var response = await client.index({
+                    index: indexName,
+                    refresh: true,
+                    type: "_doc",
+                    body: {
+                        "tls-cn": tls,
+                        "id": req.body.id,
+                        "title": req.body.title,
+                        "domain": user.domain,
+                        "attribute": JSON.stringify(req.body.attribute)
+                    }
+                }, function (err, resp, status) {
+                    if (err) {
+                        console.error(resp);
+                    } else {
+                        console.info("Inserted new filter: " + tls + ": " + req.body.id);
+                    }
+                })
+                return res.json(response);
+            }
+            client.close();
+            return res.status(400).send({
+                "msg": "Problem with saving filter."
+            });
+
+        }
+
+        return search().catch((e) => {
+            return next(e);
+        });
+
     }
 
     /**
@@ -232,75 +435,44 @@ class SettingController {
      *             example:
      *               error: "Problem writing new filters to config file"
      */
-    static deleteFilter(request, respond) {
-        //get config file
-        var jsonData = JSON.parse(fs.readFileSync(cfg.fileMonitor));
-        var jsonDataOld = JSON.parse(fs.readFileSync(cfg.fileMonitor));
-        // filters paste it on top layer
-        jsonData["general"]["m_filters"] = [];
-
-        //add new        
-        jsonData["general"]["m_filters"] = request.body;
-        console.info("Writing new filters to file.");
-
-        //write also monitor version
-        jsonData["m_version"] = monitorVersion;
-        //write it to monitor file
-        fs.writeFile(cfg.fileMonitor, JSON.stringify(jsonData), function (error) {
-            if (error) {
-                respond.status(400).send({
-                    "msg": error
-                });
-                console.error("Problem writing new filters to config file. " + error);
-            }
-            //call check config script
-            exec("/usr/sbin/abc-monitor-check-config", function (error, stdout, stderr) {
-                if (error) {
-                    //write old data back
-                    fs.writeFile(cfg.fileMonitor, JSON.stringify(jsonDataOld));
-
-                    respond.status(400).send({
-                        "msg": stderr
-                    });
-                    console.error("Config checked failed. Writing old config back. " + stderr);
-                    respond.end();
-                } else {
-
-                    //call generate config script
-                    exec("/usr/sbin/abc-monitor-activate-config", function (error, stdout, stderr) {
-                        if (error) {
-                            respond.status(400).send({
-                                "msg": stderr
-                            });
-                            console.error("Config activation failed. " + stderr);
-                            respond.end();
-                        } else {
-                            console.info("New config activated");
-                            respond.status(200).send({
-                                "msg": "Data has been saved."
-                            });
-                        }
-                    })
-
+    static deleteFilter(req, res) {
+        var client = connectToES(res);
+        console.info("Deleting filter " + req.body.id);
+        client.deleteByQuery({
+            index: 'filters',
+            type: '_doc',
+            refresh: true,
+            body: {
+                query: {
+                    match: { id: req.body.id }
                 }
-            })
-
-
+            }
+        }, function (error, response) {
+            if (error) {
+                return res.status(400).send({
+                    "msg": "Problem with deleting filter. " + error
+                });
+            }
+            else {
+                return res.status(200).send({
+                    "msg": "Filter deleted."
+                });
+            }
         });
     }
 
     /**
      * @swagger
-     * /api/filters/save:
+     * /api/save:
      *   post:
-     *     description: save new filter
+     *     description: save data
      *     tags: [Setting]
      *     consumes:
      *       - application/json
      *     parameters:
      *       - in: body
      *         name: filter
-     *         description: new filter to save
+     *         description: new data to save
      *         schema:
      *           type: object
      *           properties:
@@ -634,10 +806,138 @@ class SettingController {
         });
     }
 
+    //store setings by user in ES
+    //users index
+    //req.body: {attribute: value} 
+    static storeUserSettings(req, res, next) {
+        async function search() {
+            var client = connectToES(res);
+            var user = AdminController.getUser(req);
+            if (user) {
+                tls = user["tls-cn"];
+                indexName = "users";
+            }
+
+            //check if it is neccesary to create new index
+            const existIndex = await client.indices.exists({ index: indexName });
+            //if not, create new one
+            if (!existIndex) {
+                var newIndex = await client.indices.create({
+                    index: indexName,
+                    body: {
+                        mappings: {
+                            properties: {
+                                "tls-cn": { "type": "keyword", "index": "true" },
+                                "monitor-name": { "type": "text", "index": "false" }
+                            }
+                        }
+                    }
+                }, function (err, resp, respcode) {
+                    newIndex = false;
+                    console.error(err, resp, respcode);
+                });
+                newIndex = true;
+
+            }
+
+            if (newIndex || existIndex) {
+                //check if event with same tls-cn and attr exists, if so delete it
+                client.deleteByQuery({
+                    index: indexName,
+                    type: '_doc',
+                    refresh: true,
+                    body: {
+                        query: {
+                            bool: {
+                                must: [
+                                    { query_string: { "query": "tls-cn:" + user["tls-cn"] } },
+                                    { exists: { "field": Object.keys(req.body.attribute)[0] } }
+                                ],
+                            }
+                        }
+                    }
+                }, function (error, response) {
+                    if (error) {
+                        //ok no event
+                    }
+                    else {
+                        //event deleted
+                    }
+                });
+
+                //add new event
+                var attr = Object.keys(req.body.attribute)[0];
+                var response = await client.index({
+                    index: indexName,
+                    refresh: true,
+                    type: "_doc",
+                    body: {
+                        "tls-cn": tls,
+                        [attr]: req.body[attr]
+                    }
+                }, function (err, resp, status) {
+                    if (err) {
+                        console.error(resp);
+                    } else {
+                        console.info("Inserted new user setting");
+                    }
+                })
+                return res.json(response);
+            }
+            client.close();
+            return res.status(400).send({
+                "msg": "Problem with saving filter."
+            });
+
+        }
+
+        return search().catch((e) => {
+            return next(e);
+        });
+    }
+
+    //get setings from ES
+    //users index
+    //req.body: attribute 
+    static getUserSettings(req, res, next) {
+        async function search() {
+            var client = connectToES(res);
+            var user = AdminController.getUser(req);
+            var tls = user["tls-cn"];
+            var indexName = "users";
+
+            client.search(condition = {
+                index: indexName,
+                type: '_doc',
+                body: {
+                    query: {
+                        bool: {
+                            must: [
+                                { query_string: { "query": "tls-cn:" + tls } },
+                                { exists: { "field": req.body.attribute } }
+                            ],
+                        }
+                    }
+                }
+            }, (error, response, status) => {
+                if (error) {
+                    res.json(400, error);
+                }
+                else {
+                    res.json(200, response);
+                }
+            });
+        }
+
+        return search().catch((e) => {
+            return next(e);
+        });
+    }
+
     //api/monitor/logo
     static loadLogo(request, respond) {
-        var logoPath = "../../../" + request.body.path;
-        var img = fs.readFileSync(path.join(__dirname, logoPath));
+        var logoPath = request.body.path;
+        var img = fs.readFileSync(logoPath);
         respond.writeHead(200, { 'Content-Type': 'image/png' });
         respond.end(img, 'binary');
     }

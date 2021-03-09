@@ -11,7 +11,7 @@ import ListChart from '../../charts/list_chart.js';
 import store from "../../store/index";
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import DashboardsTypes from '../../helpers/DashboardsTypes';
-import {parseListData, parseIp, parseAggCities, parseBucketData, parseStackedbarTimeData} from '@moki-client/es-response-parser';
+import { parseListData, parseIp, parseAggCities, parseBucketData, parseStackedbarTimeData } from '@moki-client/es-response-parser';
 
 
 class SecurityCharts extends Dashboard {
@@ -20,6 +20,8 @@ class SecurityCharts extends Dashboard {
     constructor(props) {
         super(props);
         this.state = {
+            ...this.state,
+            charts: [],
             dashboardName: "security/charts",
             geoipMap: [],
             eventRegsTimeline: [],
@@ -32,23 +34,23 @@ class SecurityCharts extends Dashboard {
         };
         this.callBacks = {
             functors: [
-              //DISTRIBUTION GEOIP MAP
-              [{result: 'geoipMap', func: parseAggCities}],
+                //DISTRIBUTION GEOIP MAP
+                [{ result: 'geoipMap', func: parseAggCities }],
 
-              //EVENT SECURITY TIMELINE
-              [{result: 'eventRegsTimeline', func: parseStackedbarTimeData}],
+                //EVENT SECURITY TIMELINE
+                [{ result: 'eventRegsTimeline', func: parseStackedbarTimeData }],
 
-              //EVENTS BY IP ADDR
-              [{result: 'eventsByIP', func: parseIp}],
+                //EVENTS BY IP ADDR
+                [{ result: 'eventsByIP', func: parseIp }],
 
-              //TOP SUBNETS /24
-              [{result: 'subnets', func: parseListData}],
+                //TOP SUBNETS /24
+                [{ result: 'subnets', func: parseListData }],
 
-              //EVENTS BY COUNTRY
-              [{result: 'eventsByCountry', func: parseListData}],
+                //EVENTS BY COUNTRY
+                [{ result: 'eventsByCountry', func: parseListData }],
 
-              //SECURITY TYPES EVENTS
-              [{result: 'typesCount', func: parseBucketData}]
+                //SECURITY TYPES EVENTS
+                [{ result: 'typesCount', func: parseBucketData }]
             ]
         };
 
@@ -59,9 +61,8 @@ class SecurityCharts extends Dashboard {
         return (<div> {
             this.state.isLoading && < LoadingScreenCharts />
         }
-            <div className="row no-gutters" >
-                <
-                    TimedateStackedChart id="eventsOverTime"
+            {this.state.charts["EVENTS OVER TIME"] && <div className="row no-gutters" >
+                <TimedateStackedChart id="eventsOverTime"
                     data={
                         this.state.eventRegsTimeline
                     }
@@ -75,20 +76,21 @@ class SecurityCharts extends Dashboard {
                     width={
                         store.getState().width - 300
                     }
-                />  </div> <div className="row no-gutters" >
+                />  </div>}
+            {this.state.charts["SECURITY GEO EVENTS"] && <div className="row no-gutters" >
                 <div className="col" >
-                    <
-                        Geoipchart data={
-                            this.state.geoipMap
-                        }
+                    <Geoipchart data={
+                        this.state.geoipMap
+                    }
                         type={"geoip"}
                         name={"SECURITY GEO EVENTS"}
                         units={"count"}
                         width={
                             store.getState().width - 300
                         }
-                    /> </div> </div> <div className="row no-gutters" >
-                <div className="col" >
+                    /> </div> </div>}
+            <div className="row no-gutters" >
+                {this.state.charts["TYPES"] && <div className="col" >
                     <DonutChart data={this.state.typesCount}
                         units={"count"}
                         name={
@@ -105,8 +107,8 @@ class SecurityCharts extends Dashboard {
                             200
                         }
                         field="attrs.type" />
-                </div>
-                <div className="col" >
+                </div>}
+                {this.state.charts["EVENTS BY IP ADDR"] && <div className="col" >
                     <ListChart data={
                         this.state.eventsByIP
                     }
@@ -117,7 +119,8 @@ class SecurityCharts extends Dashboard {
                             "attrs.source"
                         }
                         type="list"
-                    />  </div> <div className="col" >
+                    />  </div>}
+                {this.state.charts["TOP SUBNETS"] && <div className="col" >
                     <ListChart data={
                         this.state.subnets
                     }
@@ -128,7 +131,8 @@ class SecurityCharts extends Dashboard {
                         field={
                             "attrs.sourceSubnets"
                         }
-                    />  </div> <div className="col" >
+                    />  </div>}
+                {this.state.charts["EVENTS BY COUNTRY"] && <div className="col" >
                     <ListChart data={
                         this.state.eventsByCountry
                     }
@@ -139,7 +143,7 @@ class SecurityCharts extends Dashboard {
                         field={
                             "geoip.country_name"
                         }
-                    />  </div>
+                    />  </div>}
             </div>
         </div>
         );

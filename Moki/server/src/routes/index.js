@@ -9,9 +9,9 @@ const {
   DiagramController, DiagnosticsController, ExceededController,
   HomeController, MonitoringController, MicroanalysisController,
   NetworkController, OverviewController, QoSController,
-  RealmController, RegistrationController, RestrictedController,
+  RealmController, RegistrationController,
   SettingController, SecurityController, SystemController,
-  TransportController, DomainsController, WebController
+  TransportController
 } = require('../controller');
 //const ReportController = require('../controller/report');
 const { nodeEnv } = require('../modules/config');
@@ -27,7 +27,9 @@ module.exports = () => {
     .post('/calls/table', CallsController.getTable);
 
   router
+    .get('/layout', SettingController.loadGUILayout)
     .get('/setting', SettingController.load)
+    .get('/setting/user', SettingController.storeUserSettings)
     .get('/defaults', SettingController.defaults)
     .get('/monitor/version', SettingController.loadMonitorVersion)
     .post('/monitor/logo', SettingController.loadLogo)
@@ -37,7 +39,8 @@ module.exports = () => {
     .post('/tag', SettingController.tag)
     .get('/tags', SettingController.tags)
     .post('/tag/delete', SettingController.deleteTag)
-    .post('/filters/delete', SettingController.deleteFilter);
+    .post('/filters/delete', SettingController.deleteFilter)
+    .post('/filters/save', SettingController.saveFilter);
 
   router
     .post('/download/pcap', DiagramController.downloadPcap)
@@ -48,8 +51,6 @@ module.exports = () => {
   router
     .post('/home/charts', HomeController.getCharts);
 
-    router
-    .post('/domains/charts', DomainsController.getCharts);
 
   router
     .post('/conference/charts', ConferenceController.getCharts)
@@ -107,26 +108,12 @@ module.exports = () => {
     .post('/security/table', SecurityController.getTable);
 
   router
-  .post('/web', WebController.getWebCharts)
-  .post('/web/events', WebController.getEventsCount)
-  .post('/web/distinct_ips', WebController.getDistinctIPs)
-  .post('/web/security_geo_events', WebController.getGeoip)
-  .post('/web/by_country', WebController.getEventsByCountryLimit)
-  .post('/web/top_user_agents', WebController.getTopUserAgents)
-
-
-  router
     .post('/system/charts', SystemController.getCharts)
     .post('/system/table', SystemController.getTable);
 
   router
     .post('/transport/charts', TransportController.getCharts)
     .post('/transport/table', TransportController.getTable);
-
-  router
-    .post('/restricted/table', RestrictedController.getTable)
-    .post('/restricted/home', RestrictedController.getCharts)
-    .post('/restricted/calls', RestrictedController.getCalls)
 
   router
     .post('/monitoring/charts', MonitoringController.getCharts)

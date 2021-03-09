@@ -33,11 +33,6 @@ moki-client react appliction developement pack
 NODE_ENV=production npm install --production
 npm install
 
-# FIXME: manual customization - should be part of npm build process
-cp -r node_modules/@moki-client/gui/dashboards/* ./src/js/dashboards/
-cp node_modules/@moki-client/gui/logo.png ./src/styles/logo.png
-cp node_modules/@moki-client/gui/logo_circle.png  ./public/logo_circle.png
-
 npm run build
 rm -rf node_modules
 

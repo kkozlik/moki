@@ -15,7 +15,7 @@ const initialState = {
   isDecryptPassword: false
 };
 
-
+ 
 function rootReducer(state = initialState, action) {
 
   if (action.type === ASSIGN_TYPE) {
