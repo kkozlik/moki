@@ -444,8 +444,8 @@ class App extends Component {
             />}</div></span>
 
         var sipUser = store.getState().user;
-        if (store.getState().user) {
-            sipUser = store.getState().user.name ? store.getState().user.user + ": " + store.getState().user.name : store.getState().user.user;
+        if (sipUser) {
+            sipUser = store.getState().user.email ? store.getState().user.user + ": " + store.getState().user.email : store.getState().user.user;
         } else {
             sipUser = "";
         }

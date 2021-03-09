@@ -11,7 +11,7 @@ const {
   NetworkController, OverviewController, QoSController,
   RealmController, RegistrationController,
   SettingController, SecurityController, SystemController,
-  TransportController
+  TransportController, ProfileController
 } = require('../controller');
 //const ReportController = require('../controller/report');
 const { nodeEnv } = require('../modules/config');
@@ -29,7 +29,6 @@ module.exports = () => {
   router
     .get('/layout', SettingController.loadGUILayout)
     .get('/setting', SettingController.load)
-    .get('/setting/user', SettingController.storeUserSettings)
     .get('/defaults', SettingController.defaults)
     .get('/monitor/version', SettingController.loadMonitorVersion)
     .post('/monitor/logo', SettingController.loadLogo)
@@ -41,6 +40,10 @@ module.exports = () => {
     .post('/tag/delete', SettingController.deleteTag)
     .post('/filters/delete', SettingController.deleteFilter)
     .post('/filters/save', SettingController.saveFilter);
+
+    router
+    .get('/profile/save', ProfileController.storeUserSettings)
+    .get('/profile', ProfileController.getUserSettings)
 
   router
     .post('/download/pcap', DiagramController.downloadPcap)

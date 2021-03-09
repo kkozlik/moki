@@ -20,6 +20,7 @@ const SettingController = require('./setting');
 const SecurityController = require('./security');
 const SystemController = require('./system');
 const TransportController = require('./transport');
+const ProfileController = require('./profile');
 
 // controller boilerplate code
 
@@ -57,5 +58,5 @@ module.exports = {
     SecurityController,
     SystemController,
     TransportController,
-
+    ProfileController
 };
