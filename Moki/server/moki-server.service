@@ -10,6 +10,7 @@ SyslogIdentifier=moki
 TimeoutStopSec=30
 RestartSec=1
 StartLimitInterval=0
+User=moki
 
 [Install]
 WantedBy=multi-user.target

@@ -1,3 +1,6 @@
+%define moki_user moki
+%define moki_group  moki
+
 Name:		  moki-server
 Version:  10.0.1
 #Release:	1%{dist}
@@ -29,6 +32,13 @@ moki-server express API developement pack
 %setup -q
 
 %build
+
+%pre
+# 
+getent group %{moki_user} > /dev/null || %{_sbindir}/groupadd -r %{moki_user}
+getent passwd %{moki_user} > /dev/null || \
+  | useradd -r -d /usr/share/Moki -g %{moki_user}  -s /sbin/nologin -c "moki user" %{moki_user}
+exit 0
 
 %install
 # install moki
@@ -81,6 +91,7 @@ systemctl -q restart moki-server
 
 
 %files
+%defattr(-,%{moki_user},%{moki_group})
 /usr/share/Moki/server/node_modules_prod
 /usr/share/Moki/server/js
 /usr/share/Moki/server/src
@@ -89,6 +100,7 @@ systemctl -q restart moki-server
 /usr/lib/systemd/system/moki-server.service
 
 %files dev
+%defattr(-,%{moki_user},%{moki_group})
 /usr/share/Moki/server/node_modules_dev
 /usr/share/Moki/server/js
 /usr/share/Moki/server/src
