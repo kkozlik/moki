@@ -108,9 +108,7 @@ async function updateES(indexName, queries, script, params, res) {
       body: {
         query: {
           bool: {
-            must: [
-              queries
-            ],
+            must: queries
           }
         },
         "script": {

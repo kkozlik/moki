@@ -42,7 +42,7 @@ module.exports = () => {
     .post('/filters/save', SettingController.saveFilter);
 
     router
-    .get('/profile/save', ProfileController.storeUserSettings)
+    .post('/profile/save', ProfileController.storeUserSettings)
     .get('/profile', ProfileController.getUserSettings)
 
   router

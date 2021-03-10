@@ -15,44 +15,61 @@ const indexName = "profiles";
 class ProfileController {
     //store setings by user in ES
     //users index
-    //req.body: {attribute: value, type: user/domain} 
+    //req.body: {userprefs: {list of values}, type: user/domain} 
+    ///profile/save
     static storeUserSettings(req, res, next) {
         async function search() {
             var user = AdminController.getUser(req);
-            var key = Object.keys(req.body.attribute)[0];
-            var field = req.body.attribute[Object.keys(req.body.attribute)[0]];
+            var keys = Object.keys(req.body.userprefs);
+            var field = req.body.userprefs[Object.keys(req.body.userprefs)[0]];
             var secret = user["tls-cn"];
             var secretField = "tls-cn";
-            if (req.body.attribute.type == "domain") {
+            if (req.body.type == "domain" && user.jwtbit == 2) {
                 secret = user["domain"];
                 secretField = "domain";
             }
+            //user level 2 wants to change domain settings - refuse
+            else if (req.body.type == "domain" && user.jwtbit == 2) {
+                return res.status(400).send({
+                    "msg": "User can't change domain settings."
+                });
+            }
+
+            //change format of userprefs before insert into ES
+            //"userprefs": {"ddd": "bbb", "aaa": "ccc"}  to ctx._source.event.userprefs.ddd = bbb; ctx._source.event.userprefs.aaa = ccc
+            var script = "";
+            for (var i = 0; i < keys.length; i++) {
+                script = script + " ctx._source.event.userprefs." + keys[i] + "='" + req.body.userprefs[keys[i]] + "';";
+            }
 
             //check if event with same tls-cn/domain exists, if so update it
-            var update = updateES(indexName, [
-                { query_string: { "query": [secret] + ": " + secretField } }
-            ], "if(ctx._source.event.userprefs." + key + ") { ctx._source.attrs.userprefs = " + field + ")) }", {
-                "attr": field,
-                "attr": key
+            var update = await updateES(indexName, [
+                { "query_string": { "query": "event." + [secretField] + ":" + secret } }
+            ], script, {
+                "field": field,
+                "key": keys
             }, res);
 
             //event was updated
-            if (update == "ok") {
+            if (update.updated != 0) {
                 return res.status(200).send(update);
             }
             //no such event create new one
             else {
-                insertES(indexName, {
+                var insert = await insertES(indexName, {
                     [secretField]: secret,
-                    "userprefs": {
-                        [key]: field
-                    }
+                    "userprefs": req.body.userprefs
                 }, res)
-            }
 
-            return res.status(400).send({
-                "msg": "Problem with saving filter."
-            });
+                if (insert == "ok") {
+                    return res.status(200).send({ insert });
+                }
+                else {
+                    return res.status(400).send({
+                        "msg": "Problem with saving profile ." + insert
+                    });
+                }
+            }
         }
 
         return search().catch((e) => {
@@ -63,6 +80,7 @@ class ProfileController {
     //get setings from ES
     //users index
     //req.body: attribute 
+    // /profile
     static getUserSettings(req, res, next) {
         async function search() {
             var user = AdminController.getUser(req);
@@ -127,10 +145,12 @@ class ProfileController {
                 if (userProfile.hits.hits.length == 0) {
                     userProfile = await searchES(indexName, [{ query_string: { "query": "event.tls-cn:default" } }], res);
                 }
-                else (
+                else {
                     res.status(400).send({
                         "msg": "Problem with getting user profile. " + userProfile
-                    }))
+                    })
+                    return;
+                }
                 //domain is undefined for admin
                 if (domain != "N/A") {
                     var domainProfile = await searchES(indexName, [{ query_string: { "query": "event.domain:" + domain } }], res);
