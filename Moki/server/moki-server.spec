@@ -1,5 +1,5 @@
-%define moki_user moki
-%define moki_group  moki
+%define moki_user mokis
+%define moki_group  mokis
 
 Name:		  moki-server
 Version:  10.0.1

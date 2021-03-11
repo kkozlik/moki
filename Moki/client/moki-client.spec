@@ -1,5 +1,5 @@
-%define	moki_user	moki
-%define moki_group	moki
+%define	moki_user	mokic
+%define moki_group	mokic
 
 Name:		  moki-client
 Version:  10.0.1

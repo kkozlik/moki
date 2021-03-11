@@ -6,11 +6,11 @@ WorkingDirectory=/usr/share/Moki/client
 Restart=always
 StandardOutput=syslog
 StandardError=syslog
-SyslogIdentifier=moki
+SyslogIdentifier=moki-client
 TimeoutStopSec=30
 RestartSec=1
 StartLimitInterval=0
-User=moki
+User=mokic
 
 [Install]
 WantedBy=multi-user.target
