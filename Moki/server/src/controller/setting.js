@@ -14,6 +14,12 @@ const {
 const {
     connectToES
 } = require('../modules/elastic');
+const {
+    searchES,
+    newIndexES,
+    existsIndexES,
+    insertES
+} = require('../utils/ES_queries');
 const distinct_query = require('../../js/template_queries/distinct_query.js');
 const { getJWTsipUserFilter } = require('../modules/jwt');
 const AdminController = require('../controller/admin');
@@ -803,134 +809,6 @@ class SettingController {
             return respond.status(200).send({
                 version: cfg.monitorVersion
             });
-        });
-    }
-
-    //store setings by user in ES
-    //users index
-    //req.body: {attribute: value} 
-    static storeUserSettings(req, res, next) {
-        async function search() {
-            var client = connectToES(res);
-            var user = AdminController.getUser(req);
-            if (user) {
-                tls = user["tls-cn"];
-                indexName = "users";
-            }
-
-            //check if it is neccesary to create new index
-            const existIndex = await client.indices.exists({ index: indexName });
-            //if not, create new one
-            if (!existIndex) {
-                var newIndex = await client.indices.create({
-                    index: indexName,
-                    body: {
-                        mappings: {
-                            properties: {
-                                "tls-cn": { "type": "keyword", "index": "true" },
-                                "monitor-name": { "type": "text", "index": "false" }
-                            }
-                        }
-                    }
-                }, function (err, resp, respcode) {
-                    newIndex = false;
-                    console.error(err, resp, respcode);
-                });
-                newIndex = true;
-
-            }
-
-            if (newIndex || existIndex) {
-                //check if event with same tls-cn and attr exists, if so delete it
-                client.deleteByQuery({
-                    index: indexName,
-                    type: '_doc',
-                    refresh: true,
-                    body: {
-                        query: {
-                            bool: {
-                                must: [
-                                    { query_string: { "query": "tls-cn:" + user["tls-cn"] } },
-                                    { exists: { "field": Object.keys(req.body.attribute)[0] } }
-                                ],
-                            }
-                        }
-                    }
-                }, function (error, response) {
-                    if (error) {
-                        //ok no event
-                    }
-                    else {
-                        //event deleted
-                    }
-                });
-
-                //add new event
-                var attr = Object.keys(req.body.attribute)[0];
-                var response = await client.index({
-                    index: indexName,
-                    refresh: true,
-                    type: "_doc",
-                    body: {
-                        "tls-cn": tls,
-                        [attr]: req.body[attr]
-                    }
-                }, function (err, resp, status) {
-                    if (err) {
-                        console.error(resp);
-                    } else {
-                        console.info("Inserted new user setting");
-                    }
-                })
-                return res.json(response);
-            }
-            client.close();
-            return res.status(400).send({
-                "msg": "Problem with saving filter."
-            });
-
-        }
-
-        return search().catch((e) => {
-            return next(e);
-        });
-    }
-
-    //get setings from ES
-    //users index
-    //req.body: attribute 
-    static getUserSettings(req, res, next) {
-        async function search() {
-            var client = connectToES(res);
-            var user = AdminController.getUser(req);
-            var tls = user["tls-cn"];
-            var indexName = "users";
-
-            client.search(condition = {
-                index: indexName,
-                type: '_doc',
-                body: {
-                    query: {
-                        bool: {
-                            must: [
-                                { query_string: { "query": "tls-cn:" + tls } },
-                                { exists: { "field": req.body.attribute } }
-                            ],
-                        }
-                    }
-                }
-            }, (error, response, status) => {
-                if (error) {
-                    res.json(400, error);
-                }
-                else {
-                    res.json(200, response);
-                }
-            });
-        }
-
-        return search().catch((e) => {
-            return next(e);
         });
     }
 
