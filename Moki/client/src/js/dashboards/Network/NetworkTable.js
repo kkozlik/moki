@@ -5,7 +5,7 @@ import React, {
 
 import TableChart from '../../charts/table_chart.js';
 import store from "../../store/index";
-import { elasticsearchConnection } from '../../helpers/elasticsearchConnection';
+import { elasticsearchConnection } from '@moki-client/gui';
 
 class NetworkTable extends Component {
 

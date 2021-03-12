@@ -14,7 +14,7 @@ import ListChart from '../../charts/list_chart.js';
 import store from "../../store/index";
 import {
     elasticsearchConnection
-} from '../../helpers/elasticsearchConnection';
+} from '@moki-client/gui';
 import DashboardsTypes from '../../helpers/DashboardsTypes';
 import {parseListData, parseBucketData, parseMultipleLineDataShareAxis, parseAggQueryWithoutScriptValue, parseStackedbarTimeData} from '@moki-client/es-response-parser';
 

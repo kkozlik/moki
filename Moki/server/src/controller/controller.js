@@ -14,7 +14,7 @@ let {
     timestamp_gte,
     timestamp_lte
 } = require('../utils/ts');
-const { getJWTsipUserFilter } = require('../modules/jwt');
+const { getJWTsipUserFilter, getEncryptChecksumFilter } = require('../modules/jwt');
 var timerange_query = require('../../js/template_queries/timerange_query.js');
 
 supress = "nofield";
@@ -46,7 +46,13 @@ class Controller {
                 domainFilter = isDomainFilter.domain;
             }
 
-            console.info("SERVER search with filters: " + filters + " types: " + types + " timerange: " + timestamp_gte + "-" + timestamp_lte + " timebucket: " + timebucket + " userFilter: " + userFilter + " domainFilter: " + domainFilter);
+            //check if encrypt filter should be used
+            var isEncryptChecksumFilter = await getEncryptChecksumFilter(req);
+            if (isEncryptChecksumFilter.encryptChecksum) {
+                isEncryptChecksumFilter = isEncryptChecksumFilter.encryptChecksum;
+            }
+
+            console.info("SERVER search with filters: " + filters + " types: " + types + " timerange: " + timestamp_gte + "-" + timestamp_lte + " timebucket: " + timebucket + " userFilter: " + userFilter + " domainFilter: " + domainFilter + " encrypt checksum filter: "+isEncryptChecksumFilter);
 
             for (var i = 0; i < requests.length; i++) {
                 if (requests[i].types) {
@@ -110,11 +116,11 @@ class Controller {
                         timebucketAnimation = Math.round(timebucketAnimation) + "s";
                         params = params.map(function (item) { return item == "timebucketAnimation" ? timebucketAnimation : item; });
                     }
-                    requests[i].query = requests[i].template.getTemplate(...params, getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, requests[i].filter, domainFilter), supress);
+                    requests[i].query = requests[i].template.getTemplate(...params, getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, requests[i].filter, domainFilter, isEncryptChecksumFilter), supress);
 
                 }
                 else {
-                    requests[i].query = requests[i].template.getTemplate(getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, requests[i].filter, domainFilter), supress);
+                    requests[i].query = requests[i].template.getTemplate(getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, requests[i].filter, domainFilter, isEncryptChecksumFilter), supress);
                 }
 
                 //ged old timestamp if has changed
@@ -186,9 +192,15 @@ class Controller {
                 domainFilter = isDomainFilter.domain;
             }
 
-            console.info("SERVER search with filters: " + filters + " types: " + types + " timerange: " + timestamp_gte + "-" + timestamp_lte + " timebucket: " + timebucket + " userFilter: " + userFilter + " domainFilter: " + domainFilter);
+             //check if encrypt filter should be used
+             var isEncryptChecksumFilter = await getEncryptChecksumFilter(req);
+             if (isEncryptChecksumFilter.encryptChecksum) {
+                 isEncryptChecksumFilter = isEncryptChecksumFilter.encryptChecksum;
+             }
+
+            console.info("SERVER search with filters: " + filters + " types: " + types + " timerange: " + timestamp_gte + "-" + timestamp_lte + " timebucket: " + timebucket + " userFilter: " + userFilter + " domainFilter: " + domainFilter + " encrypt checksum filter: "+isEncryptChecksumFilter);
             //always timerange_query
-            requests.query = timerange_query.getTemplate(getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, requests.filter, domainFilter), supress, querySize);
+            requests.query = timerange_query.getTemplate(getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, requests.filter, domainFilter, isEncryptChecksumFilter), supress, querySize);
             const response = await client.search({
                 index: requests.index,
                 scroll: '2m',

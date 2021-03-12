@@ -40,7 +40,6 @@ class Settings extends Component {
        Load data 
        */
     async load(url) {
-
         var jsonData;
         try {
             const response = await fetch(url, {

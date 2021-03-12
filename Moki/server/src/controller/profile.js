@@ -175,6 +175,8 @@ class ProfileController {
             return next(e);
         });
     }
+
+    
 }
 
 module.exports = ProfileController;

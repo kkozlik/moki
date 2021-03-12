@@ -6,7 +6,9 @@ import {
 } from 'react';
 
 import store from "../store/index";
-import { elasticsearchConnection } from '../helpers/elasticsearchConnection';
+import {
+  elasticsearchConnection
+} from '@moki-client/gui';
 import { getLayoutSettings } from '../helpers/getLayout';
 
 class Dashboard extends Component {
@@ -21,7 +23,6 @@ class Dashboard extends Component {
     // call 'unsubscribe()' to deregister default loadData change listener
     this.unsubscribe = store.subscribe(() => this.loadData());
     this.getLayout = this.getLayout.bind(this);
-
   }
 
   componentDidMount() {

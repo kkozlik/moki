@@ -12,7 +12,7 @@ import pauseIcon from "../../styles/icons/stop.png";
 import historyIcon from "../../styles/icons/reload_time_grey.png";
 import {
     elasticsearchConnection
-} from '../helpers/elasticsearchConnection';
+} from '@moki-client/gui';
 import { setTimerange } from "../actions/index";
 import {parseDateHeatmapAnimation, parseDateHeatmapDocCountAnimation, parseTwoAggAnimation, parseGeoipAnimation, parseTopologyDataAnimation, parseHistogramDataAnimation, parseListDataAnimation, parseQueryStringDataAnimation, parseDistinctDataAnimation} from '@moki-client/es-response-parser';
 

@@ -259,6 +259,7 @@ class timerangeBar extends Component {
 
     //reload data
     reload() {
+        console.log("aaaaa");
 
         //relative time
         if (this.state.timerange.includes("+")) {
@@ -543,7 +544,7 @@ class timerangeBar extends Component {
                     <div className="dropdown float-right text-right">
                         <span onClick={this.share} className="tabletd marginRight" ><img className="iconShare" alt="shareIcon" src={shareIcon} title="share" /><span id="tooltipshare" style={{ "display": "none" }}>copied to clipboard</span></span>
                         <span className="tabletd marginRight" onClick={this.moveTimerangeForward}><img alt="timeBackIcon" src={timeBack} title="move back" /></span><span className="tabletd marginRight" onClick={this.moveTimerangeBack}> <img alt="timeForwardIcon" src={timeForward} title="move forward" /></span>
-                        <span onClick={this.reload} className="tabletd marginRight" ><img className="iconReload" alt="reloadIcon" src={reloadIcon} title="reload" /></span>
+                        <span id="reload" onClick={this.reload} className="tabletd marginRight" ><img className="iconReload" alt="reloadIcon" src={reloadIcon} title="reload" /></span>
                         <span onClick={this.loadHistory} className="tabletd marginRight" ><img className="iconHistory" alt="historyIcon" src={this.state.historyIcon} title="previous time range" /></span>
                         <span onClick={this.refresh} className="tabletd" ><img style={{ "marginLeft": "10px", "marginRight": "0px" }} className="iconRefresh" alt="refreshIcon" src={this.state.refreshIcon} title="refresh" /></span>
                         <button className="btn dropdown-toggle" type="button" id="dropdownMenuButton" onClick={this.toggleMenu} aria-haspopup="true" aria-expanded="false">

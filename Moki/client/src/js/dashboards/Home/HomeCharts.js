@@ -11,7 +11,7 @@ import ValueChart from '../../charts/value_chart.js';
 import MultipleAreaChart from '../../charts/multipleArea_chart';
 import store from "../../store/index";
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
-import { elasticsearchConnection } from '../../helpers/elasticsearchConnection';
+import { elasticsearchConnection } from '@moki-client/gui';
 import {parseQueryStringData, parseDateHeatmap, parseAggData, parseAggSumBucketData, parseMultipleLineDataShareAxis, parseMultipleLineDataShareAxisWithoutAgg, parseAggQueryWithoutScriptValue} from '@moki-client/es-response-parser';
 
 class HomeCharts extends Component {
