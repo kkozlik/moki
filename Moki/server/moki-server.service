@@ -3,13 +3,16 @@ Type=simple
 Environment="HOST=127.0.0.1"
 ExecStart=/usr/bin/npm run start
 WorkingDirectory=/usr/share/Moki/server
-Restart=always
 StandardOutput=syslog
 StandardError=syslog
-SyslogIdentifier=moki
+SyslogIdentifier=moki-server
 TimeoutStopSec=30
+Restart=always
 RestartSec=1
-StartLimitInterval=0
+StartLimitInterval=20
+StartLimitBurst=5
+User=mokis
+Group=mokis
 
 [Install]
 WantedBy=multi-user.target
