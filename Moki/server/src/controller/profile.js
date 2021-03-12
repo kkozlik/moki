@@ -133,7 +133,7 @@ class ProfileController {
                 }
                 else {
                     res.status(400).send({
-                        "msg": "Problem with getting user profile. " + response
+                        "msg": "Problem with creating default profile. " + JSON.stringify(response)
                     });
                     return;
                 }
@@ -145,12 +145,7 @@ class ProfileController {
                 if (userProfile.hits.hits.length == 0) {
                     userProfile = await searchES(indexName, [{ query_string: { "query": "event.tls-cn:default" } }], res);
                 }
-                else {
-                    res.status(400).send({
-                        "msg": "Problem with getting user profile. " + userProfile
-                    })
-                    return;
-                }
+
                 //domain is undefined for admin
                 if (domain != "N/A") {
                     var domainProfile = await searchES(indexName, [{ query_string: { "query": "event.domain:" + domain } }], res);

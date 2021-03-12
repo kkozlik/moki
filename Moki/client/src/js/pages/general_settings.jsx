@@ -7,8 +7,8 @@ import isIP from '../helpers/isIP';
 import isEmail from '../helpers/isEmail';
 import deleteIcon from "../../styles/icons/delete_grey.png";
 import {
-    elasticsearchConnectionTag
-} from '../helpers/elasticsearchConnectionTag';
+    elasticsearchConnection
+} from '../helpers/elasticsearchConnection';
 
 class Settings extends Component {
     constructor(props) {
@@ -261,7 +261,7 @@ class Settings extends Component {
 
     async deleteTag(e) {
         var tag = e.currentTarget.id;
-        var data = await elasticsearchConnectionTag("/api/tag/delete", "", "", tag);
+        var data = await elasticsearchConnection("/api/tag/delete", {id: "", index: "", tags: tag});
         if (data.deleted >= 0) {
                var tags = this.state.tags;         
                for (var i = 0; i < tags.length; i++) {

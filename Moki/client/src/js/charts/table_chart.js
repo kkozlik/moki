@@ -23,7 +23,7 @@ import downloadIcon from "../../styles/icons/download.png";
 import downloadPcapIcon from "../../styles/icons/downloadPcap.png";
 import viewIcon from "../../styles/icons/view.png";
 import store from "../store/index";
-import { elasticsearchConnectionTag } from '../helpers/elasticsearchConnectionTag';
+import { elasticsearchConnection} from '../helpers/elasticsearchConnection';
 import { downloadPcap } from '../helpers/download/downloadPcap';
 import { downloadSD } from '../helpers/download/downloadSD';
 import { tableColumns } from '../helpers/TableColumns';
@@ -308,10 +308,10 @@ export default class listChart extends Component {
                 //previous tag exist
                 if (record['_source']['attrs']['tags']) {
                     var tags = record['_source']['attrs']['tags'] + "," + tag.toString();
-                    result = await elasticsearchConnectionTag("/api/tag", record['_id'], record['_index'], tags);
+                    result = await elasticsearchConnection("/api/tag", {id: record['_id'], index: record['_index'], tags: tags});
                 }
                 else {
-                    result = await elasticsearchConnectionTag("/api/tag", record['_id'], record['_index'], tag);
+                    result = await elasticsearchConnection("/api/tag", {id: record['_id'], index: record['_index'], tags: tag});
                 }
                 console.info("Tagging event");
                 console.info(result);

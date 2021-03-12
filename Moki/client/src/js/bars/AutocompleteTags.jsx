@@ -3,8 +3,8 @@ import React, {
     Fragment
 } from "react";
 import {
-    elasticsearchConnectionTag
-} from '../helpers/elasticsearchConnectionTag';
+    elasticsearchConnection
+} from '../helpers/elasticsearchConnection';
 
 class Autocomplete extends Component {
 
@@ -39,7 +39,7 @@ class Autocomplete extends Component {
                 if (!Array.isArray(tag)) {
                     tag = tag.split(",");
                 }
-                var data = await elasticsearchConnectionTag("/api/tag", id, index, tag);
+                var data = await elasticsearchConnection("/api/tag", {id: id, index: index, tags: tag});
                 if (data.result && (data.result === "updated" || data.result === "noop")) {
                     // alert("Tag has been saved."); 
 

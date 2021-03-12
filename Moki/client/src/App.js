@@ -6,8 +6,6 @@ import 'jquery/src/jquery';
 import React, {
     Component
 } from 'react';
-
-
 import './App.css';
 import NavBar from './js/bars/NavigationBar';
 import {
@@ -16,17 +14,12 @@ import {
     Route
 } from 'react-router-dom';
 import TimerangeBar from './js/bars/SetTimerangeBar';
-import {getLayoutSettings} from './js/helpers/getLayout';
+import { getLayoutSettings } from './js/helpers/getLayout';
 import FilterBar from './js/bars/FilterBar';
 import Restricted from './js/dashboards/Restricted/Restricted';
 import Sequence from './js/pages/sequenceDiagram';
 import store from "./js/store/index";
-import {
-    setUser
-} from "./js/actions/index";
-import {
-    setWidthChart
-} from "./js/actions/index";
+import { setUser, setWidthChart } from "./js/actions/index";
 import { Redirect } from 'react-router';
 import { paths } from "./js/controllers/paths.jsx";
 
@@ -50,7 +43,8 @@ class App extends Component {
             dashboards: [],
             dashboardsUser: [],
             dashboardsSettings: [],
-            logo: ""
+            logo: "",
+            user: {}
         }
         this.showError = this.showError.bind(this);
         this.redirect = this.redirect.bind(this);
@@ -357,6 +351,7 @@ class App extends Component {
 
                     //set user info :  email:email, domainID:domainID, jwt: jwtbit
                     store.dispatch(setUser(sip));
+
                     //set admin
                     if (sip.user === "ADMIN" && sip.user !== "SITE ADMIN") {
                         this.setState({
@@ -450,6 +445,7 @@ class App extends Component {
             sipUser = "";
         }
 
+        
         var sipUserSwitch;
         const aws = this.state.aws;
         var url = window.location.pathname;
@@ -472,6 +468,7 @@ class App extends Component {
                         className={
                             "margin250"
                         } >
+                            <span id="decryptpopupplaceholder"></span>
                         <div className="row" >
                             <div className="errorBar" > {this.state.error} </div>
                         </div>
@@ -584,13 +581,12 @@ class App extends Component {
         }
         return (
             (this.state.isLoading) ? loadingScreen :
-                <Router>
-                    <div className="container-fluid"> {
-                        sipUserSwitch
-                    }
-                    </div>
-                </Router>
-
+                    <Router>
+                        <div className="container-fluid"> {
+                            sipUserSwitch
+                        }
+                        </div>
+                    </Router>
         );
     }
 }

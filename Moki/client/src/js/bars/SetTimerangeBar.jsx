@@ -259,8 +259,6 @@ class timerangeBar extends Component {
 
     //reload data
     reload() {
-        console.log("aaaaa");
-
         //relative time
         if (this.state.timerange.includes("+")) {
 

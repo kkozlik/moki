@@ -10,6 +10,9 @@ import {
   elasticsearchConnection
 } from '@moki-client/gui';
 import { getLayoutSettings } from '../helpers/getLayout';
+import {
+  getProfile
+} from '@moki-client/gui';
 
 class Dashboard extends Component {
 
@@ -27,6 +30,7 @@ class Dashboard extends Component {
 
   componentDidMount() {
     this.loadData();
+    getProfile(store.getState().user);
   }
 
   componentWillUnmount() {
@@ -81,7 +85,6 @@ class Dashboard extends Component {
 
     }
   }
-
 }
 
 export default Dashboard;
