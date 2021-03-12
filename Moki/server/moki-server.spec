@@ -1,5 +1,5 @@
-%define moki_user mokis
-%define moki_group  mokis
+%global moki_user mokis
+%global moki_group  mokis
 
 Name:		  moki-server
 Version:  10.0.1
@@ -35,9 +35,9 @@ moki-server express API developement pack
 
 %pre
 # 
-getent group %{moki_user} > /dev/null || %{_sbindir}/groupadd -r %{moki_user}
+getent group %{moki_group} > /dev/null || %{_sbindir}/groupadd -r %{moki_group}
 getent passwd %{moki_user} > /dev/null || \
-  | useradd -r -d /usr/share/Moki -g %{moki_user}  -s /sbin/nologin -c "moki user" %{moki_user}
+  | useradd -r -d /usr/share/Moki/server -g %{moki_group}  -s /sbin/nologin -c "moki user" %{moki_user}
 exit 0
 
 %install

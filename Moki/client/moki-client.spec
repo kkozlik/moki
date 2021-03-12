@@ -1,5 +1,5 @@
-%define	moki_user	mokic
-%define moki_group	mokic
+%global	moki_user	mokic
+%global moki_group	mokic
 
 Name:		  moki-client
 Version:  10.0.1
@@ -41,9 +41,9 @@ rm -rf node_modules
 
 %pre dev
 # _datadir - default to /usr/share
-getent group %{moki_user} > /dev/null || %{_sbindir}/groupadd -r %{moki_user}
+getent group %{moki_group} > /dev/null || %{_sbindir}/groupadd -r %{moki_group}
 getent passwd %{moki_user} > /dev/null || \
-    useradd -r -d /usr/share/Moki -g %{moki_user}  -s /sbin/nologin -c "moki client dev" %{moki_user}
+    useradd -r -d /usr/share/Moki -g %{moki_group}  -s /sbin/nologin -c "moki client dev" %{moki_user}
 exit 0
 
 %install
