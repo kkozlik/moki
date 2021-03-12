@@ -34,10 +34,15 @@ moki-server express API developement pack
 %build
 
 %pre
-# 
 getent group %{moki_group} > /dev/null || %{_sbindir}/groupadd -r %{moki_group}
 getent passwd %{moki_user} > /dev/null || \
-  | useradd -r -d /usr/share/Moki/server -g %{moki_group}  -s /sbin/nologin -c "moki user" %{moki_user}
+  useradd -r -d /usr/share/Moki/server -g %{moki_group}  -s /sbin/nologin -c "moki user" %{moki_user}
+exit 0
+
+%pre dev
+getent group %{moki_group} > /dev/null || %{_sbindir}/groupadd -r %{moki_group}
+getent passwd %{moki_user} > /dev/null || \
+  useradd -r -d /usr/share/Moki/server -g %{moki_group}  -s /sbin/nologin -c "moki user" %{moki_user}
 exit 0
 
 %install
@@ -69,8 +74,8 @@ rm -rf %{buildroot}
 
 # symlinking correct node_modules
 ln -rfs \
-   /usr/share/Moki/server/node_modules_prod \
-   /usr/share/Moki/server/node_modules
+  /usr/share/Moki/server/node_modules_prod \
+  /usr/share/Moki/server/node_modules
 
 systemctl daemon-reload
 echo "Enabling and restarting moki-server"
@@ -81,8 +86,8 @@ systemctl -q restart moki-server
 
 # symlinking correct node_modules
 ln -rfs \
-   /usr/share/Moki/server/node_modules_dev \
-   /usr/share/Moki/server/node_modules
+  /usr/share/Moki/server/node_modules_dev \
+  /usr/share/Moki/server/node_modules
 
 systemctl daemon-reload
 echo "Enabling and restarting moki-server dev"
