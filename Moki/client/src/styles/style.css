@@ -337,8 +337,16 @@ h5 {
     border-color: #545b62 !important;
     max-height: 30px !important;
     padding: 0 !important;
-    min-width: 100px;
+    min-width: 130px;
     min-height: 30px;
+}
+
+.btn-tertiary {
+    float: right;
+    min-width: 170px;
+    margin-right: auto;
+    background-color: #00c8cc !important;
+    border-color: #00c8cc !important;
 }
 
 .btn-default {
