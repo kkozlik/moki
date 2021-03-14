@@ -22,6 +22,9 @@ import store from "./js/store/index";
 import { setUser, setWidthChart } from "./js/actions/index";
 import { Redirect } from 'react-router';
 import { paths } from "./js/controllers/paths.jsx";
+import {
+    getProfile
+} from '@moki-client/gui';
 
 class App extends Component {
     // Initialize the state
@@ -58,6 +61,7 @@ class App extends Component {
         this.showError(this.state.error);
         //resize window function
         window.addEventListener('resize', this.windowResize);
+        getProfile(this.state.user);
     }
 
     componentWillUnmount() {
@@ -351,6 +355,9 @@ class App extends Component {
 
                     //set user info :  email:email, domainID:domainID, jwt: jwtbit
                     store.dispatch(setUser(sip));
+                    this.setState({
+                        user: sip
+                    })
 
                     //set admin
                     if (sip.user === "ADMIN" && sip.user !== "SITE ADMIN") {
@@ -445,7 +452,7 @@ class App extends Component {
             sipUser = "";
         }
 
-        
+
         var sipUserSwitch;
         const aws = this.state.aws;
         var url = window.location.pathname;
@@ -468,7 +475,6 @@ class App extends Component {
                         className={
                             "margin250"
                         } >
-                            <span id="decryptpopupplaceholder"></span>
                         <div className="row" >
                             <div className="errorBar" > {this.state.error} </div>
                         </div>
@@ -580,13 +586,18 @@ class App extends Component {
             }
         }
         return (
-            (this.state.isLoading) ? loadingScreen :
+            <span>
+                <span id="decryptpopupplaceholder"></span>
+                {(this.state.isLoading) ? loadingScreen :
                     <Router>
                         <div className="container-fluid"> {
                             sipUserSwitch
                         }
+
                         </div>
                     </Router>
+                }
+            </span>
         );
     }
 }

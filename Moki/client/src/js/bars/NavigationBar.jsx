@@ -114,7 +114,10 @@ class navBar extends Component {
             catch (error) {
             }
         }
+        //aws case, just redirect
         else {
+            window.localStorage.removeItem("HMAC_SHA_256_KEY");
+            window.localStorage.removeItem("IPCIPHER_MAP_KEY");
             window.location.href = "/logout";
         }
     }

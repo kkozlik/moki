@@ -52,7 +52,7 @@ class Controller {
                 isEncryptChecksumFilter = isEncryptChecksumFilter.encryptChecksum;
             }
 
-            console.info("SERVER search with filters: " + filters + " types: " + types + " timerange: " + timestamp_gte + "-" + timestamp_lte + " timebucket: " + timebucket + " userFilter: " + userFilter + " domainFilter: " + domainFilter + " encrypt checksum filter: "+isEncryptChecksumFilter);
+            console.info("SERVER search with filters: " + filters + " types: " + types + " timerange: " + timestamp_gte + "-" + timestamp_lte + " timebucket: " + timebucket + " userFilter: " + userFilter + " domainFilter: " + domainFilter + " encrypt checksum: "+isEncryptChecksumFilter);
 
             for (var i = 0; i < requests.length; i++) {
                 if (requests[i].types) {

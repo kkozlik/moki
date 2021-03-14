@@ -149,8 +149,7 @@ function getEncryptChecksumFilter(req) {
   //no encrypt checksum passed from client
   if(!req.body.encryptChecksum) {return  {encryptChecksum: "*"}}
 
-  //no password was used for decryption, show only unecrypted events
-  if(req.body.encryptChecksum == "nokey") {return  {encryptChecksum: ""}}
+  //no password was used for decryption, show only unecrypted events -> plain state
   //user or site admin, use filter
     return { encryptChecksum: req.body.encryptChecksum }
 }
