@@ -52,7 +52,13 @@ class Controller {
                 isEncryptChecksumFilter = isEncryptChecksumFilter.encryptChecksum;
             }
 
-            console.info("SERVER search with filters: " + filters + " types: " + types + " timerange: " + timestamp_gte + "-" + timestamp_lte + " timebucket: " + timebucket + " userFilter: " + userFilter + " domainFilter: " + domainFilter + " encrypt checksum: "+isEncryptChecksumFilter);
+            //special case: disable disableHMACfilter - for account chart
+            if (req.url == "/account/charts") {
+                isEncryptChecksumFilter = "*";
+            }
+
+
+            console.info("SERVER search with filters: " + filters + " types: " + types + " timerange: " + timestamp_gte + "-" + timestamp_lte + " timebucket: " + timebucket + " userFilter: " + userFilter + " domainFilter: " + domainFilter + " encrypt checksum: " + isEncryptChecksumFilter);
 
             for (var i = 0; i < requests.length; i++) {
                 if (requests[i].types) {
@@ -192,13 +198,13 @@ class Controller {
                 domainFilter = isDomainFilter.domain;
             }
 
-             //check if encrypt filter should be used
-             var isEncryptChecksumFilter = await getEncryptChecksumFilter(req);
-             if (isEncryptChecksumFilter.encryptChecksum) {
-                 isEncryptChecksumFilter = isEncryptChecksumFilter.encryptChecksum;
-             }
+            //check if encrypt filter should be used
+            var isEncryptChecksumFilter = await getEncryptChecksumFilter(req);
+            if (isEncryptChecksumFilter.encryptChecksum) {
+                isEncryptChecksumFilter = isEncryptChecksumFilter.encryptChecksum;
+            }
 
-            console.info("SERVER search with filters: " + filters + " types: " + types + " timerange: " + timestamp_gte + "-" + timestamp_lte + " timebucket: " + timebucket + " userFilter: " + userFilter + " domainFilter: " + domainFilter + " encrypt checksum filter: "+isEncryptChecksumFilter);
+            console.info("SERVER search with filters: " + filters + " types: " + types + " timerange: " + timestamp_gte + "-" + timestamp_lte + " timebucket: " + timebucket + " userFilter: " + userFilter + " domainFilter: " + domainFilter + " encrypt checksum filter: " + isEncryptChecksumFilter);
             //always timerange_query
             requests.query = timerange_query.getTemplate(getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, requests.filter, domainFilter, isEncryptChecksumFilter), supress, querySize);
             const response = await client.search({

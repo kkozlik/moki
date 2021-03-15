@@ -1215,6 +1215,11 @@ input {
     margin-top: 10px;
 }
 
+.list {
+    color: gray !important;
+    font-weight: 350;
+}
+
 .react-bootstrap-table {
     width: 100%;
     font-size: 0.9rem;
