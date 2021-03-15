@@ -36,11 +36,11 @@ export default class datebarChart extends Component {
             }
         }
 
+        var color= this.props.color ? this.props.color : "gray";
         return (
-
             <div id = "valueChart">
             <h3 className="alignLeft title" >{this.props.name}</h3>
-            <h4 className={"alignLeft " + this.props.biggerFont}>{niceNumber(this.props.data, this.props.name)}</h4>
+            <h4 className={"alignLeft " + this.props.biggerFont} style={{"color":color}}>{niceNumber(this.props.data, this.props.name)}</h4>
             </div>
                )
     }

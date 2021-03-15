@@ -61,7 +61,7 @@ class App extends Component {
         this.showError(this.state.error);
         //resize window function
         window.addEventListener('resize', this.windowResize);
-        getProfile(this.state.user);
+
     }
 
     componentWillUnmount() {
@@ -140,13 +140,7 @@ class App extends Component {
         this.setState({
             isLoading: false
         })
-        /*   }
-           else {
-               this.setState({
-                   monitorName: monitorName.hits.hits + " " + monitorVersion
-               });
-           }
-           */
+        getProfile(this.state.user);
     }
 
     //get logo img

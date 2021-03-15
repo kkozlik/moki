@@ -122,6 +122,7 @@ class Controller {
                         timebucketAnimation = Math.round(timebucketAnimation) + "s";
                         params = params.map(function (item) { return item == "timebucketAnimation" ? timebucketAnimation : item; });
                     }
+
                     requests[i].query = requests[i].template.getTemplate(...params, getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, requests[i].filter, domainFilter, isEncryptChecksumFilter), supress);
 
                 }
