@@ -49,7 +49,7 @@ export default class sunburst extends Component {
         var colorScale = d3.scaleOrdinal(Colors);
 
         if (!data || data.length === 0 || !data.children || data.children.length === 0) {
-           var g = d3.select('#sunburstChart')
+            var g = d3.select('#sunburstChart')
                 .append("svg")
                 .attr('width', svgWidth)
                 .attr('height', height)
@@ -143,6 +143,12 @@ export default class sunburst extends Component {
                     if (d.data.key === "success") {
                         return "#58A959";
                     }
+                    else if (d.data.key === "displayed") {
+                        return "#58A959";
+                    }
+                   /* else if( d.data.key === "hidden"){
+                        return "#c41d03";
+                    }*/
                     else {
                         return colorScale((d.children ? d : d.parent).data.key);
 
@@ -191,181 +197,181 @@ export default class sunburst extends Component {
                 }
             }
 
+            if (this.props.legend !== "off") {
+                g.append('text')
+                    .attr('x', 170)
+                    .attr('y', -70)
+                    .text("Net failure");
+                //define legend
+                var legend = g.selectAll('.legend')
+                    .data(function () {
+                        var noParents = [];
+                        var data = root.descendants();
 
-            g.append('text')
-                .attr('x', 170)
-                .attr('y', -70)
-                .text("Net failure");
-            //define legend
-            var legend = g.selectAll('.legend')
-                .data(function () {
-                    var noParents = [];
-                    var data = root.descendants();
-
-                    for (var i = 0; i < data.length; i++) {
-                        if (data[i].height === 0 && data[i].data.key !== "success" && data[i].data.key !== "487" && data[i].data.key !== "486") {
-                            noParents.push(data[i]);
+                        for (var i = 0; i < data.length; i++) {
+                            if (data[i].height === 0 && data[i].data.key !== "success" && data[i].data.key !== "487" && data[i].data.key !== "486") {
+                                noParents.push(data[i]);
+                            }
                         }
-                    }
 
-                    return noParents;
-                })
-                .enter()
-                .append('g')
-                .attr('class', 'legend')
-                .attr('transform', function (d, i) {
-
-
-                    var c = 2;   // number of columns
-                    var h = 20;  // legend entry height
-                    var w = 100; // legend entry width (so we can position the next column) 
-                    var tx = 150; // tx/ty are essentially margin values
-                    var ty = -50;
-                    var x = i % c * w + tx;
-                    var y = Math.floor(i / c) * h + ty;
-                    return "translate(" + x + "," + y + ")";
+                        return noParents;
+                    })
+                    .enter()
+                    .append('g')
+                    .attr('class', 'legend')
+                    .attr('transform', function (d, i) {
 
 
-                });
+                        var c = 2;   // number of columns
+                        var h = 20;  // legend entry height
+                        var w = 100; // legend entry width (so we can position the next column) 
+                        var tx = 150; // tx/ty are essentially margin values
+                        var ty = -50;
+                        var x = i % c * w + tx;
+                        var y = Math.floor(i / c) * h + ty;
+                        return "translate(" + x + "," + y + ")";
 
 
-            g.append('text')
-                .attr('x', 370)
-                .attr('y', -70)
-                .text("User failure");
+                    });
 
-            //define legend
-            var legendUser = g.selectAll('.legend2')
-                .data(function () {
-                    var noParents = [];
-                    var data = root.descendants();
-                    for (var i = 0; i < data.length; i++) {
-                        if (data[i].data.key === "486" || data[i].data.key === "487") {
-                            noParents.push(data[i]);
+
+                g.append('text')
+                    .attr('x', 370)
+                    .attr('y', -70)
+                    .text("User failure");
+
+                //define legend
+                var legendUser = g.selectAll('.legend2')
+                    .data(function () {
+                        var noParents = [];
+                        var data = root.descendants();
+                        for (var i = 0; i < data.length; i++) {
+                            if (data[i].data.key === "486" || data[i].data.key === "487") {
+                                noParents.push(data[i]);
+                            }
                         }
-                    }
-                    return noParents;
-                })
-                .enter()
-                .append('g')
-                .attr('class', 'legend')
-                .attr('transform', function (d, i) {
+                        return noParents;
+                    })
+                    .enter()
+                    .append('g')
+                    .attr('class', 'legend')
+                    .attr('transform', function (d, i) {
 
 
-                    var c = 1;   // number of columns
-                    var h = 20;  // legend entry height
-                    var w = 100; // legend entry width (so we can position the next column) 
-                    var tx = 350; // tx/ty are essentially margin values
-                    var ty = -50;
-                    var x = i % c * w + tx;
-                    var y = Math.floor(i / c) * h + ty;
-                    return "translate(" + x + "," + y + ")";
+                        var c = 1;   // number of columns
+                        var h = 20;  // legend entry height
+                        var w = 100; // legend entry width (so we can position the next column) 
+                        var tx = 350; // tx/ty are essentially margin values
+                        var ty = -50;
+                        var x = i % c * w + tx;
+                        var y = Math.floor(i / c) * h + ty;
+                        return "translate(" + x + "," + y + ")";
 
-                    //}
-                });
+                        //}
+                    });
 
 
 
-            legend.append('rect')
-                .attr('width', (function (d) {
-                    if (parseInt(d.data.key)) {
-                        return legendRectSize;
-                    }
-                }))
-                .attr('height', legendRectSize)
-                .style("fill", function (d) {
-                    return colorScale((d.children ? d : d.parent).data.key);
-                })
-                .on("click", el => {
-                    if (parseInt(el.data.key, 10)) {
-                        createFilter("attrs.sip-code: \"" + el.data.key + "\"");
-                    } else {
-                        createFilter("termination: \"" + el.data.key + "\"");
-                    }
-
-                    //bug fix: if you click but not move out
-                    var tooltips = document.getElementsByClassName("tooltipSunburst");
-                    if (tooltip) {
-                        for (var j = 0; j < tooltips.length; j++) {
-                            tooltips[j].remove();
+                legend.append('rect')
+                    .attr('width', (function (d) {
+                        if (parseInt(d.data.key)) {
+                            return legendRectSize;
                         }
-                    }
-                });
-
-            legend.append('text')
-                .attr('x', legendRectSize + legendSpacing)
-                .attr('y', legendRectSize - legendSpacing)
-                .text(function (d) {
-                    if (parseInt(d.data.key)) {
-                        return d.data.key + " (" + d3.format(',')(d.data.value) + ")";
-                    }
-                })
-                .on("click", el => {
-                    if (parseInt(el.data.key, 10)) {
-                        createFilter("attrs.sip-code: \"" + el.data.key + "\"");
-                    } else {
-                        createFilter("termination: \"" + el.data.key + "\"");
-                    }
-
-                    //bug fix: if you click but not move out
-                    var tooltips = document.getElementsByClassName("tooltipSunburst");
-                    if (tooltip) {
-                        for (var j = 0; j < tooltips.length; j++) {
-                            tooltips[j].remove();
+                    }))
+                    .attr('height', legendRectSize)
+                    .style("fill", function (d) {
+                        return colorScale((d.children ? d : d.parent).data.key);
+                    })
+                    .on("click", el => {
+                        if (parseInt(el.data.key, 10)) {
+                            createFilter("attrs.sip-code: \"" + el.data.key + "\"");
+                        } else {
+                            createFilter("termination: \"" + el.data.key + "\"");
                         }
-                    }
-                });
 
-            legendUser.append('rect')
-                .attr('width', (function (d) {
-                    if (parseInt(d.data.key)) {
-                        return legendRectSize;
-                    }
-                }))
-                .attr('height', legendRectSize)
-                .style("fill", function (d) {
-                    return colorScale((d.children ? d : d.parent).data.key);
-                })
-                .on("click", el => {
-                    if (parseInt(el.data.key, 10)) {
-                        createFilter("attrs.sip-code: \"" + el.data.key + "\"");
-                    } else {
-                        createFilter("termination: \"" + el.data.key + "\"");
-                    }
-
-                    //bug fix: if you click but not move out
-                    var tooltips = document.getElementsByClassName("tooltipSunburst");
-                    if (tooltip) {
-                        for (var j = 0; j < tooltips.length; j++) {
-                            tooltips[j].remove();
+                        //bug fix: if you click but not move out
+                        var tooltips = document.getElementsByClassName("tooltipSunburst");
+                        if (tooltip) {
+                            for (var j = 0; j < tooltips.length; j++) {
+                                tooltips[j].remove();
+                            }
                         }
-                    }
-                });
+                    });
 
-            legendUser.append('text')
-                .attr('x', legendRectSize + legendSpacing)
-                .attr('y', legendRectSize - legendSpacing)
-                .text(function (d) {
-                    if (parseInt(d.data.key)) {
-                        return d.data.key + " (" + d3.format(',')(d.data.value) + ")";
-                    }
-                })
-                .on("click", el => {
-                    if (parseInt(el.data.key, 10)) {
-                        createFilter("attrs.sip-code: \"" + el.data.key + "\"");
-                    } else {
-                        createFilter("termination: \"" + el.data.key + "\"");
-                    }
-
-                    //bug fix: if you click but not move out
-                    var tooltips = document.getElementsByClassName("tooltipSunburst");
-                    if (tooltip) {
-                        for (var j = 0; j < tooltips.length; j++) {
-                            tooltips[j].remove();
+                legend.append('text')
+                    .attr('x', legendRectSize + legendSpacing)
+                    .attr('y', legendRectSize - legendSpacing)
+                    .text(function (d) {
+                        if (parseInt(d.data.key)) {
+                            return d.data.key + " (" + d3.format(',')(d.data.value) + ")";
                         }
-                    }
-                });
+                    })
+                    .on("click", el => {
+                        if (parseInt(el.data.key, 10)) {
+                            createFilter("attrs.sip-code: \"" + el.data.key + "\"");
+                        } else {
+                            createFilter("termination: \"" + el.data.key + "\"");
+                        }
 
+                        //bug fix: if you click but not move out
+                        var tooltips = document.getElementsByClassName("tooltipSunburst");
+                        if (tooltip) {
+                            for (var j = 0; j < tooltips.length; j++) {
+                                tooltips[j].remove();
+                            }
+                        }
+                    });
+
+                legendUser.append('rect')
+                    .attr('width', (function (d) {
+                        if (parseInt(d.data.key)) {
+                            return legendRectSize;
+                        }
+                    }))
+                    .attr('height', legendRectSize)
+                    .style("fill", function (d) {
+                        return colorScale((d.children ? d : d.parent).data.key);
+                    })
+                    .on("click", el => {
+                        if (parseInt(el.data.key, 10)) {
+                            createFilter("attrs.sip-code: \"" + el.data.key + "\"");
+                        } else {
+                            createFilter("termination: \"" + el.data.key + "\"");
+                        }
+
+                        //bug fix: if you click but not move out
+                        var tooltips = document.getElementsByClassName("tooltipSunburst");
+                        if (tooltip) {
+                            for (var j = 0; j < tooltips.length; j++) {
+                                tooltips[j].remove();
+                            }
+                        }
+                    });
+
+                legendUser.append('text')
+                    .attr('x', legendRectSize + legendSpacing)
+                    .attr('y', legendRectSize - legendSpacing)
+                    .text(function (d) {
+                        if (parseInt(d.data.key)) {
+                            return d.data.key + " (" + d3.format(',')(d.data.value) + ")";
+                        }
+                    })
+                    .on("click", el => {
+                        if (parseInt(el.data.key, 10)) {
+                            createFilter("attrs.sip-code: \"" + el.data.key + "\"");
+                        } else {
+                            createFilter("termination: \"" + el.data.key + "\"");
+                        }
+
+                        //bug fix: if you click but not move out
+                        var tooltips = document.getElementsByClassName("tooltipSunburst");
+                        if (tooltip) {
+                            for (var j = 0; j < tooltips.length; j++) {
+                                tooltips[j].remove();
+                            }
+                        }
+                    });
+            }
         }
 
     }

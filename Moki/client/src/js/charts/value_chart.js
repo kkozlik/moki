@@ -4,44 +4,79 @@ import React, {
 
 
 export default class datebarChart extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            color: "grey",
+            data: this.props.data
+        };
+        this.changeColor = this.changeColor.bind(this);
+    }
+
+    componentDidMount(){
+        this.changeColor();
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (this.props.data !== nextProps.data) {
+          this.setState({
+            data: nextProps.data
+          });
+          this.changeColor();
+        }
+      }
+
+    changeColor() {
+        console.log("this.state.data");
+        console.log(this.state.data);
+        if (this.props.color === "zerogreen") {
+            if (this.state.data === 0) {
+                this.setState({ color: "green" })
+            }
+            else {
+                this.setState({ color: "red" })
+            }
+        }
+    }
+
     render() {
-        function niceNumber(nmb, name){
-            if(name.includes("DURATION")){
 
-                var sec_num = parseInt(nmb, 10); 
+        function niceNumber(nmb, name) {
+            if (name.includes("DURATION")) {
 
-                var days = Math.floor(sec_num / 86400) ? Math.floor(sec_num / 86400)+"d" : "";
-                sec_num = sec_num - ( Math.floor(sec_num / 86400) *86400);
+                var sec_num = parseInt(nmb, 10);
 
-                var hours = Math.floor(sec_num / 3600) ? Math.floor(sec_num / 3600)+"h" : "";
-                sec_num = sec_num - ( Math.floor(sec_num / 3600) *3600);
-                
-                var minutes = Math.floor( (sec_num % 3600) / 60) ? Math.floor((sec_num % 3600) / 60)+"m" : "";
-                sec_num = sec_num - ( Math.floor((sec_num % 3600) / 60) *60);
-                
-                var seconds = sec_num % 60 ? sec_num % 60+"s" : "";
-                
+                var days = Math.floor(sec_num / 86400) ? Math.floor(sec_num / 86400) + "d" : "";
+                sec_num = sec_num - (Math.floor(sec_num / 86400) * 86400);
+
+                var hours = Math.floor(sec_num / 3600) ? Math.floor(sec_num / 3600) + "h" : "";
+                sec_num = sec_num - (Math.floor(sec_num / 3600) * 3600);
+
+                var minutes = Math.floor((sec_num % 3600) / 60) ? Math.floor((sec_num % 3600) / 60) + "m" : "";
+                sec_num = sec_num - (Math.floor((sec_num % 3600) / 60) * 60);
+
+                var seconds = sec_num % 60 ? sec_num % 60 + "s" : "";
+
                 //don't  display seconds if value is in days
-                if(days){
+                if (days) {
                     seconds = "";
                 }
-                
-                if(!days && !hours && !minutes && !seconds) return "0s";
-                return days+" "+hours+" "+minutes+" "+seconds;
+
+                if (!days && !hours && !minutes && !seconds) return "0s";
+                return days + " " + hours + " " + minutes + " " + seconds;
             }
-            else if(nmb){
+            else if (nmb) {
                 return nmb.toLocaleString();
-            }else {
+            } else {
                 return 0;
             }
         }
 
-        var color= this.props.color ? this.props.color : "gray";
         return (
-            <div id = "valueChart">
-            <h3 className="alignLeft title" >{this.props.name}</h3>
-            <h4 className={"alignLeft " + this.props.biggerFont} style={{"color":color}}>{niceNumber(this.props.data, this.props.name)}</h4>
+            <div id="valueChart">
+                <h3 className="alignLeft title" >{this.props.name}</h3>
+                <h4 className={"alignLeft " + this.props.biggerFont} style={{ "color": this.state.color }}>{niceNumber(this.state.data, this.props.name)}</h4>
             </div>
-               )
+        )
     }
 }

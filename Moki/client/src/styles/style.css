@@ -407,7 +407,8 @@ h5 {
     width: 100%;
     visibility: hidden;
     margin-left: 15px;
-    font-weight: 600;
+    font-weight: 800;
+    z-index: 9999999999;
 }
 
 h6 {
