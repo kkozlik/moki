@@ -103,8 +103,8 @@ class App extends Component {
 
         //get settings dashboard list
         var dashboardsSettings = Object.keys(jsonData.settingsDashboards);
-        if (!this.state.aws && !this.state.admin) {
-            dashboardsSettings = dashboardsSettings.filter(dashboard => jsonData.settingsDashboards[dashboard]);
+        if (this.state.aws && !this.state.admin) {
+            dashboardsSettings = dashboardsSettings.filter(dashboard => jsonData.settingsDashboards[dashboardsSettings]);
         }
         this.setState({
             dashboardsSettings: dashboardsSettings
@@ -112,8 +112,8 @@ class App extends Component {
 
         //get user dashboard list
         var userSettings = Object.keys(jsonData.userDashboards);
-        if (!this.state.aws && !this.state.admin) {
-            userSettings = userSettings.filter(dashboard => jsonData.userDashboards[dashboard]);
+        if (this.state.aws && !this.state.admin) {
+            userSettings = userSettings.filter(dashboard => jsonData.userDashboards[userSettings]);
         }
         this.setState({
             dashboardsUser: userSettings
@@ -144,8 +144,6 @@ class App extends Component {
         })
 
         var res = await getProfile(this.state.user);
-        console.log("----");
-        console.log(res);
         if (res !== "ok") {
             this.showError(res);
         }

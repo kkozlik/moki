@@ -7,7 +7,8 @@ const {
     newIndexES,
     existsIndexES,
     insertES,
-    updateES
+    updateES,
+    deleteES
 } = require('../utils/ES_queries');
 const AdminController = require('../controller/admin');
 const indexName = "profiles";
@@ -69,6 +70,29 @@ class ProfileController {
                         "msg": "Problem with saving profile ." + insert
                     });
                 }
+            }
+        }
+
+        return search().catch((e) => {
+            return next(e);
+        });
+    }
+
+    //delete 
+    //users index
+    ///profile/delete
+    static deleteUserSettings(req, res, next) {
+        async function search() {
+            var user = AdminController.getUser(req);
+            var secret = user["tls-cn"];
+            var deleted = await deleteES(indexName, { "query": { "match": {"event.tls-cn": secret }}}, res);
+            if (deleted != 0) {
+                return res.status(200).send(deleted);
+            }
+            else {
+                return res.status(400).send({
+                    "msg": "Problem with deleting profile ." + deleted
+                });
             }
         }
 
@@ -171,7 +195,7 @@ class ProfileController {
         });
     }
 
-    
+
 }
 
 module.exports = ProfileController;

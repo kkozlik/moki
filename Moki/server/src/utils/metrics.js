@@ -48,7 +48,7 @@ function getQueries(filter, types, timestamp_gte, timestamp_lte, userFilter, cha
   if(isEncryptChecksumFilter !== "*"){
     queries.push({
       "match": {
-        "encrypt_validation":  isEncryptChecksumFilter
+        "encrypt":  isEncryptChecksumFilter
       }
     });
   }

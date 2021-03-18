@@ -10,8 +10,6 @@ class SaveFilters extends Component {
         this.save = this.save.bind(this);
     }
 
-
-
     uid() {
         return Date.now().toString(36) + Math.random().toString(36).substr(2);
     }
@@ -80,7 +78,6 @@ class SaveFilters extends Component {
         }
     }
 
-
     render() {
         var filters = getFilters();
         var dashboard = window.location.pathname;
@@ -90,33 +87,17 @@ class SaveFilters extends Component {
                 <p>include timerange?  <input type="checkbox" id="time" /></p>
                 <div className="modalText" >
                     <b>Active filters:</b>
-                    {
-                        filters.length === 0 && <p className="tab" >No active filters</p>
-                    }
-                    {
-                        filters.map((item) =>
-                            <p className="tab" key={item.id}>{item.title}</p>
-                        )
-                    }
+                    {filters.length === 0 && <p className="tab" >No active filters</p>}
+                    {filters.map((item) => <p className="tab" key={item.id}>{item.title}</p>)}
                 </div>
                 <button type="button"
                     className="btn btn-primary filterButtonClose"
-                    filter={
-                        this.props.title
-                    }
-                    onClick={
-                        this.save
-                    }
-                    style={
-                        {
-                            "marginLeft": "77%"
-                        }
-                    } > Save
+                    filter={this.props.title}
+                    onClick={this.save}
+                    style={{ "float": "right" }}> Save
                 </button>
             </span>
-
         );
-
     }
 }
 

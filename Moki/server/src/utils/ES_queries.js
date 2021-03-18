@@ -131,10 +131,36 @@ async function updateES(indexName, queries, script, params, res) {
   })
 }
 
+/*
+ES delete  query
+*/
+async function deleteES(indexName, queries,  res) {
+  return new Promise(function (resolve, reject) {
+    const client = connectToES(res);
+    client.deleteByQuery({
+      index: indexName,
+      type: '_doc',
+      refresh: true,
+      body: queries
+    }, (error, response, status) => {
+      if (error) {
+        console.log(error);
+        client.close();
+        reject(error);
+      }
+      else {
+        client.close();
+        resolve(response);
+      }
+    });
+  })
+}
+
 module.exports = {
   searchES: searchES,
   newIndexES: newIndexES,
   existsIndexES: existsIndexES,
   insertES: insertES,
-  updateES: updateES
+  updateES: updateES,
+  deleteES: deleteES
 };

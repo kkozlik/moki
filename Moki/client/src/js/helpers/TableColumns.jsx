@@ -1605,6 +1605,67 @@ export function tableColumns(dashboard, tags) {
             }
         }]
 
+        case 'report': return [{
+            dataField: '_source.ts-start',
+            text: 'START TIME',
+            sort: true,
+            editable: false,
+            headerStyle: { width: '170px' },
+            formatter: (cell, obj) => {
+                var ob = obj._source;
+                return new Date(ob['ts-start']/1000).toLocaleString();
+            }
+        },{
+            dataField: '_source.tls-cn',
+            text: 'TLS-CN',
+            sort: true,
+            editable: false,
+            formatter: (cell, obj) => {
+                var ob = obj._source;
+                if (ob) {
+                    return <span className="filterToggleActive"><span className="filterToggle">
+                        <img onClick={doFilter} field="tls-cn" value={ob["tls-cn"]} className="icon" alt="filterIcon" src={filterIcon} /><img field="tls-cn" value={ob["tls-cn"]} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span >{ob["tls-cn"]}
+                    </span>
+                }
+            }
+        },  {
+            dataField: '_source.count',
+            text: 'COUNT',
+            sort: true,
+            editable: false,
+        }, {
+            dataField: '_source.period',
+            text: 'PERIOD',
+            sort: true,
+            editable: false
+        },  {
+            dataField: '_source',
+            text: 'ADVANCED',
+            editable: false,
+            headerStyle: { width: '100px' },
+            formatter: (cell, obj) => {
+                var ob = obj._source;
+                return <span>
+                    {<Popup trigger={<img className="icon" alt="detailsIcon" src={detailsIcon} title="details" />} modal>
+                        {close => (
+                            <div className="Advanced">
+                                <button className="link close export" onClick={() => exportJSON(ob)}>
+                                    Export json
+                            </button>
+                                <button className="close" onClick={close}>
+                                    &times;
+                            </button>
+                                <div className="contentAdvanced">
+                                    <pre> <div dangerouslySetInnerHTML={{ __html: syntaxHighlight(ob) }} /></pre>
+
+                                </div>
+                            </div>
+                        )}
+                    </Popup>
+                    }
+                </span>
+            }
+        }]
 
         case 'system': return [{
             dataField: '_source.@timestamp',

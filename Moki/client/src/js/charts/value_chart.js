@@ -10,31 +10,20 @@ export default class datebarChart extends Component {
             color: "grey",
             data: this.props.data
         };
-        this.changeColor = this.changeColor.bind(this);
     }
 
-    componentDidMount(){
-        this.changeColor();
-    }
-
-    componentWillReceiveProps(nextProps) {
+      componentWillReceiveProps(nextProps) {
         if (this.props.data !== nextProps.data) {
-          this.setState({
-            data: nextProps.data
-          });
-          this.changeColor();
-        }
-      }
-
-    changeColor() {
-        console.log("this.state.data");
-        console.log(this.state.data);
-        if (this.props.color === "zerogreen") {
-            if (this.state.data === 0) {
-                this.setState({ color: "green" })
-            }
-            else {
-                this.setState({ color: "red" })
+            this.setState({
+                data: nextProps.data
+            });
+            if (this.props.color === "zerogreen") {
+                if (nextProps.data === 0 || nextProps.data.length === 0) {
+                    this.setState({ color: "green" })
+                }
+                else {
+                    this.setState({ color: "red" })
+                }
             }
         }
     }
@@ -43,9 +32,7 @@ export default class datebarChart extends Component {
 
         function niceNumber(nmb, name) {
             if (name.includes("DURATION")) {
-
                 var sec_num = parseInt(nmb, 10);
-
                 var days = Math.floor(sec_num / 86400) ? Math.floor(sec_num / 86400) + "d" : "";
                 sec_num = sec_num - (Math.floor(sec_num / 86400) * 86400);
 

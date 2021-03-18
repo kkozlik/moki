@@ -135,7 +135,7 @@ class navBar extends Component {
                         <small className="menu-collapsed">DASHBOARDS</small>
                     </li>
                     {navbar}
-                    {<li className="list-group-myitem sidebar-separator-title d-flex align-items-center menu-collapsed">
+                    { navbarSettings.length > 0 && <li className="list-group-myitem sidebar-separator-title d-flex align-items-center menu-collapsed">
 
                         <small className="menu-collapsed">SETTINGS</small>
                     </li>}

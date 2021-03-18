@@ -8,7 +8,7 @@ var getTemplate = function (negationField, queries, supress) {
                     "must": queries,
                     "must_not": {
                         "match": {
-                            "encrypt_validation": negationField
+                            "encrypt": negationField
                         }
                     }
                 }

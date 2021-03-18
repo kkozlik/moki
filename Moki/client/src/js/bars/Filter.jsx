@@ -117,7 +117,7 @@ class Filter extends Component {
 
         return (<span>
             <span id={"edit" + this.props.id} className="editFilter">
-                <p className="modalText" style={{ "float": "left", "margin-left": "10px" }}><input type="text" id={"filtervalue" + this.props.id} editid={this.props.id} defaultValue={this.props.title} size={this.props.title.length} onKeyPress={this.keyPress} style={{ "width": "auto" }} /></p>
+                <p className="modalText" style={{ "float": "left", "marginLeft": "10px" }}><input type="text" id={"filtervalue" + this.props.id} editid={this.props.id} defaultValue={this.props.title} size={this.props.title.length} onKeyPress={this.keyPress} style={{ "width": "auto" }} /></p>
                 <button type="button"
                     className="btn-primary filterButtonClose btn-small"
                     filter={
@@ -130,7 +130,7 @@ class Filter extends Component {
                     style={
                         {
                             "display": "inline-block",
-                            "min-height": "35px"
+                            "minHeight": "35px"
                         }
                     }
                     editid={
@@ -149,7 +149,7 @@ class Filter extends Component {
                     style={
                         {
                             "display": "inline-block",
-                            "min-height": "35px"
+                            "minHeight": "35px"
                         }
                     } > X
                   </button>
