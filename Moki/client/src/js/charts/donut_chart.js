@@ -7,6 +7,7 @@ import {
 } from '@moki-client/gui';
 import ColorType from '../helpers/style/ColorType';
 import Colors from '../helpers/style/Colors';
+import Reds from '../helpers/style/ColorsReds';
 import emptyIcon from "../../styles/icons/empty_small.png";
 
 
@@ -19,19 +20,19 @@ export default class StackedChart extends Component {
         this.draw = this.draw.bind(this);
     }
 
-    static getDerivedStateFromProps(nextProps, prevState){
-        if(nextProps.data!==prevState.data){
-          return { data: nextProps.data};
-       }
-       else return null;
-     }
-     
-     componentDidUpdate(prevProps, prevState) {
-       if(prevProps.data!==this.props.data){
-        this.setState({ data: this.props.data });
-        this.draw(this.props.data, this.props.id, this.props.width, this.props.legendSize, this.props.field, this.props.height, this.props.units);
-       }
-     }
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (nextProps.data !== prevState.data) {
+            return { data: nextProps.data };
+        }
+        else return null;
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (prevProps.data !== this.props.data) {
+            this.setState({ data: this.props.data });
+            this.draw(this.props.data, this.props.id, this.props.width, this.props.legendSize, this.props.field, this.props.height, this.props.units);
+        }
+    }
 
 
     draw(data, id, width, legendSize, field, height, units) {
@@ -60,10 +61,9 @@ export default class StackedChart extends Component {
         var domain = 4;
         var color;
 
-        function color(nmb) {
-
+        var colorScale = d3.scaleOrdinal(Reds);
+        function color(nmb, i) {
             if (field === "attrs.rtp-MOScqex-avg") {
-
                 if (nmb >= 4) {
                     return "#6b9235";
                 } else if (nmb >= 3) {
@@ -76,13 +76,17 @@ export default class StackedChart extends Component {
 
             } else if (field === "attrs.type" && id !== "exceededType") {
                 return ColorType[nmb];
+            } else if (field === "encrypt" && window.localStorage["HMAC_SHA_256_KEY"]) {
+                if (nmb === window.localStorage["HMAC_SHA_256_KEY"]) {
+                    return "green";
+                }
+                else {
+                    return colorScale(i);
+                }
             }
-
             else {
-
                 domain = d3.scaleOrdinal(Colors).domain().length;
                 color = d3.scaleOrdinal(Colors);
-
             }
         }
 
@@ -131,9 +135,8 @@ export default class StackedChart extends Component {
                 .enter()
                 .append('path')
                 .attr('d', arc)
-                .attr('fill', function (d) {
-                    console.log(color(d.data.key));
-                    return color(d.data.key);
+                .attr('fill', function (d, i) {
+                    return color(d.data.key, i);
                 })
                 .style("cursor", "pointer")
                 .on('mouseover', (d) => {
@@ -205,8 +208,8 @@ export default class StackedChart extends Component {
             legend.append('rect')
                 .attr('width', legendRectSize)
                 .attr('height', legendRectSize)
-                .attr('fill', function (d) {
-                    return color(d.key);
+                .attr('fill', function (d, i) {
+                    return color(d.key, i);
                 }).on("click", el => {
                     createFilter(field + ":\"" + el.key + "\"");
                     //bug fix: if you click but not move out

@@ -6,8 +6,6 @@ import 'jquery/src/jquery';
 import React, {
     Component
 } from 'react';
-
-
 import './App.css';
 import NavBar from './js/bars/NavigationBar';
 import {
@@ -16,19 +14,19 @@ import {
     Route
 } from 'react-router-dom';
 import TimerangeBar from './js/bars/SetTimerangeBar';
-import {getLayoutSettings} from './js/helpers/getLayout';
+import { getLayoutSettings } from './js/helpers/getLayout';
 import FilterBar from './js/bars/FilterBar';
 import Restricted from './js/dashboards/Restricted/Restricted';
 import Sequence from './js/pages/sequenceDiagram';
 import store from "./js/store/index";
-import {
-    setUser
-} from "./js/actions/index";
-import {
-    setWidthChart
-} from "./js/actions/index";
+import { setUser, setWidthChart } from "./js/actions/index";
 import { Redirect } from 'react-router';
 import { paths } from "./js/controllers/paths.jsx";
+import {
+    getProfile
+} from '@moki-client/gui';
+
+import DecryptPasswordPopup from '@moki-client/gui/src/menu/decryptPasswordPopup';
 
 class App extends Component {
     // Initialize the state
@@ -50,7 +48,8 @@ class App extends Component {
             dashboards: [],
             dashboardsUser: [],
             dashboardsSettings: [],
-            logo: ""
+            logo: "",
+            user: {}
         }
         this.showError = this.showError.bind(this);
         this.redirect = this.redirect.bind(this);
@@ -64,6 +63,7 @@ class App extends Component {
         this.showError(this.state.error);
         //resize window function
         window.addEventListener('resize', this.windowResize);
+
     }
 
     componentWillUnmount() {
@@ -103,8 +103,8 @@ class App extends Component {
 
         //get settings dashboard list
         var dashboardsSettings = Object.keys(jsonData.settingsDashboards);
-        if (!this.state.aws && !this.state.admin) {
-            dashboardsSettings = dashboardsSettings.filter(dashboard => jsonData.settingsDashboards[dashboard]);
+        if (this.state.aws && !this.state.admin) {
+            dashboardsSettings = dashboardsSettings.filter(dashboard => jsonData.settingsDashboards[dashboardsSettings]);
         }
         this.setState({
             dashboardsSettings: dashboardsSettings
@@ -112,8 +112,8 @@ class App extends Component {
 
         //get user dashboard list
         var userSettings = Object.keys(jsonData.userDashboards);
-        if (!this.state.aws && !this.state.admin) {
-            userSettings = userSettings.filter(dashboard => jsonData.userDashboards[dashboard]);
+        if (this.state.aws && !this.state.admin) {
+            userSettings = userSettings.filter(dashboard => jsonData.userDashboards[userSettings]);
         }
         this.setState({
             dashboardsUser: userSettings
@@ -142,13 +142,11 @@ class App extends Component {
         this.setState({
             isLoading: false
         })
-        /*   }
-           else {
-               this.setState({
-                   monitorName: monitorName.hits.hits + " " + monitorVersion
-               });
-           }
-           */
+
+        var res = await getProfile(this.state.user);
+        if (res !== "ok") {
+            this.showError(res);
+        }
     }
 
     //get logo img
@@ -238,78 +236,83 @@ class App extends Component {
     //get hostnames, realms list to set colors and tag list
     async getHostnames() {
         const request = async () => {
-            const response = await fetch("/api/hostnames", {
-                method: "GET",
-                timeout: 10000,
-                credentials: 'include',
-                headers: {
-                    "Content-Type": "application/json",
-                    "Access-Control-Allow-Credentials": "include"
+            try {
+                const response = await fetch("/api/hostnames", {
+                    method: "GET",
+                    timeout: 10000,
+                    credentials: 'include',
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Access-Control-Allow-Credentials": "include"
+                    }
+                });
+
+                const json = await response.json();
+                if (!response.ok) {
+                    this.showError(json.error);
+                    return;
                 }
-            });
-
-
-            const json = await response.json();
-
-            var hostnames = [];
-            var hostnamesColor = [];
-
-            if (json.responses && json.responses[0] && json.responses[0].aggregations && json.responses[0].aggregations.distinct && json.responses[0].aggregations.distinct.buckets) {
-                hostnames = json.responses[0].aggregations.distinct.buckets;
-                var colors = ["#caa547", "#30427F", "#697F30", "#ca8b47", "#0a3f53", "#4d8296", "#58a959", "#A5CA47", "#5b67a4", "#121e5b", "#efcc76", "#3c488a", "#844a0b", "#efb576"]
-                for (var i = 0; i <= hostnames.length; i++) {
-                    if (hostnames[i]) {
-                        hostnamesColor[hostnames[i].key] = colors[i % 14];
+                var hostnames = [];
+                var hostnamesColor = [];
+                if (json.responses && json.responses[0] && json.responses[0].aggregations && json.responses[0].aggregations.distinct && json.responses[0].aggregations.distinct.buckets) {
+                    hostnames = json.responses[0].aggregations.distinct.buckets;
+                    var colors = ["#caa547", "#30427F", "#697F30", "#ca8b47", "#0a3f53", "#4d8296", "#58a959", "#A5CA47", "#5b67a4", "#121e5b", "#efcc76", "#3c488a", "#844a0b", "#efb576"]
+                    for (var i = 0; i <= hostnames.length; i++) {
+                        if (hostnames[i]) {
+                            hostnamesColor[hostnames[i].key] = colors[i % 14];
+                        }
                     }
                 }
-            }
 
-            if (json.responses && json.responses[1] && json.responses[1].aggregations && json.responses[1].aggregations.distinct && json.responses[1].aggregations.distinct.buckets) {
-                var realms = json.responses[1].aggregations.distinct.buckets;
-                for (i = 0; i <= realms.length; i++) {
-                    if (realms[i]) {
-                        hostnamesColor[realms[i].key] = colors[i % 14];
+                if (json.responses && json.responses[1] && json.responses[1].aggregations && json.responses[1].aggregations.distinct && json.responses[1].aggregations.distinct.buckets) {
+                    var realms = json.responses[1].aggregations.distinct.buckets;
+                    for (i = 0; i <= realms.length; i++) {
+                        if (realms[i]) {
+                            hostnamesColor[realms[i].key] = colors[i % 14];
+                        }
                     }
                 }
-            }
 
-            //get src realms
-            if (json.responses && json.responses[2] && json.responses[2].aggregations && json.responses[2].aggregations.distinct && json.responses[2].aggregations.distinct.buckets) {
-                this.setState({
-                    srcRealms: json.responses[2].aggregations.distinct.buckets
-                });
-            }
-
-            //get dst realms
-            if (json.responses && json.responses[3] && json.responses[3].aggregations && json.responses[3].aggregations.distinct && json.responses[3].aggregations.distinct.buckets) {
-                this.setState({
-                    dstRealms: json.responses[3].aggregations.distinct.buckets
-                });
-            }
-            //get tags
-            if (json.responses && json.responses[4] && json.responses[4].aggregations && json.responses[4].aggregations.distinct && json.responses[4].aggregations.distinct.buckets) {
-
-                //if tags is array split it
-                var tags = [];
-                for (i = 0; i < json.responses[4].aggregations.distinct.buckets.length; i++) {
-                    if (Array.isArray(json.responses[4].aggregations.distinct.buckets[i].key)) {
-                        tags.push(json.responses[4].aggregations.distinct.buckets[i].key.slice());
-                    } else {
-                        tags.push(json.responses[4].aggregations.distinct.buckets[i].key);
-                    }
-
+                //get src realms
+                if (json.responses && json.responses[2] && json.responses[2].aggregations && json.responses[2].aggregations.distinct && json.responses[2].aggregations.distinct.buckets) {
+                    this.setState({
+                        srcRealms: json.responses[2].aggregations.distinct.buckets
+                    });
                 }
+
+                //get dst realms
+                if (json.responses && json.responses[3] && json.responses[3].aggregations && json.responses[3].aggregations.distinct && json.responses[3].aggregations.distinct.buckets) {
+                    this.setState({
+                        dstRealms: json.responses[3].aggregations.distinct.buckets
+                    });
+                }
+                //get tags
+                if (json.responses && json.responses[4] && json.responses[4].aggregations && json.responses[4].aggregations.distinct && json.responses[4].aggregations.distinct.buckets) {
+
+                    //if tags is array split it
+                    var tags = [];
+                    for (i = 0; i < json.responses[4].aggregations.distinct.buckets.length; i++) {
+                        if (Array.isArray(json.responses[4].aggregations.distinct.buckets[i].key)) {
+                            tags.push(json.responses[4].aggregations.distinct.buckets[i].key.slice());
+                        } else {
+                            tags.push(json.responses[4].aggregations.distinct.buckets[i].key);
+                        }
+
+                    }
+                    this.setState({
+                        tags: tags,
+                        tagsFull: json.responses[4].aggregations.distinct.buckets
+                    });
+                }
+
                 this.setState({
-                    tags: tags,
-                    tagsFull: json.responses[4].aggregations.distinct.buckets
+                    hostnames: hostnamesColor
                 });
             }
-
-            this.setState({
-                hostnames: hostnamesColor
-            });
+            catch (er) {
+                this.setState({ error: er });
+            }
         }
-
         request();
     }
 
@@ -357,6 +360,10 @@ class App extends Component {
 
                     //set user info :  email:email, domainID:domainID, jwt: jwtbit
                     store.dispatch(setUser(sip));
+                    this.setState({
+                        user: sip
+                    })
+
                     //set admin
                     if (sip.user === "ADMIN" && sip.user !== "SITE ADMIN") {
                         this.setState({
@@ -368,8 +375,6 @@ class App extends Component {
                             siteAdmin: true
                         })
                     }
-                    //wrong pass
-
 
                     //default user: no need to log in for web
                     if (sip.user !== "DEFAULT") {
@@ -425,23 +430,14 @@ class App extends Component {
 
     render() {
         var dashboards = this.state.dashboards;
-        var loadingScreen = <span> <div className="errorBar" > {
-            this.state.error
-        } </div> <div style={
-            {
-                "marginTop": (window.innerHeight / 2) - 50
-            }
-        }
-            className="row align-items-center justify-content-center"> <div className="loader" /> {this.state.logo && <img src={
-                this.state.logo
-            }
-                alt="logo"
-                style={
-                    {
-                        "marginLeft": 10
-                    }
-                }
-            />}</div></span>
+        //loading screen span
+        var loadingScreen = <span>
+            <div className="errorBar" > {this.state.error} </div>
+            <div style={{ "marginTop": (window.innerHeight / 2) - 50 }} className="row align-items-center justify-content-center">
+                <div className="loader" />
+                {this.state.logo && <img src={this.state.logo} alt="logo" style={{ "marginLeft": 10 }} />}
+            </div>
+        </span>
 
         var sipUser = store.getState().user;
         if (sipUser) {
@@ -464,133 +460,79 @@ class App extends Component {
                 </div>
 
             } else if (aws === false || this.state.admin || this.state.siteAdmin) {
-                sipUserSwitch = <div className="row"
-                    id="body-row" >
+                //admin context
+                sipUserSwitch = <div className="row" id="body-row" >
                     <NavBar redirect={this.redirect} toggle={this.toggle} aws={this.state.aws} dashboardsUser={this.state.dashboardsUser} dashboards={this.state.dashboards} dashboardsSettings={this.state.dashboardsSettings} />
-
-                    <div id="context"
-                        className={
-                            "margin250"
-                        } >
+                    <div id="context" className={"margin250"}>
                         <div className="row" >
                             <div className="errorBar" > {this.state.error} </div>
                         </div>
                         <div className="row justify-content-between" >
-                            <span id="user"
-                                className="tab top" > {
-                                    sipUser
-                                } {
-                                    aws === true && (!this.state.admin && !this.state.siteAdmin) && < a href="/logout" > Log out </a>}</span>
-                            <span id="monitorName"
-                                className="tab top monitorName" > {
-                                    this.state.monitorName.toUpperCase()
-                                } </span> <TimerangeBar showError={
-                                    this.showError
-                                } /> </div>
+                            <span id="user" className="tab top" >
+                                {aws === true && <DecryptPasswordPopup />}
+                                {sipUser}
+                                {aws === true && (!this.state.admin && !this.state.siteAdmin) && <a href="/logout" > Log out </a>}
+                            </span>
+
+                            <TimerangeBar showError={this.showError} />
+                        </div>
                         <div className="row" >
                             <Switch >
                                 {paths(this.state.dashboards, this.state.tags, this.state.hostnames, this.state.dstRealms, this.state.srcRealms, this.showError)}
                                 {paths(this.state.dashboardsSettings, this.state.tags, this.state.hostnames, this.state.dstRealms, this.state.srcRealms, this.showError)}
                                 {paths(this.state.dashboardsUser, this.state.tags, this.state.hostnames, this.state.dstRealms, this.state.srcRealms, this.showError)}
-
                                 {aws && <Route path="/logout" />}
                                 {aws && <Route path="/passwdd" />}
                                 <Redirect to={dashboards.includes("home") ? "/home" : "/" + dashboards[0]} />
                             </Switch>
                         </div>
-                        <img src={
-                            this.state.logo
-                        }
-                            alt="logo"
-                            style={
-                                {
-                                    "float": "right",
-                                    "height": "20px"
-                                }
-                            }
-                        />
+                        <span style={{ "float": "right" }}>
+                            <div id="monitorName" className="top monitorName"> {this.state.monitorName.toUpperCase()} </div>
+                            <img src={this.state.logo} alt="logo" style={{ "height": "15px", "float": "right" }} />
+                        </span>
                     </div>
-
                 </div>;
             }
             else {
+                //end user context
                 sipUserSwitch = <div className="row"
                     id="body-row">
                     <div className="col" >
                         <div className="row" >
-                            <div className="errorBar" > {
-                                this.state.error
-                            }
-
-                            </div> </div> <div class="d-flex justify-content-between" >
-                            <span id="user"
-                                className="tab top"> {
-                                    sipUser
-                                } {
-                                    aws === true && !this.state.admin && <a href="/logout"> Log out </a>}</span> <
-                                        span id="monitorName"
-                                        className="tab top monitorName"> {
-                                    this.state.monitorName.toUpperCase()
-                                } </span> <
-                                TimerangeBar showError={
-                                    this.showError
-                                }
-                            />
-
-
+                            <div className="errorBar" > {this.state.error} </div>
                         </div>
-
-                        <FilterBar redirect={
-                            this.state.redirect
-                        }
-                        />
-
+                        <div class="d-flex justify-content-between" >
+                            <span id="user" className="tab top"> {sipUser} {aws === true && !this.state.admin && <a href="/logout"> Log out </a>}</span>
+                            <TimerangeBar showError={this.showError} />
+                        </div>
+                        <FilterBar redirect={this.state.redirect} />
                         <div>
                             <Switch >
-                                <Route exact path='/index'
-                                    render={
-                                        () => < Restricted name="restricted"
-                                            showError={
-                                                this.showError
-                                            }
-                                            tags={this.state.tags}
-                                        />} />
-                                <Route exact path='/'
-                                    render={
-                                        () => < Restricted name="restricted"
-                                            showError={
-                                                this.showError
-                                            }
-                                        />} />
-
+                                <Route exact path='/index' render={() => < Restricted name="restricted" showError={this.showError} tags={this.state.tags} />} />
+                                <Route exact path='/' render={() => < Restricted name="restricted" showError={this.showError} />} />
                                 <Route path='/logout' />
                                 <Route path='/no-sip-identity/' />
                                 <Route path='/sequenceDiagram/:id' render={() => < Sequence />} />
                                 <Route path='/sequenceDiagram/' render={() => <Sequence />} />
                                 <Redirect to="/" />
-                            </Switch> <img src={
-                                this.state.logo
-                            }
-                                alt="logo"
-                                style={
-                                    {
-                                        "float": "right",
-                                        "height": "20px"
-                                    }
-                                }
-                            />
-                        </div> </div> </div>;
+                            </Switch>
+                            <div id="monitorName" className="tab top monitorName" style={{ "float": "right" }} > {this.state.monitorName.toUpperCase()} </div>
+                            <img src={this.state.logo} alt="logo" style={{ "float": "right", "height": "20px" }} />
+                        </div>
+                    </div>
+                </div>;
             }
         }
         return (
-            (this.state.isLoading) ? loadingScreen :
-                <Router>
-                    <div className="container-fluid"> {
-                        sipUserSwitch
-                    }
-                    </div>
-                </Router>
-
+            <span>
+                <span id="decryptpopupplaceholder"></span>
+                {(this.state.isLoading) ? loadingScreen :
+                    <Router>
+                        <div className="container-fluid"> {sipUserSwitch}
+                        </div>
+                    </Router>
+                }
+            </span>
         );
     }
 }

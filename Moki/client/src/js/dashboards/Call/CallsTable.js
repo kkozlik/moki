@@ -7,7 +7,7 @@ import TableChart from '../../charts/table_chart.js';
 import store from "../../store/index";
 import {
     elasticsearchConnection
-} from '../../helpers/elasticsearchConnection';
+} from '@moki-client/gui';
 import {parseTableHits} from '@moki-client/es-response-parser';
 
 class CallsTable extends Component {

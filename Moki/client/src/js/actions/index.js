@@ -31,10 +31,8 @@ export function setWidthChart(payload) {
   return { type: "SET_WIDTH_CHART", payload }
 };
 
-export function isSetDecryptPassword(payload) {
-  return { type: "IS_SET_DECRYPT_PASSWORD", payload }
+export function setProfile(payload) {
+  return { type: "SET_PROFILE", payload }
 };
-
-
 
 

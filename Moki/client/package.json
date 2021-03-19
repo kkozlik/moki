@@ -13,7 +13,7 @@
   "homepage": "." ,
   "dependencies": {
     "@moki-client/es-response-parser": "git+ssh://git@github.com/intuitivelabs/es-response-parser-private.git#add-tls-parser",
-    "@moki-client/gui": "git+ssh://git@github.com/intuitivelabs/moki-gui-intuitive.git#117-multidomain",
+    "@moki-client/gui": "git+ssh://git@github.com/intuitivelabs/moki-gui-intuitive.git#236-gui-encryption-modes",
     "bootstrap": "^4.6.0",
     "classnames": "^2.2.6",
     "d3": "^5.7.0",

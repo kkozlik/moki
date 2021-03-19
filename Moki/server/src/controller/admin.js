@@ -219,8 +219,6 @@ class AdminController {
             "tls-cn":subId
         }
     }
-
-
 }
 
 module.exports = AdminController;

@@ -15,7 +15,7 @@ import ListChartMonitoring from '../../charts/list_chart_monitoring.js';
 import MonitoringListChart from '../../charts/monitoring_list_chart.js';
 import {
     elasticsearchConnection
-} from '../../helpers/elasticsearchConnection';
+} from '@moki-client/gui';
 
 class MonitoringCharts extends Component {
 

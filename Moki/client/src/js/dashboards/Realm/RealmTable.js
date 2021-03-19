@@ -7,7 +7,7 @@ import TableChart from '../../charts/table_chart.js';
 import store from "../../store/index";
 import {
     elasticsearchConnection
-} from '../../helpers/elasticsearchConnection';
+} from '@moki-client/gui';
 
 class RealmTable extends Component {
 

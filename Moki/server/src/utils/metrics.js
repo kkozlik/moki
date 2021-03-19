@@ -41,9 +41,17 @@ function getTypesConcat(value) {
   return types;
 }
 
-function getQueries(filter, types, timestamp_gte, timestamp_lte, userFilter, chartFilter, domain) {
+function getQueries(filter, types, timestamp_gte, timestamp_lte, userFilter, chartFilter, domain, isEncryptChecksumFilter) {
   const timebucket = getTimestampBucket(timestamp_gte, timestamp_lte);
   var queries = [];
+
+  if(isEncryptChecksumFilter !== "*"){
+    queries.push({
+      "match": {
+        "encrypt":  isEncryptChecksumFilter
+      }
+    });
+  }
 
   if (domain !== "*") {
     queries.push({

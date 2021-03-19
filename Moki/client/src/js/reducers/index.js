@@ -3,7 +3,7 @@ import { ASSIGN_TYPE } from "../constants/action-types";
 import { SET_TIMERANGE } from "../constants/action-types";
 import { SET_USER } from "../constants/action-types";
 import { SET_WIDTH_CHART } from "../constants/action-types";
-import {IS_SET_DECRYPT_PASSWORD } from  "../constants/action-types";
+import { SET_PROFILE } from "../constants/action-types";
 
 const initialState = {
   types: [],
@@ -12,7 +12,7 @@ const initialState = {
   user: null,
   width: window.innerWidth,
   error: "",
-  isDecryptPassword: false
+  profile: []
 };
 
  
@@ -48,9 +48,9 @@ function rootReducer(state = initialState, action) {
     });
   }
 
-  else if (action.type === IS_SET_DECRYPT_PASSWORD) {
+  else if (action.type === SET_PROFILE) {
     return Object.assign({}, state, {
-      isDecryptPassword: action.payload
+      profile: action.payload
     });
   }
 

@@ -114,7 +114,10 @@ class navBar extends Component {
             catch (error) {
             }
         }
+        //aws case, just redirect
         else {
+            window.localStorage.removeItem("HMAC_SHA_256_KEY");
+            window.localStorage.removeItem("IPCIPHER_MAP_KEY");
             window.location.href = "/logout";
         }
     }
@@ -132,7 +135,7 @@ class navBar extends Component {
                         <small className="menu-collapsed">DASHBOARDS</small>
                     </li>
                     {navbar}
-                    {<li className="list-group-myitem sidebar-separator-title d-flex align-items-center menu-collapsed">
+                    { navbarSettings.length > 0 && <li className="list-group-myitem sidebar-separator-title d-flex align-items-center menu-collapsed">
 
                         <small className="menu-collapsed">SETTINGS</small>
                     </li>}

@@ -43,6 +43,7 @@ module.exports = () => {
 
     router
     .post('/profile/save', ProfileController.storeUserSettings)
+    .post('/profile/delete', ProfileController.deleteUserSettings)
     .get('/profile', ProfileController.getUserSettings)
 
   router
