@@ -62,6 +62,8 @@ export default class StackedChart extends Component {
         var color;
 
         var colorScale = d3.scaleOrdinal(Reds);
+        var colorScaleMix = d3.scaleOrdinal(Colors);
+
         function color(nmb, i) {
             if (field === "attrs.rtp-MOScqex-avg") {
                 if (nmb >= 4) {
@@ -76,8 +78,8 @@ export default class StackedChart extends Component {
 
             } else if (field === "attrs.type" && id !== "exceededType") {
                 return ColorType[nmb];
-            } else if (field === "encrypt" && window.localStorage["HMAC_SHA_256_KEY"]) {
-                if (nmb === window.localStorage["HMAC_SHA_256_KEY"]) {
+            } else if (field === "encrypt") {
+                if (nmb === window.localStorage["HMAC_SHA_256_KEY"] || (nmb === "plain" && !window.localStorage["HMAC_SHA_256_KEY"])) {
                     return "green";
                 }
                 else {
@@ -85,8 +87,7 @@ export default class StackedChart extends Component {
                 }
             }
             else {
-                domain = d3.scaleOrdinal(Colors).domain().length;
-                color = d3.scaleOrdinal(Colors);
+                return colorScaleMix(nmb)
             }
         }
 
