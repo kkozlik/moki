@@ -46,7 +46,6 @@ class Filter extends Component {
         var id = event.currentTarget.getAttribute("editid");
         this.props.editFilter(id, document.getElementById("filtervalue" + id).value);
         document.getElementById("edit" + id).style.display = "none";
-
     }
 
     keyPress(event) {
@@ -113,125 +112,68 @@ class Filter extends Component {
     }
 
     render() {
-        var aws = store.getState().user.aws;
-
+        var user = store.getState().user.jwt ? store.getState().user.jwt : 0;
         return (<span>
             <span id={"edit" + this.props.id} className="editFilter">
                 <p className="modalText" style={{ "float": "left", "marginLeft": "10px" }}><input type="text" id={"filtervalue" + this.props.id} editid={this.props.id} defaultValue={this.props.title} size={this.props.title.length} onKeyPress={this.keyPress} style={{ "width": "auto" }} /></p>
                 <button type="button"
                     className="btn-primary filterButtonClose btn-small"
-                    filter={
-                        this.props.title
-                    }
-                    onClick={
-                        this.editFilter
-                    }
-
-                    style={
-                        {
-                            "display": "inline-block",
-                            "minHeight": "35px"
-                        }
-                    }
-                    editid={
-                        this.props.id
-                    }
-                > OK
+                    filter={this.props.title}
+                    onClick={this.editFilter}
+                    style={{ "display": "inline-block", "minHeight": "35px" }}
+                    editid={this.props.id}> OK
                 </button>
                 <button type="button"
                     className="btn-secondary filterButtonClose btn-small"
-                    onClick={
-                        this.closeFilterPopup
-                    }
-                    editid={
-                        this.props.id
-                    }
-                    style={
-                        {
-                            "display": "inline-block",
-                            "minHeight": "35px"
-                        }
-                    } > X
+                    onClick={this.closeFilterPopup}
+                    editid={this.props.id}
+                    style={{ "display": "inline-block", "minHeight": "35px" }} > X
                   </button>
-
-
             </span>
-
-
-            <button style={
-                {
-                    backgroundColor: this.state.color
-                }
-            }
+            <button style={{ backgroundColor: this.state.color }}
                 type="button"
                 className="filter"
-                id={
-                    this.props.id
-                } > {
-                    this.props.title
+                id={this.props.id} > {
+                    this.props.encrypt ? this.props.encrypt : this.props.title
                 } <div className="buttonHover" >
                     <span className="iconNoMargin marginRight"
-                        deleteid={
-                            this.props.id
-                        }
-                        onClick={
-                            this.deleteFilter
-                        } style={{ "marginLeft": "10px" }}> <img alt="deleteIcon"
+                        deleteid={this.props.id}
+                        onClick={this.deleteFilter}
+                        style={{ "marginLeft": "10px" }}>
+                        <img alt="deleteIcon"
                             title="delete"
-                            src={
-                                deleteIcon
-                            }
+                            src={deleteIcon}
                         /></span >
                     <span className="iconNoMargin marginRight"
-                        enable={
-                            this.state.enable
-                        }
-                        disableid={
-                            this.props.id
-                        }
-                        onClick={
-                            this.disableFilter
-                        } > <img alt="disableIcon"
-                            src={
-                                this.state.icon
-                            }
+                        enable={this.state.enable}
+                        disableid={this.props.id}
+                        onClick={this.disableFilter
+                        } >
+                        <img alt="disableIcon"
+                            src={this.state.icon}
                             title={this.state.enable === "true" ? "disable" : "enable"} /> </span>
-                    <span className="iconNoMargin marginRight"
-                        idedit={
-                            this.props.id
-                        }
-                        onClick={
-                            this.showFilterPopup
+                    {!(this.props.title.includes("source") && window.localStorage["HMAC_SHA_256_KEY"]) && <span className="iconNoMargin marginRight"
+                        idedit={this.props.id}
+                        onClick={this.showFilterPopup
                         } > <img alt="editIcon"
-                            src={
-                                editIcon
-                            }
-                            title="edit" /> </span>
-                    <span className="iconNoMargin marginRight"
-                        deleteid={
-                            this.props.id
-                        }
+                            src={editIcon}
+                            title="edit" /> </span>}
+                    {!(this.props.title.includes("source") && window.localStorage["HMAC_SHA_256_KEY"]) && <span className="iconNoMargin marginRight"
+                        deleteid={this.props.id}
                         onClick={
                             this.negationFilter
                         } > <img alt="negationIcon"
                             title="negation"
-                            src={
-                                negationIcon
-                            }
-                        /></span>
-                    {
-                        aws === false &&
+                            src={negationIcon}
+                        /></span>}
+                    {user !== 2 &&
                         <span className="iconNoMargin marginRight"
-                            pinid={
-                                this.props.id
-                            }
+                            pinid={this.props.id}
                             onClick={
                                 this.unpinFilter
                             } > <img alt="pinIcon"
-                                src={
-                                    this.state.pinIcon
-                                }
-                                title={this.state.pinned === "true" ? "pin" : "unpin"}/> </span>
+                                src={this.state.pinIcon}
+                                title={this.state.pinned === "true" ? "pin" : "unpin"} /> </span>
                     }
                 </div></button>
         </span>
