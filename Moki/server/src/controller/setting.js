@@ -556,6 +556,8 @@ class SettingController {
 
         }
         //write also monitor version
+        //remove breaks from the string
+        monitorVersion.replace(/(\r\n|\n|\r)/gm, "");
         jsonData["m_version"] = monitorVersion;
 
         //write it to monitor file
