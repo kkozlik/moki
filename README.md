@@ -13,8 +13,8 @@ Public vs. [intuitivelabs](https://www.intuitivelabs.com) private versions are i
   * [es-response-parser](https://github.com/intuitivelabs/es-response-parser);
   * [moki-gui](https://github.com/intuitivelabs/moki-gui);
 2. [intuitivelabs](https://www.intuitivelabs.com) private version:
-  * [es-response-parser-private](https://github.com/intuitivelabs/es-response-parser-private);
-  * [moki-gui-intuitive](https://github.com/intuitivelabs/moki-gui-intuitive). this module implements only decryption specific functionality and re-exports most of the functions/objects in the public version module [es-response-parser](https://github.com/intuitivelabs/es-response-parser), which is using as a dependency;
+  * [es-response-parser-private](https://github.com/intuitivelabs/es-response-parser-private). this module implements only decryption specific functionality and re-exports most of the functions/objects in the public version module [es-response-parser](https://github.com/intuitivelabs/es-response-parser), which is using as a dependency;
+  * [moki-gui-intuitive](https://github.com/intuitivelabs/moki-gui-intuitive);
 
 For example, here is how the [intuitivelabs](https://www.intuitivelabs.com) private version of the npm modules could be configured in `package.json`:
 ```
