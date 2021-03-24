@@ -110,6 +110,7 @@
     cursor: grab;
     background-color: white;
     border: none;
+    padding-left: 0;
 }
 
 .margin250 {
