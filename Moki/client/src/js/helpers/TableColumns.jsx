@@ -1613,7 +1613,7 @@ export function tableColumns(dashboard, tags) {
             headerStyle: { width: '170px' },
             formatter: (cell, obj) => {
                 var ob = obj._source;
-                return new Date(ob['ts-start']/1000).toLocaleString();
+                return new Date(parseInt(ob['ts-start'])).toLocaleString();
             }
         },{
             dataField: '_source.tls-cn',
