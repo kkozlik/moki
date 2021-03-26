@@ -2,7 +2,7 @@ import React, {
     Component
 } from 'react';
 import store from "../store/index";
-import { getFilters } from "../helpers/getFilters.js";
+import { getFilters } from '@moki-client/gui';
 
 class SaveFilters extends Component {
     constructor(props) {
