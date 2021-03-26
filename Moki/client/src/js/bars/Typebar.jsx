@@ -4,7 +4,6 @@ import React, {
 
 import Type from './Type';
 import Types from '../helpers/Types';
-import DashboardsTypes from '../helpers/DashboardsTypes';
 import checkAll from "../../styles/icons/checkAll.png";
 import uncheckAll from "../../styles/icons/uncheckAll.png";
 import store from "../store/index";

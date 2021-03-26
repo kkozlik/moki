@@ -152,20 +152,20 @@ class Filter extends Component {
                         <img alt="disableIcon"
                             src={this.state.icon}
                             title={this.state.enable === "true" ? "disable" : "enable"} /> </span>
-                    {!(this.props.title.includes("source") && window.localStorage["HMAC_SHA_256_KEY"]) && <span className="iconNoMargin marginRight"
+                     <span className="iconNoMargin marginRight"
                         idedit={this.props.id}
                         onClick={this.showFilterPopup
                         } > <img alt="editIcon"
                             src={editIcon}
-                            title="edit" /> </span>}
-                    {!(this.props.title.includes("source") && window.localStorage["HMAC_SHA_256_KEY"]) && <span className="iconNoMargin marginRight"
+                            title="edit" /> </span>
+                    <span className="iconNoMargin marginRight"
                         deleteid={this.props.id}
                         onClick={
                             this.negationFilter
                         } > <img alt="negationIcon"
                             title="negation"
                             src={negationIcon}
-                        /></span>}
+                        /></span>
                     {user !== 2 &&
                         <span className="iconNoMargin marginRight"
                             pinid={this.props.id}
