@@ -9,7 +9,7 @@ import ColorType from '../helpers/style/ColorType';
 import Colors from '../helpers/style/Colors';
 import Reds from '../helpers/style/ColorsReds';
 import emptyIcon from "../../styles/icons/empty_small.png";
-
+import store from "../store/index";
 
 export default class StackedChart extends Component {
     constructor(props) {
@@ -63,6 +63,7 @@ export default class StackedChart extends Component {
 
         var colorScale = d3.scaleOrdinal(Reds);
         var colorScaleMix = d3.scaleOrdinal(Colors);
+        var profile = store.getState().profile;
 
         function color(nmb, i) {
             if (field === "attrs.rtp-MOScqex-avg") {
@@ -79,7 +80,9 @@ export default class StackedChart extends Component {
             } else if (field === "attrs.type" && id !== "exceededType") {
                 return ColorType[nmb];
             } else if (field === "encrypt") {
-                if (nmb === window.localStorage["HMAC_SHA_256_KEY"] || (nmb === "plain" && !window.localStorage["HMAC_SHA_256_KEY"])) {
+                var hmac = profile[0] ? profile[0].userprefs.validation_code : "";
+                var mode = profile[0] ? profile[0].userprefs.mode : "";
+                if (((mode === "encrypt" || mode === "anonymous") && nmb === hmac) || (nmb === "plain" && mode === "plain")) {
                     return "green";
                 }
                 else {
@@ -119,6 +122,7 @@ export default class StackedChart extends Component {
                 .attr("stroke", "#808080");
 
         } else {
+
             var g = svg.attr('width', svgWidth)
                 .attr('height', h)
                 .attr('id', id + 'SVG')

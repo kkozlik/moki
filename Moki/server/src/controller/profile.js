@@ -116,6 +116,7 @@ class ProfileController {
             const existIndex = await existsIndexES(indexName, res);
             //if not, create new one
             if (!existIndex) {
+                //mode: encrypt, plain, anonymous
                 var response = await newIndexES(indexName, {
                     "properties": {
                         "tls-cn": { "type": "keyword", "index": "true" },
@@ -126,7 +127,8 @@ class ProfileController {
                                 "monitor_name": { "type": "text", "index": "false" },
                                 "timezone": { "type": "text", "index": "false" },
                                 "time_format": { "type": "text", "index": "false" },
-                                "encryption_checksum": { "type": "text", "index": "false" }
+                                "mode": { "type": "text", "index": "false" },
+                                "validation_code": { "type": "text", "index": "false" }
                             }
                         }
                     }
@@ -139,7 +141,8 @@ class ProfileController {
                         "userprefs": {
                             "timezone": "",
                             "time_format": "en-US",
-                            "encryption_checksum": ""
+                            "validation_code": "",
+                            "mode": "plain"
                         }
                     }, res);
 
