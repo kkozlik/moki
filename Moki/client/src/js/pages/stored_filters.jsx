@@ -28,17 +28,20 @@ class StoredFilters extends Component {
        Load data 
        */
     async load() {
-
+        var checksum = store.getState().profile[0] ? store.getState().profile[0].userprefs.validation_code : "";
         var Url = "api/filters";
         var jsonData;
         try {
             const response = await fetch(Url, {
-                method: "GET",
+                method: "POST",
                 credentials: 'include',
                 headers: {
                     "Content-Type": "application/json",
                     "Access-Control-Allow-Credentials": "include"
-                }
+                },
+                body: JSON.stringify({
+                    "validation_code": checksum
+                }),
             });
             jsonData = await response.json();
             if (jsonData && jsonData.hits && jsonData.hits.hits) {

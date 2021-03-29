@@ -220,14 +220,14 @@ export function tableColumns(dashboard, tags) {
 
         },
         {
-            dataField: '_source.user',
+            dataField: '_source["tls-cn"]',
             text: 'USER',
             editable: false,
             sort: true,
             formatter: (cell, obj) => {
                 var ob = obj._source;
                 return <span className="filterToggleActive"><span className="filterToggle">
-                    <img onClick={doFilter} field="user" value={ob.user} className="icon" alt="filterIcon" src={filterIcon} /><img field="user" value={ob.user} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span >{ob.user}
+                    <img onClick={doFilter} field="tls-cn" value={ob["tls-cn"]} className="icon" alt="filterIcon" src={filterIcon} /><img field="user" value={ob["tls-cn"]} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span >{ob["tls-cn"]}
                 </span>
             }
 

@@ -44,6 +44,7 @@ class SaveFilters extends Component {
 
 
             var tls = store.getState().user["tls-cn"] !== "N/A" ? store.getState().user["tls-cn"] : "";
+            var checksum = store.getState().profile[0] ? store.getState().profile[0].userprefs.validation_code : "";
             var domainID = store.getState().user.domainID !== "N/A" ? store.getState().user.domainID : "";
             var Url = "api/filters/save";
             try {
@@ -54,6 +55,7 @@ class SaveFilters extends Component {
                         title: filterTitle,
                         domain: domainID,
                         "tls-cn": tls,
+                        "validation_code": checksum,
                         attribute: data
                     }),
                     credentials: 'include',
