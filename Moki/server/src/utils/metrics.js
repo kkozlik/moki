@@ -1,10 +1,5 @@
 // metrics.js hold some metric logic
 
-const { getTimestampBucket } = require('./ts');
-var fs = require("fs"),
-  json;
-
-
 function getFiltersConcat(filters) {
   console.info(filters);
   // get filters, if no place "*", if more than 1, concat with AND
@@ -42,13 +37,12 @@ function getTypesConcat(value) {
 }
 
 function getQueries(filter, types, timestamp_gte, timestamp_lte, userFilter, chartFilter, domain, isEncryptChecksumFilter) {
-  const timebucket = getTimestampBucket(timestamp_gte, timestamp_lte);
   var queries = [];
 
-  if(isEncryptChecksumFilter !== "*"){
+  if (isEncryptChecksumFilter !== "*") {
     queries.push({
       "match": {
-        "encrypt":  isEncryptChecksumFilter
+        "encrypt": isEncryptChecksumFilter
       }
     });
   }
@@ -56,7 +50,7 @@ function getQueries(filter, types, timestamp_gte, timestamp_lte, userFilter, cha
   if (domain !== "*") {
     queries.push({
       "match": {
-        "tls-cn":  domain
+        "tls-cn": domain
       }
     });
   }
@@ -81,15 +75,15 @@ function getQueries(filter, types, timestamp_gte, timestamp_lte, userFilter, cha
     });
   }
 
-  queries.push({
-    "range": {
-      "@timestamp": {
-        "gte": timestamp_gte,
-        "lte": timestamp_lte,
-        "format": "epoch_millis"
+    queries.push({
+      "range": {
+        "@timestamp": {
+          "gte": timestamp_gte,
+          "lte": timestamp_lte,
+          "format": "epoch_millis"
+        }
       }
-    }
-  });
+    });
 
   if (userFilter.userFilter && userFilter.userFilter !== "*") {
     queries.push({

@@ -62,7 +62,7 @@ class AdminController {
                         mappings: {
                             properties: {
                                 "@timestamp": { "type": "date", "index": "true" },
-                                "user": { "type": "keyword", "index": "true" },
+                                "tls-cn": { "type": "keyword", "index": "true" },
                                 "domain": { "type": "keyword", "index": "true" },
                                 "email": { "type": "keyword", "index": "true" },
                                 "level": { "type": "integer", "index": "true" }
@@ -80,7 +80,7 @@ class AdminController {
                 type: "_doc",
                 body: {
                     "@timestamp": now,
-                    "user": userID,
+                    "tls-cn": userID,
                     "domain": domain,
                     "email": email,
                     "level": jwtbit

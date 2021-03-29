@@ -227,7 +227,7 @@ class SettingController {
 
             };
         }
-        //site admin, show only domain
+        //site admin, show only domain and encrypt filter
         else if (user.jwtbit == 1) {
             condition = {
                 index: 'filters',
@@ -236,7 +236,8 @@ class SettingController {
                     query: {
                         bool: {
                             must: [
-                                { query_string: { "query": "domain:" + user.domain } }
+                                { query_string: { "query": "domain:" + user.domain } },
+                                { query_string: { "query": 'encrypt:"' + req.body.validation_code+'"' } }
                             ],
                         }
                     }
@@ -244,7 +245,7 @@ class SettingController {
             }
 
         }
-        //user, show domain and user filter
+        //user, show domain, encrypt and user filter
         else {
             condition = {
                 index: 'filters',
@@ -254,7 +255,8 @@ class SettingController {
                         bool: {
                             must: [
                                 { query_string: { "query": "domain:" + user.domain } },
-                                { query_string: { "query": "tls-cn:" + user["tls-cn"] } }
+                                { query_string: { "query": "tls-cn:" + user["tls-cn"] } },
+                                { query_string: { "query": 'encrypt:"' + req.body.validation_code+'"' } }
                             ],
                         }
                     }
@@ -340,6 +342,7 @@ class SettingController {
                     body: {
                         mappings: {
                             properties: {
+                                "encrypt": { "type": "keyword", "index": "true" },
                                 "tls-cn": { "type": "keyword", "index": "true" },
                                 "domain": { "type": "keyword", "index": "true" },
                                 "id": { "type": "keyword", "index": "true" },
@@ -367,6 +370,7 @@ class SettingController {
                         "id": req.body.id,
                         "title": req.body.title,
                         "domain": user.domain,
+                        "encrypt": req.body.validation_code,
                         "attribute": JSON.stringify(req.body.attribute)
                     }
                 }, function (err, resp, status) {

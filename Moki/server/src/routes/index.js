@@ -32,7 +32,7 @@ module.exports = () => {
     .get('/defaults', SettingController.defaults)
     .get('/monitor/version', SettingController.loadMonitorVersion)
     .post('/monitor/logo', SettingController.loadLogo)
-    .get('/filters', SettingController.loadFilters)
+    .post('/filters', SettingController.loadFilters)
     .get('/hostnames', SettingController.hostnames)
     .post('/save', SettingController.save)
     .post('/tag', SettingController.tag)

@@ -55,6 +55,8 @@ class Controller {
             //special case: disable disableHMACfilter - for account chart
             if (req.url == "/account/charts") {
                 isEncryptChecksumFilter = "*";
+                //no need for timestamp filter
+                timestamp_gte = "*";
             }
 
 
@@ -123,20 +125,21 @@ class Controller {
                         params = params.map(function (item) { return item == "timebucketAnimation" ? timebucketAnimation : item; });
                     }
 
+                    //special case: disable disableHMACfilter - for loging events - different index
+                    if (requests[i].index == "lastlog*") {
+                        isEncryptChecksumFilter = "*";
+                    }
+
                     requests[i].query = requests[i].template.getTemplate(...params, getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, requests[i].filter, domainFilter, isEncryptChecksumFilter), supress);
 
                 }
                 else {
+                    //special case: disable disableHMACfilter - for loging events - different index
+                    if (requests[i].index == "lastlog*") {
+                        isEncryptChecksumFilter = "*";
+                    }
+
                     requests[i].query = requests[i].template.getTemplate(getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, requests[i].filter, domainFilter, isEncryptChecksumFilter), supress);
-                }
-
-                //ged old timestamp if has changed
-                if (req.body.timerange_lte) {
-                    timestamp_lte = Math.round(req.body.timerange_lte);
-                }
-
-                if (req.body.timerange_gte) {
-                    timestamp_gte = Math.round(req.body.timerange_gte);
                 }
             }
 
