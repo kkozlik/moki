@@ -35,4 +35,8 @@ export function setProfile(payload) {
   return { type: "SET_PROFILE", payload }
 };
 
+export function setUserProfile(payload) {
+  return { type: "SET_USER_PROFILE", payload }
+};
+
 

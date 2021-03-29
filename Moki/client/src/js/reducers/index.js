@@ -4,6 +4,7 @@ import { SET_TIMERANGE } from "../constants/action-types";
 import { SET_USER } from "../constants/action-types";
 import { SET_WIDTH_CHART } from "../constants/action-types";
 import { SET_PROFILE } from "../constants/action-types";
+import { SET_USER_PROFILE } from "../constants/action-types";
 
 const initialState = {
   types: [],
@@ -15,7 +16,7 @@ const initialState = {
   profile: []
 };
 
- 
+
 function rootReducer(state = initialState, action) {
 
   if (action.type === ASSIGN_TYPE) {
@@ -54,6 +55,14 @@ function rootReducer(state = initialState, action) {
     });
   }
 
+  else if (action.type === SET_USER_PROFILE) {
+    var key = Object.keys(action.payload)[0];
+    var profileNew = state.profile[0].userprefs[key] = action.payload[key];
+    return {
+      ...state,
+      profileNew
+    }
+  }
   return state;
 }
 export default rootReducer;
