@@ -37,8 +37,10 @@ export default class listChart extends Component {
         super(props);
 
         const columns = tableColumns(this.props.name, this.props.tags);
-        //add other hidden columns 
-        var searchable = getSearchableFields();
+        //get columns name from layout 
+        var name = window.location.pathname.substring(1);
+        var layout = store.getState().layout.table;
+        var searchable = layout[name] ?  layout[name] :  layout.default;
         //remove the same
         var removeIndices = [];
         for (var i = 0; i < searchable.length; i++) {

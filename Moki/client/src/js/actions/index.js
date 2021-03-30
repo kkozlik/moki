@@ -39,4 +39,7 @@ export function setUserProfile(payload) {
   return { type: "SET_USER_PROFILE", payload }
 };
 
+export function setLayout(payload) {
+  return { type: "SET_LAYOUT", payload }
+};
 

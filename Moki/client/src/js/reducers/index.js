@@ -5,6 +5,7 @@ import { SET_USER } from "../constants/action-types";
 import { SET_WIDTH_CHART } from "../constants/action-types";
 import { SET_PROFILE } from "../constants/action-types";
 import { SET_USER_PROFILE } from "../constants/action-types";
+import {SET_LAYOUT} from "../constants/action-types";
 
 const initialState = {
   types: [],
@@ -13,7 +14,8 @@ const initialState = {
   user: null,
   width: window.innerWidth,
   error: "",
-  profile: []
+  profile: [],
+  layout: []
 };
 
 
@@ -52,6 +54,12 @@ function rootReducer(state = initialState, action) {
   else if (action.type === SET_PROFILE) {
     return Object.assign({}, state, {
       profile: action.payload
+    });
+  }
+
+  else if (action.type === SET_LAYOUT) {
+    return Object.assign({}, state, {
+      layout: action.payload
     });
   }
 

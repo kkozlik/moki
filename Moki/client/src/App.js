@@ -19,7 +19,7 @@ import FilterBar from './js/bars/FilterBar';
 import Restricted from './js/dashboards/Restricted/Restricted';
 import Sequence from './js/pages/sequenceDiagram';
 import store from "./js/store/index";
-import { setUser, setWidthChart } from "./js/actions/index";
+import { setUser, setWidthChart, setLayout } from "./js/actions/index";
 import { Redirect } from 'react-router';
 import { paths } from "./js/controllers/paths.jsx";
 import {
@@ -92,6 +92,7 @@ class App extends Component {
 
 
         var jsonData = await getLayoutSettings();
+        store.dispatch(setLayout(jsonData));
         //get dashboard list
         var dashboards = Object.keys(jsonData.dashboards);
         if (this.state.aws && !this.state.admin) {
