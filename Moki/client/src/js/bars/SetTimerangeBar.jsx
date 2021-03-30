@@ -6,6 +6,7 @@ import timeForward from "../../styles/icons/timeForward.png";
 import timeBack from "../../styles/icons/timeBack.png";
 import shareIcon from "../../styles/icons/share.png";
 import store from "../store/index";
+import storePersistent from "../store/indexPersistent";
 import { setTimerange } from "../actions/index";
 import reloadIcon from "../../styles/icons/reload.png";
 import historyIcon from "../../styles/icons/reload_time.png";
@@ -21,7 +22,7 @@ class timerangeBar extends Component {
         super(props);
         this.state = {
             timerange: "",
-            sipUser: store.getState().user.user,
+            sipUser: storePersistent.getState().user.user,
             timestamp_gte: store.getState().timerange[0],
             timestamp_lte: store.getState().timerange[1],
             refreshInterval: 30000,

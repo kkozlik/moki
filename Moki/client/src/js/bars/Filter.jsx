@@ -8,7 +8,7 @@ import editIcon from "../../styles/icons/edit.png";
 import pinIcon from "../../styles/icons/pin.png";
 import unpinIcon from "../../styles/icons/unpin.png";
 import negationIcon from "../../styles/icons/negation.png";
-import store from "../store/index";
+import storePersistent from "../store/indexPersistent";
 
 class Filter extends Component {
     constructor(props) {
@@ -112,7 +112,7 @@ class Filter extends Component {
     }
 
     render() {
-        var user = store.getState().user.jwt ? store.getState().user.jwt : 0;
+        var user = storePersistent.getState().user.jwt ? storePersistent.getState().user.jwt : 0;
         return (<span>
             <span id={"edit" + this.props.id} className="editFilter">
                 <p className="modalText" style={{ "float": "left", "marginLeft": "10px" }}><input type="text" id={"filtervalue" + this.props.id} editid={this.props.id} defaultValue={this.props.title} size={this.props.title.length} onKeyPress={this.keyPress} style={{ "width": "auto" }} /></p>

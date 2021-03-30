@@ -9,7 +9,7 @@ import ColorType from '../helpers/style/ColorType';
 import Colors from '../helpers/style/Colors';
 import Reds from '../helpers/style/ColorsReds';
 import emptyIcon from "../../styles/icons/empty_small.png";
-import store from "../store/index";
+import storePersistent from "../store/indexPersistent";
 
 export default class StackedChart extends Component {
     constructor(props) {
@@ -18,6 +18,7 @@ export default class StackedChart extends Component {
             data: []
         }
         this.draw = this.draw.bind(this);
+        storePersistent.subscribe(() => this.draw(this.props.data, this.props.id, this.props.width, this.props.legendSize, this.props.field, this.props.height, this.props.units));
     }
 
     static getDerivedStateFromProps(nextProps, prevState) {
@@ -63,7 +64,7 @@ export default class StackedChart extends Component {
 
         var colorScale = d3.scaleOrdinal(Reds);
         var colorScaleMix = d3.scaleOrdinal(Colors);
-        var profile = store.getState().profile;
+        var profile = storePersistent.getState().profile;
 
         function color(nmb, i) {
             if (field === "attrs.rtp-MOScqex-avg") {
@@ -80,8 +81,10 @@ export default class StackedChart extends Component {
             } else if (field === "attrs.type" && id !== "exceededType") {
                 return ColorType[nmb];
             } else if (field === "encrypt") {
+                
                 var hmac = profile[0] ? profile[0].userprefs.validation_code : "";
                 var mode = profile[0] ? profile[0].userprefs.mode : "";
+                
                 if (((mode === "encrypt" || mode === "anonymous") && nmb === hmac) || (nmb === "plain" && mode === "plain")) {
                     return "green";
                 }

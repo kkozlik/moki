@@ -6,6 +6,7 @@ import {
 } from 'react';
 
 import store from "../store/index";
+import storePersistent from "../store/indexPersistent";
 import {
   elasticsearchConnection
 } from '@moki-client/gui';
@@ -21,7 +22,7 @@ class Dashboard extends Component {
     this.callBacks = { functors: [] };
     // call 'unsubscribe()' to deregister default loadData change listener
     this.unsubscribe = store.subscribe(() => this.loadData());
-    store.subscribe(() => this.getLayout());
+    //storePersistent.subscribe(() => this.getLayout());
     this.getLayout = this.getLayout.bind(this);
   }
 
@@ -37,11 +38,14 @@ class Dashboard extends Component {
   }
 
   getLayout = async () => {
-    const layout = store.getState().layout;
+    const layout = storePersistent.getState().layout;
     if (layout) {
       var name = this.state.dashboardName.substr(0, this.state.dashboardName.indexOf("/"));
       if (layout.charts[name]) {
-        this.setState({ charts: layout.charts[name] });
+        this.setState({
+          charts: layout.charts[name],
+          layout: layout
+        });
       }
     }
   }
@@ -63,6 +67,7 @@ class Dashboard extends Component {
   }
 
   async loadData() {
+    this.getLayout();
     this.setState({ isLoading: true });
 
     var data = await elasticsearchConnection(this.state.dashboardName);

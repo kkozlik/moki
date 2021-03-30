@@ -141,6 +141,15 @@ class Controller {
 
                     requests[i].query = requests[i].template.getTemplate(getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, requests[i].filter, domainFilter, isEncryptChecksumFilter), supress);
                 }
+
+                //ged old timestamp if has changed
+                if (req.body.timerange_lte) {
+                    timestamp_lte = Math.round(req.body.timerange_lte);
+                }
+
+                if (req.body.timerange_gte) {
+                    timestamp_gte = Math.round(req.body.timerange_gte);
+                }
             }
 
             console.log(new Date + " send msearch");

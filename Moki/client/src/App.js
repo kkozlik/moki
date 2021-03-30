@@ -19,6 +19,7 @@ import FilterBar from './js/bars/FilterBar';
 import Restricted from './js/dashboards/Restricted/Restricted';
 import Sequence from './js/pages/sequenceDiagram';
 import store from "./js/store/index";
+import storePersistent from "./js/store/indexPersistent";
 import { setUser, setWidthChart, setLayout } from "./js/actions/index";
 import { Redirect } from 'react-router';
 import { paths } from "./js/controllers/paths.jsx";
@@ -90,9 +91,11 @@ class App extends Component {
             console.error(error);
         }
 
-
+        //store layout
         var jsonData = await getLayoutSettings();
-        store.dispatch(setLayout(jsonData));
+        storePersistent.dispatch(setLayout(jsonData));
+        console.log(jsonData);
+        console.info("Storing layout");
         //get dashboard list
         var dashboards = Object.keys(jsonData.dashboards);
         if (this.state.aws && !this.state.admin) {
@@ -360,7 +363,7 @@ class App extends Component {
                     console.info("MOKI: sip user: " + sip.user);
 
                     //set user info :  email:email, domainID:domainID, jwt: jwtbit
-                    store.dispatch(setUser(sip));
+                    storePersistent.dispatch(setUser(sip));
                     this.setState({
                         user: sip
                     })
@@ -440,9 +443,9 @@ class App extends Component {
             </div>
         </span>
 
-        var sipUser = store.getState().user;
+        var sipUser = storePersistent.getState().user;
         if (sipUser) {
-            sipUser = store.getState().user.email ? store.getState().user.user + ": " + store.getState().user.email : store.getState().user.user;
+            sipUser = storePersistent.getState().user.email ? storePersistent.getState().user.user + ": " + storePersistent.getState().user.email : storePersistent.getState().user.user;
         } else {
             sipUser = "";
         }

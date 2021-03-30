@@ -22,7 +22,7 @@ import tagIcon from "../../styles/icons/tag.png";
 import downloadIcon from "../../styles/icons/download.png";
 import downloadPcapIcon from "../../styles/icons/downloadPcap.png";
 import viewIcon from "../../styles/icons/view.png";
-import store from "../store/index";
+import storePersistent from "../store/indexPersistent";
 import { elasticsearchConnection} from '../helpers/elasticsearchConnection';
 import { downloadPcap } from '../helpers/download/downloadPcap';
 import { downloadSD } from '../helpers/download/downloadSD';
@@ -39,7 +39,7 @@ export default class listChart extends Component {
         const columns = tableColumns(this.props.name, this.props.tags);
         //get columns name from layout 
         var name = window.location.pathname.substring(1);
-        var layout = store.getState().layout.table;
+        var layout = storePersistent.getState().layout.table;
         var searchable = layout[name] ?  layout[name] :  layout.default;
         //remove the same
         var removeIndices = [];
@@ -345,10 +345,8 @@ export default class listChart extends Component {
         document.getElementById("popupTag").style.display = "none";
     }
 
-
-
     isAdmin() {
-        var aws = store.getState().user.aws;
+        var aws = storePersistent.getState().user.aws;
         if (aws === true) {
 
             var user = document.getElementById("user").innerHTML;
