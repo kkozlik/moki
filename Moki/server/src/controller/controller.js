@@ -53,10 +53,8 @@ class Controller {
             }
 
             //special case: disable disableHMACfilter - for account chart
-            if (req.url == "/account/charts") {
+            if (req.url == "/account/charts" || req.url == "/account/distinc_encrypt") {
                 isEncryptChecksumFilter = "*";
-                //no need for timestamp filter
-                timestamp_gte = "*";
             }
 
 
@@ -155,7 +153,7 @@ class Controller {
             console.log(new Date + " send msearch");
 
             var requestList = [];
-            for (var j = 0; j < requests.length; j++) {
+            for (var j = 0; j < requests.length; j++) {               
                 requestList.push(
                     {
                         index: requests[j].index,

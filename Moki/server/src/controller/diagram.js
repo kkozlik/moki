@@ -56,24 +56,28 @@ class DiagramController {
      *               error: "bash: not found"
      */
     static downloadPcap(request, respond) {
-        var file = "/data/sbcsync/traffic_log/" + request.body.url;
+        if (request.body.url == null) {
+            return respond.status(400).send({Error: "Error: no pcap file"});
+        } else {
+            var file = "/data/sbcsync/traffic_log/" + request.body.url;
 
-        //check if file exists
-        fs.access(file, err => {
-            if (err) {
-                console.error(err);
-                return respond.status(400).send({
-                    err
-                });
-            } else {
-                respond.writeHead(200, {
-                    "Content-Type": "application/octet-stream",
-                    "Content-Disposition": "attachment; filename=" + file
-                });
-                return fs.createReadStream(file).pipe(respond);
+            //check if file exists
+            fs.access(file, err => {
+                if (err) {
+                    console.error(err);
+                    return respond.status(400).send({
+                        err
+                    });
+                } else {
+                    respond.writeHead(200, {
+                        "Content-Type": "application/octet-stream",
+                        "Content-Disposition": "attachment; filename=" + file
+                    });
+                    return fs.createReadStream(file).pipe(respond);
 
-            }
-        })
+                }
+            })
+        }
     }
 
     /**
@@ -323,52 +327,58 @@ class DiagramController {
         }
         //only one pcap
         else {
-            file = '/data/sbcsync/traffic_log/' + file[0];
-            //check if file exists
-            fs.access(file, fs.F_OK, (err) => {
-                if (err) {
-                    console.error(err);
-                    respond.status(400).send({
-                        "Error": "File doesn't exist."
-                    });
-                    respond.end();
-
-                }
-                process = ["cfanal -time-sort-destinations -ignore-ser-dns-wd -ignore-dns-ptr -sip-timestamp -sip-message-details -silent -print-cf - -r ", file].join(' ');
-
-
-                var result = exec(process, function (error, stdout, stderr) {
-                    if (error) {
-                        console.error("Problem with receiving file. " + error);
+            if (file[0] == null) {
+                respond.status(400).write("Error: no pcap file to render");
+                respond.end();
+            }
+            else {
+                file = '/data/sbcsync/traffic_log/' + file[0];
+                //check if file exists
+                fs.access(file, fs.F_OK, (err) => {
+                    if (err) {
+                        console.error(err);
                         respond.status(400).send({
-                            "Error": "Problem with receiving file."
+                            "Error": "File doesn't exist."
                         });
                         respond.end();
-                    } else {
-                        console.info("XML file from cfanal received.");
-
-                        //replace breaks
-                        stdout = stdout.replace(/(\r\n|\n|\r)/gm, "");
-                        //replace double quotes with single ones
-                        stdout = stdout.replace('"', '\'');
-
-                        //get template and insert xml value
-                        ejs.renderFile(path.resolve("./src/modules/sd.ejs"), {
-                            xml: stdout
-                        }, (err, str) => {
-                            // str => Rendered HTML string
-                            if (err) {
-                                console.log(err)
-                            } else {
-                                respond.status(200).write(str);
-                                respond.end();
-                            }
-                        })
 
                     }
-                })
+                    process = ["cfanal -time-sort-destinations -ignore-ser-dns-wd -ignore-dns-ptr -sip-timestamp -sip-message-details -silent -print-cf - -r ", file].join(' ');
 
-            })
+
+                    var result = exec(process, function (error, stdout, stderr) {
+                        if (error) {
+                            console.error("Problem with receiving file. " + error);
+                            respond.status(400).send({
+                                "Error": "Problem with receiving file."
+                            });
+                            respond.end();
+                        } else {
+                            console.info("XML file from cfanal received.");
+
+                            //replace breaks
+                            stdout = stdout.replace(/(\r\n|\n|\r)/gm, "");
+                            //replace double quotes with single ones
+                            stdout = stdout.replace('"', '\'');
+
+                            //get template and insert xml value
+                            ejs.renderFile(path.resolve("./src/modules/sd.ejs"), {
+                                xml: stdout
+                            }, (err, str) => {
+                                // str => Rendered HTML string
+                                if (err) {
+                                    console.log(err)
+                                } else {
+                                    respond.status(200).write(str);
+                                    respond.end();
+                                }
+                            })
+
+                        }
+                    })
+
+                })
+            }
         }
 
     }

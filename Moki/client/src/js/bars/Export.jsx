@@ -1,11 +1,8 @@
-import React, {
-    Component
-} from 'react';
-
-import store from "../store/index";
-import { getTypes } from "../helpers/getTypes.js";
+import React, { Component } from 'react';
 import { getSearchableFields } from "../helpers/SearchableFields.js";
-
+import { elasticsearchConnection } from '@moki-client/gui';
+import { parseTableHits } from '@moki-client/es-response-parser';
+import storePersistent from "../store/indexPersistent";
 
 class Export extends Component {
     constructor(props) {
@@ -20,21 +17,21 @@ class Export extends Component {
         this.export = this.export.bind(this);
     }
 
-    static getDerivedStateFromProps(nextProps, prevState){
-        if(nextProps.exportOpen!==prevState.exportOpen){
-          return { exportOpen: nextProps.exportOpen};
-       }
-       else return null;
-     }
-     
-     componentDidUpdate(prevProps, prevState) {
-       if(prevProps.exportOpen!==this.props.exportOpen){
-        this.setState({ exportOpen: this.props.exportOpen });
-        if(this.props.exportOpen === true) {
-            this.loadData();    
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (nextProps.exportOpen !== prevState.exportOpen) {
+            return { exportOpen: nextProps.exportOpen };
         }
-       }
-     }
+        else return null;
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (prevProps.exportOpen !== this.props.exportOpen) {
+            this.setState({ exportOpen: this.props.exportOpen });
+            if (this.props.exportOpen === true) {
+                this.loadData();
+            }
+        }
+    }
 
     async loadData() {
         try {
@@ -44,23 +41,10 @@ class Export extends Component {
                 name = "overview";
             }
             // Retrieves the list of calls
-            const response = await fetch("/api/" + name + "/table", {
-                method: "POST",
-                credentials: 'include',
-                body: JSON.stringify({
-                    filters: store.getState().filters,
-                    types: getTypes(),
-                    size: 10000,
-                    timerange_gte: store.getState().timerange[0],
-                    timerange_lte: store.getState().timerange[1]
-                }),
-                headers: {
-                    "Content-Type": "application/json",
-                    "Access-Control-Allow-Credentials": "include"
-                }
-            });
-            var calls = await response.json();
-            var data = calls.hits.hits;
+
+            var calls = await elasticsearchConnection(name + "/table");
+            //parse data
+            var data = parseTableHits(calls.hits.hits);
 
             this.setState({
                 data: data
@@ -146,11 +130,17 @@ class Export extends Component {
                 var jsonObject = JSON.stringify(result);
                 result = this.convertToCSV(jsonObject);
                 element.download = "data.csv";
+                if(storePersistent.getState().profile[0].userprefs.mode === "encrypt"){
+                    element.download = "data_decrypted.csv"
+                }
                 file = new Blob([result], { type: 'text/plain' });
             }
             else {
                 //JSON
                 element.download = "data.json";
+                if(storePersistent.getState().profile[0].userprefs.mode === "encrypt"){
+                    element.download = "data_decrypted.json"
+                }
                 file = new Blob([JSON.stringify(result)], { type: 'text/plain' });
             }
             element.href = URL.createObjectURL(file);

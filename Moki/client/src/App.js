@@ -343,6 +343,8 @@ class App extends Component {
             }
             else {
                 sip = await response.json();
+                console.info("USER login:");
+                console.info(sip);
 
                 if (sip.redirect && !window.location.pathname.includes("no-sip-identity")) {
                     console.info("redirect to no-sip-identity");
@@ -505,7 +507,7 @@ class App extends Component {
                         <div className="row" >
                             <div className="errorBar" > {this.state.error} </div>
                         </div>
-                        <div class="d-flex justify-content-between" >
+                        <div className="d-flex justify-content-between" >
                             <span id="user" className="tab top"> {sipUser} {aws === true && !this.state.admin && <a href="/logout"> Log out </a>}</span>
                             <TimerangeBar showError={this.showError} />
                         </div>
