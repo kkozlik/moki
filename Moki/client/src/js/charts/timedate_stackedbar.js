@@ -302,7 +302,7 @@ export default class StackedChart extends Component {
                     // .style("left", this.getAttribute("x") + 300 + "px")
                     //   .style("top", this.getAttribute("y") + 300 + "px");
 
-                    tooltip.select("div").html("<strong>Time: </strong> " + parseDate(d.data.time) + "<br/><strong>Value:</strong> " + d3.format(',')(d[1] - d[0]) + units + "<br/><strong>Type: </strong>" + this.parentNode.getAttribute("type") + "<br/> ");
+                    tooltip.select("div").html("<strong>Time: </strong> " + parseDate(d.data.time) + " + "+getTimeBucket()+"<br/><strong>Value:</strong> " + d3.format(',')(d[1] - d[0]) + units + "<br/><strong>Type: </strong>" + this.parentNode.getAttribute("type") + "<br/> ");
                     d3.select(this).style("cursor", "pointer");
 
 

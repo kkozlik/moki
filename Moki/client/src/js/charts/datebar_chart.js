@@ -227,7 +227,7 @@ export default class datebarChart extends Component {
                     if (name.includes("DURATION")) {
                         value = durationFormat(d.agg.value);
                     }
-                    tooltip.select("div").html("<strong>Value:</strong> " + value + units + "</br><strong>Time: </strong>" + parseDate(timestamp));
+                    tooltip.select("div").html("<strong>Value:</strong> " + value + units + "</br><strong>Time: </strong>" + parseDate(timestamp)+ " + "+getTimeBucket());
                 })
                 .on('mouseout', () => //tooltip.transition().style('opacity', 0));
                     tooltip.style("visibility", "hidden"))

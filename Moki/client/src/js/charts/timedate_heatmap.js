@@ -290,7 +290,7 @@ export default class timedateHeatmap extends Component {
                         if (d.value === 5) value = "Partially Available";
                     }
 
-                    tooltip.select("div").html("<strong>" + d.attr2.charAt(0).toUpperCase() + d.attr2.slice(1) + ": </strong>" + value + units + "<br/><strong>Time: </strong>" + new Date(d.attr1).toLocaleString());
+                    tooltip.select("div").html("<strong>" + d.attr2.charAt(0).toUpperCase() + d.attr2.slice(1) + ": </strong>" + value + units + "<br/><strong>Time: </strong>" + new Date(d.attr1).toLocaleString()+ " + "+getTimeBucket());
 
 
                     if (d3.mouse(d3.event.target)[0] > window.innerWidth - 1200) {

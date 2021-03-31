@@ -20,7 +20,7 @@ import {
 import Colors from '../helpers/style/Colors';
 import emptyIcon from "../../styles/icons/empty_small.png";
 import {
-    getTimeBucketInt
+    getTimeBucketInt, getTimeBucket
 } from "../helpers/getTimeBucket";
 
 export default class MultipleLineChart extends Component {
@@ -260,7 +260,7 @@ export default class MultipleLineChart extends Component {
                 .style("cursor", "pointer")
                 .on("mouseover", function (d) {
                     tooltip.style("visibility", "visible");
-                    tooltip.select("div").html("<strong>Time: </strong>" + parseDate(d.date) + "<strong><br/>Value: </strong>" + d3.format(',')(d.value) + "<br/> ");
+                    tooltip.select("div").html("<strong>Time: </strong>" + parseDate(d.date) + " + "+getTimeBucket()+"<strong><br/>Value: </strong>" + d3.format(',')(d.value) + "<br/> ");
                 })
                 .on("mouseout", function (d) {
                     tooltip.style("visibility", "hidden")
@@ -359,11 +359,12 @@ export default class MultipleLineChart extends Component {
     }
 
     render() {
+        var bucket = getTimeBucket();
         return (<div id={
             this.props.id
         }>
             <h3 className="alignLeft title" > {
                 this.props.name
-            } </h3></div>)
+            } <span className="smallText"> (interval: {bucket})</span></h3></div>)
     }
 }

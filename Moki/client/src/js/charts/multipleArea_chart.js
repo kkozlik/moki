@@ -305,7 +305,7 @@ export default class MultipleAreaChart extends Component {
                 .style("cursor", "pointer")
                 .on("mouseover", function (d) {
                     tooltip.style("visibility", "visible");
-                    tooltip.select("div").html("<strong>Time: </strong>" + parseDate(d.date) + "<br/><strong>Value: </strong>" + d3.format(',')(d.value) + units + "<br/> ");
+                    tooltip.select("div").html("<strong>Time: </strong>" + parseDate(d.date) + " + "+getTimeBucket()+"<br/><strong>Value: </strong>" + d3.format(',')(d.value) + units + "<br/> ");
                 })
                 .on("mouseout", function (d) {
                     tooltip.style("visibility", "hidden")
