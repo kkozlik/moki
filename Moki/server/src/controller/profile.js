@@ -25,7 +25,8 @@ class ProfileController {
             var field = req.body.userprefs[Object.keys(req.body.userprefs)[0]];
             var secret = user["tls-cn"];
             var secretField = "tls-cn";
-            if (req.body.type == "domain" && user.jwtbit == 2) {
+
+            if (req.body.type == "domain" && user.jwtbit != 2) {
                 secret = user["domain"];
                 secretField = "domain";
             }

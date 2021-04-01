@@ -1,18 +1,10 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.min.js';
 import 'jquery/src/jquery';
-// import'bootstrap/dist/css/bootstrap-theme.css';
-
-import React, {
-    Component
-} from 'react';
+import React, { Component } from 'react';
 import './App.css';
 import NavBar from './js/bars/NavigationBar';
-import {
-    BrowserRouter as Router,
-    Switch,
-    Route
-} from 'react-router-dom';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import TimerangeBar from './js/bars/SetTimerangeBar';
 import { getLayoutSettings } from './js/helpers/getLayout';
 import FilterBar from './js/bars/FilterBar';
@@ -23,10 +15,7 @@ import storePersistent from "./js/store/indexPersistent";
 import { setUser, setWidthChart, setLayout } from "./js/actions/index";
 import { Redirect } from 'react-router';
 import { paths } from "./js/controllers/paths.jsx";
-import {
-    getProfile
-} from '@moki-client/gui';
-
+import { getProfile } from '@moki-client/gui';
 import DecryptPasswordPopup from '@moki-client/gui/src/menu/decryptPasswordPopup';
 
 class App extends Component {
@@ -508,7 +497,10 @@ class App extends Component {
                             <div className="errorBar" > {this.state.error} </div>
                         </div>
                         <div className="d-flex justify-content-between" >
-                            <span id="user" className="tab top"> {sipUser} {aws === true && !this.state.admin && <a href="/logout"> Log out </a>}</span>
+                            <span id="user" className="tab top">
+                                {aws === true && <DecryptPasswordPopup />}
+                                {sipUser}
+                                {aws === true && !this.state.admin && <a href="/logout"> Log out </a>}</span>
                             <TimerangeBar showError={this.showError} />
                         </div>
                         <FilterBar redirect={this.state.redirect} />
@@ -522,8 +514,10 @@ class App extends Component {
                                 <Route path='/sequenceDiagram/' render={() => <Sequence />} />
                                 <Redirect to="/" />
                             </Switch>
-                            <div id="monitorName" className="tab top monitorName" style={{ "float": "right" }} > {this.state.monitorName.toUpperCase()} </div>
-                            <img src={this.state.logo} alt="logo" style={{ "float": "right", "height": "20px" }} />
+                            <span style={{ "float": "right" }}>
+                                <div id="monitorName" className="top monitorName"> {this.state.monitorName.toUpperCase()} </div>
+                                <img src={this.state.logo} alt="logo" style={{ "height": "15px", "float": "right" }} />
+                            </span>
                         </div>
                     </div>
                 </div>;

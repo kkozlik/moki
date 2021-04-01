@@ -85,10 +85,10 @@ function getQueries(filter, types, timestamp_gte, timestamp_lte, userFilter, cha
       }
     });
 
-  if (userFilter.userFilter && userFilter.userFilter !== "*") {
+  if (userFilter && userFilter !== "*") {
     queries.push({
       "query_string": {
-        "query": userFilter.userFilter
+        "query": userFilter
       }
     });
   }

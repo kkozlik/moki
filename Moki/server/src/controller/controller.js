@@ -44,6 +44,10 @@ class Controller {
             var isDomainFilter = await getJWTsipUserFilter(req);
             if (isDomainFilter.domain) {
                 domainFilter = isDomainFilter.domain;
+                //check if user fiter should be use
+                if (isDomainFilter.userFilter) {
+                    userFilter = isDomainFilter.userFilter;
+                }
             }
 
             //check if encrypt filter should be used
@@ -164,6 +168,7 @@ class Controller {
 
                 )
             }
+            userFilter = "*";
 
             const response = await client.msearch({
                 body: requestList
@@ -207,7 +212,13 @@ class Controller {
             var isDomainFilter = await getJWTsipUserFilter(req);
             if (isDomainFilter.domain) {
                 domainFilter = isDomainFilter.domain;
+
+                //check if user fiter should be use
+                if (isDomainFilter.userFilter) {
+                    userFilter = isDomainFilter.userFilter;
+                }
             }
+
 
             //check if encrypt filter should be used
             var isEncryptChecksumFilter = await getEncryptChecksumFilter(req);
@@ -243,6 +254,7 @@ class Controller {
                 }
             }
 
+            userFilter = "*";
             console.log(new Date + " got elastic data");
             client.close();
             return res.json(response);
