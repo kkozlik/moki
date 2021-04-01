@@ -49,7 +49,7 @@ class AdminController {
          * index: lastlog-YYYY.MM, rotate every month
          * events: {timestamp, userID, domain, level} type=login
          */
-        async function storeLoginInES(domain, userID, jwtbit, email) {
+        async function storeLoginInES(domain, userID, jwtbit, email, sourceIP) {
             const client = new elasticsearch.Client({ host: process.env.ES, requestTimeout: 60000 });
             var now = new Date();
             const index = "lastlog-" + now.getFullYear() + "." + (now.getMonth() + 1);
@@ -65,6 +65,7 @@ class AdminController {
                                 "tls-cn": { "type": "keyword", "index": "true" },
                                 "domain": { "type": "keyword", "index": "true" },
                                 "email": { "type": "keyword", "index": "true" },
+                                "source": { "type": "keyword", "index": "true" },
                                 "level": { "type": "integer", "index": "true" }
                             }
                         }
@@ -83,7 +84,8 @@ class AdminController {
                     "tls-cn": userID,
                     "domain": domain,
                     "email": email,
-                    "level": jwtbit
+                    "level": jwtbit,
+                    "source": sourceIP
                 }
             }, function (err, resp, status) {
                 if (err) {
@@ -131,6 +133,8 @@ class AdminController {
         var parsedHeaderAccessToken;
         try {
             parsedHeaderAccessToken = parseBase64(req.headers['x-amzn-oidc-accesstoken']);
+            //split x-forwarded-for by comma and take first IP
+            var IPs = req.headers['x-forwarded-for'].split(",");
         } catch (e) {
             console.log("ACCESS getJWTsipUserFilter: JTI parsing failed");
             return res.json({ redirect: "JTIparsingError" });
@@ -142,10 +146,11 @@ class AdminController {
         const subId = parsedHeader['sub'];
         const email = parsedHeader['email'];
         const jti = parsedHeaderAccessToken['jti'];
+        const sourceIP = IPs[0];
 
         //store login to ES
         if (oldJti !== jti) {
-            storeLoginInES(domainID, subId, jwtbit, email);
+            storeLoginInES(domainID, subId, jwtbit, email, sourceIP);
         }
         oldJti = jti;
 

@@ -258,6 +258,19 @@ export function tableColumns(dashboard, tags) {
 
         },
         {
+            dataField: '_source.source',
+            text: 'SOURCE',
+            editable: false,
+            sort: true,
+            formatter: (cell, obj) => {
+                var ob = obj._source;
+                return <span className="filterToggleActive"><span className="filterToggle">
+                    <img onClick={doFilter} field="source" value={ob.source} className="icon" alt="filterIcon" src={filterIcon} /><img field="domain" value={ob.source} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span >{ob.source}
+                </span>
+            }
+
+        },
+        {
             dataField: '_source.level',
             text: 'LEVEL',
             editable: false,
