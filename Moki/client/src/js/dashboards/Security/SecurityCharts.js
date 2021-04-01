@@ -10,7 +10,6 @@ import DonutChart from '../../charts/donut_chart.js';
 import ListChart from '../../charts/list_chart.js';
 import store from "../../store/index";
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
-import DashboardsTypes from '../../helpers/DashboardsTypes';
 import { parseListData, parseIp, parseAggCities, parseBucketData, parseStackedbarTimeData } from '@moki-client/es-response-parser';
 
 
@@ -63,16 +62,10 @@ class SecurityCharts extends Dashboard {
         }
             {this.state.charts["EVENTS OVER TIME"] && <div className="row no-gutters" >
                 <TimedateStackedChart id="eventsOverTime"
-                    data={
-                        this.state.eventRegsTimeline
-                    }
-                    name={
-                        "EVENTS OVER TIME"
-                    }
+                    data={ this.state.eventRegsTimeline }
+                    name={ "EVENTS OVER TIME"  }
                     units={"count"}
-                    keys={
-                        DashboardsTypes["security"]
-                    }
+                    keys={"security" }
                     width={
                         store.getState().width - 300
                     }

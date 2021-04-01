@@ -8,7 +8,6 @@ import TimedateHeatmap from '../../charts/timedate_heatmap.js';
 import TimedateStackedChart from '../../charts/timedate_stackedbar.js';
 import StackedChart from '../../charts/stackedbar.js';
 import store from "../../store/index";
-import DashboardsTypes from '../../helpers/DashboardsTypes';
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import ListChart from '../../charts/list_chart.js';
 import { parseListData, parseDateHeatmap, parseStackedbarData, parseStackedbarTimeData } from '@moki-client/es-response-parser';
@@ -62,7 +61,7 @@ class OverviewCharts extends Dashboard {
                 { this.state.charts["EVENTS OVER TIME"] && <div className="row no-gutters" >
                     <TimedateStackedChart units={"count"} data={
                         this.state.eventOverviewTimeline
-                    } id="eventsOverTime" name={"EVENTS OVER TIME"} keys={DashboardsTypes["overview"]} width={store.getState().width - 300}
+                    } id="eventsOverTime" name={"EVENTS OVER TIME"} keys={"overview"} width={store.getState().width - 300}
                     />
                 </div>
                 }
@@ -70,7 +69,7 @@ class OverviewCharts extends Dashboard {
                     {this.state.charts["TOTAL EVENTS IN INTERVAL"] && <div className="col">
                         <StackedChart data={
                             this.state.totalEventsInInterval
-                        } units={"count"} id="totalEvents" bottomMargin={80} keys={DashboardsTypes["overview"]} name={"TOTAL EVENTS IN INTERVAL"} width={store.getState().width / 2}
+                        } units={"count"} id="totalEvents" bottomMargin={80} keys={"overview"} name={"TOTAL EVENTS IN INTERVAL"} width={store.getState().width / 2}
                         />
                     </div>
                     }

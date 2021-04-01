@@ -1,23 +1,13 @@
-import React, {
-    Component
-} from 'react';
+import React, { Component} from 'react';
 import * as d3 from "d3";
-
 import ColorType from '../helpers/style/ColorType';
 import Colors from '../helpers/style/Colors';
-import {
-    timestampBucket
-} from '../bars/TimestampBucket.js';
+import {timestampBucket} from '../bars/TimestampBucket.js';
 import store from "../store/index";
-import {
-    setTimerange
-} from "../actions/index";
-import {
-    createFilter
-} from '@moki-client/gui';
-import {
-    getTimeBucket, getTimeBucketInt
-} from "../helpers/getTimeBucket";
+import storePersistent from "../store/indexPersistent";
+import { setTimerange} from "../actions/index";
+import {createFilter} from '@moki-client/gui';
+import { getTimeBucket, getTimeBucketInt} from "../helpers/getTimeBucket";
 import emptyIcon from "../../styles/icons/empty_small.png";
 
 /*
@@ -30,7 +20,8 @@ export default class StackedChart extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            data: []
+            data: [],
+            keys: []
         }
         this.draw = this.draw.bind(this);
     }
@@ -188,8 +179,7 @@ export default class StackedChart extends Component {
 
             });
 */
-            var keys = this.props.keys;
-
+            var keys =  storePersistent.getState().layout.types[this.props.keys];
             //var id = 0;
             var stack = d3.stack()
                 //.keys(["Register new", "Registration expired", "Register del"])

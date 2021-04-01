@@ -9,7 +9,6 @@ import store from "../../store/index";
 import ListChart from '../../charts/list_chart.js';
 import TimedateStackedChart from '../../charts/timedate_stackedbar.js';
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
-import DashboardsTypes from '../../helpers/DashboardsTypes';
 //import StackedLineChart from '../../charts/timedate_stackedbar_with_line_chart.js';
 import {parseListData , parseIp, parseQueryStringData , parseAggData , parseAggSumBucketData , parseBucketData , parseStackedbarTimeData} from '@moki-client/es-response-parser';
 
@@ -154,7 +153,7 @@ class RestrictedCharts extends Dashboard {
                         "EVENTS OVER TIME"
                     }
                     keys={
-                        DashboardsTypes["index"]
+                        "user"
                     }
                     width={
                         store.getState().width - 300
@@ -170,7 +169,7 @@ class RestrictedCharts extends Dashboard {
                         "INCIDENTS OVER TIME"
                     }
                     keys={
-                        DashboardsTypes["exceeded"]
+                        "exceeded"
                     }
                     width={
                         store.getState().width - 300

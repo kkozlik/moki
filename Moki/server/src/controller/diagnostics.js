@@ -41,7 +41,7 @@ class diagnosticsController extends Controller {
     static getCharts(req, res, next) {
         super.request(req, res, next, [
             //EVENT OVERVIEW TIMELINE
-            { index: "logstash*", template: datehistogram_agg_filter_query, params: ["attrs.type", "timebucket"], filter: "attrs.type:alert OR attrs.type:error OR attrs.type:message-log OR attrs.type:action-log OR attrs.type:prompt OR attrs.type:recording OR attrs.type:notice" }
+            { index: "logstash*", template: datehistogram_agg_filter_query, params: ["attrs.type", "timebucket"], filter: "attrs.type:alert OR attrs.type:error OR attrs.type:message-log OR attrs.type:action-log OR attrs.type:prompt OR attrs.type:recording OR attrs.type:notice OR attrs.type:other-timeout OR attrs.type:other-ok OR attrs.type:parse-error OR attrs.type:msg-probe" }
         ]);
     }
 
@@ -82,7 +82,7 @@ class diagnosticsController extends Controller {
      *               $ref: '#/definitions/ChartResponseError'
      */
     static getTable(req, res, next) {
-        super.requestTable(req, res, next, { index: "logstash*", filter: "attrs.type:alert OR attrs.type:error OR attrs.type:message-log OR attrs.type:action-log OR attrs.type:prompt OR attrs.type:recording OR attrs.type:notice" });
+        super.requestTable(req, res, next, { index: "logstash*", filter: "attrs.type:alert OR attrs.type:error OR attrs.type:message-log OR attrs.type:action-log OR attrs.type:prompt OR attrs.type:recording OR attrs.type:notice OR attrs.type:other-timeout OR attrs.type:other-ok OR attrs.type:parse-error OR attrs.type:msg-probe" });
     }
 
 }

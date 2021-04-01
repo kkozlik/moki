@@ -12,7 +12,6 @@ import ListChart from '../../charts/list_chart.js';
 import ValueChart from '../../charts/value_chart.js';
 import store from "../../store/index";
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
-import DashboardsTypes from '../../helpers/DashboardsTypes';
 import { parseListData, parseStackedbarTimeData, parseBucketData, parseSunburstData, parseQueryStringData, parseAggData, parseAggSumBucketData } from '@moki-client/es-response-parser';
 
 
@@ -177,7 +176,7 @@ class CallCharts extends Dashboard {
                 {this.state.charts["EVENTS OVER TIME"] && <div className="row no-gutters" >
                     <TimedateStackedChart id="eventsOverTime" data={
                         this.state.eventCallsTimeline
-                    } name={"EVENTS OVER TIME"} keys={DashboardsTypes["calls"]} width={store.getState().width - 300} units={"count"}
+                    } name={"EVENTS OVER TIME"} keys={"calls"} width={store.getState().width - 300} units={"count"}
                     />
                 </div>}
                 {this.state.charts["SUM DURATION OVER TIME"] && <div className="row no-gutters" >

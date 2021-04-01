@@ -20,7 +20,12 @@ export const Types = {
     'fgl-new': 'Firewall greylist',
     'conf-leave': 'Conference leave',
     'conf-join': 'Conference join',
-    'conference_room': 'Conference room'
+    'conference_room': 'Conference room',
+    "other-failed": 'Other failed',
+    "other-timeout": 'Other timeout',
+    "other-ok": 'Other ok',
+    "parse-error": 'Parse error',
+    "msg-probe": 'Msg probe'
     
 }
     

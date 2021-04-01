@@ -94,7 +94,7 @@ class overviewController extends Controller {
     *               $ref: '#/definitions/ChartResponseError'
     */
     static getTable(req, res, next) {
-        super.requestTable(req, res, next, { index: "logstash*", filter: "attrs.type:reg-new OR attrs.type:reg-expired OR attrs.type:reg-del OR attrs.type:call-end OR attrs.type:call-start OR attrs.type:call-attempt OR attrs.type:notice OR attrs.type:auth-failed OR attrs.type:log-reply OR attrs.type:action-log OR attrs.type:message-log OR attrs.type:error OR attrs.type:alert OR attrs.type:fbl-new OR attrs.type:fgl-new OR attrs.type:message-dropped OR attrs.type:recording OR attrs.type:limit OR attrs.type:prompt OR attrs.type:conf-join OR attrs.type:conf-leave" });
+        super.requestTable(req, res, next, { index: "logstash*", filter: "attrs.type:reg-new OR attrs.type:reg-expired OR attrs.type:reg-del OR attrs.type:call-end OR attrs.type:call-start OR attrs.type:call-attempt OR attrs.type:notice OR attrs.type:auth-failed OR attrs.type:log-reply OR attrs.type:action-log OR attrs.type:message-log OR attrs.type:error OR attrs.type:alert OR attrs.type:fbl-new OR attrs.type:fgl-new OR attrs.type:message-dropped OR attrs.type:recording OR attrs.type:limit OR attrs.type:prompt OR attrs.type:conf-join OR attrs.type:conf-leave OR attrs.type:other-failed OR attrs.type:other-timeout OR attrs.type:other-ok OR attrs.type:parse-error OR attrs.type:msg-probe" });
     }
 
 }

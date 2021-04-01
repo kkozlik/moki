@@ -15,7 +15,6 @@ import store from "../../store/index";
 import {
     elasticsearchConnection
 } from '@moki-client/gui';
-import DashboardsTypes from '../../helpers/DashboardsTypes';
 import {parseListData, parseBucketData, parseMultipleLineDataShareAxis, parseAggQueryWithoutScriptValue, parseStackedbarTimeData} from '@moki-client/es-response-parser';
 
 
@@ -117,19 +116,11 @@ class RegistrationCharts extends Component {
             this.state.isLoading && < LoadingScreenCharts />
         } <div className="row no-gutters" >
                 <TimedateStackedChart id="eventsOverTime"
-                    data={
-                        this.state.eventRegsTimeline
-                    }
+                    data={ this.state.eventRegsTimeline}
                     units={"count"}
-                    name={
-                        "EVENTS OVER TIME"
-                    }
-                    keys={
-                        DashboardsTypes["registration"]
-                    }
-                    width={
-                        store.getState().width - 300
-                    }
+                    name={  "EVENTS OVER TIME"}
+                    keys={ "registration" }
+                    width={  store.getState().width - 300  }
                 />  </div>
             <div className="row no-gutters">
                 <div className="column">

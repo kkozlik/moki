@@ -7,9 +7,7 @@ import Dashboard from '../Dashboard.js';
 import TimedateStackedChart from '../../charts/timedate_stackedbar.js';
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import store from "../../store/index";
-import DashboardsTypes from '../../helpers/DashboardsTypes';
-import {parseStackedbarTimeData} from '@moki-client/es-response-parser';
-
+import { parseStackedbarTimeData } from '@moki-client/es-response-parser';
 
 class DiagnosticsCharts extends Dashboard {
 
@@ -24,39 +22,25 @@ class DiagnosticsCharts extends Dashboard {
     this.callBacks = {
       functors: [
         //EVENT Diagnostic TIMELINE
-        [{result: 'eventDiagnosticTimeline', func: parseStackedbarTimeData}]
+        [{ result: 'eventDiagnosticTimeline', func: parseStackedbarTimeData }]
       ]
     };
   }
 
   //render GUI
   render() {
-      console.log(store.getState().width);
-      return (<
-          div > {
-              this.state.isLoading && < LoadingScreenCharts />
-          }
-
-          <
-          div className="row no-gutters" >
-              <
-                  TimedateStackedChart data={
-                      this.state.eventDiagnosticTimeline
-                  }
-                  id="eventsOverTime"
-                  name={
-                      "EVENTS OVER TIME"
-                  }
-                  keys={
-                      DashboardsTypes["diagnostics"]
-                  }
-                  units={"count"}
-                  width={
-                      store.getState().width - 300}
-              />  <
-          /div> <
-          /div> 
-      );
+    return (<div> { this.state.isLoading && < LoadingScreenCharts />}
+      <div className="row no-gutters" >
+        <TimedateStackedChart data={this.state.eventDiagnosticTimeline}
+          id="eventsOverTime"
+          name={"EVENTS OVER TIME"}
+          keys={"diagnostics"}
+          units={"count"}
+          width={store.getState().width - 300}
+        />
+      </div>
+    </div>
+    );
   }
 }
 

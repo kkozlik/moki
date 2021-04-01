@@ -1,12 +1,12 @@
 import store from "../store/index";
-import DashboardsTypes from './DashboardsTypes';
+import storePersistent from "../store/indexPersistent";
 
 export const getTypes=()=>{
      var types = store.getState().types;
     
        //check if correct types - changing dashboard from no type to types one
         var pathname = window.location.pathname.substring(1);
-        var dashboardTypesChecked = DashboardsTypes[pathname];
+        var dashboardTypesChecked = storePersistent.getState().layout.types[pathname];
         if(dashboardTypesChecked === undefined){
             types = "";
         }

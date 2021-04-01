@@ -10,7 +10,6 @@ import ListChart from '../../charts/list_chart.js';
 import ValueChart from '../../charts/value_chart.js';
 import store from "../../store/index";
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
-import DashboardsTypes from '../../helpers/DashboardsTypes';
 import { parseListData, parseIp, parseStackedbarTimeData, parseBucketData, parseQueryStringData } from '@moki-client/es-response-parser';
 
 class ExceededCharts extends Dashboard {
@@ -61,86 +60,44 @@ class ExceededCharts extends Dashboard {
         } <div className="row no-gutters" >
                 {this.state.charts["EVENTS OVER TIME"] && <div className="col" >
                     <TimedateStackedChart id="eventsOverTime"
-                        data={
-                            this.state.eventCallsTimeline
-                        }
+                        data={this.state.eventCallsTimeline}
                         units={"count"}
-                        name={
-                            "EVENTS OVER TIME"
-                        }
-                        keys={
-                            DashboardsTypes["exceeded"]
-                        }
-                        width={
-                            store.getState().width - 300
-                        }
+                        name={"EVENTS OVER TIME"}
+                        keys={"exceeded"}
+                        width={store.getState().width - 300}
                     />  </div>
                 }
                 {this.state.charts["INCIDENTS COUNT"] && <div className="col">
-                    <ValueChart data={
-                        this.state.exceededCount
-                    }
-                        name={
-                            "INCIDENTS COUNT"
-                        }
-                        biggerFont={
-                            "biggerFont"
-                        }
+                    <ValueChart data={this.state.exceededCount}
+                        name={"INCIDENTS COUNT"}
+                        biggerFont={"biggerFont"}
                     />  </div>}
                 {this.state.charts["EXCEEDED TYPE"] && <div className="col" >
-                    <DonutChart data={
-                        this.state.exceededType
-                    }
+                    <DonutChart data={this.state.exceededType}
                         units={"count"}
-                        name={
-                            "EXCEEDED TYPE"
-                        }
+                        name={"EXCEEDED TYPE"}
                         id="exceededType"
-                        width={
-                            (store.getState().width - 300) / 2
-                        }
-                        height={
-                            170
-                        }
-                        legendSize={
-                            50
-                        }
+                        width={(store.getState().width - 300) / 2}
+                        height={170}
+                        legendSize={50}
                         field="exceeded" />
                 </div>}
             </div>
             <div className="row no-gutters" >
                 {this.state.charts["TOP OFFENDERS"] && <div className="col" >
-                    <ListChart data={
-                        this.state.topOffenders
-                    }
-                        name={
-                            "TOP OFFENDERS"
-                        }
-                        field={
-                            "attrs.from.keyword"
-                        }
+                    <ListChart data={this.state.topOffenders}
+                        name={"TOP OFFENDERS"}
+                        field={"attrs.from.keyword"}
                     />  </div>}
                 {this.state.charts["TOP SUBNETS /24 EXCEEDED"] && <div className="col">
-                    <ListChart data={
-                        this.state.subnets
-                    }
-                        name={
-                            "TOP SUBNETS /24 EXCEEDED"
-                        }
-                        field={
-                            "attrs.sourceSubnets"
-                        }
+                    <ListChart data={this.state.subnets}
+                        name={"TOP SUBNETS /24 EXCEEDED"}
+                        field={"attrs.sourceSubnets"}
                     />  </div>}
                 {this.state.charts["EXCEEDED EVENTS BY IP ADDR"] && <div className="col" >
-                    <ListChart data={
-                        this.state.ipAddress
-                    }
-                        name={
-                            "EXCEEDED EVENTS BY IP ADDR"
-                        }
-                        field={
-                            "attrs.source"
-                        }
+                    <ListChart data={this.state.ipAddress}
+                        name={"EXCEEDED EVENTS BY IP ADDR"}
+                        field={"attrs.source"}
                     />  </div>
                 }
             </div> </div>
