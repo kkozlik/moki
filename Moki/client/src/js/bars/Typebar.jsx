@@ -79,8 +79,10 @@ class Typebar extends Component {
                 }
             }
         }
-        store.dispatch(assignType(types));
 
+        //set new types in state, don't dispatch it to redux
+        this.setState({types: types});
+        //store.dispatch(assignType(types));
     }
 
     componentWillUnmount() {
