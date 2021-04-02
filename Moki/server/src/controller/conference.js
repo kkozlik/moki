@@ -5,6 +5,8 @@ const agg_query = require('../../js/template_queries/agg_query.js');
 var datehistogram_agg_filter_query = require('../../js/template_queries/datehistogram_agg_filter_query.js');
 var agg_sum_bucket_query_term = require('../../js/template_queries/agg_sum_bucket_term_query.js');
 var sort_query = require('../../js/template_queries/sort_query.js');
+const checkSelectedTypes = require('../utils/metrics');
+
 class ConferenceController extends Controller {
 
     /**
@@ -64,7 +66,7 @@ class ConferenceController extends Controller {
             { index: "logstash*", template: agg_query, params: ["terms", "attrs.from-keyword"], filter: "attrs.type:conf-join" },
             //TOP ACTIVE CONFERENCES  
             { index: "logstash*", template: sort_query, params: ["attrs.count", 1], filter: "attrs.type:conference_room", timestamp_gte: " - 1 * 60 * 1000" }
-        ]);
+        ], "conference");
     }
 
     /**
@@ -102,8 +104,9 @@ class ConferenceController extends Controller {
      *             schema:
      *               $ref: '#/definitions/ChartResponseError'
      */
-    static getTable(req, res, next) {
-        super.requestTable(req, res, next, { index: "logstash*", filter: "attrs.type:conf-leave OR attrs.type:conf-join"});
+    static async getTable(req, res, next) {
+        var types = await checkSelectedTypes.checkSelectedTypes([], "calls");
+        super.requestTable(req, res, next, { index: "logstash*", filter: types });
     }
 }
 

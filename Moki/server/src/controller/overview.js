@@ -1,8 +1,9 @@
 const Controller = require('./controller.js');
-var datehistogram_agg_filter_query = require('../../js/template_queries/datehistogram_agg_filter_query.js');
-var agg_query = require('../../js/template_queries/agg_query.js');
-var datehistogram_agg_query = require('../../js/template_queries/datehistogram_agg_query.js');
-var two_agg_query_limit = require('../../js/template_queries/two_agg_query_limit.js');
+const datehistogram_agg_filter_query = require('../../js/template_queries/datehistogram_agg_filter_query.js');
+const agg_query = require('../../js/template_queries/agg_query.js');
+const datehistogram_agg_query = require('../../js/template_queries/datehistogram_agg_query.js');
+const two_agg_query_limit = require('../../js/template_queries/two_agg_query_limit.js');
+const checkSelectedTypes= require('../utils/metrics');
 
 class overviewController extends Controller {
 
@@ -44,18 +45,18 @@ class overviewController extends Controller {
     static getCharts(req, res, next) {
         super.request(req, res, next, [
             //EVENT OVERVIEW TIMELINE
-            { index: "logstash*", template: datehistogram_agg_filter_query, params: ["attrs.type", "timebucket"], filter: "*" },
+            { index: "logstash*", template: datehistogram_agg_filter_query, params: ["attrs.type", "timebucket"], filter: "*"  },
             //TOTAL EVENTS IN INTERVAL
-            { index: "logstash*", template: agg_query, params: ["terms", "attrs.type"], filter: "*" },
+            { index: "logstash*", template: agg_query, params: ["terms", "attrs.type"], filter: "*"},
             //ACTIVITY OF SBCS
-            { index: "logstash*", template: datehistogram_agg_query, params: ["attrs.hostname", "terms", "timebucket"], filter: "*" },
+            { index: "logstash*", template: datehistogram_agg_query, params: ["attrs.hostname", "terms", "timebucket"], filter: "*"},
             //SBC KEEP ALIVE, types: none - no type fiilter - special case different index 
-            { index: "collectd*", template: datehistogram_agg_query, params: ["attrs.hostname", "terms", "timebucket"], filter: "*", types: "*" },
+            { index: "collectd*", template: datehistogram_agg_query, params: ["attrs.hostname", "terms", "timebucket"], filter: "*", types: "*"  },
             //SBC ACTIVITY TYPES
-            { index: "logstash*", template: two_agg_query_limit, params: ["attrs.sbc", "terms", "attrs.type"], filter: "*" },
+            { index: "logstash*", template: two_agg_query_limit, params: ["attrs.sbc", "terms", "attrs.type"], filter: "*"},
             //list of tags
-            { index: "logstash*", template: agg_query, params: ["terms", "attrs.tags"], filter: "*" }
-        ]);
+            { index: "logstash*", template: agg_query, params: ["terms", "attrs.tags"], filter: "*"}
+        ], "overview");
     }
 
     /**
@@ -93,8 +94,9 @@ class overviewController extends Controller {
     *             schema:
     *               $ref: '#/definitions/ChartResponseError'
     */
-    static getTable(req, res, next) {
-        super.requestTable(req, res, next, { index: "logstash*", filter: "attrs.type:reg-new OR attrs.type:reg-expired OR attrs.type:reg-del OR attrs.type:call-end OR attrs.type:call-start OR attrs.type:call-attempt OR attrs.type:notice OR attrs.type:auth-failed OR attrs.type:log-reply OR attrs.type:action-log OR attrs.type:message-log OR attrs.type:error OR attrs.type:alert OR attrs.type:fbl-new OR attrs.type:fgl-new OR attrs.type:message-dropped OR attrs.type:recording OR attrs.type:limit OR attrs.type:prompt OR attrs.type:conf-join OR attrs.type:conf-leave OR attrs.type:other-failed OR attrs.type:other-timeout OR attrs.type:other-ok OR attrs.type:parse-error OR attrs.type:msg-probe" });
+    static async getTable(req, res, next) {
+        var types = await checkSelectedTypes.checkSelectedTypes([], "overview");
+        super.requestTable(req, res, next, { index: "logstash*", filter: types});
     }
 
 }

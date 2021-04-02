@@ -5,7 +5,7 @@ const agg_filter = require('../../js/template_queries/agg_filter.js');
 const datehistogram_agg_query = require('../../js/template_queries/datehistogram_agg_query.js');
 const agg_query = require('../../js/template_queries/agg_query.js');
 var geoipAnimation = require('../../js/template_queries/geoip_agg_filter_animation.js');
-
+const checkSelectedTypes= require('../utils/metrics');
 
 class registrationController extends Controller {
 
@@ -63,7 +63,7 @@ class registrationController extends Controller {
             //ACTUAL REGS  
             { index: "collectd*", template: agg_query, params: ["max", "countReg"], filter: "*", timestamp_gte: "lastTimebucket" }
 
-        ]);
+        ], "registration");
     }
 
 
@@ -144,8 +144,9 @@ class registrationController extends Controller {
      *             schema:
      *               $ref: '#/definitions/ChartResponseError'
      */
-    static getTable(req, res, next) {
-        super.requestTable(req, res, next, { index: "logstash*", filter: "attrs.type:reg-new OR attrs.type:reg-del OR attrs.type:reg-expired" });
+    static async getTable(req, res, next) {
+        var types = await checkSelectedTypes.checkSelectedTypes([], "registration");
+        super.requestTable(req, res, next, { index: "logstash*", filter: types });
     }
 }
 

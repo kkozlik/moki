@@ -22,7 +22,6 @@ class Dashboard extends Component {
     this.callBacks = { functors: [] };
     // call 'unsubscribe()' to deregister default loadData change listener
     this.unsubscribe = store.subscribe(() => this.loadData());
-    //storePersistent.subscribe(() => this.getLayout());
     this.getLayout = this.getLayout.bind(this);
   }
 

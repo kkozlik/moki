@@ -1,5 +1,6 @@
 const Controller = require('./controller.js');
 var datehistogram_agg_filter_query = require('../../js/template_queries/datehistogram_agg_filter_query.js');
+const checkSelectedTypes= require('../utils/metrics');
 
 class transportController  extends Controller {
 
@@ -42,7 +43,7 @@ class transportController  extends Controller {
         super.request(req, res, next, [
             //EVENT OVERVIEW TIMELINE
             { index: "logstash*", template: datehistogram_agg_filter_query, params: ["attrs.type", "timebucket"], filter: "attrs.type:error OR attrs.type:alert OR attrs.type:notice" }
-        ]);
+        ], "transport");
   }
 
     /**
@@ -80,8 +81,9 @@ class transportController  extends Controller {
      *             schema:
      *               $ref: '#/definitions/ChartResponseError'
      */
-    static getTable(req, res, next) {
-        super.requestTable(req, res, next, { index: "logstash*", filter: "attrs.type:error OR attrs.type:alert OR attrs.type:notice"});
+    static async getTable(req, res, next) {
+        var types = await checkSelectedTypes.checkSelectedTypes([], "transport");
+        super.requestTable(req, res, next, { index: "logstash*", filter: types});
     }
 
 }

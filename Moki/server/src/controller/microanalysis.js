@@ -87,7 +87,7 @@ class MicronalysisController extends Controller {
             { index: "logstash*", template: agg_query, params: ["terms", "attrs.dst_ca_id"], filter: "*" },
             //ORIGINATOR
             { index: "logstash*", template: agg_query, params: ["terms", "attrs.originator"], filter: "*" }
-        ]);
+        ], "microanalysis");
     }
 
 }

@@ -5,6 +5,7 @@ var agg_filter = require('../../js/template_queries/agg_filter.js');
 var agg_filter_animation = require('../../js/template_queries/agg_filter_animation.js');
 var geoipAnimation = require('../../js/template_queries/geoip_agg_filter_animation.js');
 const agg_query = require('../../js/template_queries/agg_query.js');
+const checkSelectedTypes= require('../utils/metrics');
 
 class securityController extends Controller {
 
@@ -57,7 +58,7 @@ class securityController extends Controller {
             { index: "logstash*", template: agg_filter, params: ['geoip.country_code2', 10], filter: "attrs.type:limit OR attrs.type:message-dropped OR attrs.type:auth-failed OR attrs.type:log-reply OR attrs.type:fbl-new OR attrs.type:fgl-new" },
             //TYPES
             { index: "logstash*", template: agg_query, params: ["terms", 'attrs.type'], filter: "attrs.type:limit OR attrs.type:auth-failed OR attrs.type:fbl-new OR attrs.type:log-reply OR attrs.type:message-dropped OR attrs.type:fgl-new" }
-        ]);
+        ], "security");
     }
 
 
@@ -317,8 +318,9 @@ class securityController extends Controller {
  *             schema:
  *               $ref: '#/definitions/ChartResponseError'
  */
-    static getTable(req, res, next) {
-        super.requestTable(req, res, next, { index: "logstash*", filter: "attrs.type:limit OR attrs.type:message-dropped OR attrs.type:auth-failed OR attrs.type:log-reply OR attrs.type:fbl-new OR attrs.type:fgl-new" });
+    static async getTable(req, res, next) {
+        var types = await checkSelectedTypes.checkSelectedTypes([], "security");
+        super.requestTable(req, res, next, { index: "logstash*", filter: types});
     }
 
 }

@@ -1,7 +1,8 @@
 // metrics.js hold some metric logic
+const fs = require('fs');
+const { cfg } = require('../modules/config');
 
 function getFiltersConcat(filters) {
-  console.info(filters);
   // get filters, if no place "*", if more than 1, concat with AND
   let filter = '*';
   if (filters && filters.length != 0) {
@@ -18,6 +19,38 @@ function getFiltersConcat(filters) {
     }
   }
   return filter;
+}
+
+//get type list from monitor_layout and check if all should be displayed
+async function checkSelectedTypes(types, dashboardName) {
+  return new Promise(function (resolve, reject) {
+    fs.readFile(cfg.fileGUILayout, (err, layout) => {
+      if (err) {
+        console.error(`Problem with reading default file. ${err}`);
+        reject(newHTTPError(400, `Problem with reading data: ${err}`));
+      }
+      const jsonLayout = JSON.parse(layout);
+      var selectedTypes = jsonLayout.types[dashboardName];
+      //filter out not selected types
+      var filtredTypes = types.filter(item => selectedTypes.includes(item));
+      //if no spec types, return selected types from file
+      if (types.length == 0) { filtredTypes = selectedTypes }
+      //concat types with OR
+      if (filtredTypes.length == 0) { resolve("noTypes") }
+      else {
+        var result = "";
+        for (var i = 0; i < filtredTypes.length; i++) {
+          if (i == 0) {
+            result = "attrs.type:" + filtredTypes[i];
+          }
+          else {
+            result = result + " OR attrs.type:" + filtredTypes[i]
+          }
+        }
+        resolve(result)
+      }
+    })
+  })
 }
 
 function getTypesConcat(value) {
@@ -37,8 +70,8 @@ function getTypesConcat(value) {
 }
 
 function getQueries(filter, types, timestamp_gte, timestamp_lte, userFilter, chartFilter, domain, isEncryptChecksumFilter) {
-  var queries = [];
 
+  var queries = [];
   if (isEncryptChecksumFilter !== "*") {
     queries.push({
       "match": {
@@ -75,15 +108,15 @@ function getQueries(filter, types, timestamp_gte, timestamp_lte, userFilter, cha
     });
   }
 
-    queries.push({
-      "range": {
-        "@timestamp": {
-          "gte": timestamp_gte,
-          "lte": timestamp_lte,
-          "format": "epoch_millis"
-        }
+  queries.push({
+    "range": {
+      "@timestamp": {
+        "gte": timestamp_gte,
+        "lte": timestamp_lte,
+        "format": "epoch_millis"
       }
-    });
+    }
+  });
 
   if (userFilter && userFilter !== "*") {
     queries.push({
@@ -108,5 +141,6 @@ function getQueries(filter, types, timestamp_gte, timestamp_lte, userFilter, cha
 module.exports = {
   getFiltersConcat: getFiltersConcat,
   getTypesConcat: getTypesConcat,
-  getQueries: getQueries
+  getQueries: getQueries,
+  checkSelectedTypes: checkSelectedTypes
 };

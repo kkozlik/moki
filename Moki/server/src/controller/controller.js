@@ -1,19 +1,9 @@
 // calls.js hold the calls endpoint
 
-const {
-    getFiltersConcat,
-    getTypesConcat,
-    getQueries
-} = require('../utils/metrics');
-const {
-    connectToES
-} = require('../modules/elastic');
+const { getFiltersConcat, getTypesConcat, getQueries, checkSelectedTypes } = require('../utils/metrics');
+const { connectToES } = require('../modules/elastic');
 var scroll = require('../../js/template_queries/scroll.js');
-let {
-    getTimestampBucket,
-    timestamp_gte,
-    timestamp_lte
-} = require('../utils/ts');
+let { getTimestampBucket, timestamp_gte, timestamp_lte } = require('../utils/ts');
 const { getJWTsipUserFilter, getEncryptChecksumFilter } = require('../modules/jwt');
 var timerange_query = require('../../js/template_queries/timerange_query.js');
 
@@ -24,13 +14,15 @@ var domainFilter = "*";
 /*
 Request - array of object. {template, params, filter, index}
 */
+//if no dashboard selected, use overview as default
+
 
 class Controller {
-    static request(req, res, next, requests) {
+    static request(req, res, next, requests, dashboard = "overview") {
         async function search() {
             const client = connectToES();
             var filters = getFiltersConcat(req.body.filters);
-            var types = getTypesConcat(req.body.types);
+            var types = req.body.types;
 
             if (req.body.timerange_lte) {
                 timestamp_lte = Math.round(req.body.timerange_lte);
@@ -61,13 +53,22 @@ class Controller {
                 isEncryptChecksumFilter = "*";
             }
 
-
-            console.info("SERVER search with filters: " + filters + " types: " + types + " timerange: " + timestamp_gte + "-" + timestamp_lte + " timebucket: " + timebucket + " userFilter: " + userFilter + " domainFilter: " + domainFilter + " encrypt checksum: " + isEncryptChecksumFilter);
+            //if no types from client, get types from monitor_layout
+            if (types.length == 0) {
+                types = await checkSelectedTypes([], dashboard);
+            }
+            //or if client request types, use this instead 
+            else {
+                types = getTypesConcat(types);
+            }
+            var oldtypes = types;
 
             for (var i = 0; i < requests.length; i++) {
+                //disable types for specific requests (e.g. different index in dashboard)
                 if (requests[i].types) {
                     types = "*";
                 }
+
 
                 //if timestamp_lte is set, get value
                 if (requests[i].timestamp_lte) {
@@ -152,12 +153,14 @@ class Controller {
                 if (req.body.timerange_gte) {
                     timestamp_gte = Math.round(req.body.timerange_gte);
                 }
+                types = oldtypes;
             }
-
+            console.info("SERVER search with filters: " + filters + " types: " + types + " timerange: " + timestamp_gte + "-" + timestamp_lte + " timebucket: " + timebucket + " userFilter: " + userFilter + " domainFilter: " + domainFilter + " encrypt checksum: " + isEncryptChecksumFilter);
             console.log(new Date + " send msearch");
 
             var requestList = [];
-            for (var j = 0; j < requests.length; j++) {               
+            for (var j = 0; j < requests.length; j++) {
+                //  console.log(JSON.stringify(requests[j].query));
                 requestList.push(
                     {
                         index: requests[j].index,
