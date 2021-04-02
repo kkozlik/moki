@@ -19,7 +19,6 @@ class Typebar extends Component {
             types: [],
             isFetching: true
         }
-
         this.enableType = this.enableType.bind(this);
         this.disableType = this.disableType.bind(this);
         this.checkAll = this.checkAll.bind(this);
@@ -80,7 +79,7 @@ class Typebar extends Component {
             }
         }
 
-        //set new types in state, don't dispatch it to redux
+        //set new types in state, don't dispatch it
         this.setState({types: types});
         //store.dispatch(assignType(types));
     }

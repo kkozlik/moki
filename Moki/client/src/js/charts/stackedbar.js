@@ -2,7 +2,7 @@ import React, {
     Component
 } from 'react';
 import * as d3 from "d3";
-
+import storePersistent from "../store/indexPersistent";
 import ColorType from '../helpers/style/ColorType';
 import Colors from '../helpers/style/Colors';
 import {
@@ -141,9 +141,8 @@ export default class StackedChart extends Component {
                 return "";
 
             });
-*/
-            var keys = this.props.keys;
-
+            */
+            var keys = storePersistent.getState().layout.types[this.props.keys];
             //var id = 0;
             var stack = d3.stack()
                 //.keys(["Register new", "Registration expired", "Register del"])

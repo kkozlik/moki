@@ -14,6 +14,7 @@ import { downloadAll } from "./download/downloadAll";
 import { exportJSON } from "./export";
 import { getPcap } from './getPcap';
 import { exclude } from './exclude';
+import storePersistent from "../store/indexPersistent";
 
 /*
 create new filter based on html tag with field with attribute as name 
@@ -76,6 +77,26 @@ export const onEnterKeyExclude = (event, ob)  =>{
 }
 
 export function tableColumns(dashboard, tags) {
+    var tag = {
+        dataField: '_source.attrs.tags',
+        text: 'TAGS',
+        sort: true,
+        headerStyle: { width: '150px !important' },
+        editorRenderer: (editorProps, value, row, column, rowIndex, columnIndex) => (
+            <TagRanger tags={tags} row={row} />
+        ),
+
+        formatter: (cell, obj) => {
+            var ob = obj._source;
+            return <span className="filterToggleActive"><span className="filterToggle">
+                <img onClick={doFilter} field="attrs.tags" value={ob.attrs.tags} className="icon" alt="filterIcon" src={filterIcon} /><img field="attrs.tags" value={ob.attrs.tags} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span > {ob.attrs.tags ? ob.attrs.tags.toString() : []}
+            </span>
+        }
+    }
+
+    //disable tags for end user
+    if(storePersistent.getState().user.jwt === "2"){tag = ""};
+
     switch (dashboard) {
         case 'calls': return [
             {
@@ -605,21 +626,6 @@ export function tableColumns(dashboard, tags) {
                 text: 'SIP CODE',
                 sort: true,
                 editable: false
-            }, {
-                dataField: '_source.attrs.tags',
-                text: 'TAGS',
-                sort: true,
-                headerStyle: { width: '150px !important' },
-                editorRenderer: (editorProps, value, row, column, rowIndex, columnIndex) => (
-                    <TagRanger tags={tags} row={row} />
-                ),
-
-                formatter: (cell, obj) => {
-                    var ob = obj._source;
-                    return <span className="filterToggleActive"><span className="filterToggle">
-                        <img onClick={doFilter} field="attrs.tags" value={ob.attrs.tags} className="icon" alt="filterIcon" src={filterIcon} /><img field="attrs.tags" value={ob.attrs.tags} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span > {ob.attrs.tags ? ob.attrs.tags.toString() : []}
-                    </span>
-                }
             },
             {
                 dataField: '_source.filenameDownload',
@@ -835,22 +841,8 @@ export function tableColumns(dashboard, tags) {
                         <img onClick={doFilter} field="exceeded-by" value={ob['exceeded-by']} className="icon" alt="filterIcon" src={filterIcon} /><img field="exceeded-by" value={ob['exceeded-by']} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span > {ob['exceeded-by'] ? ob['exceeded-by'].toString() : ""}
                     </span>
                 }
-            }, {
-                dataField: '_source.attrs.tags',
-                text: 'TAGS',
-                sort: true,
-                headerStyle: { width: '150px !important' },
-                editorRenderer: (editorProps, value, row, column, rowIndex, columnIndex) => (
-                    <TagRanger tags={tags} row={row} />
-                ),
-
-                formatter: (cell, obj) => {
-                    var ob = obj._source;
-                    return <span className="filterToggleActive"><span className="filterToggle">
-                        <img onClick={doFilter} field="attrs.tags" value={ob.attrs.tags} className="icon" alt="filterIcon" src={filterIcon} /><img field="attrs.tags" value={ob.attrs.tags} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span > {ob.attrs.tags ? ob.attrs.tags.toString() : []}
-                    </span>
-                }
-            },
+            }, 
+            tag,
             {
                 dataField: '_source.filenameDownload',
                 text: 'ADVANCED',

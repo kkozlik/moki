@@ -20,6 +20,8 @@ class Dashboard extends Component {
     this.state = {};
     this.transientState = {};
     this.callBacks = { functors: [] };
+    //set empty type array for first time loading
+    store.getState().types = [];
     // call 'unsubscribe()' to deregister default loadData change listener
     this.unsubscribe = store.subscribe(() => this.loadData());
     this.getLayout = this.getLayout.bind(this);

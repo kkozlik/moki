@@ -721,7 +721,7 @@ export default class listChart extends Component {
                             <button
                                 type="button"
                                 id={column.dataField}
-                                key={column.dataField}
+                                key={column.dataField+this.props.name}
                                 className={`${!column.hidden ? ' selectColumnButton green' : 'selectColumnButton'}`}
                                 data-toggle="button"
                                 aria-pressed={column.toggle ? 'true' : 'false'}
@@ -788,7 +788,7 @@ export default class listChart extends Component {
             pageButtonRenderer
         };
         return (
-            <div key={"table"}>
+            <div key={"table"+this.props.name}>
 
                 {columnsList &&
                     <ToolkitProvider
