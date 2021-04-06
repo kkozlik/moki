@@ -131,6 +131,7 @@ class Controller {
                     //special case: disable disableHMACfilter - for loging events - different index
                     if (requests[i].index == "lastlog*") {
                         isEncryptChecksumFilter = "*";
+                        types = "*";
                     }
 
                     requests[i].query = requests[i].template.getTemplate(...params, getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, requests[i].filter, domainFilter, isEncryptChecksumFilter), supress);
@@ -140,6 +141,7 @@ class Controller {
                     //special case: disable disableHMACfilter - for loging events - different index
                     if (requests[i].index == "lastlog*") {
                         isEncryptChecksumFilter = "*";
+                        types = "*";
                     }
 
                     requests[i].query = requests[i].template.getTemplate(getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, requests[i].filter, domainFilter, isEncryptChecksumFilter), supress);
