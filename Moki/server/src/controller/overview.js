@@ -3,7 +3,9 @@ const datehistogram_agg_filter_query = require('../../js/template_queries/datehi
 const agg_query = require('../../js/template_queries/agg_query.js');
 const datehistogram_agg_query = require('../../js/template_queries/datehistogram_agg_query.js');
 const two_agg_query_limit = require('../../js/template_queries/two_agg_query_limit.js');
-const checkSelectedTypes= require('../utils/metrics');
+const checkSelectedTypes = require('../utils/metrics');
+const distinct_query_string = require('../../js/template_queries/distinct_query_string.js');
+const query_string = require('../../js/template_queries/query_string.js');
 
 class overviewController extends Controller {
 
@@ -45,17 +47,21 @@ class overviewController extends Controller {
     static getCharts(req, res, next) {
         super.request(req, res, next, [
             //EVENT OVERVIEW TIMELINE
-            { index: "logstash*", template: datehistogram_agg_filter_query, params: ["attrs.type", "timebucket"], filter: "*"  },
+            { index: "logstash*", template: datehistogram_agg_filter_query, params: ["attrs.type", "timebucket"], filter: "*" },
             //TOTAL EVENTS IN INTERVAL
-            { index: "logstash*", template: agg_query, params: ["terms", "attrs.type"], filter: "*"},
+            { index: "logstash*", template: agg_query, params: ["terms", "attrs.type"], filter: "*" },
             //ACTIVITY OF SBCS
-            { index: "logstash*", template: datehistogram_agg_query, params: ["attrs.hostname", "terms", "timebucket"], filter: "*"},
+            { index: "logstash*", template: datehistogram_agg_query, params: ["attrs.hostname", "terms", "timebucket"], filter: "*" },
             //SBC KEEP ALIVE, types: none - no type fiilter - special case different index 
-            { index: "collectd*", template: datehistogram_agg_query, params: ["attrs.hostname", "terms", "timebucket"], filter: "*", types: "*"  },
+            { index: "collectd*", template: datehistogram_agg_query, params: ["attrs.hostname", "terms", "timebucket"], filter: "*", types: "*" },
             //SBC ACTIVITY TYPES
-            { index: "logstash*", template: two_agg_query_limit, params: ["attrs.sbc", "terms", "attrs.type"], filter: "*"},
+            { index: "logstash*", template: two_agg_query_limit, params: ["attrs.sbc", "terms", "attrs.type"], filter: "*" },
             //list of tags
-            { index: "logstash*", template: agg_query, params: ["terms", "attrs.tags"], filter: "*"}
+            { index: "logstash*", template: agg_query, params: ["terms", "attrs.tags"], filter: "*" },
+            //DISTINCT IP
+            { index: "logstash*", template: distinct_query_string, params: ["attrs.source"], filter: "*" },
+            //TOTAL EVENT COUNT
+            { index: "logstash*", template: query_string, filter: "*" },
         ], "overview");
     }
 
@@ -96,7 +102,7 @@ class overviewController extends Controller {
     */
     static async getTable(req, res, next) {
         var types = await checkSelectedTypes.checkSelectedTypes([], "overview");
-        super.requestTable(req, res, next, { index: "logstash*", filter: types});
+        super.requestTable(req, res, next, { index: "logstash*", filter: types });
     }
 
 }

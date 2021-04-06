@@ -4,6 +4,7 @@ const agg_query = require('../../js/template_queries/agg_query.js');
 var agg_cardinality = require('../../js/template_queries/agg_cardinality.js');
 var agg_filter = require('../../js/template_queries/agg_filter.js');
 var two_agg_query = require('../../js/template_queries/two_agg_query.js');
+const distinct_query_string = require('../../js/template_queries/distinct_query_string.js');
 
 class MicronalysisController extends Controller {
 
@@ -86,7 +87,9 @@ class MicronalysisController extends Controller {
             //DST CA
             { index: "logstash*", template: agg_query, params: ["terms", "attrs.dst_ca_id"], filter: "*" },
             //ORIGINATOR
-            { index: "logstash*", template: agg_query, params: ["terms", "attrs.originator"], filter: "*" }
+            { index: "logstash*", template: agg_query, params: ["terms", "attrs.originator"], filter: "*" },
+            //DISTINCT IP
+            { index: "logstash*", template: distinct_query_string, params: ["attrs.source"], filter: "*" },
         ], "microanalysis");
     }
 
