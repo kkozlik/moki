@@ -78,7 +78,6 @@ class Typebar extends Component {
                 }
             }
         }
-
         //set new types in state, don't dispatch it
         this.setState({types: types});
         //store.dispatch(assignType(types));
@@ -94,7 +93,7 @@ class Typebar extends Component {
 
     //when you load stored filters and types, you need to rerender GUI
     rerenderTypes() {
-        if (store.getState().types !== this.state.types) {
+        if ((store.getState().types !== this.state.types) && store.getState().types.length !== 0) {
             console.info("Types is changed to " + JSON.stringify(store.getState().types));
             this.setState({ types: store.getState().types });
         }
