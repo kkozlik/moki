@@ -57,6 +57,24 @@ export default class geoIpMap extends Component {
                 }
             }
         }
+
+        //remove old pins if exists
+        var pins = document.getElementsByClassName("pins");
+        if (pins.length > 0) {
+            if (pins) {
+                while (pins.length > 0) {
+                    pins[0].parentNode.removeChild(pins[0]);
+                }
+            }
+        }
+        pins = document.getElementsByClassName("pinsPulse");
+        if (pins.length > 0) {
+            if (pins) {
+                while (pins.length > 0) {
+                    pins[0].parentNode.removeChild(pins[0]);
+                }
+            }
+        }
         // var margin = { top: 20, right: 10, bottom: 150, left: 60 };
 
         var height = 400;
@@ -65,6 +83,11 @@ export default class geoIpMap extends Component {
         // var  colorScale =d3.scaleLinear().range(["white", "blue"]);
 
         if (data.length === 0) {
+            var chart = document.getElementById("geoIpMapSVG");
+            if (chart) {
+                chart.remove();
+            }
+
             var svg = d3.select('#geoIpMap')
                 .append('svg')
                 .attr('width', width)
@@ -81,6 +104,7 @@ export default class geoIpMap extends Component {
             if (isEmpty.length === 0) {
                 svg = d3.select('#geoIpMap')
                     .append('svg')
+                    .attr("id", "geoIpMapSVG")
                     .attr('width', width)
                     .attr('height', height);
 

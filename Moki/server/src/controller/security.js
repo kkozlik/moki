@@ -47,17 +47,17 @@ class securityController extends Controller {
     static getCharts(req, res, next) {
         super.request(req, res, next, [
             //SECURITY DISTRIBUTION MAP
-            { index: "logstash*", template: geoip, filter: 'attrs.type:limit OR attrs.type:message-dropped OR attrs.type:auth-failed OR attrs.type:log-reply OR attrs.type:fbl-new OR attrs.type:fgl-new' },
+            { index: "logstash*", template: geoip, filter: '*' },
             //EVENT SECURITY  TIMELINE
-            { index: "logstash*", template: datehistogram_agg_filter_query, params: ["attrs.type", "timebucket"], filter: "attrs.type:limit OR attrs.type:message-dropped OR attrs.type:auth-failed OR attrs.type:log-reply OR attrs.type:fbl-new OR attrs.type:fgl-new" },
+            { index: "logstash*", template: datehistogram_agg_filter_query, params: ["attrs.type", "timebucket"], filter: "*" },
             //EVENTS BY IP ADDR
-            { index: "logstash*", template: agg_filter, params: ['attrs.source', 10], filter: "attrs.type:limit OR attrs.type:message-dropped OR attrs.type:auth-failed OR attrs.type:log-reply OR attrs.type:fbl-new OR attrs.type:fgl-new" },
+            { index: "logstash*", template: agg_filter, params: ['attrs.source', 10], filter: "*" },
             //TOP SUBNETS /24
-            { index: "logstash*", template: agg_filter, params: ["attrs.sourceSubnets", 10], filter: "attrs.type:limit OR attrs.type:message-dropped OR attrs.type:auth-failed OR attrs.type:log-reply OR attrs.type:fbl-new OR attrs.type:fgl-new" },
+            { index: "logstash*", template: agg_filter, params: ["attrs.sourceSubnets", 10], filter: "*" },
             //EVENTS BY COUNTRY
-            { index: "logstash*", template: agg_filter, params: ['geoip.country_code2', 10], filter: "attrs.type:limit OR attrs.type:message-dropped OR attrs.type:auth-failed OR attrs.type:log-reply OR attrs.type:fbl-new OR attrs.type:fgl-new" },
+            { index: "logstash*", template: agg_filter, params: ['geoip.country_code2', 10], filter: "*" },
             //TYPES
-            { index: "logstash*", template: agg_query, params: ["terms", 'attrs.type'], filter: "attrs.type:limit OR attrs.type:auth-failed OR attrs.type:fbl-new OR attrs.type:log-reply OR attrs.type:message-dropped OR attrs.type:fgl-new" }
+            { index: "logstash*", template: agg_query, params: ["terms", 'attrs.type'], filter: "*" }
         ], "security");
     }
 
