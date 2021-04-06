@@ -8,7 +8,8 @@ import store from "../../store/index";
 import ListChart from '../../charts/list_chart.js';
 import DonutChart from '../../charts/donut_chart.js';
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
-import { parseListData, parseIp, parseListDataCardinality, parseBucketData } from '@moki-client/es-response-parser';
+import ValueChart from '../../charts/value_chart.js';
+import { parseListData, parseIp, parseListDataCardinality, parseBucketData, parseAggDistinct } from '@moki-client/es-response-parser';
 
 
 class MicroanalysisCharts extends Dashboard {
@@ -41,6 +42,7 @@ class MicroanalysisCharts extends Dashboard {
             dstCA: [],
             originator: [],
             charts: [],
+            distinctIP: [],
             isLoading: true
         }
         this.callBacks = {
@@ -107,7 +109,10 @@ class MicroanalysisCharts extends Dashboard {
                 [{ result: 'dstCA', func: parseListData }],
 
                 //ORIGINATOR 20
-                [{ result: 'originator', func: parseListData }]
+                [{ result: 'originator', func: parseListData }],
+
+                //DISTINCT IP
+                [{ result: 'distinctIP', func: parseAggDistinct }]
             ]
         }
     }
@@ -119,30 +124,25 @@ class MicroanalysisCharts extends Dashboard {
         }
 
             <div className="row no-gutters" >
+                {this.state.charts["DISTINCT IP"] && <div className="col">
+                    <ValueChart data={
+                        this.state.distinctIP
+                    } name={"DISTINCT IP"} />
+                </div>}
                 {this.state.charts["TYPES"] && <div className="col" >
                     <DonutChart data={
                         this.state.typesCount
                     }
                         units={"count"}
-                        name={
-                            "TYPES"
-                        }
+                        name={"TYPES"}
                         id="types"
-                        width={
-                            store.getState().width / 2 - 150
-                        }
-                        legendSize={
-                            50
-                        }
-                        height={
-                            200
-                        }
+                        width={store.getState().width / 2 - 150}
+                        legendSize={50}
+                        height={200}
                         field="attrs.type" />
                 </div>}
                 {this.state.charts["FROM UA"] && <div className="col" >
-                    <ListChart data={
-                        this.state.fromUA
-                    }
+                    <ListChart data={this.state.fromUA}
                         name={
                             "FROM UA"
                         }

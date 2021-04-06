@@ -3,6 +3,21 @@
 }
 
 
+/*code styling for <pre><code>*/
+
+pre {
+    outline: 1px solid #ccc;
+    padding: 3px;
+    margin: 5px;
+    line-height: 1.6;
+    background-color: #f4f4f4;
+    border: 1px solid #ddd;
+    font-family: 'Monaco', monospace;
+    display: inline;
+    line-height: 2.6;
+}
+
+
 /* general*/
 
 .container {

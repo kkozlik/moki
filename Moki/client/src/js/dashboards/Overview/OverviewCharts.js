@@ -10,7 +10,8 @@ import StackedChart from '../../charts/stackedbar.js';
 import store from "../../store/index";
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import ListChart from '../../charts/list_chart.js';
-import { parseListData, parseDateHeatmap, parseStackedbarData, parseStackedbarTimeData } from '@moki-client/es-response-parser';
+import ValueChart from '../../charts/value_chart.js';
+import { parseListData, parseDateHeatmap, parseStackedbarData, parseStackedbarTimeData, parseAggDistinct, parseQueryStringData } from '@moki-client/es-response-parser';
 
 class OverviewCharts extends Dashboard {
 
@@ -26,6 +27,8 @@ class OverviewCharts extends Dashboard {
             keepAlive: [],
             tags: [],
             charts: [],
+            distinctIP: [],
+            totalEvents: [],
             isLoading: true
         };
         this.callBacks = {
@@ -46,7 +49,13 @@ class OverviewCharts extends Dashboard {
                 [],
 
                 //TAGS LIST
-                [{ result: 'tags', func: parseListData }]
+                [{ result: 'tags', func: parseListData }],
+
+                //DISTINCT IP
+                [{ result: 'distinctIP', func: parseAggDistinct }],
+
+                //TOTAL EVENTS IN INTERVAL
+                [{ result: 'totalEvents', func: parseQueryStringData}],
             ]
         };
     }
@@ -58,6 +67,18 @@ class OverviewCharts extends Dashboard {
         return (
             <div>
                 { this.state.isLoading && <LoadingScreenCharts />}
+                <div className="row  no-gutters">
+                    {this.state.charts["DISTINCT IP"] && <div className="col">
+                        <ValueChart data={
+                            this.state.distinctIP
+                        } name={"DISTINCT IP"} />
+                    </div>}
+                    {this.state.charts["TOTAL EVENTS"] && <div className="col">
+                        <ValueChart data={
+                            this.state.totalEvents
+                        } name={"# EVENTS"} />
+                    </div>}
+                </div>
                 { this.state.charts["EVENTS OVER TIME"] && <div className="row no-gutters" >
                     <TimedateStackedChart units={"count"} data={
                         this.state.eventOverviewTimeline
