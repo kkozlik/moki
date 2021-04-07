@@ -5,7 +5,7 @@ import * as d3 from "d3";
 import {
     createFilter
 } from '@moki-client/gui';
-import Colors from '../helpers/style/Colors';
+import Colors from '../helpers/style/ColorsNoGreen';
 import emptyIcon from "../../styles/icons/empty_small.png";
 
 export default class sunburst extends Component {
@@ -34,6 +34,13 @@ export default class sunburst extends Component {
 
 
     draw(data, widthSvg, units) {
+        if (this.props.ends !== 0) {
+            data.children.push({
+                key: "success",
+                value: this.props.ends,
+                children: []
+            });
+        }
         units = units ? " (" + units + ")" : "";
         //FOR UPDATE: remove chart if it's already there
         var chart = document.getElementById("sunburstChartSVG");
@@ -77,14 +84,15 @@ export default class sunburst extends Component {
 
         } else {
             //get number of parent nodes
-            if (data.children.length + 1 !== this.state.parentNodes) {
-                this.setState({
-                    parentNodes: data.children.length + 1
-                });
-            }
-
+            /*    if (data.children.length + 1 !== this.state.parentNodes) {
+             this.setState({
+                 parentNodes: data.children.length + 1
+             });
+         }
+         */
             //animation for 2 sec, transition delay is in milliseconds
             //get count of all nodes
+
             var nodesCount = data.children.length;
             for (var o = 0; o < data.children.length; o++) {
                 nodesCount = nodesCount + data.children[o].children.length;
@@ -116,21 +124,13 @@ export default class sunburst extends Component {
             // Size arcs
             partition(root);
             var arc = d3.arc()
-                .startAngle(function (d) {
-                    return d.x0
-                })
-                .endAngle(function (d) {
-                    return d.x1
-                })
-                .innerRadius(function (d) {
-                    return d.y0
-                })
-                .outerRadius(function (d) {
-                    return d.y1
-                });
+                .startAngle(function (d) { return d.x0 })
+                .endAngle(function (d) { return d.x1 })
+                .innerRadius(function (d) { return d.y0 })
+                .outerRadius(function (d) { return d.y1 });
+
 
             var tooltip;
-
             g.selectAll('path')
                 .data(root.descendants())
                 .enter().append('path')
@@ -146,12 +146,11 @@ export default class sunburst extends Component {
                     else if (d.data.key === "displayed") {
                         return "#58A959";
                     }
-                   /* else if( d.data.key === "hidden"){
+                    else if (d.data.key === "hidden") {
                         return "#c41d03";
-                    }*/
+                    }
                     else {
-                        return colorScale((d.children ? d : d.parent).data.key);
-
+                        return colorScale(d.data.key);
                     }
                 })
                 .style("cursor", "pointer")
@@ -280,7 +279,19 @@ export default class sunburst extends Component {
                     }))
                     .attr('height', legendRectSize)
                     .style("fill", function (d) {
-                        return colorScale((d.children ? d : d.parent).data.key);
+                        // return colorScale((d.children ? d : d.parent).data.key);
+                        if (d.data.key === "success") {
+                            return "#58A959";
+                        }
+                        else if (d.data.key === "displayed") {
+                            return "#58A959";
+                        }
+                        else if (d.data.key === "hidden") {
+                            return "#c41d03";
+                        }
+                        else {
+                            return colorScale(d.data.key);
+                        }
                     })
                     .on("click", el => {
                         if (parseInt(el.data.key, 10)) {
@@ -330,7 +341,19 @@ export default class sunburst extends Component {
                     }))
                     .attr('height', legendRectSize)
                     .style("fill", function (d) {
-                        return colorScale((d.children ? d : d.parent).data.key);
+                        if (d.data.key === "success") {
+                            return "#58A959";
+                        }
+                        else if (d.data.key === "displayed") {
+                            return "#58A959";
+                        }
+                        else if (d.data.key === "hidden") {
+                            return "#c41d03";
+                        }
+                        else {
+                            return colorScale(d.data.key);
+                        }
+                        //return colorScale((d.children ? d : d.parent).data.key);
                     })
                     .on("click", el => {
                         if (parseInt(el.data.key, 10)) {

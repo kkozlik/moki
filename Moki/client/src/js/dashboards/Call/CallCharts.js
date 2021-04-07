@@ -107,15 +107,17 @@ class CallCharts extends Dashboard {
         });
 
         //hack - add sum of call end into success ratio
-        if (this.state.sumCallEnd && this.transientState.callSuccessRatio && this.transientState.callSuccessRatio.children) {
-            this.transientState.callSuccessRatio.children.push({
-                key: "success",
-                value: this.state.sumCallEnd,
-                children: []
-            });
-        }
+        // if (this.state.sumCallEnd && this.transientState.callSuccessRatio && this.transientState.callSuccessRatio.children) {
 
-        this.setState({ callSuccessRatio: this.transientState.callSuccessRatio });
+        //TODO removing not working, adding this don't call rerender chart function for some reasons
+        /*   this.transientState.callSuccessRatio.children.push({
+               key: "success",
+               value: this.state.sumCallEnd,
+               children: [{key: "success", value: this.state.sumCallEnd}]
+           });*/
+        //  }
+
+        // this.setState({ callSuccessRatio: this.transientState.callSuccessRatio });
         this.setState({
             isLoading: false
         });
