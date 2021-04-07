@@ -59,7 +59,7 @@ class ConferenceController extends Controller {
             //TOP CONFERENCES 
             { index: "collectd*", template: agg_query, params: ["terms", "attrs.conf_id"], filter: "attrs.type:conf-join" },
             //EVENT CONFERENCE TIMELINE
-            { index: "logstash*", template: datehistogram_agg_filter_query, params: ["attrs.type", "timebucket"], filter: "attrs.type:conf-leave OR attrs.type:conf-join" },
+            { index: "logstash*", template: datehistogram_agg_filter_query, params: ["attrs.type", "timebucket"], filter: "*" },
             //ACTIVE CONFERENCES  
             { index: "logstash*", template: agg_query, params: ["max", "attrs.count"], filter: "attrs.type:conference_room", timestamp_gte: " - 1 * 60 * 1000" },
             //TOP PARTICIPANTS 

@@ -42,7 +42,7 @@ class transportController  extends Controller {
     static getCharts(req, res, next) {
         super.request(req, res, next, [
             //EVENT OVERVIEW TIMELINE
-            { index: "logstash*", template: datehistogram_agg_filter_query, params: ["attrs.type", "timebucket"], filter: "attrs.type:error OR attrs.type:alert OR attrs.type:notice" }
+            { index: "logstash*", template: datehistogram_agg_filter_query, params: ["attrs.type", "timebucket"], filter: "*" }
         ], "transport");
   }
 

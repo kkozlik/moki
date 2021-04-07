@@ -7,7 +7,7 @@ const initialState = {
   types: [],
   filters: [],
   timerange: [(Math.round(new Date().getTime() / 1000) - (6 * 3600)) * 1000, (Math.round(new Date().getTime() / 1000)) * 1000, new Date(Math.trunc(Math.round(new Date().getTime() / 1000) - (6 * 3600)) * 1000).toLocaleString() + " + 6 hours"],
-  width: window.innerWidth,
+  width: window.innerWidth
 };
 
 
@@ -18,7 +18,7 @@ function rootReducer(state = initialState, action) {
       types: action.payload
     });
   }
-
+  
   else if (action.type === SET_TIMERANGE) {
     return Object.assign({}, state, {
       timerange: action.payload

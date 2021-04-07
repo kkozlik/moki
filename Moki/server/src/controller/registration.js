@@ -47,9 +47,9 @@ class registrationController extends Controller {
     static getCharts(req, res, next) {
         super.request(req, res, next, [
             //REGISTRATION DISTRIBUTION MAP
-            { index: "logstash*", template: geoip, filter: "attrs.type:reg-new OR attrs.type:reg-expired OR attrs.type:reg-del" },
+            { index: "logstash*", template: geoip, filter: "*" },
             //EVENT REGISTRATIONS  TIMELINE
-            { index: "logstash*", template: datehistogram_agg_filter_query, params: ["attrs.type", "timebucket"], filter: "attrs.type:reg-new OR attrs.type:reg-del OR attrs.type:reg-expired" },
+            { index: "logstash*", template: datehistogram_agg_filter_query, params: ["attrs.type", "timebucket"], filter: "*" },
             //USER-AGENTS IN REG. NEW
             { index: "logstash*", template: agg_filter, params: ['attrs.from-ua', 10], filter: 'attrs.type:reg-new' },
             //TOP REG. EXPIRED

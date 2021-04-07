@@ -162,7 +162,7 @@ class Controller {
 
             var requestList = [];
             for (var j = 0; j < requests.length; j++) {
-                //  console.log(JSON.stringify(requests[j].query));
+                  console.log(JSON.stringify(requests[j].query));
                 requestList.push(
                     {
                         index: requests[j].index,

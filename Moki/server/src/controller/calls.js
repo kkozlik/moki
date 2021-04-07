@@ -84,7 +84,7 @@ class CallsController extends Controller {
             //CALLED COUNTIRES
             { index: "logstash*", template: agg_query, params: ["terms", "attrs.tst_cc"], filter: "*" },
             //EVENT CALLS TIMELINE
-            { index: "logstash*", template: datehistogram_agg_filter_query, params: ["attrs.type", "timebucket"], filter: "attrs.type:call-end OR attrs.type:call-start OR attrs.type:call-attempt" },
+            { index: "logstash*", template: datehistogram_agg_filter_query, params: ["attrs.type", "timebucket"], filter: "*" },
             //EVENT CALLS TIMELINE
             { index: "logstash*", template: datehistogram_agg_sum_bucket_query, params: ["CallEnd", "AnsweredCalls", "timebucket"], filter: "*" }
         ], "calls");

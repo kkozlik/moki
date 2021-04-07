@@ -177,7 +177,7 @@ class HomeController extends Controller {
             //AVG DURATION
             { index: "logstash*", template: agg_query, params: ["avg", "attrs.duration"], filter: "*" },
             //TYPE HEATMAP
-            { index: "logstash*", template: datehistogram_agg_query, params: ["attrs.type", "terms", "timebucket"], filter: "attrs.type:reg-new OR attrs.type:reg-expired OR attrs.type:reg-del OR attrs.type:call-end OR attrs.type:call-start OR attrs.type:call-attempt OR attrs.type:notice OR attrs.type:auth-failed OR attrs.type:log-reply OR attrs.type:action-log OR attrs.type:message-log OR attrs.type:error OR attrs.type:alert OR attrs.type:fbl-new OR attrs.type:fgl-new OR attrs.type:message-dropped OR attrs.type:recording OR attrs.type:limit OR attrs.type:prompt" },
+            { index: "logstash*", template: datehistogram_agg_query, params: ["attrs.type", "terms", "timebucket"], filter: "*" },
             //7 PARALLEL CALLS
             { index: "collectd*", template: datehistogram_agg_query, params: ["countCall", "max", "timebucket"], filter: "*" },
             //PARALLEL CALLS day ago

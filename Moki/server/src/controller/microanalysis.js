@@ -47,7 +47,7 @@ class MicronalysisController extends Controller {
     static getCharts(req, res, next) {
         super.request(req, res, next, [
             //TYPES
-            { index: "logstash*", template: agg_query, params: ["terms", 'attrs.type'], filter: "attrs.type:reg-new OR attrs.type:reg-expired OR attrs.type:reg-del OR attrs.type:call-end OR attrs.type:call-start OR attrs.type:call-attempt OR attrs.type:notice OR attrs.type:auth-failed OR attrs.type:log-reply OR attrs.type:action-log OR attrs.type:message-log OR attrs.type:error OR attrs.type:alert OR attrs.type:fbl-new OR attrs.type:fgl-new OR attrs.type:message-dropped OR attrs.type:recording OR attrs.type:limit OR attrs.type:prompt" },
+            { index: "logstash*", template: agg_query, params: ["terms", 'attrs.type'], filter: "*" },
             //FROM UA
             { index: "logstash*", template: agg_query, params: ["terms", "attrs.from-ua"], filter: "*" },
             //SIP METHOD
