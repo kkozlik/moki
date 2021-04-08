@@ -5,6 +5,7 @@ var agg_filter = require('../../js/template_queries/agg_filter.js');
 var agg_filter_animation = require('../../js/template_queries/agg_filter_animation.js');
 var geoipAnimation = require('../../js/template_queries/geoip_agg_filter_animation.js');
 const agg_query = require('../../js/template_queries/agg_query.js');
+const geoip_hash_query = require('../../js/template_queries/geoip_agg_hash_filter.js');
 const checkSelectedTypes= require('../utils/metrics');
 
 class securityController extends Controller {
@@ -57,7 +58,9 @@ class securityController extends Controller {
             //EVENTS BY COUNTRY
             { index: "logstash*", template: agg_filter, params: ['geoip.country_code2', 10], filter: "*" },
             //TYPES
-            { index: "logstash*", template: agg_query, params: ["terms", 'attrs.type'], filter: "*" }
+            { index: "logstash*", template: agg_query, params: ["terms", 'attrs.type'], filter: "*" },
+             //MAP FOR GEOHASH
+             { index: "logstash*", template: geoip_hash_query, params: [3], filter: "*" }
         ], "security");
     }
 

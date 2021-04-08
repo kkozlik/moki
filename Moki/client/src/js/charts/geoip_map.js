@@ -12,6 +12,7 @@ import {
 import cities from "./cities_11.csv";
 import emptyIcon from "../../styles/icons/empty.png";
 import Animation from '../helpers/Animation';
+var geohash = require('ngeohash');
 
 export default class geoIpMap extends Component {
     constructor(props) {
@@ -19,7 +20,8 @@ export default class geoIpMap extends Component {
         this.state = {
             data: [],
             svg: "",
-            g: ""
+            g: "",
+            dataNotShown: []
         }
         this.setData = this.setData.bind(this);
     }
@@ -28,13 +30,20 @@ export default class geoIpMap extends Component {
         if (nextProps.data !== prevState.data) {
             return { data: nextProps.data };
         }
+        if (nextProps.dataNotShown !== prevState.dataNotShown) {
+            return { dataNotShown: nextProps.dataNotShown };
+        }
         else return null;
     }
 
     componentDidUpdate(prevProps, prevState) {
         if (prevProps.data !== this.props.data) {
             this.setState({ data: this.props.data });
-            this.draw(this.props.data, this.props.width, this.props.units, this.props.name);
+            this.draw(this.props.data, this.props.width, this.props.units, this.props.name, this.props.dataNotShown);
+        }
+        else if (prevProps.dataNotShown !== this.props.dataNotShown) {
+            this.setState({ dataNotShown: this.props.dataNotShown });
+            this.draw(this.props.data, this.props.width, this.props.units, this.props.name, this.props.dataNotShown);
         }
     }
 
@@ -43,7 +52,7 @@ export default class geoIpMap extends Component {
         this.draw(data, this.props.width, this.props.units, this.props.name);
     }
 
-    draw(data, width, units, name) {
+    draw(data, width, units, name, dataNotShown = this.state.dataNotShown) {
         width = width < 0 ? 1028 : width;
         units = units ? " (" + units + ")" : "";
         //FOR UPDATE: remove chart if it's already there
@@ -82,7 +91,7 @@ export default class geoIpMap extends Component {
         //var color= ["#61BEE2",  "#53B6DC", "#408CA9", "#30697F", "#3F555D"];
         // var  colorScale =d3.scaleLinear().range(["white", "blue"]);
 
-        if (data.length === 0) {
+        if (data.length === 0 && dataNotShown.length === 0) {
             var chart = document.getElementById("geoIpMapSVG");
             if (chart) {
                 chart.remove();
@@ -118,8 +127,6 @@ export default class geoIpMap extends Component {
                 var maxValue = 0;
                 var minValue = data.length > 0 ? data[0].doc_count : 0;
                 for (var i = 0; i < data.length; i++) {
-
-
                     if (maxValue < data[i].doc_count) {
                         maxValue = data[i].doc_count;
                     }
@@ -128,7 +135,17 @@ export default class geoIpMap extends Component {
                     }
                 }
 
-                rScale.domain([minValue - 1, maxValue + 1]).range([0, 8]);
+                //check also dataNotShown max and min value
+                for (i = 0; i < dataNotShown.length; i++) {
+                    if (maxValue < dataNotShown[i].doc_count) {
+                        maxValue = dataNotShown[i].doc_count;
+                    }
+                    if (minValue > dataNotShown[i].doc_count) {
+                        minValue = dataNotShown[i].doc_count;
+                    }
+                }
+
+                rScale.domain([minValue - 1, maxValue + 1]).range([5, 25]);
                 var thiss = this;
                 // zoom and pan
                 const zoom = d3.zoom()
@@ -143,7 +160,17 @@ export default class geoIpMap extends Component {
                              rScale(d.doc_count) / d3.event.transform.k : 2 / d3.event.transform.k
                          );
      */
-                        d3.selectAll("circle").attr("r", function (d) {
+                        //data values
+                        d3.selectAll("circle.pins").attr("r", function (d) {
+                            if (d.doc_count) {
+                                return rScale(d.doc_count) / d3.event.transform.k;
+                            } else {
+                                return 2 / d3.event.transform.k;
+                            }
+                        })
+
+                        //cities
+                        d3.selectAll("circle.city").attr("r", function (d) {
                             if (d.doc_count) {
                                 if (rScale(d.doc_count) / d3.event.transform.k > 2) {
                                     return 2;
@@ -212,8 +239,6 @@ export default class geoIpMap extends Component {
 
                 //cites
                 d3.csv(cities).then(function (city) {
-
-
                     g.selectAll("city")
                         .data(city)
                         .enter()
@@ -259,6 +284,7 @@ export default class geoIpMap extends Component {
 
     //draw only data
     drawOnlyPins(g, name, data, units, svg) {
+        var dataNotShown = this.props.dataNotShown;
         var width = this.props.width;
         var height = 400;
         var projection = d3.geoMercator();
@@ -277,20 +303,29 @@ export default class geoIpMap extends Component {
 
         var rScale = d3.scaleSqrt();
 
-        //get max value
-        var maxValue = 0;
-        var minValue = data.length > 0 ? data[0].doc_count : 0;
-        for (var i = 0; i < data.length; i++) {
+       //get max value
+       var maxValue = 0;
+       var minValue = data.length > 0 ? data[0].doc_count : 0;
+       for (var i = 0; i < data.length; i++) {
+           if (maxValue < data[i].doc_count) {
+               maxValue = data[i].doc_count;
+           }
+           if (minValue > data[i].doc_count) {
+               minValue = data[i].doc_count;
+           }
+       }
 
+       //check also dataNotShown max and min value
+       for (i = 0; i < dataNotShown.length; i++) {
+           if (maxValue < dataNotShown[i].doc_count) {
+               maxValue = dataNotShown[i].doc_count;
+           }
+           if (minValue > dataNotShown[i].doc_count) {
+               minValue = dataNotShown[i].doc_count;
+           }
+       }
 
-            if (maxValue < data[i].doc_count) {
-                maxValue = data[i].doc_count;
-            }
-            if (minValue > data[i].doc_count) {
-                minValue = data[i].doc_count;
-            }
-        }
-        rScale.domain([minValue - 1, maxValue + 1]).range([0, 8]);
+       rScale.domain([minValue - 1, maxValue + 1]).range([5, 25]);
         //remove old pins if exists
         var pins = document.getElementsByClassName("pins");
         if (pins.length > 0) {
@@ -370,75 +405,62 @@ export default class geoIpMap extends Component {
                 tooltip.style("visibility", "hidden")
             });
 
-        function transition() {
+        //draw missing part of data 
+        if (dataNotShown.length > 0) {
+            g.selectAll(".pin")
+                .data(dataNotShown)
+                .enter().append("circle")
+                .attr("r", function (d) {
+                    return rScale(d.doc_count) < 2 ? 2 : rScale(d.doc_count);
+                })
+                .attr("fill", "red")
+                .attr("class", "pins")
+                .attr("z-index", 5)
+                .attr("fill-opacity", 0.3)
+                .attr("transform", function (d) {
+                    if (d.key) {
+                        return "translate(" + projection([
+                            geohash.decode(d.key).longitude,
+                            geohash.decode(d.key).latitude
+                        ]) + ")";
+                    }
+                    return "translate(-10,-10)";
+                })
+                .on("mouseover", function (d) {
+                    tooltip.style("visibility", "visible");
+                    d3.select(this).style("cursor", "pointer");
+                    tooltip.select("div").html("<strong>AVG longitude: </strong>" + geohash.decode(d.key).longitude + " <br/><strong>AVG latitude: </strong>" + geohash.decode(d.key).latitude + " <br/><strong>Value: </strong>" + d3.format(',')(d.doc_count) + units);
+                })
+                .on("mouseout", function (d) {
+                    tooltip.style("visibility", "hidden")
+                })
+                .on("mousemove", function (d) {
+                    tooltip
+                        .style("left", (d3.event.layerX - 20) + "px")
+                        .style("top", (d3.event.layerY - 100) + "px");
+                })
+        }
 
+
+
+        function transition() {
             var i = 0;
             // Grow circles
             pins
                 .transition()
                 .ease(d3.easeLinear)
-                .attr("r", function (d) { if (d.doc_count) return rScale(d.doc_count) + 10 })
+                .attr("r", function (d) { if (d.doc_count) { return rScale(d.doc_count) + 10} })
                 .style("opacity", function (d) { return d === 60 ? 0 : 1 })
                 .duration(500)
-                .on("end", function () { if (++i === pins.size() - 1) { transition(); } });
-
+                .on("end", function () { if (++i === pins.size() - 1) {   transition(); } });
 
             // Reset circles where r == 0
             pins
                 .attr("r", 0)
                 .style("opacity", 1);
-
         }
 
         transition();
-
-        // zoom and pan
-        const zoom = d3.zoom()
-            .scaleExtent([1, 20])
-            .extent([[0, 0], [width, height]])
-            .on('zoom', () => {
-                g.style('stroke-width', `${1.5 / d3.event.transform.k}px`);
-                g.attr('transform', d3.event.transform);
-
-                // draw the circles in their new positions
-                d3.selectAll("circle").attr("r", d => d.doc_count ?
-                    rScale(d.doc_count) / d3.event.transform.k : 2 / d3.event.transform.k
-                );
-
-                //display names 
-                var first = true;
-                if (d3.event.transform.k >= 4 && first) {
-                    first = false;
-                    d3.csv(cities).then(function (city) {
-                        g.selectAll(".city_label")
-                            .data(city)
-                            .enter()
-                            .append("text")
-                            .attr("class", "city_label")
-                            .text(function (d) {
-                                return d.city_ascii
-                            })
-                            .style("font-size", "2px")
-                            .attr("transform", function (d) {
-                                if (d.lng && d.lat) {
-                                    return "translate(" + projection([
-                                        d.lng,
-                                        d.lat
-                                    ]) + ")";
-                                }
-                            })
-                    }
-                    )
-                }
-                //zooming out
-                if (d3.event.transform.k < 4 && !first) {
-                    first = true;
-                    g.selectAll(".city_label").remove();
-                }
-
-            })
-        svg.call(zoom);
-
     }
 
     render() {

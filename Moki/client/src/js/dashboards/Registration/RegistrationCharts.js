@@ -15,7 +15,7 @@ import store from "../../store/index";
 import {
     elasticsearchConnection
 } from '@moki-client/gui';
-import {parseListData, parseBucketData, parseMultipleLineDataShareAxis, parseAggQueryWithoutScriptValue, parseStackedbarTimeData} from '@moki-client/es-response-parser';
+import { parseListData, parseBucketData, parseAggCities, parseMultipleLineDataShareAxis, parseAggQueryWithoutScriptValue, parseStackedbarTimeData } from '@moki-client/es-response-parser';
 
 
 class RegistrationCharts extends Component {
@@ -33,6 +33,7 @@ class RegistrationCharts extends Component {
             transportProtocol: [],
             parallelRegs: [],
             regsActual: [],
+            geoipHashMap: [],
             isLoading: true
         }
         store.subscribe(() => this.loadData());
@@ -92,6 +93,9 @@ class RegistrationCharts extends Component {
             //ACTUALL REGS
             var regsActual = parseAggQueryWithoutScriptValue(data.responses[7]);
 
+            //DISTRIBUTION HASH GEOIP MAP
+            var geoipHashMap = parseAggCities(data.responses[8]);
+
             console.info(new Date() + " MOKI REGISTRATION: finished parsing data");
 
             this.setState({
@@ -102,6 +106,7 @@ class RegistrationCharts extends Component {
                 transportProtocol: transportProtocol,
                 parallelRegs: parallelRegs,
                 regsActual: regsActual,
+                geoipHashMap: geoipHashMap,
                 isLoading: false
             });
 
@@ -116,11 +121,11 @@ class RegistrationCharts extends Component {
             this.state.isLoading && < LoadingScreenCharts />
         } <div className="row no-gutters" >
                 <TimedateStackedChart id="eventsOverTime"
-                    data={ this.state.eventRegsTimeline}
+                    data={this.state.eventRegsTimeline}
                     units={"count"}
-                    name={  "EVENTS OVER TIME"}
-                    keys={ "registration" }
-                    width={  store.getState().width - 300  }
+                    name={"EVENTS OVER TIME"}
+                    keys={"registration"}
+                    width={store.getState().width - 300}
                 />  </div>
             <div className="row no-gutters">
                 <div className="column">
@@ -137,9 +142,8 @@ class RegistrationCharts extends Component {
 
             <div className="row no-gutters" >
                 <div className="col" >
-                    <Geoipchart data={
-                        this.state.geoipMap
-                    }
+                    <Geoipchart data={this.state.geoipMap}
+                        dataNotShown={this.state.geoipHashMap}
                         type={"geoip"}
                         units={"count"}
                         width={

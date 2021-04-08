@@ -14,7 +14,6 @@ import { parseListData, parseIp, parseAggCities, parseBucketData, parseStackedba
 
 
 class SecurityCharts extends Dashboard {
-
     // Initialize the state
     constructor(props) {
         super(props);
@@ -28,6 +27,7 @@ class SecurityCharts extends Dashboard {
             subnets: [],
             eventsByCountry: [],
             typesCount: [],
+            geoipHashMap: [],
             sLoading: true
 
         };
@@ -49,10 +49,12 @@ class SecurityCharts extends Dashboard {
                 [{ result: 'eventsByCountry', func: parseListData }],
 
                 //SECURITY TYPES EVENTS
-                [{ result: 'typesCount', func: parseBucketData }]
+                [{ result: 'typesCount', func: parseBucketData }],
+
+                //DISTRIBUTION HASH GEOIP MAP
+                [{ result: 'geoipHashMap', func: parseAggCities }],
             ]
         };
-
     }
 
     //render GUI
@@ -62,43 +64,32 @@ class SecurityCharts extends Dashboard {
         }
             {this.state.charts["EVENTS OVER TIME"] && <div className="row no-gutters" >
                 <TimedateStackedChart id="eventsOverTime"
-                    data={ this.state.eventRegsTimeline }
-                    name={ "EVENTS OVER TIME"  }
+                    data={this.state.eventRegsTimeline}
+                    name={"EVENTS OVER TIME"}
                     units={"count"}
-                    keys={"security" }
+                    keys={"security"}
                     width={
                         store.getState().width - 300
                     }
                 />  </div>}
             {this.state.charts["SECURITY GEO EVENTS"] && <div className="row no-gutters" >
                 <div className="col" >
-                    <Geoipchart data={
-                        this.state.geoipMap
-                    }
+                    <Geoipchart data={this.state.geoipMap}
+                        dataNotShown={this.state.geoipHashMap}
                         type={"geoip"}
                         name={"SECURITY GEO EVENTS"}
                         units={"count"}
-                        width={
-                            store.getState().width - 300
-                        }
+                        width={store.getState().width - 300}
                     /> </div> </div>}
             <div className="row no-gutters" >
                 {this.state.charts["TYPES"] && <div className="col" >
                     <DonutChart data={this.state.typesCount}
                         units={"count"}
-                        name={
-                            "TYPES"
-                        }
+                        name={"TYPES"}
                         id="types"
-                        width={
-                            store.getState().width / 4 + 30
-                        }
-                        legendSize={
-                            20
-                        }
-                        height={
-                            200
-                        }
+                        width={store.getState().width / 4 + 30}
+                        legendSize={20}
+                        height={200}
                         field="attrs.type" />
                 </div>}
                 {this.state.charts["EVENTS BY IP ADDR"] && <div className="col" >
