@@ -2,6 +2,7 @@ import React, {
     Component
 } from 'react';
 import store from "../store/index";
+import storePersistent from "../store/indexPersistent";
 import { getFilters } from '@moki-client/gui';
 
 class SaveFilters extends Component {
@@ -43,9 +44,9 @@ class SaveFilters extends Component {
             }
 
 
-            var tls = store.getState().user["tls-cn"] !== "N/A" ? store.getState().user["tls-cn"] : "";
-            var checksum = store.getState().profile[0] ? store.getState().profile[0].userprefs.validation_code : "";
-            var domainID = store.getState().user.domainID !== "N/A" ? store.getState().user.domainID : "";
+            var tls = storePersistent.getState().user["tls-cn"] !== "N/A" ? storePersistent.getState().user["tls-cn"] : "";
+            var checksum = storePersistent.getState().profile[0] ? storePersistent.getState().profile[0].userprefs.validation_code : "";
+            var domainID = storePersistent.getState().user.domainID !== "N/A" ? storePersistent.getState().user.domainID : "";
             var Url = "api/filters/save";
             try {
                 const response = await fetch(Url, {
