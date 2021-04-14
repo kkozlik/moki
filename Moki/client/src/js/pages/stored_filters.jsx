@@ -5,6 +5,7 @@ import { createFilterNoDispatch } from "../helpers/createFilterNoDispatch";
 import disableIcon from "../../styles/icons/disable.png";
 import enableIcon from "../../styles/icons/enable.png";
 import store from "../store/index";
+import storePersistent from "../store/indexPersistent";
 import { setTimerange } from "../actions/index";
 import { assignType } from "../actions/index";
 import { setFilters } from "../actions/index";
@@ -28,7 +29,7 @@ class StoredFilters extends Component {
        Load data 
        */
     async load() {
-        var checksum = store.getState().profile[0] ? store.getState().profile[0].userprefs.validation_code : "";
+        var checksum = storePersistent.getState().profile[0] ? storePersistent.getState().profile[0].userprefs.validation_code : "";
         var Url = "api/filters";
         var jsonData;
         try {
