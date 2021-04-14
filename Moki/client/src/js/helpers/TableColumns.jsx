@@ -130,25 +130,25 @@ export function tableColumns(dashboard, tags) {
                     </span>
                 }
             }, {
-                dataField: '_source.attrs.from',
+                dataField: '_source.attrs.from.keyword',
                 text: 'FROM',
                 sort: true,
                 editable: false,
                 formatter: (cell, obj) => {
                     var ob = obj._source;
                     return <span className="filterToggleActive"><span className="filterToggle">
-                        <img onClick={doFilter} field="attrs.from" value={ob.attrs.from} className="icon" alt="filterIcon" src={filterIcon} /><img field="attrs.from" value={ob.attrs.from} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span >{ob.attrs.from}
+                        <img onClick={doFilter} field="attrs.from.keyword" value={ob.attrs.from} className="icon" alt="filterIcon" src={filterIcon} /><img field="attrs.from.keyword" value={ob.attrs.from} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span >{ob.attrs.from}
                     </span>
                 }
             }, {
-                dataField: '_source.attrs.to',
+                dataField: '_source.attrs.to.keyword',
                 text: 'TO',
                 sort: true,
                 editable: false,
                 formatter: (cell, obj) => {
                     var ob = obj._source;
                     return <span className="filterToggleActive"><span className="filterToggle">
-                        <img onClick={doFilter} field="attrs.to" value={ob.attrs.to} className="icon" alt="filterIcon" src={filterIcon} /><img field="attrs.to" value={ob.attrs.to} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span >{ob.attrs.to}
+                        <img onClick={doFilter} field="attrs.to.keyword" value={ob.attrs.to} className="icon" alt="filterIcon" src={filterIcon} /><img field="attrs.to.keyword" value={ob.attrs.to} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span >{ob.attrs.to}
                     </span>
                 }
             },
@@ -327,25 +327,25 @@ export function tableColumns(dashboard, tags) {
                 </span>
             }
         }, {
-            dataField: '_source.attrs.from',
+            dataField: '_source.attrs.from.keyword',
             text: 'FROM',
             sort: true,
             editable: false,
             formatter: (cell, obj) => {
                 var ob = obj._source;
                 return <span className="filterToggleActive"><span className="filterToggle">
-                    <img onClick={doFilter} field="attrs.from" value={ob.attrs.from} className="icon" alt="filterIcon" src={filterIcon} /><img field="attrs.from" value={ob.attrs.from} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span >{ob.attrs.from}
+                    <img onClick={doFilter} field="attrs.from.keyword" value={ob.attrs.from} className="icon" alt="filterIcon" src={filterIcon} /><img field="attrs.from.keyword" value={ob.attrs.from} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span >{ob.attrs.from}
                 </span>
             }
         }, {
-            dataField: '_source.attrs.to',
+            dataField: '_source.attrs.to.keyword',
             text: 'TO',
             sort: true,
             editable: false,
             formatter: (cell, obj) => {
                 var ob = obj._source;
                 return <span className="filterToggleActive"><span className="filterToggle">
-                    <img onClick={doFilter} field="attrs.to" value={ob.attrs.to} className="icon" alt="filterIcon" src={filterIcon} /><img field="attrs.to" value={ob.attrs.to} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span >{ob.attrs.to}
+                    <img onClick={doFilter} field="attrs.to.keyword" value={ob.attrs.to} className="icon" alt="filterIcon" src={filterIcon} /><img field="attrs.to.keyword" value={ob.attrs.to} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span >{ob.attrs.to}
                 </span>
             }
         },
@@ -446,25 +446,25 @@ export function tableColumns(dashboard, tags) {
                 </span>
             }
         }, {
-            dataField: '_source.attrs.from',
+            dataField: '_source.attrs.from.keyword',
             editable: false,
             sort: true,
             text: 'FROM',
             formatter: (cell, obj) => {
                 var ob = obj._source;
                 return <span className="filterToggleActive"><span className="filterToggle">
-                    <img onClick={doFilter} field="attrs.from" value={ob.attrs.from} className="icon" alt="filterIcon" src={filterIcon} /><img field="attrs.from" value={ob.attrs.from} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span >{ob.attrs.from}
+                    <img onClick={doFilter} field="attrs.from.keyword" value={ob.attrs.from} className="icon" alt="filterIcon" src={filterIcon} /><img field="attrs.from.keyword" value={ob.attrs.from} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span >{ob.attrs.from}
                 </span>
             }
         }, {
-            dataField: '_source.attrs.to',
+            dataField: '_source.attrs.to.keyword',
             editable: false,
             sort: true,
             text: 'TO',
             formatter: (cell, obj) => {
                 var ob = obj._source;
                 return <span className="filterToggleActive"><span className="filterToggle">
-                    <img onClick={doFilter} field="attrs.to" value={ob.attrs.to} className="icon" alt="filterIcon" src={filterIcon} /><img field="attrs.to" value={ob.attrs.to} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span >{ob.attrs.to}
+                    <img onClick={doFilter} field="attrs.to.keyword" value={ob.attrs.to} className="icon" alt="filterIcon" src={filterIcon} /><img field="attrs.to.keyword" value={ob.attrs.to} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span >{ob.attrs.to}
                 </span>
             }
         },
@@ -570,25 +570,25 @@ export function tableColumns(dashboard, tags) {
                 }
 
             }, {
-                dataField: '_source.attrs.from',
+                dataField: '_source.attrs.from.keyword',
                 text: 'FROM',
                 editable: false,
                 sort: true,
                 formatter: (cell, obj) => {
                     var ob = obj._source;
                     return <span className="filterToggleActive"><span className="filterToggle">
-                        <img onClick={doFilter} field="attrs.from" value={ob.attrs.from} className="icon" alt="filterIcon" src={filterIcon} /><img field="attrs.from" value={ob.attrs.from} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span >    {ob.attrs.from}
+                        <img onClick={doFilter} field="attrs.from.keyword" value={ob.attrs.from} className="icon" alt="filterIcon" src={filterIcon} /><img field="attrs.from.keyword" value={ob.attrs.from} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span >    {ob.attrs.from}
                     </span>
                 }
             }, {
-                dataField: '_source.attrs.to',
+                dataField: '_source.attrs.to.keyword',
                 text: 'TO',
                 editable: false,
                 sort: true,
                 formatter: (cell, obj) => {
                     var ob = obj._source;
                     return <span className="filterToggleActive"><span className="filterToggle">
-                        <img onClick={doFilter} field="attrs.to" value={ob.attrs.to} className="icon" alt="filterIcon" src={filterIcon} /><img field="attrs.to" value={ob.attrs.to} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span >  {ob.attrs.to}
+                        <img onClick={doFilter} field="attrs.to.keyword" value={ob.attrs.to} className="icon" alt="filterIcon" src={filterIcon} /><img field="attrs.to.keyword" value={ob.attrs.to} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span >  {ob.attrs.to}
                     </span>
                 }
             },
@@ -692,25 +692,25 @@ export function tableColumns(dashboard, tags) {
             sort: true,
             text: 'REASON'
         }, {
-            dataField: '_source.attrs.from',
+            dataField: '_source.attrs.from.keyword',
             editable: false,
             sort: true,
             text: 'FROM',
             formatter: (cell, obj) => {
                 var ob = obj._source;
                 return <span className="filterToggleActive"><span className="filterToggle">
-                    <img onClick={doFilter} field="attrs.from" value={ob.attrs.from} className="icon" alt="filterIcon" src={filterIcon} /><img field="attrs.from" value={ob.attrs.from} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span >  {ob.attrs.from}
+                    <img onClick={doFilter} field="attrs.from.keyword" value={ob.attrs.from} className="icon" alt="filterIcon" src={filterIcon} /><img field="attrs.from.keyword" value={ob.attrs.from} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span >  {ob.attrs.from}
                 </span>
             }
         }, {
-            dataField: '_source.attrs.to',
+            dataField: '_source.attrs.to.keyword',
             editable: false,
             sort: true,
             text: 'TO',
             formatter: (cell, obj) => {
                 var ob = obj._source;
                 return <span className="filterToggleActive"><span className="filterToggle">
-                    <img onClick={doFilter} field="attrs.to" value={ob.attrs.to} className="icon" alt="filterIcon" src={filterIcon} /><img field="attrs.to" value={ob.attrs.to} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span >   {ob.attrs.to}
+                    <img onClick={doFilter} field="attrs.to.keyword" value={ob.attrs.to} className="icon" alt="filterIcon" src={filterIcon} /><img field="attrs.to.keyword" value={ob.attrs.to} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span >   {ob.attrs.to}
                 </span>
             }
         }, {
@@ -808,14 +808,14 @@ export function tableColumns(dashboard, tags) {
                 text: 'REASON',
 
             }, {
-                dataField: '_source.attrs.from',
+                dataField: '_source.attrs.from.keyword',
                 text: 'FROM',
                 sort: true,
                 editable: false,
                 formatter: (cell, obj) => {
                     var ob = obj._source;
                     return <span className="filterToggleActive"><span className="filterToggle">
-                        <img onClick={doFilter} field="attrs.from" value={ob.attrs.from} className="icon" alt="filterIcon" src={filterIcon} /><img field="attrs.from" value={ob.attrs.from} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span >{ob.attrs.from}
+                        <img onClick={doFilter} field="attrs.from.keyword" value={ob.attrs.from} className="icon" alt="filterIcon" src={filterIcon} /><img field="attrs.from.keyword" value={ob.attrs.from} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span >{ob.attrs.from}
                     </span>
                 }
             }, {
@@ -913,25 +913,25 @@ export function tableColumns(dashboard, tags) {
                 </span>
             }
         }, {
-            dataField: '_source.attrs.from',
+            dataField: '_source.attrs.from.keyword',
             text: 'FROM',
             sort: true,
             editable: false,
             formatter: (cell, obj) => {
                 var ob = obj._source;
                 return <span className="filterToggleActive"><span className="filterToggle">
-                    <img onClick={doFilter} field="attrs.from" value={ob.attrs.from} className="icon" alt="filterIcon" src={filterIcon} /><img field="attrs.from" value={ob.attrs.from} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span >{ob.attrs.from}
+                    <img onClick={doFilter} field="attrs.from.keyword" value={ob.attrs.from} className="icon" alt="filterIcon" src={filterIcon} /><img field="attrs.from.keyword" value={ob.attrs.from} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span >{ob.attrs.from}
                 </span>
             }
         }, {
-            dataField: '_source.attrs.to',
+            dataField: '_source.attrs.to.keyword',
             text: 'TO',
             sort: true,
             editable: false,
             formatter: (cell, obj) => {
                 var ob = obj._source;
                 return <span className="filterToggleActive"><span className="filterToggle">
-                    <img onClick={doFilter} field="attrs.to" value={ob.attrs.to} className="icon" alt="filterIcon" src={filterIcon} /><img field="attrs.to" value={ob.attrs.to} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span >{ob.attrs.to}
+                    <img onClick={doFilter} field="attrs.to.keyword" value={ob.attrs.to} className="icon" alt="filterIcon" src={filterIcon} /><img field="attrs.to.keyword" value={ob.attrs.to} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span >{ob.attrs.to}
                 </span>
             }
         }, {
@@ -1111,25 +1111,25 @@ export function tableColumns(dashboard, tags) {
                 </span>
             }
         }, {
-            dataField: '_source.attrs.from',
+            dataField: '_source.attrs.from.keyword',
             text: 'FROM',
             editable: false,
             sort: true,
             formatter: (cell, obj) => {
                 var ob = obj._source;
                 return <span className="filterToggleActive"><span className="filterToggle">
-                    <img onClick={doFilter} field="attrs.from" value={ob.attrs.from} className="icon" alt="filterIcon" src={filterIcon} /><img field="attrs.from" value={ob.attrs.from} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span >{ob.attrs.from}
+                    <img onClick={doFilter} field="attrs.from.keyword" value={ob.attrs.from} className="icon" alt="filterIcon" src={filterIcon} /><img field="attrs.from.keyword" value={ob.attrs.from} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span >{ob.attrs.from}
                 </span>
             }
         }, {
-            dataField: '_source.attrs.to',
+            dataField: '_source.attrs.to.keyword',
             text: 'TO',
             editable: false,
             sort: true,
             formatter: (cell, obj) => {
                 var ob = obj._source;
                 return <span className="filterToggleActive"><span className="filterToggle">
-                    <img onClick={doFilter} field="attrs.to" value={ob.attrs.to} className="icon" alt="filterIcon" src={filterIcon} /><img field="attrs.to" value={ob.attrs.to} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span >{ob.attrs.to}
+                    <img onClick={doFilter} field="attrs.to.keyword" value={ob.attrs.to} className="icon" alt="filterIcon" src={filterIcon} /><img field="attrs.to.keyword" value={ob.attrs.to} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span >{ob.attrs.to}
                 </span>
             }
         }, {
@@ -1226,25 +1226,25 @@ export function tableColumns(dashboard, tags) {
                 </span>
             }
         }, {
-            dataField: '_source.attrs.from',
+            dataField: '_source.attrs.from.keyword',
             text: 'FROM',
             sort: true,
             editable: false,
             formatter: (cell, obj) => {
                 var ob = obj._source;
                 return <span className="filterToggleActive"><span className="filterToggle">
-                    <img onClick={doFilter} field="attrs.from" value={ob.attrs.from} className="icon" alt="filterIcon" src={filterIcon} /><img field="attrs.from" value={ob.attrs.from} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span >{ob.attrs.from}
+                    <img onClick={doFilter} field="attrs.from.keyword" value={ob.attrs.from} className="icon" alt="filterIcon" src={filterIcon} /><img field="attrs.from.keyword" value={ob.attrs.from} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span >{ob.attrs.from}
                 </span>
             }
         }, {
-            dataField: '_source.attrs.to',
+            dataField: '_source.attrs.to.keyword',
             text: 'TO',
             sort: true,
             editable: false,
             formatter: (cell, obj) => {
                 var ob = obj._source;
                 return <span className="filterToggleActive"><span className="filterToggle">
-                    <img onClick={doFilter} field="attrs.to" value={ob.attrs.to} className="icon" alt="filterIcon" src={filterIcon} /><img field="attrs.to" value={ob.attrs.to} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span >{ob.attrs.to}
+                    <img onClick={doFilter} field="attrs.to.keyword" value={ob.attrs.to} className="icon" alt="filterIcon" src={filterIcon} /><img field="attrs.to.keyword" value={ob.attrs.to} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span >{ob.attrs.to}
                 </span>
             }
         }, {
