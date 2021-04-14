@@ -23,7 +23,7 @@ import downloadIcon from "../../styles/icons/download.png";
 import downloadPcapIcon from "../../styles/icons/downloadPcap.png";
 import viewIcon from "../../styles/icons/view.png";
 import storePersistent from "../store/indexPersistent";
-import { elasticsearchConnection} from '../helpers/elasticsearchConnection';
+import { elasticsearchConnection } from '../helpers/elasticsearchConnection';
 import { downloadPcap } from '../helpers/download/downloadPcap';
 import { downloadSD } from '../helpers/download/downloadSD';
 import { tableColumns } from '../helpers/TableColumns';
@@ -40,7 +40,7 @@ export default class listChart extends Component {
         //get columns name from layout 
         var name = window.location.pathname.substring(1);
         var layout = storePersistent.getState().layout.table;
-        var searchable = layout[name] ?  layout[name] :  layout.default;
+        var searchable = layout[name] ? layout[name] : layout.default;
         //remove the same
         var removeIndices = [];
         for (var i = 0; i < searchable.length; i++) {
@@ -310,10 +310,10 @@ export default class listChart extends Component {
                 //previous tag exist
                 if (record['_source']['attrs']['tags']) {
                     var tags = record['_source']['attrs']['tags'] + "," + tag.toString();
-                    result = await elasticsearchConnection("/api/tag", {id: record['_id'], index: record['_index'], tags: tags});
+                    result = await elasticsearchConnection("/api/tag", { id: record['_id'], index: record['_index'], tags: tags });
                 }
                 else {
-                    result = await elasticsearchConnection("/api/tag", {id: record['_id'], index: record['_index'], tags: tag});
+                    result = await elasticsearchConnection("/api/tag", { id: record['_id'], index: record['_index'], tags: tag });
                 }
                 console.info("Tagging event");
                 console.info(result);
@@ -580,14 +580,21 @@ export default class listChart extends Component {
                                                             <span className="tab">{row._source.attrs[cell]}</span>
                                                         </p>
 
-                                                    :
-                                                    <p key={cell} field={"attrs." + cell} value={row._source.attrs[cell]}>
-                                                        <span className="spanTab">{cell}: </span>
-                                                        <img onClick={this.filter} field={"attrs." + cell} value={row._source.attrs[cell]} title="filter" className="icon" alt="filterIcon" src={filter} />
-                                                        <img field={"attrs." + cell} value={row._source.attrs[cell]} onClick={this.unfilter} className="icon" alt="unfilterIcon" title="unfilter" src={unfilter} />
-                                                        <span className="spanTab">{row._source.attrs[cell]}</span>
-
-                                                    </p>
+                                                    //attrs.to or attrs.from, use keyword 
+                                                    : cell === "from" || cell === "to" ?
+                                                        <p key={cell} field={"attrs." + cell+".keyword"} value={row._source.attrs[cell]}>
+                                                            <span className="spanTab">{cell}: </span>
+                                                            <img onClick={this.filter} field={"attrs." + cell+".keyword"} value={row._source.attrs[cell]} title="filter" className="icon" alt="filterIcon" src={filter} />
+                                                            <img field={"attrs." + cell+".keyword"} value={row._source.attrs[cell]} onClick={this.unfilter} className="icon" alt="unfilterIcon" title="unfilter" src={unfilter} />
+                                                            <span className="spanTab">{row._source.attrs[cell]}</span>
+                                                        </p>
+                                                        :
+                                                        <p key={cell} field={"attrs." + cell} value={row._source.attrs[cell]}>
+                                                            <span className="spanTab">{cell}: </span>
+                                                            <img onClick={this.filter} field={"attrs." + cell} value={row._source.attrs[cell]} title="filter" className="icon" alt="filterIcon" src={filter} />
+                                                            <img field={"attrs." + cell} value={row._source.attrs[cell]} onClick={this.unfilter} className="icon" alt="unfilterIcon" title="unfilter" src={unfilter} />
+                                                            <span className="spanTab">{row._source.attrs[cell]}</span>
+                                                        </p>
                                 :
                                 //if filename make a link
                                 cell === "filename" ?
@@ -721,7 +728,7 @@ export default class listChart extends Component {
                             <button
                                 type="button"
                                 id={column.dataField}
-                                key={column.dataField+this.props.name}
+                                key={column.dataField + this.props.name}
                                 className={`${!column.hidden ? ' selectColumnButton green' : 'selectColumnButton'}`}
                                 data-toggle="button"
                                 aria-pressed={column.toggle ? 'true' : 'false'}
@@ -788,7 +795,7 @@ export default class listChart extends Component {
             pageButtonRenderer
         };
         return (
-            <div key={"table"+this.props.name}>
+            <div key={"table" + this.props.name}>
 
                 {columnsList &&
                     <ToolkitProvider
