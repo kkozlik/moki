@@ -1,6 +1,5 @@
 const Controller = require('./controller.js');
 var datehistogram_agg_filter_query = require('../../js/template_queries/datehistogram_agg_filter_query.js');
-const checkSelectedTypes= require('../utils/metrics');
 
 class diagnosticsController extends Controller {
 
@@ -81,9 +80,8 @@ class diagnosticsController extends Controller {
      *             schema:
      *               $ref: '#/definitions/ChartResponseError'
      */
-    static async getTable(req, res, next) {
-        var types = await checkSelectedTypes.checkSelectedTypes([], "diagnostics");
-        super.requestTable(req, res, next, { index: "logstash*", filter: types });
+    static getTable(req, res, next) {
+        super.requestTable(req, res, next, { index: "logstash*", filter: "*" }, "diagnostics");
     }
 
 }

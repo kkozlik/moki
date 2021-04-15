@@ -25,8 +25,26 @@ export const Types = {
     "other-timeout": 'Other timeout',
     "other-ok": 'Other ok',
     "parse-error": 'Parse error',
-    "msg-probe": 'Msg probe'
-    
+    "msg-probe": 'Msg probe',
+    "low_MoS": "Low MoS",
+    "high_rx": "High RX",
+    "high_tx": "High TX",
+    "call_start": "Call start",
+    "honeynet": "Honeynet",
+    "short_calls_ip": "Short calls IP",
+    "short_calls_uri": "Short calls URI",
+    "limit_ip": "Limit",
+    "drop_ip": "Drop",
+    "authfail_ip" : "Auth-failed IP",
+    "authfail_uri": "Auth-failed URI",
+    "ip_limit_behind_uri": "IPs behind URI",
+    "uri_limit_behind_ip": "URIs behind IP",
+    "changing_location": "Diff country",
+    "too_many_minutes": "Too many minutes",
+    "poor_ratio_ca": "Poor ratio CA",
+    "CA_unreachable": "CA unreachable",
+    "poor_parallel_reg": "Poor parallel reg",
+    "security_metrics": "Security metrics"
 }
     
 export default Types;

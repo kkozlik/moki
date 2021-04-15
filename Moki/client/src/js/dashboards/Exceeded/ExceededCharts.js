@@ -54,7 +54,6 @@ class ExceededCharts extends Dashboard {
 
     //render GUI
     render() {
-        console.log(this.state.charts);
         return (<div> {
             this.state.isLoading && < LoadingScreenCharts />
         } <div className="row no-gutters" >

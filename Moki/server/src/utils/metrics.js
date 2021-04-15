@@ -31,6 +31,7 @@ async function checkSelectedTypes(types, dashboardName) {
       }
       const jsonLayout = JSON.parse(layout);
       var selectedTypes = jsonLayout.types[dashboardName];
+      var field = dashboardName == "exceeded" ? "exceeded" : "attrs.type";
       //filter out not selected types
       var filtredTypes = types.filter(item => selectedTypes.includes(item));
       //if no spec types, return selected types from file
@@ -41,10 +42,10 @@ async function checkSelectedTypes(types, dashboardName) {
         var result = "";
         for (var i = 0; i < filtredTypes.length; i++) {
           if (i == 0) {
-            result = "attrs.type:" + filtredTypes[i];
+            result = field+":" + filtredTypes[i];
           }
           else {
-            result = result + " OR attrs.type:" + filtredTypes[i]
+            result = result + " OR "+field+":" + filtredTypes[i]
           }
         }
         resolve(result)
@@ -53,16 +54,17 @@ async function checkSelectedTypes(types, dashboardName) {
   })
 }
 
-function getTypesConcat(value) {
+//concat all enable types (if exceeded use field exceeded, otherwise attrs.type)
+function getTypesConcat(value, type = "attrs.type") {
   console.info(value);
   // concat types with OR
   var types = '*';
   if (value && value.length != 0) {
     for (var i = 0; i < value.length; i++) {
       if (i == 0) {
-        types = "attrs.type:" + value[i].id;
+        types = type + ":" + value[i].id;
       } else {
-        types = types + " OR attrs.type:" + value[i].id;
+        types = types + " OR " + type + ":" + value[i].id;
       }
     }
   }

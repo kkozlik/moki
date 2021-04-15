@@ -26,7 +26,26 @@ export const colorType = {
     "other-timeout": '#e28561',
     "other-ok": '#61e285',
     "parse-error": '#c41d03',
-    "msg-probe": '#8561e2'
+    "msg-probe": '#8561e2',
+    "low_MoS": "#58a959",
+    "high_rx": "#61BEE2",
+    "high_tx": "#f58231",
+    "call_start": "#465D00",
+    "honeynet": "#c41d03",
+    "short_calls_ip": "#ebd94e",
+    "short_calls_uri": "#ebd94e",
+    "limit_ip": "#d66bad",
+    "drop_ip": "#ffe119",
+    "authfail_ip" : "#e6beff",
+    "authfail_uri": "#e6beff",
+    "ip_limit_behind_uri": "#2077e8",
+    "uri_limit_behind_ip": "#d18e1a",
+    "changing_location": "#9a6324",
+    "too_many_minutes": "#99e5af",
+    "poor_ratio_ca": "#aa59e0",
+    "CA_unreachable": "#2b2b29",
+    "poor_parallel_reg": "#7FA900",
+    "security_metrics": "#46f0f0"
 
 }
 

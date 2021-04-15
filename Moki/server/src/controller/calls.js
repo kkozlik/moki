@@ -7,8 +7,6 @@ var two_agg_no_order_query = require('../../js/template_queries/two_agg_no_order
 var date_bar = require('../../js/template_queries/date_bar_query.js');
 var datehistogram_agg_filter_query = require('../../js/template_queries/datehistogram_agg_filter_query.js');
 var datehistogram_agg_sum_bucket_query = require('../../js/template_queries/datehistogram_agg_sum_bucket_query.js');
-const checkSelectedTypes= require('../utils/metrics');
-
 
 class CallsController extends Controller {
 
@@ -125,9 +123,8 @@ class CallsController extends Controller {
      *             schema:
      *               $ref: '#/definitions/ChartResponseError'
      */
-    static async getTable(req, res, next) {
-        var types = await checkSelectedTypes.checkSelectedTypes([], "calls");
-        super.requestTable(req, res, next, { index: "logstash*", filter: types});
+    static getTable(req, res, next) {
+        super.requestTable(req, res, next, { index: "logstash*", filter: "*"}, "calls");
     }
 }
 

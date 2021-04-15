@@ -50,12 +50,12 @@ class exceededController extends Controller {
             //EXCEEDED TYPE
             { index: "exceeded*", template: agg, params: ["exceeded"], filter: "*" },
             //TOP OFFENDERS BY COUNT
-            { index: "exceeded*", template: agg, params: ["attrs.from.keyword"], filter: "*", types: "*" },
+            { index: "exceeded*", template: agg, params: ["attrs.from.keyword"], filter: "*"},
             //EVENTS BY IP ADDR EXCEEDED
             { index: "exceeded*", template: agg, params: ["attrs.source"], filter: "*" },
             //TOP SUBNETS /24 EXCEEDED
             { index: "exceeded*", template: agg, params: ["attrs.sourceSubnets"], filter: "*" }
-        ]);
+        ], "exceeded");
     }
 
     /**
@@ -94,7 +94,7 @@ class exceededController extends Controller {
      *               $ref: '#/definitions/ChartResponseError'
      */
     static getTable(req, res, next) {
-        super.requestTable(req, res, next, { index: "exceeded*", filter: "*" });
+        super.requestTable(req, res, next, { index: "exceeded*", filter: "*" }, "exceeded");
     }
 }
 

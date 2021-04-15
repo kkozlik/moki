@@ -22,6 +22,12 @@ create new filter based on html tag with field with attribute as name
 export const doFilter = (event) => {
     createFilter(event.currentTarget.getAttribute('field') + ":\"" + event.currentTarget.getAttribute('value') + "\"");
 }
+/*
+create raw new filter without changing it's value
+*/
+export const doFilterRaw = (event) => {
+    createFilter( event.currentTarget.getAttribute('value'));
+}
 
 /*
 same as above but unfilter 
@@ -45,32 +51,32 @@ export const closePopupExclude = (i) => {
 //json syntax highlight
 export const syntaxHighlight = (json) => {
     if (typeof json != 'string') {
-      json = JSON.stringify(json, undefined, 4);
+        json = JSON.stringify(json, undefined, 4);
     }
-  
+
     json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\\-]?\d+)?)/g, function (match) {
-      var cls = 'number';
-  
-      if (/^"/.test(match)) {
-        if (/:$/.test(match)) {
-          cls = 'key';
-        } else {
-          cls = 'string';
+        var cls = 'number';
+
+        if (/^"/.test(match)) {
+            if (/:$/.test(match)) {
+                cls = 'key';
+            } else {
+                cls = 'string';
+            }
+        } else if (/true|false/.test(match)) {
+            cls = 'boolean';
+        } else if (/null/.test(match)) {
+            cls = 'null';
         }
-      } else if (/true|false/.test(match)) {
-        cls = 'boolean';
-      } else if (/null/.test(match)) {
-        cls = 'null';
-      }
-      return '<span class="' + cls + '">' + match + '</span>';
+        return '<span class="' + cls + '">' + match + '</span>';
     });
-  }
+}
 
 /*
 handle user input on exclude
 */
-export const onEnterKeyExclude = (event, ob)  =>{
+export const onEnterKeyExclude = (event, ob) => {
     if (event.keyCode === 13) {
         exclude(ob);
     }
@@ -95,7 +101,7 @@ export function tableColumns(dashboard, tags) {
     }
 
     //disable tags for end user
-    if(storePersistent.getState().user.jwt === "2"){tag = ""};
+    if (storePersistent.getState().user.jwt === "2") { tag = "" };
 
     switch (dashboard) {
         case 'calls': return [
@@ -796,8 +802,21 @@ export function tableColumns(dashboard, tags) {
                 editable: false,
                 formatter: (cell, obj) => {
                     var ob = obj._source;
+                    var value = "";
+                    var notvalue = "";
+                    for (var i = 0; i < ob.exceeded.length; i++) {
+                        if(i === 0 ){
+                            value = "exceeded: "+ob.exceeded[i];
+                            notvalue  = "NOT (exceeded: "+ob.exceeded[i];
+                        }
+                        else {
+                            value = value + " AND exceeded:"+ob.exceeded[i];
+                            notvalue = notvalue + " AND exceeded:"+ob.exceeded[i];
+                        }
+                    }
+                    notvalue = notvalue + ")";
                     return <span className="filterToggleActive"><span className="filterToggle">
-                        <img onClick={doFilter} field="exceeded" value={ob.exceeded} className="icon" alt="filterIcon" src={filterIcon} /><img field="exceeded" value={ob.exceeded} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span >   {ob.exceeded ? ob.exceeded.toString() : ""}
+                        <img onClick={doFilterRaw} field="exceeded" value={value} className="icon" alt="filterIcon" src={filterIcon} /><img field="exceeded" value={notvalue} onClick={doFilterRaw} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span >   {ob.exceeded ? ob.exceeded.toString() : ""}
                     </span>
                 }
             }, {
@@ -837,11 +856,24 @@ export function tableColumns(dashboard, tags) {
                 editable: false,
                 formatter: (cell, obj) => {
                     var ob = obj._source;
+                    var value = "";
+                    var notvalue = "";
+                    for (var i = 0; i < ob["exceeded-by"].length; i++) {
+                        if(i === 0 ){
+                            value = "exceeded-by: "+ob["exceeded-by"][i];
+                            notvalue  = "NOT (exceeded-by: "+ob["exceeded-by"][i];
+                        }
+                        else {
+                            value = value + " AND exceeded-by:"+ob["exceeded-by"][i];
+                            notvalue = notvalue + " AND exceeded-by:"+ob["exceeded-by"][i];
+                        }
+                    }
+                    notvalue = notvalue + ")";
                     return <span className="filterToggleActive"><span className="filterToggle">
-                        <img onClick={doFilter} field="exceeded-by" value={ob['exceeded-by']} className="icon" alt="filterIcon" src={filterIcon} /><img field="exceeded-by" value={ob['exceeded-by']} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span > {ob['exceeded-by'] ? ob['exceeded-by'].toString() : ""}
+                        <img onClick={doFilterRaw} field="exceeded-by" value={value} className="icon" alt="filterIcon" src={filterIcon} /><img field="exceeded-by" value={notvalue} onClick={doFilterRaw} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span > {ob['exceeded-by'] ? ob['exceeded-by'].toString() : ""}
                     </span>
                 }
-            }, 
+            },
             tag,
             {
                 dataField: '_source.filenameDownload',
@@ -1177,7 +1209,7 @@ export function tableColumns(dashboard, tags) {
                         <button className="noFormatButton" onClick={getPcap} file={ob.attrs.filenameDownload}>  <img className="icon" alt="downloadIcon" src={downloadPcapIcon} title="download PCAP" /></button>
                     }
 
-                <button className="noFormatButton" onClick={() => downloadAll(ob)} file={ob.attrs.filenameDownload} data={obj}>  <img className="icon" alt="downloadIcon" src={downloadIcon} title="download all" /></button>
+                    <button className="noFormatButton" onClick={() => downloadAll(ob)} file={ob.attrs.filenameDownload} data={obj}>  <img className="icon" alt="downloadIcon" src={downloadIcon} title="download all" /></button>
 
                     {ob.attrs.filenameDownload && <a href={"/sequenceDiagram/" + ob.attrs.filenameDownload} target="_blank" rel="noopener noreferrer"><img className="icon" alt="viewIcon" src={viewIcon} title="view PCAP" /></a>
                     }
@@ -1619,7 +1651,7 @@ export function tableColumns(dashboard, tags) {
                 var ob = obj._source;
                 return new Date(parseInt(ob['ts-start'])).toLocaleString();
             }
-        },{
+        }, {
             dataField: '_source.tls-cn',
             text: 'TLS-CN',
             sort: true,
@@ -1632,7 +1664,7 @@ export function tableColumns(dashboard, tags) {
                     </span>
                 }
             }
-        },  {
+        }, {
             dataField: '_source.count',
             text: 'COUNT',
             sort: true,
@@ -1642,7 +1674,7 @@ export function tableColumns(dashboard, tags) {
             text: 'PERIOD',
             sort: true,
             editable: false
-        },  {
+        }, {
             dataField: '_source',
             text: 'ADVANCED',
             editable: false,
