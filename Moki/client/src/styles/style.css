@@ -1252,7 +1252,8 @@ input {
 
 #pageDropDown {
     padding: 3px;
-    margin-left: 15px;
+    min-height: unset !important;
+    line-height: 1;
 }
 
 #toggleDropdown {
@@ -1276,6 +1277,7 @@ input {
 .page-link {
     padding: 5px !important;
     color: var(--main);
+    line-height: 1;
 }
 
 .page-link-myPadding {
