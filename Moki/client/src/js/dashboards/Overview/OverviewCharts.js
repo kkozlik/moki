@@ -111,7 +111,7 @@ class OverviewCharts extends Dashboard {
                 {this.state.charts["NODES - ACTIVITY"] && <div className="row no-gutters">
                     <TimedateHeatmap data={
                         this.state.activitySBC
-                    } marginLeft={"250"} name={"NODES - ACTIVITY"} units={"any event count"} id="activitySBC" field={"attrs.sbc"} width={store.getState().width - 300} />
+                    } marginLeft={"250"} name={"NODES - ACTIVITY"} units={"any event count"} id="activitySBC" field={"attrs.hostname"} width={store.getState().width - 300} />
                 </div>
                 }
                 {this.state.charts["NODES - KEEP ALIVE"] && <div className="row no-gutters">
