@@ -6,7 +6,6 @@ var agg_filter_animation = require('../../js/template_queries/agg_filter_animati
 var geoipAnimation = require('../../js/template_queries/geoip_agg_filter_animation.js');
 const agg_query = require('../../js/template_queries/agg_query.js');
 const geoip_hash_query = require('../../js/template_queries/geoip_agg_hash_filter.js');
-const checkSelectedTypes= require('../utils/metrics');
 
 class securityController extends Controller {
 
@@ -321,9 +320,8 @@ class securityController extends Controller {
  *             schema:
  *               $ref: '#/definitions/ChartResponseError'
  */
-    static async getTable(req, res, next) {
-        var types = await checkSelectedTypes.checkSelectedTypes([], "security");
-        super.requestTable(req, res, next, { index: "logstash*", filter: types});
+    static getTable(req, res, next) {
+        super.requestTable(req, res, next, { index: "logstash*", filter: "*"}, "security");
     }
 
 }

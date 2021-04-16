@@ -5,7 +5,6 @@ const agg_query = require('../../js/template_queries/agg_query.js');
 var datehistogram_agg_filter_query = require('../../js/template_queries/datehistogram_agg_filter_query.js');
 var agg_sum_bucket_query_term = require('../../js/template_queries/agg_sum_bucket_term_query.js');
 var sort_query = require('../../js/template_queries/sort_query.js');
-const checkSelectedTypes = require('../utils/metrics');
 
 class ConferenceController extends Controller {
 
@@ -105,8 +104,7 @@ class ConferenceController extends Controller {
      *               $ref: '#/definitions/ChartResponseError'
      */
     static async getTable(req, res, next) {
-        var types = await checkSelectedTypes.checkSelectedTypes([], "calls");
-        super.requestTable(req, res, next, { index: "logstash*", filter: types });
+        super.requestTable(req, res, next, { index: "logstash*", filter: "*" }, "conference");
     }
 }
 

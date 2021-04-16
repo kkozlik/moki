@@ -67,7 +67,7 @@ export default class heatmap extends Component {
             var maxTextWidth = d3.max(data.map(n => n.attr1.length));
             marginBottom = maxTextWidth > 50 ? 150 : (maxTextWidth * 7) + 10;
             maxTextWidth = d3.max(data.map(n => n.attr2.length));
-            marginLeft = maxTextWidth > 50 ? 150 : maxTextWidth > 15 ? maxTextWidth * 8 : maxTextWidth * 13;
+            marginLeft = maxTextWidth > 40 ? 170: maxTextWidth > 15 ? maxTextWidth * 8 : maxTextWidth * 13;
         }
 
         var margin = {

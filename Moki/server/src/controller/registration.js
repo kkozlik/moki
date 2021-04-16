@@ -5,7 +5,6 @@ const agg_filter = require('../../js/template_queries/agg_filter.js');
 const datehistogram_agg_query = require('../../js/template_queries/datehistogram_agg_query.js');
 const agg_query = require('../../js/template_queries/agg_query.js');
 var geoipAnimation = require('../../js/template_queries/geoip_agg_filter_animation.js');
-const checkSelectedTypes = require('../utils/metrics');
 const geoip_hash_query = require('../../js/template_queries/geoip_agg_hash_filter.js');
 
 class registrationController extends Controller {
@@ -65,7 +64,6 @@ class registrationController extends Controller {
             { index: "collectd*", template: agg_query, params: ["max", "countReg"], filter: "*", timestamp_gte: "lastTimebucket" },
             //MAP FOR GEOHASH
             { index: "logstash*", template: geoip_hash_query, params: [3], filter: "*" }
-
         ], "registration");
     }
 
@@ -147,9 +145,8 @@ class registrationController extends Controller {
      *             schema:
      *               $ref: '#/definitions/ChartResponseError'
      */
-    static async getTable(req, res, next) {
-        var types = await checkSelectedTypes.checkSelectedTypes([], "registration");
-        super.requestTable(req, res, next, { index: "logstash*", filter: types });
+    static getTable(req, res, next) {
+        super.requestTable(req, res, next, { index: "logstash*", filter: "*" }, "registration");
     }
 }
 

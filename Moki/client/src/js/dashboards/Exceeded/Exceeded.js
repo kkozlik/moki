@@ -6,7 +6,7 @@ import React, {
 import ExceededTable from './ExceededTable';
 import ExceededCharts from './ExceededCharts';
 import FilterBar from '../../bars/FilterBar';
-
+import TypeBar from '../../bars/Typebar';
 
 class Exceeded extends Component {
     constructor(props) {
@@ -22,6 +22,7 @@ class Exceeded extends Component {
         return (
            <div className="container-fluid">
                 <FilterBar tags={this.props.tags} />
+                <TypeBar/>
                 <ExceededCharts  showError={this.showError} />
                 <ExceededTable tags={this.props.tags}   />
             </div>

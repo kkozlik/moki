@@ -78,7 +78,7 @@ export default class StackedChart extends Component {
                     return "#F6412D";
                 }
 
-            } else if (field === "attrs.type" && id !== "exceededType") {
+            } else if (field === "attrs.type" || field === "exceeded") {
                 return ColorType[nmb];
             } else if (field === "encrypt") {
                 

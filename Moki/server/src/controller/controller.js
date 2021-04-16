@@ -59,7 +59,12 @@ class Controller {
             }
             //or if client request types, use this instead 
             else {
-                types = getTypesConcat(types);
+                if (req.url.includes("exceeded")) {
+                    types = getTypesConcat(types, "exceeded");
+                }
+                else {
+                    types = getTypesConcat(types);
+                }
             }
             var oldtypes = types;
 
@@ -162,7 +167,6 @@ class Controller {
 
             var requestList = [];
             for (var j = 0; j < requests.length; j++) {
-                  console.log(JSON.stringify(requests[j].query));
                 requestList.push(
                     {
                         index: requests[j].index,
@@ -197,12 +201,26 @@ class Controller {
     }
 
     //special case, not msearch and with scroll parameter
-    static requestTable(req, res, next, requests) {
+    static requestTable(req, res, next, requests, dashboard = "overview") {
         async function search() {
             const client = connectToES();
             const filters = getFiltersConcat(req.body.filters);
-            const types = getTypesConcat(req.body.types);
+            var types = req.body.types;
             const querySize = req.body.size ? req.body.size : 500;
+
+            //if no types from client, get types from monitor_layout
+            if (types.length == 0) {
+                types = await checkSelectedTypes([], dashboard);
+            }
+            //or if client request types, use this instead 
+            else {
+                if (req.url.includes("exceeded")) {
+                    types = getTypesConcat(types, "exceeded");
+                }
+                else {
+                    types = getTypesConcat(types);
+                }
+            }
 
             if (req.body.timerange_lte) {
                 timestamp_lte = Math.round(req.body.timerange_lte);
@@ -260,7 +278,7 @@ class Controller {
             }
 
             userFilter = "*";
-            console.log(new Date + " got elastic data");
+            console.info(new Date + " got elastic data");
             client.close();
             return res.json(response);
         }
