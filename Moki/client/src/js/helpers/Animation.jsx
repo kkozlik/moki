@@ -14,7 +14,7 @@ import {
     elasticsearchConnection
 } from '@moki-client/gui';
 import { setTimerange } from "../actions/index";
-import {parseDateHeatmapAnimation, parseDateHeatmapDocCountAnimation, parseTwoAggAnimation, parseGeoipAnimation, parseTopologyDataAnimation, parseHistogramDataAnimation, parseListDataAnimation, parseQueryStringDataAnimation, parseDistinctDataAnimation} from '@moki-client/es-response-parser';
+import { parseDateHeatmapAnimation, parseDateHeatmapDocCountAnimation, parseTwoAggAnimation, parseGeoipAnimation, parseTopologyDataAnimation, parseHistogramDataAnimation, parseListDataAnimation, parseQueryStringDataAnimation, parseDistinctDataAnimation } from '@moki-client/es-response-parser';
 
 class Animation extends Component {
     // Initialize the state
@@ -38,8 +38,15 @@ class Animation extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (nextProps.dataAll !== this.state.dataAll && (this.state.dataAll === "" || this.state.dataAll === undefined)) {
-            this.setState({ dataAll: nextProps.dataAll });
+        if (window.location.pathname === "/web") {
+            if (nextProps.dataAll !== this.state.dataAll) {
+                this.setState({ dataAll: nextProps.dataAll });
+            }
+        }
+        else {
+            if (nextProps.dataAll !== this.state.dataAll && (this.state.dataAll === "" || this.state.dataAll === undefined)) {
+                this.setState({ dataAll: nextProps.dataAll });
+            }
         }
     }
 
@@ -203,7 +210,7 @@ class Animation extends Component {
                 animationTime: this.state.data[event.target.value].time,
                 count: event.target.value
             });
-            if(event.target.value >= this.state.data.length-1){
+            if (event.target.value >= this.state.data.length - 1) {
                 this.props.setData(this.state.dataAll);
             }
             else {
