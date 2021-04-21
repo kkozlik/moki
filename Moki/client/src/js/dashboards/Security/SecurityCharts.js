@@ -125,7 +125,7 @@ class SecurityCharts extends Dashboard {
                         }
                         type="list"
                         field={
-                            "geoip.country_name"
+                            "geoip.country_code2"
                         }
                     />  </div>}
             </div>
