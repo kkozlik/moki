@@ -83,7 +83,7 @@ class App extends Component {
         //store layout
         var jsonData = await getLayoutSettings();
         storePersistent.dispatch(setLayout(jsonData));
-        console.log(jsonData);
+        console.info(jsonData);
         console.info("Storing layout");
         //get dashboard list
         var dashboards = Object.keys(jsonData.dashboards);
@@ -138,7 +138,7 @@ class App extends Component {
 
         var res = await getProfile(this.state.user);
         if (res !== "ok") {
-            this.showError(res);
+            this.showError(JSON.stringify(res));
         }
     }
 
@@ -242,7 +242,7 @@ class App extends Component {
 
                 const json = await response.json();
                 if (!response.ok) {
-                    this.showError(json.error);
+                    this.showError(JSON.stringify(json.error));
                     return;
                 }
                 var hostnames = [];
@@ -377,8 +377,12 @@ class App extends Component {
                         this.getHostnames();
                     }
                     else {
+                        //store layout
+                        var jsonData = await getLayoutSettings();
+                        storePersistent.dispatch(setLayout(jsonData));
                         this.setState({
-                            dashboards: ["web"]
+                            dashboards: ["web"],
+                            isLoading: false
                         });
                     }
                 }
@@ -427,7 +431,7 @@ class App extends Component {
         var dashboards = this.state.dashboards;
         //loading screen span
         var loadingScreen = <span>
-            <div className="errorBar" > {this.state.error} </div>
+            <div className="errorBar" > {JSON.stringify(this.state.error)} </div>
             <div style={{ "marginTop": (window.innerHeight / 2) - 50 }} className="row align-items-center justify-content-center">
                 <div className="loader" />
                 {this.state.logo && <img src={this.state.logo} alt="logo" style={{ "marginLeft": 10 }} />}
@@ -455,6 +459,7 @@ class App extends Component {
                 </div>
 
             } else if (aws === false || this.state.admin || this.state.siteAdmin) {
+                console.info("Router: admin mode");
                 //admin context
                 sipUserSwitch = <div className="row" id="body-row" >
                     <NavBar redirect={this.redirect} toggle={this.toggle} aws={this.state.aws} dashboardsUser={this.state.dashboardsUser} dashboards={this.state.dashboards} dashboardsSettings={this.state.dashboardsSettings} />
@@ -489,6 +494,7 @@ class App extends Component {
                 </div>;
             }
             else {
+                console.info("Router: end user mode");
                 //end user context
                 sipUserSwitch = <div className="row"
                     id="body-row">

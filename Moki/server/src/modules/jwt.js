@@ -38,6 +38,11 @@ async function getJWTsipUserFilter(req) {
        return  "*";
    }
 */
+
+  //check if web access - allow it without user logins
+  if (req.originalUrl.startsWith("/api/web")) {
+    return "*";
+  }
   // check config if JWT required
   var isAccept;
   try {
@@ -55,7 +60,8 @@ async function getJWTsipUserFilter(req) {
     console.log(`ACCESS getJWTsipUserFilter: * permitted because no JWT required`);
     return "*";
   }
-  // token required but not present -- decline
+
+  // token required but not present -- decline, if not web dashboard access
   if (req.headers[hfName] === undefined) {
     console.log("ACCESS getJWTsipUserFilter: token required but not present");
     throw new Error("ACCESS: token missing");
@@ -147,11 +153,11 @@ function getEncryptChecksumFilter(req) {
   if (jwtbit == 0) { return { encryptChecksum: "*" } }
 
   //no encrypt checksum passed from client
-  if(!req.body.encryptChecksum) {return  {encryptChecksum: "*"}}
+  if (!req.body.encryptChecksum) { return { encryptChecksum: "*" } }
 
   //no password was used for decryption, show only unecrypted events -> plain state
   //user or site admin, use filter
-    return { encryptChecksum: req.body.encryptChecksum }
+  return { encryptChecksum: req.body.encryptChecksum }
 }
 
 module.exports = {
