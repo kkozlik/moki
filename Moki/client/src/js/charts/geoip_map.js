@@ -145,7 +145,7 @@ export default class geoIpMap extends Component {
                     }
                 }
 
-                rScale.domain([minValue - 1, maxValue + 1]).range([5, 25]);
+                rScale.domain([minValue - 1, maxValue + 1]).range([3, 12]);
                 var thiss = this;
                 // zoom and pan
                 const zoom = d3.zoom()
@@ -325,7 +325,7 @@ export default class geoIpMap extends Component {
            }
        }
 
-       rScale.domain([minValue - 1, maxValue + 1]).range([5, 25]);
+       rScale.domain([minValue - 1, maxValue + 1]).range([3, 12]);
         //remove old pins if exists
         var pins = document.getElementsByClassName("pins");
         if (pins.length > 0) {
