@@ -42,10 +42,10 @@ async function checkSelectedTypes(types, dashboardName) {
         var result = "";
         for (var i = 0; i < filtredTypes.length; i++) {
           if (i == 0) {
-            result = field+":" + filtredTypes[i];
+            result = field + ":" + filtredTypes[i];
           }
           else {
-            result = result + " OR "+field+":" + filtredTypes[i]
+            result = result + " OR " + field + ":" + filtredTypes[i]
           }
         }
         resolve(result)
@@ -71,7 +71,7 @@ function getTypesConcat(value, type = "attrs.type") {
   return types;
 }
 
-function getQueries(filter, types, timestamp_gte, timestamp_lte, userFilter, chartFilter, domain, isEncryptChecksumFilter) {
+function getQueries(filter, types, timestamp_gte, timestamp_lte, userFilter, chartFilter, domain, isEncryptChecksumFilter, exists) {
 
   var queries = [];
   if (isEncryptChecksumFilter !== "*") {
@@ -109,6 +109,16 @@ function getQueries(filter, types, timestamp_gte, timestamp_lte, userFilter, cha
       }
     });
   }
+
+  //exists attribute condition
+  if (exists) {
+    queries.push({
+      "exists": {
+        "field": exists
+      }
+    });
+  }
+
 
   queries.push({
     "range": {
