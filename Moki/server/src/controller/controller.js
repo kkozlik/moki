@@ -111,6 +111,9 @@ class Controller {
                         timestamp_gte = eval(timestamp_gte + requests[i].timestamp_gte);
                     }
                 }
+
+                timebucket = getTimestampBucket(timestamp_gte, timestamp_lte);
+
                 if (requests[i].params) {
                     //check if params contains "timebucket", insert it
                     var params = requests[i].params;
@@ -139,7 +142,7 @@ class Controller {
                         types = "*";
                     }
 
-                    requests[i].query = requests[i].template.getTemplate(...params, getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, requests[i].filter, domainFilter, isEncryptChecksumFilter), supress);
+                    requests[i].query = requests[i].template.getTemplate(...params, getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, requests[i].filter, domainFilter, isEncryptChecksumFilter, requests[i].exists), supress);
 
                 }
                 else {
@@ -149,7 +152,7 @@ class Controller {
                         types = "*";
                     }
 
-                    requests[i].query = requests[i].template.getTemplate(getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, requests[i].filter, domainFilter, isEncryptChecksumFilter), supress);
+                    requests[i].query = requests[i].template.getTemplate(getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, requests[i].filter, domainFilter, isEncryptChecksumFilter, requests[i].exists), supress);
                 }
 
                 //ged old timestamp if has changed

@@ -15,7 +15,7 @@ import store from "../../store/index";
 import {
     elasticsearchConnection
 } from '@moki-client/gui';
-import { parseListData, parseBucketData, parseAggCities, parseMultipleLineDataShareAxis, parseAggQueryWithoutScriptValue, parseStackedbarTimeData } from '@moki-client/es-response-parser';
+import { parseListData, parseBucketData, parseAggCities, parseAggQuerySumValue, parseMultipleLineDataShareAxis, parseAggQueryWithoutScriptValue, parseStackedbarTimeData } from '@moki-client/es-response-parser';
 
 
 class RegistrationCharts extends Component {
@@ -91,7 +91,7 @@ class RegistrationCharts extends Component {
             var parallelRegs = parseMultipleLineDataShareAxis("Regs", data.responses[5], "Regs-1d", data.responses[6]);
 
             //ACTUALL REGS
-            var regsActual = parseAggQueryWithoutScriptValue(data.responses[7]);
+            var regsActual = parseAggQuerySumValue(data.responses[7]);
 
             //DISTRIBUTION HASH GEOIP MAP
             var geoipHashMap = parseAggCities(data.responses[8]);

@@ -6,6 +6,9 @@ const datehistogram_agg_query = require('../../js/template_queries/datehistogram
 const agg_query = require('../../js/template_queries/agg_query.js');
 var geoipAnimation = require('../../js/template_queries/geoip_agg_filter_animation.js');
 const geoip_hash_query = require('../../js/template_queries/geoip_agg_hash_filter.js');
+const distinct_timerange_query_string = require('../../js/template_queries/distinct_timerange_query_string.js');
+const two_agg_query = require('../../js/template_queries/two_agg_query.js');
+
 
 class registrationController extends Controller {
 
@@ -57,11 +60,11 @@ class registrationController extends Controller {
             //TRANSPORT PROTOCOL
             { index: "logstash*", template: agg_filter, params: ['attrs.transport', 10], filter: "*" },
             //PARALLEL REGS
-            { index: "collectd*", template: datehistogram_agg_query, params: ["countReg", "max", "timebucket"], filter: "*" },
+            { index: "collectd*", template: distinct_timerange_query_string, params: ["attrs.hostname", "max", "attrs.regs", "timebucket"], filter: "*", exists: "attrs.regs", types:"*"},
             //PARALLEL REGS 1 DAY AGO   
-            { index: "collectd*", template: datehistogram_agg_query, params: ["countReg", "max", "timebucket"], filter: "*", timestamp_gte: "- 60 * 60 * 24 * 1000", timestamp_lte: "- 60 * 60 * 24 * 1000" },
+            { index: "collectd*", template: distinct_timerange_query_string, params: ["attrs.hostname", "max", "attrs.regs", "timebucket"], filter: "*", timestamp_gte: "- 60 * 60 * 24 * 1000", timestamp_lte: "- 60 * 60 * 24 * 1000", exists: "attrs.regs",  types:"*"  },
             //ACTUAL REGS  
-            { index: "collectd*", template: agg_query, params: ["max", "countReg"], filter: "*", timestamp_gte: "lastTimebucket" },
+            { index: "collectd*", template:  two_agg_query, params: ["attrs.hostname", "max", "attrs.regs"], filter: "*", timestamp_gte: "lastTimebucket", exists: "attrs.regs",  types:"*"},
             //MAP FOR GEOHASH
             { index: "logstash*", template: geoip_hash_query, params: [3], filter: "*" }
         ], "registration");

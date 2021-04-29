@@ -18,22 +18,13 @@ export default class CountUpChart extends Component {
         this.setData = this.setData.bind(this);
     }
 
-
-    static getDerivedStateFromProps(nextProps, prevState) {
-        if (nextProps.data !== prevState.data) {
-            return { data: nextProps.data };
-        }
-        if (nextProps.dataAgo !== prevState.dataAgo) {
-            return { dataAgo: nextProps.dataAgo };
-        }
-        else return null;
-    }
-
-    componentDidUpdate(prevProps, prevState) {
-        if (prevProps.data !== this.props.data) {
-            this.setState({ data: this.props.data });
+    componentWillReceiveProps(nextProps) {
+        if (this.props !== nextProps) {
+            this.setState(nextProps);
+            this.countUp(nextProps.data);
         }
     }
+
 
     setData(data) {
         this.setState({

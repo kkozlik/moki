@@ -12,7 +12,7 @@ import MultipleAreaChart from '../../charts/multipleArea_chart';
 import store from "../../store/index";
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import { elasticsearchConnection } from '@moki-client/gui';
-import {parseQueryStringData, parseDateHeatmap, parseAggData, parseAggSumBucketData, parseMultipleLineDataShareAxis, parseMultipleLineDataShareAxisWithoutAgg, parseAggQueryWithoutScriptValue} from '@moki-client/es-response-parser';
+import {parseQueryStringData, parseDateHeatmap, parseAggData, parseAggSumBucketData, parseMultipleLineDataShareAxis, parseMultipleLineDataShareAxisWithoutAgg, parseAggQueryWithoutScriptValue, parseAggQuerySumValue } from '@moki-client/es-response-parser';
 
 class HomeCharts extends Component {
 
@@ -96,10 +96,10 @@ class HomeCharts extends Component {
             var parallelRegs = parseMultipleLineDataShareAxis("Regs", data.responses[9], "Regs-1d", data.responses[10]);
 
             //ACTUALL REGS
-            var regsActual = parseAggQueryWithoutScriptValue(data.responses[11]);
+            var regsActual = parseAggQuerySumValue(data.responses[11]);
 
             //ACTUALL CALLS
-            var callsActual = parseAggQueryWithoutScriptValue(data.responses[12]);
+            var callsActual = parseAggQuerySumValue(data.responses[12]);
 
             //INCIDENT COUNT
             var incidentCount = parseMultipleLineDataShareAxisWithoutAgg("Incident", data.responses[13], "Incident-1d", data.responses[14]);
@@ -108,10 +108,10 @@ class HomeCharts extends Component {
             var incidentActual = parseQueryStringData(data.responses[15]);
 
             //ACTUALL REGS MINUTE AGO
-            var callsActualMinuteAgo = parseAggQueryWithoutScriptValue(data.responses[16]);
+            var callsActualMinuteAgo = parseAggQuerySumValue(data.responses[16]);
 
             //ACTUALL CALLS MINUTE AGO
-            var regsActualMinuteAgo = parseAggQueryWithoutScriptValue(data.responses[17]);
+            var regsActualMinuteAgo = parseAggQuerySumValue(data.responses[17]);
 
             //ACTUALL INCIDENT MINUTE AGO
             var incidentActualMinuteAgo = parseQueryStringData(data.responses[18]);
