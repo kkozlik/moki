@@ -55,7 +55,7 @@ class OverviewCharts extends Dashboard {
                 [{ result: 'distinctIP', func: parseAggDistinct }],
 
                 //TOTAL EVENTS IN INTERVAL
-                [{ result: 'totalEvents', func: parseQueryStringData}],
+                [{ result: 'totalEvents', func: parseQueryStringData }],
             ]
         };
     }
