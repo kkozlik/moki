@@ -690,7 +690,7 @@ export default class listChart extends Component {
                     );
                 }
                 return (
-                    <span>-</span>
+                    <span>+</span>
                 );
             }
         };

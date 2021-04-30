@@ -527,7 +527,7 @@ class timerangeBar extends Component {
             <div id="popup">
                 <div className="d-flex justify-content-between">
                     {sipUserSwitch}
-                    <div className="dropdown float-right text-right">
+                    {name !== "wblist" && <div className="dropdown float-right text-right">
                         <button className="btn dropdown-toggle" type="button" id="dropdownMenuExportButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             Export
                         </button>
@@ -539,8 +539,9 @@ class timerangeBar extends Component {
                             </div>
                         </div>
                     </div>
+                    }
 
-                    <div className="dropdown float-right text-right">
+                    {name !== "wblist" && <div className="dropdown float-right text-right">
                         <span onClick={this.share} className="tabletd marginRight" ><img className="iconShare" alt="shareIcon" src={shareIcon} title="share" /><span id="tooltipshare" style={{ "display": "none" }}>copied to clipboard</span></span>
                         <span className="tabletd marginRight" onClick={this.moveTimerangeForward}><img alt="timeBackIcon" src={timeBack} title="move back" /></span><span className="tabletd marginRight" onClick={this.moveTimerangeBack}> <img alt="timeForwardIcon" src={timeForward} title="move forward" /></span>
                         <span id="reload" onClick={this.reload} className="tabletd marginRight" ><img className="iconReload" alt="reloadIcon" src={reloadIcon} title="reload" /></span>
@@ -608,7 +609,7 @@ class timerangeBar extends Component {
                         </div>
                         }
                     </div>
-
+                    }
 
 
                 </div>

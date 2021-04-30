@@ -27,14 +27,14 @@ export default class StackedChart extends Component {
     }
 
     static getDerivedStateFromProps(nextProps, prevState) {
-        if (nextProps.data !== prevState.data) {
+        if (nextProps !== prevState) {
             return { data: nextProps.data };
         }
         else return null;
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if (prevProps.data !== this.props.data) {
+        if (prevProps !== this.props) {
             this.setState({ data: this.props.data });
             var isFirst = this.state.data && this.state.data.length === 0 ? true : false;
             this.draw(this.props.data, this.props.id, this.props.width, this.props.name, this.props.units, isFirst);
