@@ -6,17 +6,42 @@ function getFiltersConcat(filters) {
   // get filters, if no place "*", if more than 1, concat with AND
   let filter = '*';
   if (filters && filters.length != 0) {
+    var filtersList = [];
     for (var i = 0; i < filters.length; i++) {
-      if (i == 0) {
-        if (filters[i].title.includes("\\")) {
-          filter = filters[i].title.replace("\\", String.fromCharCode(92));
-        } else {
-          filter = filters[i].title;
+      var tit = filters[i].title;
+      //replace double shash with ASCII - ES had a problem to parse it
+      if (tit.includes("\\")) {
+        tit = tit.replace("\\", String.fromCharCode(92))
+      }
+      else {
+        //wildcard search - special ES query
+        if (tit.includes("*") || tit.includes("?")) {
+          //is field name?
+          if (tit.includes(":")) {
+            filtersList.push({
+              "wildcard": {
+                [tit.substring(0, tit.indexOf(":"))]: tit.substring(tit.indexOf(":") + 1)
+              }
+            })
+          }
+          else {
+            filtersList.push({
+              "wildcard": {
+                "attrs.all_copy": tit
+              }
+            })
+          }
         }
-      } else {
-        filter = `${filter}  AND ${filters[i].title}`;
+        else {
+          filtersList.push({
+            "query_string": {
+              "query": tit
+            }
+          })
+        }
       }
     }
+    return filtersList;
   }
   return filter;
 }
@@ -90,16 +115,11 @@ function getQueries(filter, types, timestamp_gte, timestamp_lte, userFilter, cha
     });
   }
 
+  //add user filters 
   if (filter !== '*') {
-
-    queries.push({
-      "query_string": {
-        "query": filter,
-        "analyze_wildcard": true,
-        "fuzzy_max_expansions": 0,
-        "fuzziness": 0
-      }
-    });
+    for (var i = 0; i < filter.length; i++) {
+      queries.push(filter[i]);
+    }
   }
 
   if (types !== "*") {

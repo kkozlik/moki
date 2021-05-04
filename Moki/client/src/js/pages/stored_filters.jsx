@@ -87,8 +87,8 @@ class StoredFilters extends Component {
 
         //filters
         if (filters.attribute[0].filters) {
-            for (i = 0; i < filters.attribute[0].filters.length; i++) {
-                newFilters.push(createFilterNoDispatch(filters.attribute[0].filters[i][0].title, i));
+            for (i = 0; i < filters.attribute[0].filters[0].length; i++) {
+                newFilters.push(createFilterNoDispatch(filters.attribute[0].filters[0][i].title, i));
             }
             store.dispatch(setFilters(newFilters));
         }
