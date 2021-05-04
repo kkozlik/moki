@@ -181,7 +181,7 @@ class Controller {
                 )
             }
             userFilter = "*";
-
+            
             const response = await client.msearch({
                 body: requestList
             }).catch((err) => {
