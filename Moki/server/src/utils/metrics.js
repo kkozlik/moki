@@ -13,32 +13,31 @@ function getFiltersConcat(filters) {
       if (tit.includes("\\")) {
         tit = tit.replace("\\", String.fromCharCode(92))
       }
-      else {
-        //wildcard search - special ES query
-        if (tit.includes("*") || tit.includes("?")) {
-          //is field name?
-          if (tit.includes(":")) {
-            filtersList.push({
-              "wildcard": {
-                [tit.substring(0, tit.indexOf(":"))]: tit.substring(tit.indexOf(":") + 1)
-              }
-            })
-          }
-          else {
-            filtersList.push({
-              "wildcard": {
-                "attrs.all_copy": tit
-              }
-            })
-          }
-        }
-        else {
+
+      //wildcard search - special ES query
+      if (tit.includes("*") || tit.includes("?")) {
+        //is field name?
+        if (tit.includes(":")) {
           filtersList.push({
-            "query_string": {
-              "query": tit
+            "wildcard": {
+              [tit.substring(0, tit.indexOf(":"))]: tit.substring(tit.indexOf(":") + 1)
             }
           })
         }
+        else {
+          filtersList.push({
+            "wildcard": {
+              "attrs.all_copy": tit
+            }
+          })
+        }
+      }
+      else {
+        filtersList.push({
+          "query_string": {
+            "query": tit
+          }
+        })
       }
     }
     return filtersList;
