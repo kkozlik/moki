@@ -4,6 +4,7 @@ import { elasticsearchConnection } from '@moki-client/gui';
 import { parseTableHits } from '@moki-client/es-response-parser';
 import storePersistent from "../store/indexPersistent";
 
+//Export to csv, json... all or just selected attributes
 class Export extends Component {
     constructor(props) {
         super(props);
@@ -33,24 +34,26 @@ class Export extends Component {
         }
     }
 
+    /**
+* Get data to export. If dashboard has table, use this query if doesn't user general overview query
+* @return {} set data to state
+* */
     async loadData() {
         try {
-
+            //get data based on dashboard types. If there is no table, use overview call table
             var name = window.location.pathname.substr(1);
             if (name === "connectivityCA" || name === "connectivity" || name === "home" || name === "microanalysis") {
                 name = "overview";
             }
-            // Retrieves the list of calls
 
             var calls = await elasticsearchConnection(name + "/table");
-            //parse data
             var data = parseTableHits(calls.hits.hits);
 
             this.setState({
                 data: data
             });
 
-            //attributes attrs+, @timestamp   
+            //get list of all attributes attrs+, @timestamp   
             if (data[0]) {
                 var attributes = Object.keys(data[0]._source.attrs);
                 attributes.push("@timestamp");
@@ -61,22 +64,23 @@ class Export extends Component {
                         if (!attributes.includes(keys[j])) {
                             attributes.push(keys[j]);
                         }
-
                     }
                 }
                 this.setState({ attributes: attributes });
             }
-
         } catch (error) {
             console.error(error);
         }
-
     }
 
+    /**
+* convert array to CSV format
+* @param {array}  objArray array of object to export
+* @return {string} string in CSV format
+* */
     convertToCSV(objArray) {
         var array = typeof objArray !== 'object' ? JSON.parse(objArray) : objArray;
         var str = '';
-
         for (var i = 0; i < array.length; i++) {
             var line = '';
             for (var index in array[i]) {
@@ -84,16 +88,19 @@ class Export extends Component {
 
                 line += array[i][index];
             }
-
             str += line + '\r\n';
         }
-
         return str;
     }
 
+    /**
+* Export selected attributes by user, create fake element and insert there file to download
+* @return {file} export file in browser
+* */
     export() {
         const attributesState = this.state.attributes;
         var attributes = [];
+
         //get rid of uncheck columns
         for (var i = 0; i < attributesState.length; i++) {
             var el = document.getElementById(attributesState[i]);
@@ -106,7 +113,6 @@ class Export extends Component {
         var result = [attributes];
         var event = {};
         var data = this.state.data;
-
 
         for (i = 0; i < data.length; i++) {
             for (var j = 0; j < attributes.length; j++) {
@@ -124,21 +130,23 @@ class Export extends Component {
         if (attributes.length === 0) {
             alert("No data selected");
         } else {
+            //export file (fake element help)
             const element = document.createElement("a");
             var file = "";
+            //CSV format
             if (this.props.type === "CSV") {
                 var jsonObject = JSON.stringify(result);
                 result = this.convertToCSV(jsonObject);
                 element.download = "data.csv";
-                if(storePersistent.getState().profile[0].userprefs.mode === "encrypt"){
+                if (storePersistent.getState().profile[0].userprefs.mode === "encrypt") {
                     element.download = "data_decrypted.csv"
                 }
                 file = new Blob([result], { type: 'text/plain' });
             }
             else {
-                //JSON
+                //JSON format
                 element.download = "data.json";
-                if(storePersistent.getState().profile[0].userprefs.mode === "encrypt"){
+                if (storePersistent.getState().profile[0].userprefs.mode === "encrypt") {
                     element.download = "data_decrypted.json"
                 }
                 file = new Blob([JSON.stringify(result)], { type: 'text/plain' });
@@ -154,8 +162,12 @@ class Export extends Component {
 
     render() {
 
+        /**
+* return true if attribute is searchable to be checked by default
+* @param {string}  filed attribute name
+* @return {boolean} if searchable
+* */
         function isSearchable(field) {
-
             var searchable = getSearchableFields();
             searchable.push("@timestamp");
             for (var j = 0; j < searchable.length; j++) {

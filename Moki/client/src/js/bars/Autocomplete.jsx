@@ -4,6 +4,7 @@ import React, {
 } from "react";
 import PropTypes from "prop-types";
 
+//Input field with hints when user writes
 class Autocomplete extends Component {
     static propTypes = {
         suggestions: PropTypes.instanceOf(Array)

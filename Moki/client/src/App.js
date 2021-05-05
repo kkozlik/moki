@@ -18,6 +18,8 @@ import { paths } from "./js/controllers/paths.jsx";
 import { getProfile } from '@moki-client/gui';
 import DecryptPasswordPopup from '@moki-client/gui/src/menu/decryptPasswordPopup';
 
+//General class - check user level, profile from ES, monitor_layout before loading monitor
+//return router with dashboards and bars
 class App extends Component {
     // Initialize the state
     constructor(props) {
@@ -44,7 +46,6 @@ class App extends Component {
         this.showError = this.showError.bind(this);
         this.redirect = this.redirect.bind(this);
         this.getHostnames = this.getHostnames.bind(this);
-        this.getTags = this.getTags.bind(this);
         this.getSipUser();
     }
 
@@ -60,8 +61,11 @@ class App extends Component {
         window.removeEventListener('resize', this.windowResize);
     }
 
-    //get monitor name
-    async getMonitorName() {
+    /**
+* get monitor version from cmd and layout settings
+* @return {} stores everything in state
+* */
+    async getMonitorSettings() {
         //get monitor version
         var url = "/api/monitor/version";
         var monitorVersion = "";
@@ -142,9 +146,12 @@ class App extends Component {
         }
     }
 
-    //get logo img
+    /**
+* load logo from server based on the path in monitor_layout.json
+* @param {path}  path path to logo img
+* @return {base64} return img in base64
+* */
     async getLogo(path) {
-        //get monitor version
         var url = "/api/monitor/logo";
         try {
             const response = await fetch(url, {
@@ -171,7 +178,11 @@ class App extends Component {
         }
     }
 
-    //get user settings stored in ES
+    /**
+* Get user settings stored in ES
+* @param {string}  attribute to retrieve
+* @return {response} json response from ES
+* */
     async getUserSetting(attribute) {
         var url = "/api/setting/user";
         try {
@@ -192,41 +203,11 @@ class App extends Component {
         }
     }
 
-    //get hostnames list to set colors
-    async getTags() {
-        const request = async () => {
-            const response = await fetch("/api/tags", {
-                method: "GET",
-                timeout: 10000,
-                credentials: 'include',
-                headers: {
-                    "Content-Type": "application/json",
-                    "Access-Control-Allow-Credentials": "include"
-                }
-            });
-            const json = await response.json();
-            //get tags
-            if (json.responses && json.responses[0] && json.responses[0].aggregations && json.responses[0].aggregations.distinct && json.responses[0].aggregations.distinct.buckets) {
-                //if tags is array split it
-                var tags = [];
-                for (var i = 0; i < json.responses[0].aggregations.distinct.buckets.length; i++) {
-                    if (Array.isArray(json.responses[0].aggregations.distinct.buckets[i].key)) {
-                        tags.push(json.responses[0].aggregations.distinct.buckets[i].key.slice());
-                    } else {
-                        tags.push(json.responses[0].aggregations.distinct.buckets[i].key);
-                    }
 
-                }
-                this.setState({
-                    tags: tags,
-                    tagsFull: json.responses[0].aggregations.distinct.buckets
-                });
-            }
-        }
-        request();
-    }
-
-    //get hostnames, realms list to set colors and tag list
+    /**
+* hostnames, realms list to set colors, tags list
+* @return {} stores in state
+* */
     async getHostnames() {
         const request = async () => {
             try {
@@ -314,7 +295,10 @@ class App extends Component {
         if (window.innerWidth !== store.getState().width) store.dispatch(setWidthChart(window.innerWidth));
     }
 
-    //get sip user
+    /**
+* get sip user level, based on that show dashboards and monitor layout
+* @return {} stores in state
+* */
     async getSipUser() {
         var response = "";
         try {
@@ -373,7 +357,7 @@ class App extends Component {
 
                     //default user: no need to log in for web
                     if (sip.user !== "DEFAULT") {
-                        this.getMonitorName();
+                        this.getMonitorSettings();
                         this.getHostnames();
                     }
                     else {
@@ -397,6 +381,11 @@ class App extends Component {
         }
     }
 
+    /**
+* dislay an error in error bar in GUI for 10 sec
+* @param {string}  error an error to display
+* @return {} stores in state 
+* */
     showError(error) {
         if (error !== "" && document.getElementsByClassName("errorBar").length > 0) {
             document.getElementsByClassName("errorBar")[0].style.visibility = "visible";
@@ -426,9 +415,12 @@ class App extends Component {
         }
     }
 
-
+    /**
+* render layout based on user level
+* */
     render() {
         var dashboards = this.state.dashboards;
+
         //loading screen span
         var loadingScreen = <span>
             <div className="errorBar" > {JSON.stringify(this.state.error)} </div>
@@ -438,6 +430,7 @@ class App extends Component {
             </div>
         </span>
 
+        //get userto display
         var sipUser = storePersistent.getState().user;
         if (sipUser) {
             sipUser = storePersistent.getState().user.email ? storePersistent.getState().user.user + ": " + storePersistent.getState().user.email : storePersistent.getState().user.user;
@@ -448,6 +441,7 @@ class App extends Component {
         var sipUserSwitch;
         const aws = this.state.aws;
         var url = window.location.pathname;
+        //show just diagram
         if (this.state.dashboards.length > 0) {
             if ((aws === false || this.state.admin || this.state.siteAdmin) && url.includes("sequenceDiagram")) {
                 sipUserSwitch = <div className="row"
@@ -458,6 +452,7 @@ class App extends Component {
                     </Switch>
                 </div>
 
+                //ADMIN ROLE: show everything
             } else if (aws === false || this.state.admin || this.state.siteAdmin) {
                 console.info("Router: admin mode");
                 //admin context
@@ -493,6 +488,7 @@ class App extends Component {
                     </div>
                 </div>;
             }
+            //END USER ROLE: show one limited dashboard
             else {
                 console.info("Router: end user mode");
                 //end user context
@@ -542,7 +538,5 @@ class App extends Component {
         );
     }
 }
-
-//        <Redirect to='/index' />
 
 export default App;

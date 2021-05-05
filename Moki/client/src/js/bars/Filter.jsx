@@ -10,6 +10,7 @@ import unpinIcon from "../../styles/icons/unpin.png";
 import negationIcon from "../../styles/icons/negation.png";
 import storePersistent from "../store/indexPersistent";
 
+//Filter element component with enable/disable state, color, pin state
 class Filter extends Component {
     constructor(props) {
         super(props);
@@ -31,33 +32,51 @@ class Filter extends Component {
     }
 
 
-
+    /**
+* Remove filter from redux
+* @param {event}  event html event with id attribute with name
+* @return {} 
+* */
     deleteFilter(event) {
         this.props.deleteFilter(document.getElementById(event.currentTarget.getAttribute('deleteid')).getAttribute('id'));
 
     }
 
+    /**
+* set filter to negation iin redux
+* @param {event}  event html event with id attribute with name
+* @return {} 
+* */
     negationFilter(event) {
         this.props.negationFilter(document.getElementById(event.currentTarget.getAttribute('deleteid')).getAttribute('id'));
 
     }
 
+    /**
+* change filter value in redux
+* @param {event}  event html event with id attribute with name
+* @return {} 
+* */
     editFilter(event) {
         var id = event.currentTarget.getAttribute("editid");
         this.props.editFilter(id, document.getElementById("filtervalue" + id).value);
         document.getElementById("edit" + id).style.display = "none";
     }
 
+    //on enter handler
     keyPress(event) {
         if (event.key === "Enter") {
             // Cancel the default action, if needed
             event.preventDefault();
             this.editFilter(event);
-
         }
     }
 
-
+    /**
+* Popup edit filter window
+* @param {event}  event html event with id attribute with name
+* @return {} 
+* */
     showFilterPopup(event) {
         var id = event.currentTarget.getAttribute("idedit");
         var filter = document.getElementById("edit" + id);
@@ -66,12 +85,21 @@ class Filter extends Component {
         document.getElementById("filtervalue" + id).focus();
     }
 
-    closeFilterPopup(event) {
+    /**
+* Close edit filter popup
+* @param {event}  event html event with id attribute with name
+* @return {} 
+* */    closeFilterPopup(event) {
         var id = event.currentTarget.getAttribute("editid");
         document.getElementById("edit" + id).style.display = "none";
     }
 
 
+    /**
+* Disable filter in redux state, change its color
+* @param {event}  event html event with id attribute with name
+* @return {} 
+* */
     disableFilter(event) {
         if (this.state.enable === "true") {
             this.setState({
@@ -92,6 +120,11 @@ class Filter extends Component {
 
     }
 
+    /**
+* Unpin filter in redux, change its color
+* @param {event}  event html event with id attribute with name
+* @return {} 
+* */
     unpinFilter(event) {
         if (this.state.pinned === "true") {
             this.setState({
@@ -133,9 +166,8 @@ class Filter extends Component {
             <button style={{ backgroundColor: this.state.color }}
                 type="button"
                 className="filter"
-                id={this.props.id} > {
-                    this.props.encrypt ? this.props.encrypt : this.props.title
-                } <div className="buttonHover" >
+                id={this.props.id} > 
+                { this.props.encrypt ? this.props.encrypt : this.props.title } <div className="buttonHover" >
                     <span className="iconNoMargin marginRight"
                         deleteid={this.props.id}
                         onClick={this.deleteFilter}
@@ -152,7 +184,7 @@ class Filter extends Component {
                         <img alt="disableIcon"
                             src={this.state.icon}
                             title={this.state.enable === "true" ? "disable" : "enable"} /> </span>
-                     <span className="iconNoMargin marginRight"
+                    <span className="iconNoMargin marginRight"
                         idedit={this.props.id}
                         onClick={this.showFilterPopup
                         } > <img alt="editIcon"
