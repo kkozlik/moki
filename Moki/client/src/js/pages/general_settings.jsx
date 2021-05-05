@@ -7,39 +7,32 @@ import isIP from '../helpers/isIP';
 import isEmail from '../helpers/isEmail';
 import deleteIcon from "../../styles/icons/delete_grey.png";
 import {
-    elasticsearchConnection
-} from '../helpers/elasticsearchConnection';
+    elasticsearchConnectionTag
+} from '../helpers/elasticsearchConnectionTag';
 
 class Settings extends Component {
     constructor(props) {
         super(props);
         this.load = this.load.bind(this);
         this.save = this.save.bind(this);
+        this.getTags = this.getTags.bind(this);
         this.state = {
             data: [],
             wait: false,
-            tags: this.props.tags
+            tags: []
         }
     }
 
     componentWillMount() {
         this.load("/api/setting");
-    }
-
-
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.tags !== this.props.tags) {
-            this.setState({
-                tags: nextProps.tags
-            });
-        }
-
+        this.getTags();
     }
 
     /*
        Load data 
        */
     async load(url) {
+
         var jsonData;
         try {
             const response = await fetch(url, {
@@ -59,6 +52,7 @@ class Settings extends Component {
             this.setState({
                 data: result
             });
+
             console.info("Got general settings data " + JSON.stringify(result));
 
         } catch (error) {
@@ -68,67 +62,79 @@ class Settings extends Component {
 
     }
 
+    //get tags
+    async getTags() {
+        const request = async () => {
+            const response = await fetch("/api/tags", {
+                method: "GET",
+                timeout: 10000,
+                credentials: 'include',
+                headers: {
+                    "Content-Type": "application/json",
+                    "Access-Control-Allow-Credentials": "include"
+                }
+            });
+            const json = await response.json();
+            //get tags
+            if (json.responses && json.responses[0] && json.responses[0].aggregations && json.responses[0].aggregations.distinct) {
+                this.setState({
+                    tags: json.responses[0].aggregations.distinct.buckets
+                });
+            }
+        }
+        request();
+    }
+
     validate(attribute, value) {
         if (attribute === "tlc_cert_verify_level") {
-            if (value === "0" || value === "1" || value === "2" || value === "3" || value === "4") {
-                return true;
+            if (!(value === "0" || value === "1" || value === "2" || value === "3" || value === "4")) {
+                return "Error: Peer certificate verification level must be 0-4";
             }
-            return "Error: Peer certificate verification level must be 0-4";
         }
 
         if (attribute === "gui_port" || attribute === "events_cleanup_days" || attribute === "events_cleanup_percentage" || attribute === "pcap_cleanup_minutes" || attribute === "recordings_cleanup_minutes") {
-            if (isNumber(value)) {
-                return true;
+            if (!isNumber(value)) {
+                return "Error: " + attribute + " must be integer.";
             }
-            return "Error: " + attribute + " must be integer.";
         }
 
         if (attribute === "logstash_heap_mem" || attribute === "elasticsearch_heap_mem" || attribute === "logstash_queue_size") {
-            if ((value.slice(-1) === "g" || value.slice(-1) === "m") && isNumber(value.slice(0, value.length - 1)) && value.slice(0, value.length - 1) % 1 === 0) {
-                return true;
+            if (!((value.slice(-1) === "g" || value.slice(-1) === "m") && isNumber(value.slice(0, value.length - 1)) && value.slice(0, value.length - 1) % 1 === 0)) {
+                return "Error: " + attribute + " must have format integer and m or g suffix.";
             }
-            return "Error: " + attribute + " must have format integer and m or g suffix.";
         }
 
 
         if (attribute === "slowlog_query_warn" || attribute === "slowlog_query_info" || attribute === "slowlog_fetch_warn" || attribute === "slowlog_fetch_info" || attribute === "slowlog_indexing_info" || attribute === "slowlog_indexing_warn" || attribute === "refresh_interval_logstash" || attribute === "refresh_interval_collectd" || attribute === "refresh_interval_exceeded") {
-            if (value.slice(-1) === "s" && isNumber(value.slice(0, value.length - 1)) && value.slice(0, value.length - 1) % 1 === 0) {
-                return true;
+            if (!(value.slice(-1) === "s" && isNumber(value.slice(0, value.length - 1)) && value.slice(0, value.length - 1) % 1 === 0)) {
+                return "Error: " + attribute + " must have format integer and s suffix.";
             }
-            return "Error: " + attribute + " must have format integer and s suffix.";
         }
 
         if (attribute === "slowlog_search_level" || attribute === "slowlog_indexing_level") {
-            if (value === "warn" || value === "info") {
-                return true;
+            if (!(value === "warn" || value === "info")) {
+                return "Error: " + attribute + " must have format info or warn.";
             }
-            return "Error: " + attribute + " must have format info or warn.";
         }
 
         if (attribute === "fw_src_gui" || attribute === "fw_src_ssh" || attribute === "fw_src_events") {
-
-
-            if (value.length === 0) {
-                return true;
+            if (value.length !== 0) {
+                if (value.indexOf("/") !== -1) {
+                    value = value.substring(0, value.indexOf("/"));
+                }
+                if (!isIP(value)) {
+                    return "Error: " + attribute + " must have format IP or subnet format.";
+                }
             }
-            if (value.indexOf("/") !== -1) {
-                value = value.substring(0, value.indexOf("/"));
-            }
-            if (isIP(value)) {
-                return true;
-            }
-            return "Error: " + attribute + " must have format IP or subnet format.";
         }
 
         if (attribute === "bl_email_to" || attribute === "bl_email_from" || attribute === "email_reports") {
-            if (value.length === 0) {
-                return true;
+            if (value.length !== 0) {
+                if (!isEmail(value)) {
+                    return "Error: " + attribute + " must have email format.";
+                }
             }
 
-            if (isEmail(value)) {
-                return true;
-            }
-            return "Error: " + attribute + " must have email format.";
         }
 
         return true;
@@ -193,7 +199,7 @@ class Settings extends Component {
                 return response.json();
 
             }).then(function (responseData) {
-                //alert(responseData.msg);
+                if (responseData.msg !== "Data has been saved.") alert(responseData.msg);
             }).catch(function (error) {
                 console.error(error);
                 alert("Problem with saving data. " + error);
@@ -209,66 +215,66 @@ class Settings extends Component {
         if (data.length !== 0) {
             // Outer loop to create parent
             for (var i = 0; i < data.length; i++) {
-                alarms.push( <div key = {
-                        data[i].attribute + "key"
-                    }
-                    className = "tab "> <span className = "form-inline row justify-content-start paddingBottom"> <label className = "col-7" > {
+                alarms.push(<div key={
+                    data[i].attribute + "key"
+                }
+                    className="tab "> <span className="form-inline row justify-content-start paddingBottom"> <label className="col-7" > {
                         data[i].label
                     } </label>
-                     {data[i].type === "boolean" ? 
-                     data[i].value ? <input className="text-left form-check-input" type="checkbox" defaultChecked="true"  id={data[i].attribute} /> :
-                    <input className="text-left form-check-input" type="checkbox"   id={data[i].attribute} />
-                    :  <input className="text-left form-control form-check-input" type={data[i].type } defaultValue={data[i].value} id={data[i].attribute} />
-                    }
-                    </span></div> );
+                        {data[i].type === "boolean" ?
+                            data[i].value ? <input className="text-left form-check-input" type="checkbox" defaultChecked="true" id={data[i].attribute} /> :
+                                <input className="text-left form-check-input" type="checkbox" id={data[i].attribute} />
+                            : <input className="text-left form-control form-check-input" type={data[i].type} defaultValue={data[i].value} id={data[i].attribute} />
+                        }
+                    </span></div>);
             }
         }
         return alarms
     }
 
     generateTags() {
-            var data = this.state.tags;
+        var data = this.state.tags;
 
-            var tags = [];
-            if (data.length !== 0) {
-                for (var i = 0; i < data.length; i++) {
-                    tags.push( <div key = {
-                            data[i].key
-                        }
-                        className = "tab" > <span className = "form-inline row justify-content-start paddingBottom" >
-                        <img className = "icon"
-                        alt = "deleteIcon"
-                        src = {
-                            deleteIcon
-                        }
-                        title = "delete tag"
-                        onClick = {
-                            this.deleteTag.bind(this)
-                        }
-                        id = {
-                            data[i].key
-                        }
-                        /> <label className = "col-4" > {
+        var tags = [];
+        if (data.length !== 0) {
+            for (var i = 0; i < data.length; i++) {
+                tags.push(<div key={
+                    data[i].key
+                }
+                    className="tab" > <span className="form-inline row justify-content-start paddingBottom" >
+                        <img className="icon"
+                            alt="deleteIcon"
+                            src={
+                                deleteIcon
+                            }
+                            title="delete tag"
+                            onClick={
+                                this.deleteTag.bind(this)
+                            }
+                            id={
+                                data[i].key
+                            }
+                        /> <label className="col-4" > {
                             data[i].key + " (" + data[i].doc_count + ")"
-                        } </label> </span> </div> );      
-                    }
-                } else {
-                    tags.push( < div className = "tab" key="notags"> No tags. Create them directly in event's table.</div> );  
+                        } </label> </span> </div>);
+            }
+        } else {
+            tags.push(< div className="tab" key="notags"> No tags. Create them directly in event's table.</div>);
 
-                    }
-                    return tags
+        }
+        return tags
     }
 
     async deleteTag(e) {
         var tag = e.currentTarget.id;
-        var data = await elasticsearchConnection("/api/tag/delete", {id: "", index: "", tags: tag});
+        var data = await elasticsearchConnectionTag("/api/tag/delete", "", "", tag);
         if (data.deleted >= 0) {
-               var tags = this.state.tags;         
-               for (var i = 0; i < tags.length; i++) {
+            var tags = this.state.tags;
+            for (var i = 0; i < tags.length; i++) {
                 if (tags[i].key === tag) {
                     tags.splice(i, 1);
                 }
-               }
+            }
             //this.props.getTags();
             this.setState({
                 tags: tags
@@ -280,79 +286,86 @@ class Settings extends Component {
     }
 
 
-        render() {
+    render() {
 
-            var data = this.state.data;
-            var General = [];
-            var Slowlog = [];
-            var LE = [];
-            var Firewall = [];
-            var Events = [];
+        var data = this.state.data;
+        var General = [];
+        var Slowlog = [];
+        var LE = [];
+        var Firewall = [];
+        var Events = [];
+        var Authentication = [];
 
-            //separate type
-            for (var i = 0; i < data.length; i++) {
-                if (data[i].category === "General") {
-                    General.push(data[i]);
-                } else if (data[i].category === "Slowlog") {
-                    Slowlog.push(data[i]);
-                } else if (data[i].category === "Logstash and elasticsearch") {
-                    LE.push(data[i]);
-                } else if (data[i].category === "Firewall") {
-                    Firewall.push(data[i]);
-                } else if (data[i].category === "Events") {
-                    Events.push(data[i]);
-                }
+        //separate type
+        for (var i = 0; i < data.length; i++) {
+            if (data[i].category === "General") {
+                General.push(data[i]);
+            } else if (data[i].category === "Slowlog") {
+                Slowlog.push(data[i]);
+            } else if (data[i].category === "Logstash and elasticsearch") {
+                LE.push(data[i]);
+            } else if (data[i].category === "Firewall") {
+                Firewall.push(data[i]);
+            } else if (data[i].category === "Events") {
+                Events.push(data[i]);
+            } else if (data[i].category === "Authentication") {
+                Authentication.push(data[i]);
             }
-
-            var Generaldata = this.generate(General);
-            var Slowlogdata = this.generate(Slowlog);
-            var LEdata = this.generate(LE);
-            var Firewalldata = this.generate(Firewall);
-            var Eventsdata = this.generate(Events);
-            var Tagdata = this.generateTags();
-
-
-            return ( <div className = "container-fluid" > {
-                    this.state.wait && < SavingScreen />
-                } <p className = "settingsH" > General </p> {
-                    Generaldata
-                }
-
-                <p className = "settingsH" > Firewall </p> {
-                    Firewalldata
-                }
-
-                <p className = "settingsH" > Events </p> {
-                    Eventsdata
-                } <p className = "settingsH" > Elasticsearch and logstash </p> {
-                    LEdata
-                } <p className = "settingsH" > Slowlog </p> {
-                    Slowlogdata
-                } <p className = "settingsH" > Tags </p> {
-                    Tagdata
-                }
-
-
-                <div className = "btn-group rightButton" >
-                <button type = "button"
-                className = "btn btn-primary "
-                onClick = {
-                    this.save
-                }
-                style = {
-                    {
-                        "marginRight": "5px"
-                    }
-                } > Save </button> <button type = "button"
-                className = "btn btn-secondary"
-                onClick = {
-                    () => this.load("api/defaults")
-                } > Reset </button> </div >
-
-                </div>
-            )
         }
 
+        var Generaldata = this.generate(General);
+        var Slowlogdata = this.generate(Slowlog);
+        var LEdata = this.generate(LE);
+        var Firewalldata = this.generate(Firewall);
+        var Eventsdata = this.generate(Events);
+        var Authenticationdata = this.generate(Authentication);
+        var Tagdata = this.generateTags();
+
+
+        return (<div className="container-fluid" > {
+            this.state.wait && < SavingScreen />
+        } <p className="settingsH" > General </p> {
+                Generaldata
+            }
+
+            <p className="settingsH" > Firewall </p> {
+                Firewalldata
+            }
+            <p className="settingsH" > Authentication </p> {
+                Authenticationdata
+            }
+
+            <p className="settingsH" > Events </p> {
+                Eventsdata
+            } <p className="settingsH" > Elasticsearch and logstash </p> {
+                LEdata
+            } <p className="settingsH" > Slowlog </p> {
+                Slowlogdata
+            } <p className="settingsH" > Tags </p> {
+                Tagdata
+            }
+
+
+            <div className="btn-group rightButton" >
+                <button type="button"
+                    className="btn btn-primary "
+                    onClick={
+                        this.save
+                    }
+                    style={
+                        {
+                            "marginRight": "5px"
+                        }
+                    } > Save </button> <button type="button"
+                        className="btn btn-secondary"
+                        onClick={
+                            () => this.load("api/defaults")
+                        } > Reset </button> </div >
+
+        </div>
+        )
     }
 
-    export default Settings;
+}
+
+export default Settings;
