@@ -52,11 +52,9 @@ export default class heatmap extends Component {
         var chart = document.getElementById(id + "SVG");
         if (chart) {
             chart.remove();
-            var tooltips = document.getElementsByClassName("tooltip" + id);
+            var tooltips = document.getElementById("tooltip" + id);
             if (tooltips) {
-                for (var j = 0; j < tooltips.length; j++) {
-                    tooltips[j].remove();
-                }
+                tooltips.remove();
             }
         }
 
@@ -67,7 +65,7 @@ export default class heatmap extends Component {
             var maxTextWidth = d3.max(data.map(n => n.attr1.length));
             marginBottom = maxTextWidth > 50 ? 150 : (maxTextWidth * 7) + 10;
             maxTextWidth = d3.max(data.map(n => n.attr2.length));
-            marginLeft = maxTextWidth > 40 ? 170: maxTextWidth > 15 ? maxTextWidth * 8 : maxTextWidth * 13;
+            marginLeft = maxTextWidth > 50 ? 150 : maxTextWidth > 15 ? maxTextWidth * 8 : maxTextWidth * 13;
         }
 
         var margin = {
@@ -173,13 +171,8 @@ export default class heatmap extends Component {
 
             // tooltip
             var tooltip = d3.select('#' + id).append("div")
-                .style("background", "white")
-                .attr('class', 'tooltip tooltip' + id)
-                .style("opacity", "0.9")
-                .style("position", "absolute")
-                .style("visibility", "hidden")
-                .style("box-shadow", "0px 0px 6px black")
-                .style("padding", "10px");
+                .attr('id', 'tooltip' + id)
+                .attr("class", "tooltipCharts");
 
             tooltip.append("div");
 
@@ -225,12 +218,12 @@ export default class heatmap extends Component {
                 .on("mouseover", function (d) {
                     d3.select(this).style("stroke", "orange");
                     tooltip.style("visibility", "visible")
-                        .style('left', `${d3.event.layerX + 20}px`)
+                        .style('left', `${d3.event.layerX }px`)
                         .style('top', `${(d3.event.layerY - 50)}px`);
 
-                    if (d3.mouse(d3.event.target)[0] > window.innerWidth - 1200) {
+                    if (d3.mouse(d3.event.target)[0] > window.innerWidth - 600) {
                         tooltip
-                            .style("left", `${d3.event.layerX - 600}px`)
+                            .style("left", `${d3.event.layerX - 350}px`)
                     }
                     if (name.includes("DURATION")) {
                         var value = durationFormat(d.value);
@@ -268,11 +261,9 @@ export default class heatmap extends Component {
                 createFilter(field + ":" + el.attr1);
 
 
-                var tooltips = document.getElementsByClassName("tooltip" + id);
+                var tooltips = document.getElementById("tooltip" + id);
                 if (tooltip) {
-                    for (var j = 0; j < tooltips.length; j++) {
-                        tooltips[j].style.opacity = 0;
-                    }
+                    tooltips.style.opacity = 0;
                 }
             });
 

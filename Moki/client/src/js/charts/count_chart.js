@@ -25,7 +25,6 @@ export default class CountUpChart extends Component {
         }
     }
 
-
     setData(data) {
         this.setState({
             data: data,

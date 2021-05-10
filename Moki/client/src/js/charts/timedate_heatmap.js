@@ -54,15 +54,15 @@ export default class timedateHeatmap extends Component {
         }
 
         // Clean up lost tooltips
-        var elements = document.getElementsByClassName('tooltip' + id);
-        while (elements.length > 0) {
-            elements[0].parentNode.removeChild(elements[0]);
+        var elements = document.getElementById('tooltip' + id);
+        while (elements) {
+            elements.parentNode.removeChild(elements);
         }
 
         var marginLeft = 100;
         if (data.length > 0) {
             var maxTextWidth = d3.max(data.map(n => n.attr2.length));
-            marginLeft = maxTextWidth > 40 ? 170 : maxTextWidth > 15 ? maxTextWidth * 8 :  maxTextWidth * 13;
+            marginLeft = maxTextWidth > 50 ? 150 : maxTextWidth > 15 ? maxTextWidth * 8 :  maxTextWidth * 13;
         }
         var margin = {
             top: 10,
@@ -192,15 +192,8 @@ export default class timedateHeatmap extends Component {
 
             // tooltip
             var tooltip = d3.select('#' + id).append("div")
-                .style("background", "white")
-                .attr('class', 'tooltip tooltip' + id)
-                .style("opacity", "0.9")
-                .style("position", "absolute")
-                .style("visibility", "hidden")
-                .style("box-shadow", "0px 0px 6px black")
-                .style("left", "10px")
-                .style("top", "10px")
-                .style("padding", "10px");
+                .attr('id', 'tooltip ' + id)
+                .attr("class", "tooltipCharts");
 
             tooltip.append("div");
 
@@ -272,8 +265,16 @@ export default class timedateHeatmap extends Component {
                 .attr('transform', 'translate(' + cellSize / 2 + ',0)')
                 .on("mouseover", function (d) {
                     tooltip.style("visibility", "visible")
-                    .style('left',(d3.event.pageX-180) + 'px')  
-                    .style("top", d3.select(this).attr("cy") + "px");
+                    .style('left', (d3.event.x -400)+ 'px')  
+                    .style("top", (d3.event.y -300) +"px");
+
+                    if (id === "avgMoS") tooltip.style("top", (d3.event.y - 400) + "px");
+                    if (id === "ratioHistory") tooltip.style("top", (d3.event.y - 550) + "px");
+                    if (id === "caAvailability") tooltip.style("top", (d3.event.y -650) + "px");
+                    if (id === "dateHeatmap") tooltip.style("top", (d3.event.y - 100) + "px");
+                    if (id === "activitySBC") tooltip.style("top", (d3.event.pageY - 100) + "px");
+                    if (id === "keepAlive") tooltip.style("top", (d3.event.pageY - 80) + "px");
+
                     var value = (d.value).toFixed(2);
                     if (name === "CA AVAILABILITY") {
                         //Reachable
@@ -293,10 +294,10 @@ export default class timedateHeatmap extends Component {
                     tooltip.select("div").html("<strong>" + d.attr2.charAt(0).toUpperCase() + d.attr2.slice(1) + ": </strong>" + value + units + "<br/><strong>Time: </strong>" + new Date(d.attr1).toLocaleString()+ " + "+getTimeBucket());
 
 
-                    if (d3.mouse(d3.event.target)[0] > window.innerWidth - 1200) {
+                  /*  if (d3.mouse(d3.event.target)[0] > window.innerWidth - 600) {
                         tooltip
-                            .style("left", (d3.event.pageX - 600) + "px")
-                    }
+                            .style("left", (d3.event.x - 350) + "px")
+                    }*/
 
                 })
                 .on("mouseout", function () {
@@ -307,13 +308,9 @@ export default class timedateHeatmap extends Component {
             //filter type onClick
             rect.on("click", el => {
                 createFilter(field + ": \"" + el.attr2 + "\"");
-
-
-                var tooltips = document.getElementsByClassName("tooltip" + id);
-                if (tooltip) {
-                    for (var j = 0; j < tooltips.length; j++) {
-                        tooltips[j].style.opacity = 0;
-                    }
+                var tooltips = document.getElementById("tooltip" + id);
+                if (tooltips) {
+                        tooltips.style.opacity = 0;
                 }
             });
 
