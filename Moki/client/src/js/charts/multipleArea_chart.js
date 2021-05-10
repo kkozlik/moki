@@ -55,9 +55,9 @@ export default class MultipleAreaChart extends Component {
         }
 
         // Clean up lost tooltips
-        var elements = document.getElementsByClassName('tooltip' + id);
-        while (elements.length > 0) {
-            elements[0].parentNode.removeChild(elements[0]);
+        var elements = document.getElementById('tooltip' + id);
+        if (elements) {
+            elements.parentNode.removeChild(elements);
         }
 
         var margin = {
@@ -283,14 +283,10 @@ export default class MultipleAreaChart extends Component {
                 });
 
             var tooltip = d3.select('#' + id).append('div')
-                .attr('class', 'tooltip tooltip' + id)
-                .style("width", "200px")
-                .style("height", "90px")
-                .style('opacity', 0.9)
-                .style("position", "absolute")
-                .style("visibility", "hidden")
-                .style("box-shadow", "0px 0px 6px black")
-                .style("padding", "10px");
+                .attr('id', 'tooltip ' + id)
+                .attr("class", "tooltipCharts");
+
+
             tooltip.append("div");
 
             /* Add circles in the area */
@@ -312,11 +308,12 @@ export default class MultipleAreaChart extends Component {
                 })
                 .on("mousemove", function (d) {
                     tooltip
-                        .style("left", (d3.event.layerX - 20) + "px")
-                        .style("top", (d3.event.layerY - 100) + "px");
-                        if(id === "parallelCalls")   tooltip.style("top", (d3.event.layerY +300) + "px");
-                        if(id === "parallelRegs")   tooltip.style("top", (d3.event.layerY +550) + "px");
-                        if(id === "incidentCount")   tooltip.style("top", (d3.event.layerY +800) + "px");
+                        .style("left", (d3.event.layerX - 125) + "px")
+                        .style("top", (d3.event.layerY - 90) + "px");
+                    if (id === "parallelCalls") tooltip.style("top", (d3.event.layerY + 350) + "px");
+                    if (id === "parallelRegs") tooltip.style("top", (d3.event.layerY + 570) + "px");
+                    if (id === "incidentCount") tooltip.style("top", (d3.event.layerY + 820) + "px");
+                    if (id === "parallelRegsR") tooltip.style("top", (d3.event.layerY + 300) + "px");
 
                 })
                 .append("circle")

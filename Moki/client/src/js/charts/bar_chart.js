@@ -16,19 +16,19 @@ export default class barChart extends Component {
         this.setData = this.setData.bind(this);
     }
 
-    static getDerivedStateFromProps(nextProps, prevState){
-        if(nextProps.data!==prevState.data){
-          return { data: nextProps.data};
-       }
-       else return null;
-     }
-     
-     componentDidUpdate(prevProps, prevState) {
-       if(prevProps.data!==this.props.data){
-        this.setState({ data: this.props.data });
-        this.draw(this.props.data, this.props.width, this.props.units, this.props.name);
-       }
-     }
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (nextProps.data !== prevState.data) {
+            return { data: nextProps.data };
+        }
+        else return null;
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (prevProps.data !== this.props.data) {
+            this.setState({ data: this.props.data });
+            this.draw(this.props.data, this.props.width, this.props.units, this.props.name);
+        }
+    }
 
     setData(data) {
         this.setState({ data: data });
@@ -206,13 +206,8 @@ export default class barChart extends Component {
                 .attr('height', d => height - yScale(d.doc_count))
                 .on('mouseover', (d) => {
                     tooltip = d3.select('#barChart').append('div')
-                        .style("background", "white")
-                        .attr('class', 'tooltip tooltipBar')
-                        .style('opacity', 0.9)
-                        .style("visibility", "visible")
-                        .style("position", "absolute")
-                        .style("box-shadow", "0px 0px 6px black")
-                        .style("padding", "10px");
+                        .attr('id', 'tooltip tooltipBar')
+                        .attr("class", "tooltipCharts");
 
                     tooltip.style('opacity', 0.9);
                     tooltip.html(`<strong>Key: </strong>${d.key}<br/><strong>Value: </strong>${d.doc_count + units}`)
@@ -224,16 +219,16 @@ export default class barChart extends Component {
                 .on('mouseout', () => tooltip.style('visibility', "hidden"))
                 .on("mousemove", function (d) {
                     tooltip
-                        .style("left", (d3.event.layerX + 100) + "px")
-                        .style("top", (d3.event.layerY) + "px");
+                        .style("left", (d3.event.layerX + 180) + "px")
+                        .style("top", (d3.event.layerY - 80) + "px");
 
-                    if (d3.mouse(d3.event.target)[0] > window.innerWidth - 1200) {
+                    if (d3.mouse(d3.event.target)[0] > window.innerWidth - 600) {
                         tooltip
-                            .style("left", (d3.event.layerX - 200) + "px")
+                            .style("left", (d3.event.layerX - 350) + "px")
                     }
                 });
 
-               
+
             //animation for 2 sec, transition delay is in milliseconds, DISABLE BECAUSE OF PLAY MODE
             /* Add 'curtain' rectangle to hide entire graph */
             /*

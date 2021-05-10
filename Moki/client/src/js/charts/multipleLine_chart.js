@@ -20,7 +20,7 @@ import {
 import Colors from '../helpers/style/Colors';
 import emptyIcon from "../../styles/icons/empty_small.png";
 import {
-    getTimeBucketInt, getTimeBucket
+    getTimeBucketInt
 } from "../helpers/getTimeBucket";
 
 export default class MultipleLineChart extends Component {
@@ -59,9 +59,9 @@ export default class MultipleLineChart extends Component {
         var minTime = store.getState().timerange[0];
 
         // Clean up lost tooltips
-        var elements = document.getElementsByClassName('tooltip' + id);
-        while (elements.length > 0) {
-            elements[0].parentNode.removeChild(elements[0]);
+        var elements = document.getElementById('tooltip' + id);
+        if (elements) {
+            elements.parentNode.removeChild(elements);
         }
         var margin = {
             top: 20,
@@ -237,15 +237,9 @@ export default class MultipleLineChart extends Component {
                 });
 
             var tooltip = d3.select('#' + id).append('div')
-                .attr('class', 'tooltip tooltip' + id)
-                .style("width", "200px")
-                .style("height", "90px")
-                .style("background", "white")
-                .style('opacity', 0.9)
-                .style("position", "absolute")
-                .style("visibility", "hidden")
-                .style("box-shadow", "0px 0px 6px black")
-                .style("padding", "10px");
+                .attr('id', 'tooltip ' + id)
+                .attr("class", "tooltipCharts");
+
             tooltip.append("div");
 
             /* Add circles in the line */
@@ -267,8 +261,8 @@ export default class MultipleLineChart extends Component {
                 })
                 .on("mousemove", function (d) {
                     tooltip
-                        .style("left", (d3.event.layerX - 20) + "px")
-                        .style("top", (d3.event.layerY - 100) + "px");
+                        .style("left", (d3.event.layerX -100) + "px")
+                        .style("top", (d3.event.layerY - 70) + "px");
 
                 })
                 .append("circle")

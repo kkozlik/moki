@@ -50,9 +50,9 @@ export default class datebarChart extends Component {
         }
 
         // Clean up lost tooltips
-        var elements = document.getElementsByClassName('tooltip' + id);
-        while (elements.length > 0) {
-            elements[0].parentNode.removeChild(elements[0]);
+        var elements = document.getElementById('tooltip' + id);
+        if (elements) {
+            elements.parentNode.removeChild(elements);
         }
 
         var margin = {
@@ -159,19 +159,9 @@ export default class datebarChart extends Component {
             }
 
             var tooltip = d3.select('#' + id).append('div')
-                .attr('class', 'tooltip tooltip' + id)
-                .style("width", "200px")
-                .style("height", "90px")
-                .style("background", "white")
-                .style('opacity', 0.9)
-                .style("position", "absolute")
-                .style("visibility", "hidden")
-                .style("box-shadow", "0px 0px 6px black")
-                .style("padding", "10px");
+                .attr('id', 'tooltip ' + id)
+                .attr("class", "tooltipCharts");
             tooltip.append("div");
-
-
-
 
             svg.selectAll('.bar').data(data)
                 .enter()
@@ -234,10 +224,10 @@ export default class datebarChart extends Component {
                 .on("mousemove", function (d) {
                     tooltip
                         .style("left", (d3.event.pageX - 200) + "px")
-                        .style("top", (d3.event.pageY - 100) + "px");
+                        .style("top", (d3.event.pageY - 90) + "px");
                     if (d3.mouse(d3.event.target)[0] > window.innerWidth - 600) {
                         tooltip
-                            .style("left", (d3.event.pageX - 500) + "px")
+                            .style("left", (d3.event.pageX - 350) + "px")
                     }
                 });
 
