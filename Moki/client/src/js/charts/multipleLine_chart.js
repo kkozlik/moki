@@ -20,7 +20,7 @@ import {
 import Colors from '../helpers/style/Colors';
 import emptyIcon from "../../styles/icons/empty_small.png";
 import {
-    getTimeBucketInt
+    getTimeBucketInt, getTimeBucket
 } from "../helpers/getTimeBucket";
 
 export default class MultipleLineChart extends Component {
