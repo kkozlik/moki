@@ -51,9 +51,9 @@ export default class StackedChart extends Component {
         }
 
         // Clean up lost tooltips
-        var elements = document.getElementsByClassName('tooltip' + id);
-        while (elements.length > 0) {
-            elements[0].parentNode.removeChild(elements[0]);
+        var elements = document.getElementById('tooltip' + id);
+        if (elements) {
+            elements.parentNode.removeChild(elements);
         }
         var svg = d3.select('#' + id);
         var margin = {
@@ -316,11 +316,9 @@ export default class StackedChart extends Component {
             layer.on("click", el => {
                 createFilter("attrs.type:" + el.key);
 
-                var tooltips = document.getElementsByClassName("tooltip" + id);
+                var tooltips = document.getElementById("tooltip" + id);
                 if (tooltip) {
-                    for (var j = 0; j < tooltips.length; j++) {
-                        tooltips[j].style.opacity = 0;
-                    }
+                        tooltips.style.opacity = 0;
                 }
             });
 
@@ -366,15 +364,9 @@ export default class StackedChart extends Component {
 
             // tooltip
             var tooltip = d3.select('#' + id).append("div")
-                .style("width", "200px")
-                .style("height", "100px")
-                .style("background", "white")
-                .attr('class', 'tooltip' + id)
-                .style("opacity", "0.9")
-                .style("position", "absolute")
-                .style("visibility", "hidden")
-                .style("box-shadow", "0px 0px 6px black")
-                .style("padding", "10px");
+                .attr('id', 'tooltip' + id)
+                .attr("class", "tooltipCharts");
+
 
             tooltip.append("div");
 
