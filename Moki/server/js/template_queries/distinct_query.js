@@ -1,5 +1,5 @@
 var getTemplate = function (field, domainFilter) {
-    if (domainFilter && domainFilter !== "*") {
+    if (domainFilter !== "*") {
         var template = {
             "size": 0,
             "query": {

@@ -17,7 +17,6 @@ import saveIcon from "../../styles/icons/save_filters.png";
 import loadIcon from "../../styles/icons/load_filters.png";
 import search from "../../styles/icons/search.png";
 
-//filter bar stuff using filter components
 class filterBar extends Component {
     constructor(props) {
         super(props);
@@ -78,10 +77,7 @@ class filterBar extends Component {
         }
     }
 
-        /**
-* if store filters changes, render new state
-* @return {} 
-* */
+    //if store filters changes, render new state
     rerenderFilters() {
         if (store.getState().filters !== this.state.filters) {
             console.info("Filters are changed: " + JSON.stringify(store.getState().filters));

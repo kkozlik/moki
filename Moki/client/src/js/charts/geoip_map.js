@@ -59,11 +59,9 @@ export default class geoIpMap extends Component {
         var chart = document.getElementById("geoIpMapSVGempty");
         if (chart) {
             chart.remove();
-            var tooltips = document.getElementsByClassName("tooltipgeoIpMap");
+            var tooltips = document.getElementById("tooltipgeoIpMap");
             if (tooltips) {
-                for (var j = 0; j < tooltips.length; j++) {
-                    tooltips[j].remove();
-                }
+                    tooltips.remove();
             }
         }
 
@@ -226,15 +224,10 @@ export default class geoIpMap extends Component {
                     .attr("fill", "#343a40");
 
                 var tooltip = d3.select('#geoIpMap').append('div')
-                    .attr('class', 'tooltipgeoIpMap')
-                    .style("width", "200px")
-                    .style("height", "80px")
-                    .style("background", "white")
-                    .style('opacity', 0.9)
-                    .style("position", "absolute")
-                    .style("visibility", "hidden")
-                    .style("box-shadow", "0px 0px 6px black")
-                    .style("padding", "10px");
+                    .attr('id', 'tooltipgeoIpMap')
+                    .attr("class", "tooltipCharts");
+    
+    
                 tooltip.append("div");
 
                 //cites
@@ -290,15 +283,10 @@ export default class geoIpMap extends Component {
         var projection = d3.geoMercator();
 
         var tooltip = d3.select('#geoIpMap').append('div')
-            .attr('class', 'tooltipgeoIpMap')
-            .style("width", "200px")
-            .style("height", "80px")
-            .style("background", "white")
-            .style('opacity', 0.9)
-            .style("position", "absolute")
-            .style("visibility", "hidden")
-            .style("box-shadow", "0px 0px 6px black")
-            .style("padding", "10px");
+            .attr('id', 'tooltipgeoIpMap')
+            .attr("class", "tooltipCharts");
+
+
         tooltip.append("div");
 
         var rScale = d3.scaleSqrt();
@@ -385,9 +373,13 @@ export default class geoIpMap extends Component {
                 return "translate(-10,-10)";
             })
             .on("mouseover", function (d) {
+                var types  = d.aggs.buckets.map(type =>
+                    " <br/><strong>"+type.key+": </strong> "+type.doc_count
+                );
+
                 tooltip.style("visibility", "visible");
                 d3.select(this).style("cursor", "pointer");
-                tooltip.select("div").html("<strong>City: </strong>" + d.key + " <br/><strong>Value: </strong>" + d3.format(',')(d.doc_count) + units);
+                tooltip.select("div").html("<strong>City: </strong>" + d.key + " <br/>" + types);
             })
             .on("mouseout", function (d) {
                 tooltip.style("visibility", "hidden")
@@ -427,9 +419,13 @@ export default class geoIpMap extends Component {
                     return "translate(-10,-10)";
                 })
                 .on("mouseover", function (d) {
+                    var types  = d.types.buckets.map(type =>
+                        "<br/><strong>"+type.key+": </strong> "+type.doc_count
+                    );
+
                     tooltip.style("visibility", "visible");
                     d3.select(this).style("cursor", "pointer");
-                    tooltip.select("div").html("<strong>AVG longitude: </strong>" + geohash.decode(d.key).longitude + " <br/><strong>AVG latitude: </strong>" + geohash.decode(d.key).latitude + " <br/><strong>Value: </strong>" + d3.format(',')(d.doc_count) + units);
+                    tooltip.select("div").html("<strong>AVG longitude: </strong>" + geohash.decode(d.key).longitude + " <br/><strong>AVG latitude: </strong>" + geohash.decode(d.key).latitude + " <br/>"+types);
                 })
                 .on("mouseout", function (d) {
                     tooltip.style("visibility", "hidden")
