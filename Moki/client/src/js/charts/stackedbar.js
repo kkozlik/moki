@@ -218,7 +218,7 @@ export default class StackedChart extends Component {
 
 
             layer.selectAll("rect")
-                .data(function (d, i) {
+                .data(function (d) {
                     return d;
                 })
                 .enter().append("rect")
@@ -279,19 +279,16 @@ export default class StackedChart extends Component {
             });
 
 
-            //add total sum                
-            layer.selectAll("text.rect")
-                .data(function (layer) { return layer; })
+            //TODO add total sum                
+            /*layer.selectAll("text.rect")
+                .data( layers[0])
                 .enter().append("text")
                 .attr("text-anchor", "middle")
                 .attr("x", function (d) { return x(d.data.name) + x.bandwidth() / 2 })
-                .attr("y", function (d) { return yScale(d[1]) - 5 })
-                .text(function (d, i) { 
-                    console.log("----"); console.log(d);  console.log(keys[i+1]); console.log(keys[i+1] !== "reg-expired"); console.log(d.data.sum);   if( keys[i] !== "reg-expired") return d.data.sum; })
+                .attr("y", function (d, i) { return yScale(d[1])  })
+                .text(function (d, i) { return d.data.sum; })
                 .style("fill", "black");
-
-
-
+*/
 
             //animation for 2 sec, transition delay is in milliseconds
             /* Add 'curtain' rectangle to hide entire graph */

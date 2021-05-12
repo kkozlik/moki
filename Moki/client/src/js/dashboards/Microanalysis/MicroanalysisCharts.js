@@ -136,7 +136,7 @@ class MicroanalysisCharts extends Dashboard {
                         units={"count"}
                         name={"TYPES"}
                         id="types"
-                        width={store.getState().width / 2 - 150}
+                        width={500}
                         legendSize={50}
                         height={200}
                         field="attrs.type" />
