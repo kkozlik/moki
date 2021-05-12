@@ -21,7 +21,7 @@ class timerangeBar extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            timerange: "",
+            timerange: store.getState().timerange[2],
             sipUser: storePersistent.getState().user.user,
             timestamp_gte: store.getState().timerange[0],
             timestamp_lte: store.getState().timerange[1],
@@ -29,6 +29,7 @@ class timerangeBar extends Component {
             refreshIcon: refreshIcon,
             historyIcon: historyIconGrey,
             timer: "",
+            isHistory: false,
             refreshUnit: "seconds",
             refreshValue: 30,
             click: false,
@@ -40,10 +41,8 @@ class timerangeBar extends Component {
         this.close = this.close.bind(this);
         this.share = this.share.bind(this);
         this.setToNow = this.setToNow.bind(this);
-        this.moveTimerangeBack =
-            this.moveTimerangeBack.bind(this);
-        this.moveTimerangeForward =
-            this.moveTimerangeForward.bind(this);
+        this.moveTimerangeBack = this.moveTimerangeBack.bind(this);
+        this.moveTimerangeForward = this.moveTimerangeForward.bind(this);
         this.changeTimerange = this.changeTimerange.bind(this);
         this.renderPDF = this.renderPDF.bind(this);
         this.rerenderTimerange = this.rerenderTimerange.bind(this);
@@ -96,13 +95,12 @@ class timerangeBar extends Component {
                     var timestamp_readiable = new Date(timestamp_gte).toLocaleString() + " - " + new Date(timestamp_lte).toLocaleString();
                     store.dispatch(setTimerange([timestamp_gte, timestamp_lte, timestamp_readiable]))
                 }
-                console.log("setting auto refresh every " + refreshTime + " ms.");
+                console.info("setting auto refresh every " + refreshTime + " ms.");
                 window.setInterval(refresh, refreshTime);
             }
 
         }
     }
-
 
     //add to time history
     addHistory(timerange, timestamp_gte, timestamp_lte) {
@@ -111,13 +109,12 @@ class timerangeBar extends Component {
             timestamp_gte: timestamp_gte,
             timestamp_lte: timestamp_lte
         }
-        //keep only last 7 time ranges
-        if (this.state.history.length > 7) {
+        //keep only last 20 time ranges
+        if (this.state.history.length > 20) {
             this.setState({ history: this.state.history.shift() });
         }
         this.setState({
-            history: [...this.state.history, [historyTime]],
-            historyIcon: historyIcon
+            history: [...this.state.history, [historyTime]]
         })
     }
 
@@ -126,27 +123,27 @@ class timerangeBar extends Component {
             var history = this.state.history;
             var lastHistory = history.pop();
             this.setState({
-                history: history
+                history: history,
+                isHistory: true
+            }, () => {
+                store.dispatch(setTimerange([lastHistory[0].timestamp_gte, lastHistory[0].timestamp_lte, lastHistory[0].timestamp]));
             });
-            store.dispatch(setTimerange([lastHistory[0].timestamp_gte, lastHistory[0].timestamp_lte, lastHistory[0].timestamp]));
-        }
-        if (this.state.history.length === 0) {
-            this.setState({
-                historyIcon: historyIconGrey
-            });
-
         }
     }
 
     //if store timernage changes, render new state
     rerenderTimerange() {
         if (store.getState().timerange[2] !== this.state.timerange) {
+           if(!this.state.isHistory) this.addHistory(this.state.timerange, this.state.timestamp_gte, this.state.timestamp_lte);
+
             console.info("Timerange is changed to " + store.getState().timerange[2]);
             this.setState({
                 timerange: store.getState().timerange[2],
                 timestamp_gte: store.getState().timerange[0],
-                timestamp_lte: store.getState().timerange[1]
+                timestamp_lte: store.getState().timerange[1],
+                isHistory: false
             });
+
         }
     }
 
@@ -194,10 +191,7 @@ class timerangeBar extends Component {
 
     //set refresh
     setRefresh() {
-
-        var e = document.getElementById("timeUnit");
-
-        //  var value = e.options[e.selectedIndex].value;   
+        var e = document.getElementById("timeUnit"); 
         var refreshInterval = document.getElementById("refresh").value * 1000
         if (e.options[e.selectedIndex].value === "minutes") {
             refreshInterval = document.getElementById("refresh").value * 60000
@@ -290,7 +284,7 @@ class timerangeBar extends Component {
         }
         //absolute time
         else {
-            //this.addHistory(store.getState().timerange[2], store.getState().timerange[0], store.getState().timerange[1]);
+            this.setState({isHistory: false});
             store.dispatch(setTimerange(store.getState().timerange));
 
         }
@@ -320,23 +314,19 @@ class timerangeBar extends Component {
 
     //move half of timerange value back
     moveTimerangeForward(event) {
-        this.addHistory(store.getState().timerange[2], store.getState().timerange[0], store.getState().timerange[1]);
         var timestamp_gte = store.getState().timerange[0] - (store.getState().timerange[1] - store.getState().timerange[0]);
-
-        //Math.round(store.getState().timerange[0]/2000)*1000; 
-
         var timestamp_lte = store.getState().timerange[1];
         var timestamp_readiable = new Date(timestamp_gte).toLocaleString() + " - " + new Date(timestamp_lte).toLocaleString();
 
         this.setState({
-            timerange: timestamp_readiable
+            timerange: timestamp_readiable,
+            isHistory: false
         });
         console.info("Timerange is changed to " + timestamp_readiable);
         store.dispatch(setTimerange([timestamp_gte, timestamp_lte, timestamp_readiable]));
     }
 
     moveTimerangeBack(event) {
-        this.addHistory(store.getState().timerange[2], store.getState().timerange[0], store.getState().timerange[1]);
         var timestamp_gte = store.getState().timerange[0];
         var timestamp_lte = store.getState().timerange[1] + (store.getState().timerange[1] - store.getState().timerange[0]);
 
@@ -353,15 +343,12 @@ class timerangeBar extends Component {
 
     //set timerange
     changeTimerange(timestamp_gte, timestamp_lte) {
-        this.addHistory(store.getState().timerange[2], store.getState().timerange[0], store.getState().timerange[1]);
         var timestamp_readiable = new Date(Math.trunc(timestamp_gte)).toLocaleString() + " - " + new Date(Math.trunc(timestamp_lte)).toLocaleString();
-
         this.setState({
-            timerange: timestamp_readiable
+            timerange: timestamp_readiable,
+            isHistory: false
         });
-
         console.info("Timerange is changed to " + timestamp_readiable);
-
         store.dispatch(setTimerange([timestamp_gte, timestamp_lte, timestamp_readiable]));
         timestamp_gte = Math.trunc(timestamp_gte);
     }
@@ -369,8 +356,6 @@ class timerangeBar extends Component {
 
 
     setTimerangeLastX(timerange) {
-        //save old timerange
-        this.addHistory(this.state.timerange, this.state.timestamp_gte, this.state.timestamp_lte);
         var timestamp_gte = "";
         var timestamp_lte = new Date();
         if (timerange === "Last 6 hours") {
@@ -424,10 +409,8 @@ class timerangeBar extends Component {
         }
 
         this.setState({
-            timerange: timerange,
-            timestamp_gte: timestamp_gte,
-            timestamp_lte: timestamp_lte,
-            click: false
+            click: false,
+            isHistory: false
         });
         console.info("Timerange is changed to " + timerange + " " + timestamp_gte + " " + timestamp_lte);
 
@@ -451,7 +434,7 @@ class timerangeBar extends Component {
                 this.props.showError("Error: Timestamp 'TO' is not valid date.");
                 return;
             }
-            this.addHistory(store.getState().timerange[2], store.getState().timerange[0], store.getState().timerange[1]);
+           // this.addHistory(store.getState().timerange[2], store.getState().timerange[0], store.getState().timerange[1]);
             const gte = Math.round((new Date(timestamp_gte)).getTime() / 1000) * 1000;
             const lte = Math.round((new Date(timestamp_lte)).getTime() / 1000) * 1000;
 
@@ -464,7 +447,7 @@ class timerangeBar extends Component {
             console.info("Timerange is changed to " + timestamp_readiable + " " + gte + " " + lte);
 
             this.setState({
-                timerange: timestamp_readiable,
+                isHistory: false,
                 click: false
             });
             store.dispatch(setTimerange([gte, lte, timestamp_readiable]));
@@ -473,8 +456,6 @@ class timerangeBar extends Component {
         else {
             var timerange = event.target.innerHTML;
             this.setTimerangeLastX(timerange);
-
-
         }
     }
 
@@ -545,7 +526,7 @@ class timerangeBar extends Component {
                         <span onClick={this.share} className="tabletd marginRight" ><img className="iconShare" alt="shareIcon" src={shareIcon} title="share" /><span id="tooltipshare" style={{ "display": "none" }}>copied to clipboard</span></span>
                         <span className="tabletd marginRight" onClick={this.moveTimerangeForward}><img alt="timeBackIcon" src={timeBack} title="move back" /></span><span className="tabletd marginRight" onClick={this.moveTimerangeBack}> <img alt="timeForwardIcon" src={timeForward} title="move forward" /></span>
                         <span id="reload" onClick={this.reload} className="tabletd marginRight" ><img className="iconReload" alt="reloadIcon" src={reloadIcon} title="reload" /></span>
-                        <span onClick={this.loadHistory} className="tabletd marginRight" ><img className="iconHistory" alt="historyIcon" src={this.state.historyIcon} title="previous time range" /></span>
+                        <span onClick={this.loadHistory} className="tabletd marginRight" ><img className="iconHistory" alt="historyIcon" src={this.state.history.length === 0 ? historyIconGrey : historyIcon} title="previous time range" /></span>
                         <span onClick={this.refresh} className="tabletd" ><img style={{ "marginLeft": "10px", "marginRight": "0px" }} className="iconRefresh" alt="refreshIcon" src={this.state.refreshIcon} title="refresh" /></span>
                         <button className="btn dropdown-toggle" type="button" id="dropdownMenuButton" onClick={this.toggleMenu} aria-haspopup="true" aria-expanded="false">
                             {store.getState().timerange[2]}
