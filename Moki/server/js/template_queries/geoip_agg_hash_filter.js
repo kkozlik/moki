@@ -19,12 +19,19 @@ var getTemplate = function (precision, queries, supress) {
                 }
             }
         },
-        "aggs" : {
-            "cities" : {
+        "aggs": {
+            "cities": {
                 "geohash_grid": {
                     "field": "geoip.location_all",
                     "precision": precision
-                  }
+                },
+                "aggs": {
+                    "types": {
+                        "terms": { "field": "attrs.type" }
+
+                    }
+                }
+
             }
         }
     };

@@ -60,13 +60,15 @@ class registrationController extends Controller {
             //TRANSPORT PROTOCOL
             { index: "logstash*", template: agg_filter, params: ['attrs.transport', 10], filter: "*" },
             //PARALLEL REGS
-            { index: "collectd*", template: distinct_timerange_query_string, params: ["attrs.hostname", "max", "attrs.regs", "timebucket"], filter: "*", exists: "attrs.regs", types:"*"},
+            { index: "collectd*", template: distinct_timerange_query_string, params: ["attrs.hostname", "max", "attrs.regs", "timebucket"], filter: "*", exists: "attrs.regs", types: "*" },
             //PARALLEL REGS 1 DAY AGO   
-            { index: "collectd*", template: distinct_timerange_query_string, params: ["attrs.hostname", "max", "attrs.regs", "timebucket"], filter: "*", timestamp_gte: "- 60 * 60 * 24 * 1000", timestamp_lte: "- 60 * 60 * 24 * 1000", exists: "attrs.regs",  types:"*"  },
+            { index: "collectd*", template: distinct_timerange_query_string, params: ["attrs.hostname", "max", "attrs.regs", "timebucket"], filter: "*", timestamp_gte: "- 60 * 60 * 24 * 1000", timestamp_lte: "- 60 * 60 * 24 * 1000", exists: "attrs.regs", types: "*" },
             //ACTUAL REGS  
-            { index: "collectd*", template:  two_agg_query, params: ["attrs.hostname", "max", "attrs.regs"], filter: "*", timestamp_gte: "lastTimebucket", exists: "attrs.regs",  types:"*"},
+            { index: "collectd*", template: two_agg_query, params: ["attrs.hostname", "max", "attrs.regs"], filter: "*", timestamp_gte: "lastTimebucket", exists: "attrs.regs", types: "*" },
             //MAP FOR GEOHASH
-            { index: "logstash*", template: geoip_hash_query, params: [3], filter: "*" }
+            { index: "logstash*", template: geoip_hash_query, params: [3], filter: "*" },
+            //TYPES DISTRIBUTIONS
+            { index: "logstash*", template: agg_filter, params: ['attrs.type', 10], filter: "*" }
         ], "registration");
     }
 

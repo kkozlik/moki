@@ -1,4 +1,3 @@
-//REDUX action func
 
 export function addFilter(payload) {
   return { type: "ADD_FILTER", payload }

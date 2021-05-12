@@ -25,6 +25,9 @@ var getTemplate = function (queries, supress) {
                 "aggs" : {
                     "centroid" : {
                         "geo_centroid" : { "field" : "geoip.location_all" }
+                    },
+                    "aggs": {
+                            "terms": { "field": "attrs.type" }
                     }
                 }
             }

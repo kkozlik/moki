@@ -34,6 +34,7 @@ class RegistrationCharts extends Component {
             parallelRegs: [],
             regsActual: [],
             geoipHashMap: [],
+            types: [],
             isLoading: true
         }
         store.subscribe(() => this.loadData());
@@ -96,6 +97,9 @@ class RegistrationCharts extends Component {
             //DISTRIBUTION HASH GEOIP MAP
             var geoipHashMap = parseAggCities(data.responses[8]);
 
+            //TYPES DISTRIBUTIONS
+            var types = parseBucketData(data.responses[9]);
+
             console.info(new Date() + " MOKI REGISTRATION: finished parsing data");
 
             this.setState({
@@ -107,6 +111,7 @@ class RegistrationCharts extends Component {
                 parallelRegs: parallelRegs,
                 regsActual: regsActual,
                 geoipHashMap: geoipHashMap,
+                types: types,
                 isLoading: false
             });
 
@@ -152,60 +157,45 @@ class RegistrationCharts extends Component {
                         name="REGISTRATIONS MAP" />
                 </div> </div> <div className="row no-gutters" >
                 <div className="col" >
+                    <DonutChart
+                        data={this.state.types}
+                        units={"count"}
+                        name={"TYPES"}
+                        field={"attrs.type"}
+                        id="types"
+                        width={500}
+                        height={170}
+                        legendSize={100}
+                    />
                     <DonutChart data={
                         this.state.userAgents
                     }
                         units={"count"}
-                        name={
-                            "USER-AGENTS IN REG. NEW"
-                        }
-                        field={
-                            "attrs.from-ua"
-                        }
+                        name={"USER-AGENTS IN REG. NEW"}
+                        field={"attrs.from-ua"}
                         id="userAgents"
-                        width={
-                            store.getState().width - 300
-                        }
-                        height={
-                            170
-                        }
-                        legendSize={
-                            450
-                        }
+                        width={(store.getState().width/2)-100}
+                        height={170}
+                        legendSize={350}
                     />  </div> <div className="col" >
-                    <DonutChart data={
-                        this.state.transportProtocol
-                    }
-                        name={
-                            "TRANSPORT PROTOCOL"
-                        }
+                    <DonutChart
+                        data={this.state.transportProtocol}
+                        name={"TRANSPORT PROTOCOL"}
                         units={"count"}
-                        field={
-                            "attrs.transport"
-                        }
+                        field={"attrs.transport"}
                         id="transportProtocol"
-                        width={
-                            (store.getState().width - 300) / 2
-                        }
-                        height={
-                            170
-                        }
-                        legendSize={
-                            50
-                        }
+                        width={500}
+                        height={170}
+                        legendSize={50}
                     />  </div> <div className="col" >
-                    <ListChart data={
-                        this.state.topRegExpired
-                    }
-                        name={
-                            "TOP REG. EXPIRED"
-                        }
-                        field={
-                            "attrs.from.keyword"
-                        }
-                    />  </div>
-
-            </div> </div>
+                    <ListChart
+                        data={this.state.topRegExpired}
+                        name={"TOP REG. EXPIRED"}
+                        field={"attrs.from.keyword"}
+                    />
+                </div>
+            </div>
+        </div>
         );
     }
 }

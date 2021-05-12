@@ -107,30 +107,30 @@ export default class StackedChart extends Component {
 
             function wrap(text, width) {
                 //split by /
-                text.each(function() {
-                  var text = d3.select(this),
-                      words = text.text().split("/").reverse(),
-                      word,
-                      line = [],
-                      lineNumber = 0,
-                      lineHeight = 1.1, // ems
-                      y = text.attr("y"),
-                      dy = parseFloat(text.attr("dy")),
-                      tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em");
-                      //return the split char
-                      if(words.length > 1) words[1] = words[1] + "/";
-                  while (word = words.pop()) {
-                    line.push(word);
-                    tspan.text(line.join(" "));
-                    if (tspan.node().getComputedTextLength() > width) {
-                      line.pop();
-                      tspan.text(line.join(" "));
-                      line = [word];
-                      tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word);
+                text.each(function () {
+                    var text = d3.select(this),
+                        words = text.text().split("/").reverse(),
+                        word,
+                        line = [],
+                        lineNumber = 0,
+                        lineHeight = 1.1, // ems
+                        y = text.attr("y"),
+                        dy = parseFloat(text.attr("dy")),
+                        tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em");
+                    //return the split char
+                    if (words.length > 1) words[1] = words[1] + "/";
+                    while (word = words.pop()) {
+                        line.push(word);
+                        tspan.text(line.join(" "));
+                        if (tspan.node().getComputedTextLength() > width) {
+                            line.pop();
+                            tspan.text(line.join(" "));
+                            line = [word];
+                            tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word);
+                        }
                     }
-                  }
                 });
-              }
+            }
 
             var x = d3.scaleBand()
                 .range([0, width])
@@ -139,7 +139,7 @@ export default class StackedChart extends Component {
                 return d.name;
             }));
             var xAxis = d3.axisBottom(x);
-            
+
 
             rootsvg.append("g")
                 .attr("class", "x axis")
@@ -218,7 +218,7 @@ export default class StackedChart extends Component {
 
 
             layer.selectAll("rect")
-                .data(function (d, i) {
+                .data(function (d) {
                     return d;
                 })
                 .enter().append("rect")
@@ -267,15 +267,28 @@ export default class StackedChart extends Component {
                     }
                 });
 
+
             //filter type onClick
             layer.on("click", el => {
                 createFilter("attrs.type:" + el.key);
 
                 var tooltips = document.getElementById("tooltip" + id);
                 if (tooltip) {
-                        tooltips.style.opacity = 0;
+                    tooltips.style.opacity = 0;
                 }
             });
+
+
+            //TODO add total sum                
+            /*layer.selectAll("text.rect")
+                .data( layers[0])
+                .enter().append("text")
+                .attr("text-anchor", "middle")
+                .attr("x", function (d) { return x(d.data.name) + x.bandwidth() / 2 })
+                .attr("y", function (d, i) { return yScale(d[1])  })
+                .text(function (d, i) { return d.data.sum; })
+                .style("fill", "black");
+*/
 
             //animation for 2 sec, transition delay is in milliseconds
             /* Add 'curtain' rectangle to hide entire graph */
@@ -314,8 +327,8 @@ export default class StackedChart extends Component {
 
             // tooltip
             var tooltip = d3.select('#' + id).append("div")
-            .attr('id', 'tooltip' + id)
-            .attr("class", "tooltipCharts");
+                .attr('id', 'tooltip' + id)
+                .attr("class", "tooltipCharts");
 
 
             tooltip.append("div");

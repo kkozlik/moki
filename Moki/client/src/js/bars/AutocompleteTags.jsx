@@ -6,7 +6,6 @@ import {
     elasticsearchConnection
 } from '../helpers/elasticsearchConnection';
 
-//input field with hints specificaly for tags
 class Autocomplete extends Component {
 
     static defaultProps = {
