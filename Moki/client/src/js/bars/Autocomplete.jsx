@@ -18,7 +18,7 @@ class Autocomplete extends Component {
 
         this.state = {
             // The active selection's index
-            activeSuggestion: 0,
+            activeSuggestion: -1,
             // The suggestions that match the user's input
             filteredSuggestions: [],
             // Whether or not the suggestion list is shown
@@ -38,13 +38,13 @@ class Autocomplete extends Component {
         // Filter our suggestions that don't contain the user's input
         const filteredSuggestions = suggestions.filter(
             suggestion =>
-            suggestion.toLowerCase().indexOf(userInput.toLowerCase()) > -1
+                suggestion.toLowerCase().indexOf(userInput.toLowerCase()) > -1
         );
 
         // Update the user input and filtered suggestions, reset the active
         // suggestion and make sure the suggestions are shown
         this.setState({
-            activeSuggestion: 0,
+            activeSuggestion: -1,
             filteredSuggestions,
             showSuggestions: true,
             userInput: e.currentTarget.value
@@ -58,13 +58,23 @@ class Autocomplete extends Component {
         }
     };
 
+    // Event fired when the input value is changed
+    onClickInput = e => {
+        // hide suggestions
+        this.setState({
+            activeSuggestion: -1,
+            filteredSuggestions: [],
+            showSuggestions: false
+        });
+    };
+
     // Event fired when the user clicks on a suggestion
     onClick = e => {
         // if you already wrote whole tags string
         if (this.state.userInput === "tags:" || this.state.userInput === "tags: ") {
             this.setState({
                 userInput: this.state.userInput + e.currentTarget.innerText,
-                activeSuggestion: 0,
+                activeSuggestion: -1,
                 filteredSuggestions: [],
                 showSuggestions: false,
             });
@@ -80,14 +90,15 @@ class Autocomplete extends Component {
         } else {
             this.setState({
                 userInput: e.currentTarget.innerText + ": ",
-                activeSuggestion: 0,
+                activeSuggestion: -1,
                 filteredSuggestions: [],
                 showSuggestions: false,
             });
         }
 
-        document.getElementById("searchBar").focus();
+        //document.getElementById("searchBar").focus();
     };
+
 
     // Event fired when the user presses a key down
     onKeyDown = e => {
@@ -99,12 +110,19 @@ class Autocomplete extends Component {
         // User pressed the enter key, update the input and close the
         // suggestions
         if (e.keyCode === 13) {
-            /* this.setState({
-               activeSuggestion: 0,
-               showSuggestions: false,
-               userInput: filteredSuggestions[activeSuggestion]
-             });*/
-            document.getElementById("filterButton").click();
+            //if suggestion was selected
+            if (this.state.activeSuggestion !== -1) {
+                this.setState({
+                    activeSuggestion: -1,
+                    showSuggestions: false,
+                    userInput: filteredSuggestions[activeSuggestion]
+                });
+            }
+            //no suggestion selected, create new filter on enter
+            else {
+                document.getElementById("filterButton").click();
+            }
+
         }
         // User pressed the up arrow, decrement the index
         else if (e.keyCode === 38) {
@@ -134,10 +152,10 @@ class Autocomplete extends Component {
                 userInput: ""
             });
         }
-        
+
         if (nextProps.tags !== this.props.tags) {
             this.setState({
-                tags: nextProps.tags 
+                tags: nextProps.tags
             });
         }
     }
@@ -147,7 +165,9 @@ class Autocomplete extends Component {
         const {
             onChange,
             onClick,
+            onClickInput,
             onKeyDown,
+            onkeyDownSuggestions,
             state: {
                 activeSuggestion,
                 filteredSuggestions,
@@ -160,64 +180,44 @@ class Autocomplete extends Component {
 
         if (showSuggestions && userInput) {
             if (filteredSuggestions.length) {
-                suggestionsListComponent = ( <
-                    ul className = "suggestions" > {
+                suggestionsListComponent = (
+                    <ul className="suggestions" > {
                         filteredSuggestions.map((suggestion, index) => {
                             let className;
-
                             // Flag the active suggestion with a class
                             if (index === activeSuggestion) {
                                 className = "suggestion-active";
                             }
 
-                            return ( <
-                                li className = {
-                                    className
-                                }
-                                key = {
-                                    suggestion
-                                }
-                                onClick = {
-                                    onClick
-                                } > {
-                                    suggestion
-                                } <
-                                /li>
+                            return (<li className={className}
+                                key={suggestion}
+                                onClick={onClick}
+                                tabIndex={0}
+                            > {suggestion} </li>
                             );
                         })
-                    } <
-                    /ul>
+                    } </ul>
                 );
             } else {
-                suggestionsListComponent = ( <
-                    div className = "no-suggestions" >
-                    <
-                    /div>
+                suggestionsListComponent = (<div className="no-suggestions" >
+                </div>
                 );
             }
         }
 
-        return ( <
-            Fragment >
-            <
-            input type = "text"
-            onChange = {
-                onChange
-            }
-            onKeyDown = {
-                onKeyDown
-            }
-            value = {
-                userInput
-            }
-            id = "searchBar"
-            placeholder = "FILTER: attribute:value"
-            autoComplete = "new-password" /
-            >
-            {
-                suggestionsListComponent
-            } <
-            /Fragment>
+        return (<Fragment>
+            <input
+                type="text"
+                onChange={onChange}
+                onKeyDown={onKeyDown}
+                onClick={onClickInput}
+                value={userInput}
+                id="searchBar"
+                placeholder="FILTER: attribute:value"
+                autoComplete="new-password"
+            />
+            {suggestionsListComponent}
+        </Fragment>
         );
     }
 }
