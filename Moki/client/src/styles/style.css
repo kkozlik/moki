@@ -1175,16 +1175,16 @@ input {
 }
 
 .suggestions {
-    border: 1px solid #999;
-    border-top-width: 0;
+    border: 1px solid #ced4da;
+    border-radius: .25rem;
     list-style: none;
-    max-height: 143px;
+    max-height: 165px;
     padding-left: 0;
-    width: 62%;
-    overflow-y: auto;
+    width: 85%;
+    overflow-y: hidden;
     z-index: 9999999;
-    margin-left: 25px;
-    position: fixed;
+    margin-left: 20px;
+    position: absolute;
     background-color: white;
 }
 
