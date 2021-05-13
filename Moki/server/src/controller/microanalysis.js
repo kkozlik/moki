@@ -90,6 +90,8 @@ class MicronalysisController extends Controller {
             { index: "logstash*", template: agg_query, params: ["terms", "attrs.originator"], filter: "*" },
             //DISTINCT IP
             { index: "logstash*", template: distinct_query_string, params: ["attrs.source"], filter: "*" },
+             //TOP NODEs LIST
+             { index: "logstash*", template: agg_query, params: ["terms", "agent.hostname"], filter: "*" },
         ], "microanalysis");
     }
 
