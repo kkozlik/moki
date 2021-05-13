@@ -43,6 +43,7 @@ class MicroanalysisCharts extends Dashboard {
             originator: [],
             charts: [],
             distinctIP: [],
+            topNodes: [],
             isLoading: true
         }
         this.callBacks = {
@@ -112,7 +113,10 @@ class MicroanalysisCharts extends Dashboard {
                 [{ result: 'originator', func: parseListData }],
 
                 //DISTINCT IP
-                [{ result: 'distinctIP', func: parseAggDistinct }]
+                [{ result: 'distinctIP', func: parseAggDistinct }],
+
+                //TOP NODES
+                [{ result: 'topNodes', func: parseListData }]
             ]
         }
     }
@@ -125,14 +129,13 @@ class MicroanalysisCharts extends Dashboard {
 
             <div className="row no-gutters" >
                 {this.state.charts["DISTINCT IP"] && <div className="col">
-                    <ValueChart data={
-                        this.state.distinctIP
-                    } name={"DISTINCT IP"} />
+                    <ValueChart
+                        data={this.state.distinctIP}
+                        name={"DISTINCT IP"} />
                 </div>}
                 {this.state.charts["TYPES"] && <div className="col" >
-                    <DonutChart data={
-                        this.state.typesCount
-                    }
+                    <DonutChart
+                        data={this.state.typesCount}
                         units={"count"}
                         name={"TYPES"}
                         id="types"
@@ -143,224 +146,112 @@ class MicroanalysisCharts extends Dashboard {
                 </div>}
                 {this.state.charts["FROM UA"] && <div className="col" >
                     <ListChart data={this.state.fromUA}
-                        name={
-                            "FROM UA"
-                        }
-                        field={
-                            "attrs.from-ua"
-                        }
-                    />   </div>} </div> <div className="row no-gutters" >
+                        name={"FROM UA"}
+                        field={"attrs.from-ua"}
+                    />   </div>}
+            </div>
+            <div className="row no-gutters" >
                 {this.state.charts["SIP METHOD"] && <div className="col" >
-                    <ListChart data={
-                        this.state.sipMethod
-                    }
-                        name={
-                            "SIP METHOD"
-                        }
-                        field={
-                            "attrs.method"
-                        }
+                    <ListChart data={this.state.sipMethod}
+                        name={"SIP METHOD"}
+                        field={"attrs.method"}
                     />  </div>}
                 {this.state.charts["SIP CODE"] && <div className="col">
-                    <ListChart data={
-                        this.state.sipCode
-                    }
-                        name={
-                            "SIP CODE"
-                        }
-                        field={
-                            "attrs.sip-code"
-                        }
+                    <ListChart data={this.state.sipCode}
+                        name={"SIP CODE"}
+                        field={"attrs.sip-code"}
                     />  </div >}
                 {this.state.charts["TOP SUBNETS /24"] && <div className="col">
-                    <ListChart data={
-                        this.state.topSubnets
-                    }
-                        name={
-                            "TOP SUBNETS /24"
-                        }
-                        field={
-                            "attrs.sourceSubnets"
-                        }
+                    <ListChart data={this.state.topSubnets}
+                        name={"TOP SUBNETS /24"}
+                        field={"attrs.sourceSubnets"}
                     />  </div>}
                 {this.state.charts["r-URI"] && <div className="col" >
-                    <ListChart data={
-                        this.state.prefixStripped
-                    }
-                        name={
-                            "r-URI"
-                        }
-                        field={
-                            "attrs.r-uri-shorted"
-                        }
+                    <ListChart data={this.state.prefixStripped}
+                        name={"r-URI"}
+                        field={"attrs.r-uri-shorted"}
                     />  </div>}
                 {this.state.charts["SOURCE IP ADDRESS"] && <div className="col" >
-                    <ListChart data={
-                        this.state.sourceIP
-                    }
-                        name={
-                            "SOURCE IP ADDRESS"
-                        }
-                        field={
-                            "attrs.source"
-                        }
+                    <ListChart data={this.state.sourceIP}
+                        name={"SOURCE IP ADDRESS"}
+                        field={"attrs.source"}
                     />  </div>}
                 {this.state.charts["SRC CA"] && <div className="col" >
-                    <ListChart data={
-                        this.state.srcCA
-                    }
-                        name={
-                            "SRC CA"
-                        }
-                        field={
-                            "attrs.src_ca_name"
-                        }
+                    <ListChart data={this.state.srcCA}
+                        name={"SRC CA"}
+                        field={"attrs.src_ca_name"}
                     />  </div>}
                 {this.state.charts["DST CA"] && <div className="col" >
-                    <ListChart data={
-                        this.state.dstCA
-                    }
-                        name={
-                            "DST CA"
-                        }
-                        field={
-                            "attrs.dst_ca_name"
-                        }
+                    <ListChart data={this.state.dstCA}
+                        name={"DST CA"}
+                        field={"attrs.dst_ca_name"}
                     />  </div>}
                 {this.state.charts["ORIGINATOR"] && <div className="col" >
-                    <ListChart data={
-                        this.state.originator
-                    }
-                        name={
-                            "ORIGINATOR"
-                        }
-                        field={
-                            "attrs.originator"
-                        }
+                    <ListChart data={this.state.originator}
+                        name={"ORIGINATOR"}
+                        field={"attrs.originator"}
                     />  </div>}
                 {this.state.charts["TOP 10 FROM"] && <div className="col" >
-                    <ListChart data={
-                        this.state.top10from
-                    }
-                        name={
-                            "TOP 10 FROM"
-                        }
-                        field={
-                            "attrs.from.keyword"
-                        }
+                    <ListChart data={this.state.top10from}
+                        name={"TOP 10 FROM"}
+                        field={"attrs.from.keyword"}
                     />  </div>}
                 {this.state.charts["CALLER DOMAIN"] && <div className="col" >
-                    <ListChart data={
-                        this.state.callerDomain
-                    }
-                        name={
-                            "CALLER DOMAIN"
-                        }
-                        field={
-                            "attrs.from-domain"
-                        }
+                    <ListChart data={this.state.callerDomain}
+                        name={"CALLER DOMAIN"}
+                        field={"attrs.from-domain"}
                     />  </div>}
                 {this.state.charts["TOP 10 TO"] && <div className="col" >
-                    <ListChart data={
-                        this.state.top10to
-                    }
-                        name={
-                            "TOP 10 TO"
-                        }
-                        field={
-                            "attrs.to.keyword"
-                        }
+                    <ListChart data={this.state.top10to}
+                        name={"TOP 10 TO"}
+                        field={"attrs.to.keyword"}
                     />  </div>}
                 {this.state.charts["DISTINCT DESTINATIONS"] && <div className="col" >
-                    <ListChart data={
-                        this.state.distinctDestinations
-                    }
-                        name={
-                            "DISTINCT DESTINATIONS"
-                        }
-                        field={
-                            "attrs.from.keyword"
-                        }
+                    <ListChart data={this.state.distinctDestinations}
+                        name={"DISTINCT DESTINATIONS"}
+                        field={"attrs.from.keyword"}
                     />  </div>}
 
                 {this.state.charts["TOP CALL ATTEMPTS"] && <div className="col" >
-                    <ListChart data={
-                        this.state.topCallAttempts
-                    }
-                        name={
-                            "TOP CALL ATTEMPTS"
-                        }
-                        field={
-                            "attrs.from.keyword"
-                        }
+                    <ListChart data={this.state.topCallAttempts}
+                        name={"TOP CALL ATTEMPTS"}
+                        field={"attrs.from.keyword"}
                     />  </div>}
                 {this.state.charts["TOP CALL ENDS"] && <div className="col">
-
-                    <ListChart data={
-                        this.state.topCallEnds
-                    }
-                        name={
-                            "TOP CALL ENDS"
-                        }
-                        field={
-                            "attrs.from-keyword"
-                        }
+                    <ListChart data={this.state.topCallEnds}
+                        name={"TOP CALL ENDS"}
+                        field={"attrs.from-keyword"}
                     />  </div>}
                 {this.state.charts["DESTINATION BY R-URI"] && <div className="col" >
-                    <ListChart data={
-                        this.state.destination
-                    }
-                        name={
-                            "DESTINATION BY R-URI"
-                        }
-                        field={
-                            "attrs.r-uri.keyword"
-                        }
+                    <ListChart data={this.state.destination}
+                        name={"DESTINATION BY R-URI"}
+                        field={"attrs.r-uri.keyword"}
                     />  </div>}
 
                 {this.state.charts["SUM DURATION"] && <div className="col" >
-                    <ListChart data={
-                        this.state.sumDuration
-                    }
-                        name={
-                            "SUM DURATION"
-                        }
-                        field={
-                            "attrs.from.keyword"
-                        }
+                    <ListChart data={this.state.sumDuration}
+                        name={"SUM DURATION"}
+                        field={"attrs.from.keyword"}
                     />  </div>}
                 {this.state.charts["TOP DURATION"] && <div className="col" >
-                    <ListChart data={
-                        this.state.topDuration
-                    }
-                        name={
-                            "TOP DURATION"
-                        }
-                        field={
-                            "attrs.from.keyword"
-                        }
+                    <ListChart data={this.state.topDuration}
+                        name={"TOP DURATION"}
+                        field={"attrs.from.keyword"}
                     />  </div >}
                 {this.state.charts["TOP DURATION < 5 sec"] && <div className="col" >
-                    <ListChart data={
-                        this.state.topDuration5
-                    }
-                        name={
-                            "TOP DURATION < 5 sec"
-                        }
-                        field={
-                            "attrs.from.keyword"
-                        }
+                    <ListChart data={this.state.topDuration5}
+                        name={"TOP DURATION < 5 sec"}
+                        field={"attrs.from.keyword"}
                     />  </div >}
                 {this.state.charts["TOP SBCs LIST"] && <div className="col" >
-                    <ListChart data={
-                        this.state.topSBC
-                    }
-                        name={
-                            "TOP SBCs LIST"
-                        }
-                        field={
-                            "attrs.sbc"
-                        }
+                    <ListChart data={this.state.topSBC}
+                        name={"TOP SBCs LIST"}
+                        field={"attrs.sbc"}
+                    />  </div>}
+                {this.state.charts["TOP NODEs LIST"] && <div className="col" >
+                    <ListChart data={this.state.topNodes}
+                        name={"TOP HOSTs LIST"}
+                        field={"agent.hostname"}
                     />  </div>}
             </div> </div>
         );
