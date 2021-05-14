@@ -91,7 +91,7 @@ class App extends Component {
         console.info("Storing layout");
         //get dashboard list
         var dashboards = Object.keys(jsonData.dashboards);
-        if ((this.state.aws && !this.state.admin) || this.state.aws) {
+        if ((this.state.aws && !this.state.admin) || !this.state.aws) {
             dashboards = dashboards.filter(dashboard => jsonData.dashboards[dashboard]);
         }
         this.setState({
@@ -100,7 +100,7 @@ class App extends Component {
 
         //get settings dashboard list
         var dashboardsSettings = Object.keys(jsonData.settingsDashboards);
-        if ((this.state.aws && !this.state.admin) || this.state.aws) {
+        if ((this.state.aws && !this.state.admin) || !this.state.aws) {
             dashboardsSettings = dashboardsSettings.filter(dashboard => jsonData.settingsDashboards[dashboard]);
         }
         this.setState({
@@ -109,7 +109,7 @@ class App extends Component {
 
         //get user dashboard list
         var userSettings = Object.keys(jsonData.userDashboards);
-        if ((this.state.aws && !this.state.admin) || this.state.aws) {
+        if ((this.state.aws && !this.state.admin) || !this.state.aws) {
             userSettings = userSettings.filter(dashboard => jsonData.userDashboards[dashboard]);
         }
         this.setState({

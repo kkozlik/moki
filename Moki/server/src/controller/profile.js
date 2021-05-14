@@ -152,7 +152,7 @@ class ProfileController {
                         response = await insertES(indexName, {
                             "domain": "default",
                             "userprefs": {
-                                "monitor_name": "Intuitive labs"
+                                "monitor_name": "Monitor"
                             }
                         }, res);
                         newIndex = true;
