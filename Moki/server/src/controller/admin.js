@@ -208,20 +208,30 @@ class AdminController {
     static getUser(req) {
         var parsedHeader;
         try {
-          parsedHeader = parseBase64(req.headers[hfName]);
+            parsedHeader = parseBase64(req.headers[hfName]);
         } catch (e) {
-          console.log("ACCESS getJWTsipUserFilter: JWT parsing failed");
-          throw new Error("ACCESS: JWT parsing error");
+            console.log("ACCESS getJWTsipUserFilter: JWT parsing failed");
+            throw new Error("ACCESS: JWT parsing error");
         }
         const sip = parsedHeader['custom:sip'];
         const jwtbit = parsedHeader['custom:adminlevel'];
         const domainID = parsedHeader['custom:domainid'];
         const subId = parsedHeader['sub'];
-        return {
-            sip: sip,
-            jwtbit: jwtbit,
-            domain: domainID,
-            "tls-cn":subId
+        if (sip) {
+            return {
+                sip: sip,
+                jwtbit: jwtbit,
+                domain: domainID,
+                "tls-cn": subId
+            }
+        }
+        else {
+            return {
+                sip: "admin",
+                jwtbit: 0,
+                domain: "default",
+                "tls-cn": "default"
+            }
         }
     }
 }
