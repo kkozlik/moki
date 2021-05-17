@@ -2,7 +2,7 @@
 
 // TODO: rename to app.js (this isn't a server isn't ;) )
 
-const app = require('@moki-server/server-intuitive/modules/express'); 
+const app = require('@moki-server/server/modules/express'); 
 const { cfg } = require('./modules/config');
 
 
