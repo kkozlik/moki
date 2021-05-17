@@ -15,7 +15,7 @@ function getFiltersConcat(filters) {
       }
 
       //wildcard search - special ES query
-      if (tit.includes("*") || tit.includes("?")) {
+      if ((tit.includes("*") || tit.includes("?")) && !tit.includes("/")) {
         //is field name?
         if (tit.includes(":")) {
           filtersList.push({
