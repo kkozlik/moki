@@ -9,7 +9,7 @@ import ListChart from '../../charts/list_chart.js';
 import DonutChart from '../../charts/donut_chart.js';
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import ValueChart from '../../charts/value_chart.js';
-import { parseListData, parseIp, parseListDataCardinality, parseBucketData, parseAggDistinct } from '@moki-client/es-response-parser';
+import { parseListData, parseIp, parseListDataCardinality, parseBucketData, parseAggDistinct, parseUri } from '@moki-client/es-response-parser';
 
 
 class MicroanalysisCharts extends Dashboard {
@@ -71,25 +71,25 @@ class MicroanalysisCharts extends Dashboard {
                 [{ result: 'sourceIP', func: parseIp }],
 
                 //TOP 10 FROM 7
-                [{ result: 'top10from', func: parseListData }],
+                [{ result: 'top10from', func: parseUri }],
 
                 //CALLER DOMAIN 8
                 [{ result: 'callerDomain', func: parseListData }],
 
                 //TOP 10 TO 9
-                [{ result: 'top10to', func: parseListData }],
+                [{ result: 'top10to', func: parseUri }],
 
                 //DOMAIN STATS 10
                 [{ result: 'distinctDestinations', func: parseListDataCardinality }],
 
                 //TOP CALL ATTEMPTS 11
-                [{ result: 'topCallAttempts', func: parseListData }],
+                [{ result: 'topCallAttempts', func: parseUri }],
 
                 //TOP CALL ENDS 12
-                [{ result: 'topCallEnds', func: parseListData }],
+                [{ result: 'topCallEnds', func: parseUri }],
 
                 //DESTINATION BY R-URI 13
-                [{ result: 'destination', func: parseListData }],
+                [{ result: 'destination', func: parseUri }],
 
                 //SUM DURATION 14
                 [{ result: 'sumDuration', func: parseListDataCardinality }],
