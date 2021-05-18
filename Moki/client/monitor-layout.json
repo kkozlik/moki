@@ -1,0 +1,250 @@
+{
+    "color": "#58a959",
+    "logo": "/etc/abc-monitor/logo.png",
+    "favicon": "/etc/abc-monitor/logo_circle.png",
+    "name": "Frafos Monitor",
+    "dashboards": {
+        "calls": true,
+        "conference": true,
+        "connectivityCA": true,
+        "connectivity": true,
+        "diagnostics": true,
+        "domains": false,
+        "exceeded": true,
+        "home": true,
+        "microanalysis": true,
+        "network": true,
+        "overview": true,
+        "qos": true,
+        "realm": true,
+        "registration": true,
+        "security": true,
+        "system": true,
+        "transport": true,
+        "web": true
+    },
+    "settingsDashboards": {
+        "alarms": true,
+        "settings": true,
+        "monitoring": true
+    },
+    "userDashboards": {
+        "account": false
+    },
+    "types": {
+        "calls": [
+            "call-end",
+            "call-start",
+            "call-attempt"
+        ],
+        "overview": [
+            "call-end",
+            "call-start",
+            "call-attempt",
+            "reg-new",
+            "reg-del",
+            "reg-expired",
+            "auth-failed",
+            "error",
+            "alert",
+            "notice",
+            "other-failed",
+            "other-timeout",
+            "other-ok",
+            "parse-error",
+            "msg-probe"
+        ],
+        "microanalysis": [
+            "call-end",
+            "call-start",
+            "call-attempt",
+            "reg-new",
+            "reg-del",
+            "reg-expired",
+            "auth-failed",
+            "error",
+            "alert",
+            "notice"
+        ],
+        "registration": [
+            "reg-del",
+            "reg-new",
+            "reg-expired"
+        ],
+        "diagnostics": [
+            "alert",
+            "error",
+            "notice",
+            "other-failed",
+            "other-timeout",
+            "other-ok",
+            "parse-error",
+            "msg-probe",
+            "message-log",
+            "action-log",
+            "prompt",
+            "recording"
+        ],
+        "security": [
+            "auth-failed"
+        ],
+        "transport": [
+            "error",
+            "alert",
+            "notice"
+        ],
+        "exceeded": [
+            "low_MoS",
+            "high_rx",
+            "high_tx",
+            "call_start",
+            "honeynet",
+            "short_calls_ip",
+            "short_calls_uri",
+            "limit_ip",
+            "drop_ip",
+            "authfail_ip",
+            "authfail_uri",
+            "ip_limit_behind_uri",
+            "uri_limit_behind_ip",
+            "changing_location",
+            "too_many_minutes",
+            "poor_ratio_ca",
+            "CA_unreachable",
+            "poor_parallel_reg",
+            "security_metrics"
+        ],
+        "user": [
+            "call-end",
+            "call-start",
+            "call-attempt",
+            "message-dropped",
+            "auth-failed",
+            "limit",
+            "reg-del",
+            "reg-new",
+            "reg-expired"
+        ],
+        "conference": [
+            "conf-join",
+            "conf-leave"
+        ]
+    },
+    "charts": {
+        "overview": {
+            "TOTAL EVENTS": true,
+            "DISTINCT IP": true,
+            "EVENTS OVER TIME": true,
+            "TOTAL EVENTS IN INTERVAL": true,
+            "TOP TAGS": true,
+            "NODES - ACTIVITY": true,
+            "NODES - KEEP ALIVE": true
+        },
+        "exceeded": {
+            "EVENTS OVER TIME": true,
+            "INCIDENTS COUNT": true,
+            "EXCEEDED TYPE": true,
+            "TOP OFFENDERS": true,
+            "TOP SUBNETS /24 EXCEEDED": true,
+            "EXCEEDED EVENTS BY IP ADDR": true
+        },
+        "microanalysis": {
+            "DISTINCT IP": true,
+            "TYPES": true,
+            "FROM UA": true,
+            "SIP METHOD": true,
+            "SIP CODE": true,
+            "TOP SUBNETS /24": true,
+            "r-URI": true,
+            "SOURCE IP ADDRESS": true,
+            "SRC CA": false,
+            "DST CA": false,
+            "ORIGINATOR": true,
+            "TOP 10 FROM": true,
+            "CALLER DOMAIN": true,
+            "TOP 10 TO": true,
+            "DISTINCT DESTINATIONS": true,
+            "TOP CALL ATTEMPTS": true,
+            "TOP CALL ENDS": true,
+            "DESTINATION BY R-URI": true,
+            "SUM DURATION": true,
+            "TOP DURATION": true,
+            "TOP DURATION < 5 sec": true,
+            "TOP SBCs LIST": true
+        },
+        "calls": {
+            "ATTEMPTs": true,
+            "ENDs": true,
+            "STARTs": true,
+            "ASR (%)": true,
+            "MAX DURATION": true,
+            "AVG DURATION": true,
+            "SUM DURATION": true,
+            "AVG MoS": false,
+            "EVENTS OVER TIME": true,
+            "SUM DURATION OVER TIME": true,
+            "ASR OVER TIME": true,
+            "CALL SUCCESS RATIO": true,
+            "CALL TERMINATED": true,
+            "CALLING COUNTRIES": true,
+            "CALLED COUNTRIES": false,
+            "DURATION GROUP": true,
+            "SIP-CODE COUNT": true
+        },
+        "registration": {
+            "EVENTS OVER TIME": true,
+            "PARALLEL REGS": true,
+            "ACTUAL REGS": true,
+            "REGISTRATIONS MAP": true,
+            "USER-AGENTS IN REG. NEW": true,
+            "TRANSPORT PROTOCOL": true,
+            "TOP REG. EXPIRED": true
+        },
+        "security": {
+            "EVENTS OVER TIME": true,
+            "SECURITY GEO EVENTS": true,
+            "TYPES": true,
+            "EVENTS BY IP ADDR": true,
+            "TOP SUBNETS": true,
+            "EVENTS BY COUNTRY": true
+        }
+    },
+    "table": {
+        "default": [
+            "call-id",
+            "dst_ca_id",
+            "dst_rlm_name",
+            "duration",
+            "from",
+            "from-domain",
+            "from-ua",
+            "hostname",
+            "method",
+            "originator",
+            "rtp-MOScqex-avg",
+            "rtp-MOScqex-min",
+            "r-uri",
+            "sbc",
+            "sip-code",
+            "source-alias",
+            "sourceSubnets",
+            "src_ca_id",
+            "src_rlm_name",
+            "src-port",
+            "to",
+            "to-ua",
+            "type",
+            "source",
+            "conf_id",
+            "reason",
+            "tags"
+        ],
+        "account": [],
+        "calls": [
+            "call-id",
+            "dst_ca_id",
+            "dst_rlm_name",
+            "duration"
+        ]
+    }
+}
