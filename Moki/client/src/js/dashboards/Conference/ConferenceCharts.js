@@ -8,7 +8,6 @@ import TimedateStackedChart from '../../charts/timedate_stackedbar.js';
 import ListChart from '../../charts/list_chart.js';
 import ValueChart from '../../charts/value_chart.js';
 import store from "../../store/index";
-import storePersistent from "../../store/indexPersistent";
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import {parseListData, parseAggAvgCnt, parseStackedbarTimeData, parseQueryStringData, parseAggData, parseAggQueryWithoutScriptValue, parseListDataSort} from '@moki-client/es-response-parser';
 
@@ -69,7 +68,6 @@ class ConferenceCharts extends Dashboard {
     
     //render GUI
     render() {
-         
         return (
             <div> 
            { this.state.isLoading && <LoadingScreenCharts />   } 
@@ -110,7 +108,7 @@ class ConferenceCharts extends Dashboard {
             <div className = "row no-gutters" >
                     <TimedateStackedChart id="eventsOverTime" data = {
                         this.state.eventCallsTimeline
-                    } name={"EVENTS OVER TIME"} keys={storePersistent.layout.types.conference}  width={store.getState().width-300}
+                    } name={"EVENTS OVER TIME"}  width={store.getState().width-300}
                     /> 
             </div>
             <div className = "row no-gutters" >
