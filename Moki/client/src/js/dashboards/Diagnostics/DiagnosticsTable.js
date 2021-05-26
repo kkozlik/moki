@@ -44,7 +44,7 @@ class DiagnosticsTable extends Component {
             return;
         } else if (calls) {
 
-            var data = parseTableHits(calls.hits.hits);
+            var data = await parseTableHits(calls.hits.hits);
             var total = calls.hits.total.value;
             this.setState({
                 calls: data,
