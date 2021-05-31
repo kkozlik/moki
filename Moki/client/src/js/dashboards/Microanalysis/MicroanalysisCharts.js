@@ -9,7 +9,7 @@ import ListChart from '../../charts/list_chart.js';
 import DonutChart from '../../charts/donut_chart.js';
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import ValueChart from '../../charts/value_chart.js';
-import { parseListData, parseIp, parseListDataCardinality, parseBucketData, parseAggDistinct, parseUri } from '@moki-client/es-response-parser';
+import { parseListData, parseIp, parseListDataCardinality, parseBucketData, parseAggDistinct, parseUri, parseListDataCardinalityDecrypt } from '@moki-client/es-response-parser';
 
 
 class MicroanalysisCharts extends Dashboard {
@@ -74,13 +74,14 @@ class MicroanalysisCharts extends Dashboard {
                 [{ result: 'top10from', func: parseUri }],
 
                 //CALLER DOMAIN 8
-                [{ result: 'callerDomain', func: parseListData }],
+                //[{ result: 'callerDomain', func: parseListData }],
+                [{ result: 'callerDomain', func: parseUri}],
 
                 //TOP 10 TO 9
                 [{ result: 'top10to', func: parseUri }],
 
                 //DOMAIN STATS 10
-                [{ result: 'distinctDestinations', func: parseListDataCardinality }],
+                [{ result: 'distinctDestinations', func: parseListDataCardinalityDecrypt }],
 
                 //TOP CALL ATTEMPTS 11
                 [{ result: 'topCallAttempts', func: parseUri }],
@@ -92,13 +93,13 @@ class MicroanalysisCharts extends Dashboard {
                 [{ result: 'destination', func: parseUri }],
 
                 //SUM DURATION 14
-                [{ result: 'sumDuration', func: parseListDataCardinality }],
+                [{ result: 'sumDuration', func: parseListDataCardinalityDecrypt }],
 
                 //TOP DURATION 15
-                [{ result: 'topDuration', func: parseListDataCardinality }],
+                [{ result: 'topDuration', func: parseListDataCardinalityDecrypt }],
 
                 //TOP DURATION < 5 sec 16
-                [{ result: 'topDuration5', func: parseListData }],
+                [{ result: 'topDuration5', func: parseUri }],
 
                 //TOP SBCs 17
                 [{ result: 'topSBC', func: parseListData }],
@@ -168,7 +169,7 @@ class MicroanalysisCharts extends Dashboard {
                     />  </div>}
                 {this.state.charts["r-URI"] && <div className="col" >
                     <ListChart data={this.state.prefixStripped}
-                        name={"r-URI"}
+                        name={"r-URI - short"}
                         field={"attrs.r-uri-shorted"}
                     />  </div>}
                 {this.state.charts["SOURCE IP ADDRESS"] && <div className="col" >
