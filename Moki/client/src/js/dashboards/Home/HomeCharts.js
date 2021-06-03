@@ -87,7 +87,7 @@ class HomeCharts extends Component {
             var avgDuration = parseAggData(data.responses[5]);
 
             // DATE HEATMAP
-            var typeDateHeatmap = parseDateHeatmap(data.responses[6]);
+            var typeDateHeatmap = await parseDateHeatmap(data.responses[6]);
 
             //PARALLEL CALLS
             var parallelCalls = parseMultipleLineDataShareAxis("Calls", data.responses[7], "Calls-1d", data.responses[8]);
