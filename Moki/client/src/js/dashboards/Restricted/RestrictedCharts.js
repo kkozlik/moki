@@ -74,7 +74,7 @@ class RestrictedCharts extends Dashboard {
               [{result: 'eventExceededTimeline', func: parseStackedbarTimeData}],
 
               //TOP 10 TO
-              [{result: 'top10to', func: parseListData}],
+              [{result: 'top10to', func: parseUri}],
 
               //AVG MoS
               [{result: 'avgMoS', func: parseAggData}]
