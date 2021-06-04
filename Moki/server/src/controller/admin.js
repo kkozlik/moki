@@ -217,7 +217,8 @@ class AdminController {
         const jwtbit = parsedHeader['custom:adminlevel'];
         const domainID = parsedHeader['custom:domainid'];
         const subId = parsedHeader['sub'];
-        if (sip) {
+
+        if (domainID) {
             return {
                 sip: sip,
                 jwtbit: jwtbit,

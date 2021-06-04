@@ -10,7 +10,7 @@ import ListChart from '../../charts/list_chart.js';
 import ValueChart from '../../charts/value_chart.js';
 import store from "../../store/index";
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
-import { parseListData, parseIp, parseStackedbarTimeData, parseBucketData, parseQueryStringData } from '@moki-client/es-response-parser';
+import { parseListData, parseIp, parseStackedbarTimeData, parseBucketData, parseQueryStringData, parseUri } from '@moki-client/es-response-parser';
 
 class ExceededCharts extends Dashboard {
 
@@ -41,7 +41,7 @@ class ExceededCharts extends Dashboard {
                 [{ result: 'exceededType', func: parseBucketData }],
 
                 //TOP OFFENDERS
-                [{ result: 'topOffenders', func: parseListData }],
+                [{ result: 'topOffenders', func: parseUri }],
 
                 //EVENTS BY IP ADDR 
                 [{ result: 'ipAddress', func: parseIp }],

@@ -10,7 +10,7 @@ import ListChart from '../../charts/list_chart.js';
 import TimedateStackedChart from '../../charts/timedate_stackedbar.js';
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 //import StackedLineChart from '../../charts/timedate_stackedbar_with_line_chart.js';
-import {parseListData , parseIp, parseQueryStringData , parseAggData , parseAggSumBucketData , parseBucketData , parseStackedbarTimeData} from '@moki-client/es-response-parser';
+import {parseListData , parseIp, parseQueryStringData , parseAggData , parseAggSumBucketData , parseUri, parseBucketData , parseStackedbarTimeData} from '@moki-client/es-response-parser';
 
 
 class RestrictedCharts extends Dashboard {
@@ -74,7 +74,7 @@ class RestrictedCharts extends Dashboard {
               [{result: 'eventExceededTimeline', func: parseStackedbarTimeData}],
 
               //TOP 10 TO
-              [{result: 'top10to', func: parseListData}],
+              [{result: 'top10to', func: parseUri}],
 
               //AVG MoS
               [{result: 'avgMoS', func: parseAggData}]

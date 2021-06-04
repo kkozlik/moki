@@ -91,7 +91,6 @@ export function tableColumns(dashboard, tags) {
         editorRenderer: (editorProps, value, row, column, rowIndex, columnIndex) => (
             <TagRanger tags={tags} row={row} />
         ),
-
         formatter: (cell, obj) => {
             var ob = obj._source;
             return <span className="filterToggleActive"><span className="filterToggle">
@@ -136,7 +135,7 @@ export function tableColumns(dashboard, tags) {
                     </span>
                 }
             }, {
-                dataField: '_source.attrs.from.keyword',
+                dataField: '_source.attrs.from',
                 text: 'FROM',
                 sort: true,
                 editable: false,
@@ -147,7 +146,7 @@ export function tableColumns(dashboard, tags) {
                     </span>
                 }
             }, {
-                dataField: '_source.attrs.to.keyword',
+                dataField: '_source.attrs.to',
                 text: 'TO',
                 sort: true,
                 editable: false,
@@ -333,7 +332,7 @@ export function tableColumns(dashboard, tags) {
                 </span>
             }
         }, {
-            dataField: '_source.attrs.from.keyword',
+            dataField: '_source.attrs.from',
             text: 'FROM',
             sort: true,
             editable: false,
@@ -344,7 +343,7 @@ export function tableColumns(dashboard, tags) {
                 </span>
             }
         }, {
-            dataField: '_source.attrs.to.keyword',
+            dataField: '_source.attrs.to',
             text: 'TO',
             sort: true,
             editable: false,
@@ -452,7 +451,7 @@ export function tableColumns(dashboard, tags) {
                 </span>
             }
         }, {
-            dataField: '_source.attrs.from.keyword',
+            dataField: '_source.attrs.from',
             editable: false,
             sort: true,
             text: 'FROM',
@@ -463,7 +462,7 @@ export function tableColumns(dashboard, tags) {
                 </span>
             }
         }, {
-            dataField: '_source.attrs.to.keyword',
+            dataField: '_source.attrs.to',
             editable: false,
             sort: true,
             text: 'TO',
@@ -576,7 +575,7 @@ export function tableColumns(dashboard, tags) {
                 }
 
             }, {
-                dataField: '_source.attrs.from.keyword',
+                dataField: '_source.attrs.from',
                 text: 'FROM',
                 editable: false,
                 sort: true,
@@ -587,7 +586,7 @@ export function tableColumns(dashboard, tags) {
                     </span>
                 }
             }, {
-                dataField: '_source.attrs.to.keyword',
+                dataField: '_source.attrs.to',
                 text: 'TO',
                 editable: false,
                 sort: true,
@@ -698,7 +697,7 @@ export function tableColumns(dashboard, tags) {
             sort: true,
             text: 'REASON'
         }, {
-            dataField: '_source.attrs.from.keyword',
+            dataField: '_source.attrs.from',
             editable: false,
             sort: true,
             text: 'FROM',
@@ -709,7 +708,7 @@ export function tableColumns(dashboard, tags) {
                 </span>
             }
         }, {
-            dataField: '_source.attrs.to.keyword',
+            dataField: '_source.attrs.to',
             editable: false,
             sort: true,
             text: 'TO',
@@ -827,7 +826,7 @@ export function tableColumns(dashboard, tags) {
                 text: 'REASON',
 
             }, {
-                dataField: '_source.attrs.from.keyword',
+                dataField: '_source.attrs.from',
                 text: 'FROM',
                 sort: true,
                 editable: false,
@@ -945,7 +944,7 @@ export function tableColumns(dashboard, tags) {
                 </span>
             }
         }, {
-            dataField: '_source.attrs.from.keyword',
+            dataField: '_source.attrs.from', 
             text: 'FROM',
             sort: true,
             editable: false,
@@ -954,9 +953,9 @@ export function tableColumns(dashboard, tags) {
                 return <span className="filterToggleActive"><span className="filterToggle">
                     <img onClick={doFilter} field="attrs.from.keyword" value={ob.attrs.from} className="icon" alt="filterIcon" src={filterIcon} /><img field="attrs.from.keyword" value={ob.attrs.from} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span >{ob.attrs.from}
                 </span>
-            }
+            },
         }, {
-            dataField: '_source.attrs.to.keyword',
+            dataField: '_source.attrs.to',
             text: 'TO',
             sort: true,
             editable: false,
@@ -1143,7 +1142,7 @@ export function tableColumns(dashboard, tags) {
                 </span>
             }
         }, {
-            dataField: '_source.attrs.from.keyword',
+            dataField: '_source.attrs.from',
             text: 'FROM',
             editable: false,
             sort: true,
@@ -1154,7 +1153,7 @@ export function tableColumns(dashboard, tags) {
                 </span>
             }
         }, {
-            dataField: '_source.attrs.to.keyword',
+            dataField: '_source.attrs.to',
             text: 'TO',
             editable: false,
             sort: true,
@@ -1258,7 +1257,7 @@ export function tableColumns(dashboard, tags) {
                 </span>
             }
         }, {
-            dataField: '_source.attrs.from.keyword',
+            dataField: '_source.attrs.from',
             text: 'FROM',
             sort: true,
             editable: false,
@@ -1269,7 +1268,7 @@ export function tableColumns(dashboard, tags) {
                 </span>
             }
         }, {
-            dataField: '_source.attrs.to.keyword',
+            dataField: '_source.attrs.to',
             text: 'TO',
             sort: true,
             editable: false,
