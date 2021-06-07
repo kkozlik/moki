@@ -111,13 +111,11 @@ class Settings extends Component {
             if (value.length === 0) {
                 return true;
             }
-            if (value.indexOf("/") !== -1) {
-                value = value.substring(0, value.indexOf("/"));
+            var checkValue = value.split(' ');
+            var i = checkValue.map(x => isIP(x));
+            if (i.includes(false)) {
+                return "Error: " + attribute + " must have format IP or subnet format.";
             }
-            if (isIP(value)) {
-                return true;
-            }
-            return "Error: " + attribute + " must have format IP or subnet format.";
         }
 
         if (attribute === "bl_email_to" || attribute === "bl_email_from" || attribute === "email_reports") {
