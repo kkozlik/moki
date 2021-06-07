@@ -13,7 +13,7 @@ License:	Commercial
 Source:		%{name}-%{version}-%{release}.tar.gz
 BuildArch:	x86_64
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root
-Requires:	nodejs >= 14.15.5
+Requires:	nodejs >= 2:14.15.5
 #BuildRequires:  npm, yarn
 #Requires:	nodejs
 
