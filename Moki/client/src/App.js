@@ -41,7 +41,8 @@ class App extends Component {
             dashboardsUser: [],
             dashboardsSettings: [],
             logo: "",
-            user: {}
+            user: {},
+            resizeId: ""
         }
         this.showError = this.showError.bind(this);
         this.redirect = this.redirect.bind(this);
@@ -52,8 +53,12 @@ class App extends Component {
     componentDidMount() {
         //check if needed to display an error
         this.showError(this.state.error);
+        var thiss = this;
         //resize window function
-        window.addEventListener('resize', this.windowResize);
+        window.addEventListener('resize', function () {
+            if(thiss.state.resizeId) clearTimeout(thiss.state.resizeId);
+            thiss.setState({ resizeId: setTimeout(thiss.windowResize, 500) });
+        });
 
     }
 
