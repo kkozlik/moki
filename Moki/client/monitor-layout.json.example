@@ -1,8 +1,8 @@
 {
     "color": "#58a959",
-    "logo": "/etc/abc-monitor/logo.png",
-    "favicon": "/etc/abc-monitor/logo_circle.png",
-    "name": "Frafos Monitor",
+    "logo": "./logo.png",
+    "favicon": "./logo_circle.png",
+    "name": "Moki",
     "dashboards": {
         "calls": true,
         "conference": true,
