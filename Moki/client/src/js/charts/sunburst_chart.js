@@ -97,8 +97,7 @@ export default class sunburst extends Component {
             for (var o = 0; o < data.children.length; o++) {
                 nodesCount = nodesCount + data.children[o].children.length;
             }
-            var animationSpeed = 1200 / nodesCount;
-
+            var animationSpeed = 600 / nodesCount;
 
             // Create primary <g> element
             g = d3.select('#sunburstChart')
