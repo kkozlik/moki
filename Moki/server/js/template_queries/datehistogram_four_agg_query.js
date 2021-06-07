@@ -1,4 +1,4 @@
-var getTemplate = function (field1, field2, field3, field4, timebucket, queries, supress, agg_type="avg") {
+var getTemplate = function (field1, field2, field3, field4, timebucket, timestamp_gte, timestamp_lte, queries, supress, agg_type="avg") {
     var template = {
         "size": 0,
         track_total_hits: true,
@@ -18,7 +18,11 @@ var getTemplate = function (field1, field2, field3, field4, timebucket, queries,
                     "field": "@timestamp",
                     "interval": timebucket,
                     "time_zone": "Europe/Berlin",
-                    "min_doc_count": 1
+                    "min_doc_count": 0,
+                    "extended_bounds": {
+                        "min": timestamp_gte,
+                        "max": timestamp_lte
+                    }
                 },
                 "aggs": {
                     "agg": {
