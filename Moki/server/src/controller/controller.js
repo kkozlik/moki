@@ -100,11 +100,30 @@ class Controller {
                     lastTimebucket = timestamp_lte - (timebucket.slice(0, -1) * 60 * 60 * 1000);
                 }
 
+                 //get last last timebucket
+                 var lastlastTimebucket = "";
+                 if (timebucket.includes("s")) {
+                     lastlastTimebucket = lastTimebucket - (timebucket.slice(0, -1) * 1000);
+                 }
+                 else if (timebucket.includes("m")) {
+                     lastlastTimebucket = lastTimebucket - (timebucket.slice(0, -1) * 60 * 1000);
+                 }
+                 if (timebucket.includes("h")) {
+                     lastlastTimebucket = lastTimebucket - (timebucket.slice(0, -1) * 60 * 60 * 1000);
+                 }
+ 
+
                 //if timestamp_gte is set, get value
                 if (requests[i].timestamp_gte) {
                     //last time bucket
                     if (requests[i].timestamp_gte == "lastTimebucket") {
                         timestamp_gte = lastTimebucket;
+                    }
+                     //special case: last last timebucket for home dashboard
+                     else if (requests[i].timestamp_gte == "lastlastTimebucket") {
+                        timestamp_gte = lastlastTimebucket;
+                        timestamp_lte = lastTimebucket;
+
                     }
                     //timestamp_lte is depending on timestamp_gte
                     else if (requests[i].timestamp_gte.includes("timestamp_lte")) {

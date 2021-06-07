@@ -198,12 +198,12 @@ class HomeController extends Controller {
             { index: "exceeded*", template: datehistogram_query, params: ["timebucket"], types:"*", filter: "*", timestamp_gte: "- 60 * 60 * 24 * 1000", timestamp_lte: "- 60 * 60 * 24 * 1000" },
             //INCIDENT ACTUAL
             { index: "exceeded*", template: timerange_query, filter: "*", types:"*", timestamp_gte: "lastTimebucket" },
-            //CALLS MINUTE AGO
-            { index: "collectd*", template: two_agg_query, params: ["attrs.hostname", "max", "attrs.calls"], types:"*", filter: "*", timestamp_gte: "+ 1 * 120 * 1000", timestamp_lte: "- 1 * 60 * 1000", exists: "attrs.calls"  },
-            //REGS MINUTE AGO
-            { index: "collectd*", template: two_agg_query, params: ["attrs.hostname", "max", "attrs.regs"], types:"*", filter: "*", timestamp_gte: "+ 1 * 120 * 1000", timestamp_lte: "- 1 * 60 * 1000", exists: "attrs.regs" },
-             //18 INCIDENT ACTUAL MINUTE AGO
-            { index: "exceeded*", template: timerange_query, filter: "*", timestamp_gte: "+ 1 * 120 * 1000", types:"*", timestamp_lte: "- 1 * 60 * 1000" }
+            //CALLS LAST LAST TIMERANGE
+            { index: "collectd*", template: two_agg_query, params: ["attrs.hostname", "max", "attrs.calls"], types:"*", filter: "*", timestamp_gte: "lastlastTimebucket", exists: "attrs.calls"  },
+            //REGS LAST LAST TIMERANGE
+            { index: "collectd*", template: two_agg_query, params: ["attrs.hostname", "max", "attrs.regs"], types:"*", filter: "*", timestamp_gte: "lastlastTimebucket", exists: "attrs.regs" },
+             //18 INCIDENT LAST LAST TIMERANGE
+            { index: "exceeded*", template: timerange_query, filter: "*", timestamp_gte: "lastlastTimebucket", types:"*" }
         ])
     }
 }
