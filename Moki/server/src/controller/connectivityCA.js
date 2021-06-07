@@ -122,7 +122,7 @@ class ConnectivityCAController extends Controller {
     static getConnectionFailureRatioCA(req, res, next) {
         super.request(req, res, next, [
             //CA RATIO HISTORY - animation
-            { index: "logstash*", template: datehistogram_four_agg_query, params: ["attrs.src_ca_id", "failure", "attrs.dst_ca_id", "failure", "timebucketAnimation"], filter: "*" }
+            { index: "logstash*", template: datehistogram_four_agg_query, params: ["attrs.src_ca_id", "failure", "attrs.dst_ca_id", "failure", "timebucketAnimation",  "timestamp_gte", "timestamp_lte"], filter: "*" }
         ]);
     }
 
@@ -166,7 +166,7 @@ class ConnectivityCAController extends Controller {
     static getErrorCodeAnalysis(req, res, next) {
         super.request(req, res, next, [
             //CA RATIO HISTORY - animation
-            { index: "logstash*", template: datehistogram_four_agg_query, params: ["attrs.sip-code", "failure", "attrs.src_ca_id", "failure", "timebucketAnimation"], filter: "*" }
+            { index: "logstash*", template: datehistogram_four_agg_query, params: ["attrs.sip-code", "failure", "attrs.src_ca_id", "failure", "timebucketAnimation", "timestamp_gte", "timestamp_lte"], filter: "*" }
         ]);
     }
 
