@@ -68,9 +68,14 @@ class Controller {
             }
             var oldtypes = types;
 
+            //disable types for network dashboard
+            if(req.url.includes("network")){
+                types = "*";
+            }
+
             for (var i = 0; i < requests.length; i++) {
                 //disable types for specific requests (e.g. different index in dashboard)
-                if (requests[i].types) {
+                if (requests[i].types ) {
                     types = "*";
                 }
 
@@ -170,6 +175,7 @@ class Controller {
 
             var requestList = [];
             for (var j = 0; j < requests.length; j++) {
+                //console.log(JSON.stringify(requests[j].query));
                 requestList.push(
                     {
                         index: requests[j].index,

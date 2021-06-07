@@ -15,7 +15,7 @@ import store from "../../store/index";
 import {
     elasticsearchConnection
 } from '@moki-client/gui';
-import { parseListData, parseBucketData, parseAggCities, parseAggQuerySumValue, parseMultipleLineDataShareAxis, parseAggQueryWithoutScriptValue, parseStackedbarTimeData } from '@moki-client/es-response-parser';
+import { parseListData, parseBucketData, parseAggCities, parseAggQuerySumValue, parseMultipleLineDataShareAxis, parseUri, parseAggQueryWithoutScriptValue, parseStackedbarTimeData } from '@moki-client/es-response-parser';
 
 
 class RegistrationCharts extends Component {
@@ -83,7 +83,7 @@ class RegistrationCharts extends Component {
             var userAgents = parseBucketData(data.responses[2]);
 
             //TOP REG. EXPIRED
-            var topRegExpired = parseListData(data.responses[3]);
+            var topRegExpired = parseUri(data.responses[3]);
 
             //TRANSPORT PROTOCOL
             var transportProtocol = parseBucketData(data.responses[4]);

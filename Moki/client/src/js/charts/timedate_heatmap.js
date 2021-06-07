@@ -1,27 +1,13 @@
-import React, {
-    Component
-} from 'react';
+import React, { Component } from 'react';
 import * as d3 from "d3";
-import {
-    timestampBucket
-} from '../bars/TimestampBucket.js';
+import { timestampBucket } from '../bars/TimestampBucket.js';
 import store from "../store/index";
-import {
-    setTimerange
-} from "../actions/index";
-import {
-    createFilter
-} from '@moki-client/gui';
+import { setTimerange } from "../actions/index";
+import { createFilter} from '@moki-client/gui';
 import emptyIcon from "../../styles/icons/empty_small.png";
-import {
-    getTimeBucket, getTimeBucketInt
-} from "../helpers/getTimeBucket";
-import {
-    ColorsRedGreen
-} from "../helpers/style/ColorsRedGreen";
-import {
-    ColorsGreen
-} from "../helpers/style/ColorsGreen";
+import { getTimeBucket, getTimeBucketInt} from "../helpers/getTimeBucket";
+import {ColorsRedGreen} from "../helpers/style/ColorsRedGreen";
+import { ColorsGreen} from "../helpers/style/ColorsGreen";
 
 export default class timedateHeatmap extends Component {
     constructor(props) {
