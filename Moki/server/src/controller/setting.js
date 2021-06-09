@@ -589,7 +589,6 @@ class SettingController {
                                 "msg": stderr
                             });
                             console.error("Config cannot be activated. " + stderr);
-                            respond.end();
                         } else {
                             console.info("New config activated.");
                             respond.status(200).send({

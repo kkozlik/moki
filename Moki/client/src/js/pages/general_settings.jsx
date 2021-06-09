@@ -187,9 +187,11 @@ class Settings extends Component {
                     console.error(response.statusText);
                 }
                 return response.json();
-
             }).then(function (responseData) {
-                //alert(responseData.msg);
+                if(responseData.msg){
+                    alert(responseData.msg);
+                }
+
             }).catch(function (error) {
                 console.error(error);
                 alert("Problem with saving data. " + error);
