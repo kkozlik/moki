@@ -21,13 +21,10 @@ export default class TagRanger extends React.Component {
 
     render() {
         return [
-            <Autocomplete suggestions={
-                this.state.tags
-            }
+            <Autocomplete
+                suggestions={this.state.tags}
                 key="tagSuggestions"
-                row={
-                    this.props.row
-                }
+                row={this.props.row}
             />];
     }
 }
