@@ -3,8 +3,8 @@ import React, {
     Fragment
 } from "react";
 import {
-    elasticsearchConnection
-} from '../helpers/elasticsearchConnection';
+    elasticsearchConnectionTag
+} from '../helpers/elasticsearchConnectionTag';
 
 class Autocomplete extends Component {
 
@@ -29,17 +29,17 @@ class Autocomplete extends Component {
         };
     }
 
-    async tag() {
+    async tag(directTag = "") {
         if (this.state.row) {
             var id = this.state.row._id;
             var index = this.state.row._index;
-            var tag = this.state.userInput;
+            var tag = directTag === "" ? this.state.userInput : directTag;
             if (tag && tag !== "" && tag !== " ") {
                 tag = tag.replace(/\s/g, '');
                 if (!Array.isArray(tag)) {
                     tag = tag.split(",");
                 }
-                var data = await elasticsearchConnection("/api/tag", {id: id, index: index, tags: tag});
+                var data = await elasticsearchConnectionTag("/api/tag", id, index, tag);
                 if (data.result && (data.result === "updated" || data.result === "noop")) {
                     // alert("Tag has been saved."); 
 
@@ -47,23 +47,22 @@ class Autocomplete extends Component {
                     var tags = this.state.suggestions;
 
                     if (Array.isArray(tag)) {
-                        for(var j =0; j < tag.length; j++){
+                        for (var j = 0; j < tag.length; j++) {
                             if (!tags.includes(tag[j])) {
-                                console.log(tag[j]);
                                 tag[j] = tag[j].replace(/\s/g, '');
                                 tags.push(tag[j]);
                                 this.setState({
                                     suggestions: tags
                                 });
-                        }  
+                            }
+                        }
                     }
-                }
                     else {
                         if (!tags.includes(tag)) {
-                                tags.push(tag);
-                                this.setState({
-                                    suggestions: tags
-                                });
+                            tags.push(tag);
+                            this.setState({
+                                suggestions: tags
+                            });
                         }
                     }
 
@@ -86,7 +85,7 @@ class Autocomplete extends Component {
         // Filter our suggestions that don't contain the user's input
         const filteredSuggestions = suggestions.filter(
             suggestion =>
-            suggestion.toLowerCase().indexOf(userInput.toLowerCase()) > -1
+                suggestion.toLowerCase().indexOf(userInput.toLowerCase()) > -1
         );
 
         // Update the user input and filtered suggestions, reset the active
@@ -101,21 +100,23 @@ class Autocomplete extends Component {
 
     //save to ES
     onFocusout = e => {
-        this.tag();
+        this.tag();        
     };
 
 
     // Event fired when the user clicks on a suggestion
-    onClick = e => {
+    onClick = async e => {
         var userInput = this.state.userInput + e.currentTarget.innerText;
+
         // Update the user input and reset the rest of the state
         this.setState({
             activeSuggestion: 0,
             filteredSuggestions: [],
             showSuggestions: false,
             userInput: userInput
-        });
-        document.getElementById("tagsFilter").focus();
+        }, await this.tag(userInput));
+
+        //document.getElementById("tagsFilter").focus();
     };
 
     //on input click show suggestions
@@ -197,67 +198,40 @@ class Autocomplete extends Component {
         let suggestionsListComponent;
         if (showSuggestions) {
             if (filteredSuggestions.length) {
-                suggestionsListComponent = ( <
-                    ul className = "suggestionsTag" > {
-                        filteredSuggestions.map((suggestion, index) => {
-                            let className;
-                            // Flag the active suggestion with a class
-                            if (index === activeSuggestion) {
-                                className = "suggestion-active";
-                            }
-                            return ( <
-                                li className = {
-                                    className
-                                }
-                                key = {
-                                    index
-                                }
-                                onClick = {
-                                    onClick
-                                } >
-                                {
-                                    suggestion
-                                } <
-                                /li>
-                            );
-                        })
-                    } <
-                    /ul>
+                suggestionsListComponent = (<ul className="suggestionsTag" > {
+                    filteredSuggestions.map((suggestion, index) => {
+                        let className;
+                        // Flag the active suggestion with a class
+                        if (index === activeSuggestion) {
+                            className = "suggestion-active";
+                        }
+                        return (
+                            <li className={className}
+                                key={index}
+                                onClick={onClick} >
+                                { suggestion}
+                            </li>
+                        );
+                    })
+                } </ul>
                 );
             } else {
-                suggestionsListComponent = ( <
-                    div className = "no-suggestions" >
-                    <
-                    /div>
+                suggestionsListComponent = (<div className="no-suggestions" ></div>
                 );
             }
         }
 
-        return ( <
-            Fragment >
-            <
-            input type = "text"
-            onChange = {
-                onChange
-            }
-            onKeyDown = {
-                onKeyDown
-            }
-            onClick = {
-                onClickInput
-            }
-            onBlur = {
-                onFocusout
-            }
-            value = {
-                userInput
-            }
-            id = "tagsFilter"
-            autoComplete = "off" /
-            > {
-                suggestionsListComponent
-            } <
-            /Fragment>
+        return (<Fragment >
+            <input type="text"
+                onChange={onChange}
+                onKeyDown={onKeyDown}
+                onClick={onClickInput}
+                onBlur={onFocusout}
+                value={userInput}
+                id="tagsFilter"
+                autoComplete="off"
+            /> {suggestionsListComponent}
+        </Fragment>
         );
     }
 }
