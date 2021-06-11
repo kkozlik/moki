@@ -14,7 +14,7 @@
   "dependencies": {
     "@moki-client/es-response-parser": "git+ssh://git@github.com/intuitivelabs/es-response-parser.git#master",
     "@moki-client/gui": "git+ssh://git@github.com/intuitivelabs/moki-gui.git#master",
-    "@moki-client/react-bootstrap-table-next": "git+ssh://git@github.com/intuitivelabs/react-bootstrap-table2-1.git#npm-repo",
+    "@moki-client/react-bootstrap-table-next": "git+ssh://git@github.com/intuitivelabs/react-bootstrap-table2-1.git#master",
     "bootstrap": "^4.6.0",
     "classnames": "^2.2.6",
     "d3": "^5.7.0",
