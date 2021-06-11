@@ -41,10 +41,10 @@ module.exports = () => {
     .post('/filters/delete', SettingController.deleteFilter)
     .post('/filters/save', SettingController.saveFilter);
 
-    router
+  router
     .post('/profile/save', ProfileController.storeUserSettings)
     .post('/profile/delete', ProfileController.deleteUserSettings)
-    .get('/profile', ProfileController.getUserSettings)
+    .get('/profile', ProfileController.getUserSettings);
 
   router
     .post('/download/pcap', DiagramController.downloadPcap)
@@ -66,7 +66,7 @@ module.exports = () => {
     .post('/connectivityCA/number_of_call-attemps_ca', ConnectivityCAController.getNumberOfCallAttemptsCA)
     .post('/connectivityCA/number_of_call-ends_ca', ConnectivityCAController.getNumberOfCallEndsCA)
     .post('/connectivityCA/error_code_analysis', ConnectivityCAController.getErrorCodeAnalysis)
-    .post('/connectivityCA/from_to_ca', ConnectivityCAController.getFromToCA) 
+    .post('/connectivityCA/from_to_ca', ConnectivityCAController.getFromToCA)
     .post('/connectivityCA/avg_duration_of_calls_ca', ConnectivityCAController.getDurationCA)
     .post('/connectivity/charts', ConnectivityController.getCharts);
 

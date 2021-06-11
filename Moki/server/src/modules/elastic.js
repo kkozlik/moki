@@ -14,7 +14,6 @@ module.exports = {
       error.status = 400;
       throw error;
     }
-
     return client;
   }
-}
+};

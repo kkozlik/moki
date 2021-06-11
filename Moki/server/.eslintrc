@@ -1,9 +1,28 @@
 {
   "extends": "airbnb",
   "settings": {
-			"react": {
-				"version": "999.999.999"
-			},
+    "react": {
+      "version": "999.999.999"
+    },
     "class-methods-use-this": "disable"
+  },
+  "rules": {
+    "camelcase": "off",
+    "quotes": "off",
+    "comma-dangle": ["error", "never"],
+    "object-shorthand": ["error", "consistent"],
+    "linebreak-style": "off",
+    "vars-on-top": "off",
+    "spaced-comment": "off",
+    "no-plusplus": "off",
+    "quote-props": "off",
+    "prefer-template": "off",
+    "no-trailing-spaces": "off",
+    "no-multiple-empty-lines": "off",
+    "max-len": ["error", { "code": 150 }],
+    "arrow-parens": "off",
+    "prefer-arrow-callback": "off",
+    "no-console": "off",
+    "func-names": "off"
   }
 }
