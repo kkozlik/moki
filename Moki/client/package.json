@@ -12,8 +12,8 @@
   ],
   "homepage": "." ,
   "dependencies": {
-    "@moki-client/es-response-parser": "git+ssh://git@github.com/intuitivelabs/es-response-parser.git#master",
-    "@moki-client/gui": "git+ssh://git@github.com/intuitivelabs/moki-gui.git#master",
+    "@moki-client/es-response-parser": "git+ssh://git@github.com/intuitivelabs/es-response-parser-private.git#call-id",
+    "@moki-client/gui": "git+ssh://git@github.com/intuitivelabs/moki-gui-intuitive.git#call-id",
     "bootstrap": "^4.6.0",
     "classnames": "^2.2.6",
     "d3": "^5.7.0",
