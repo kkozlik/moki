@@ -571,7 +571,7 @@ class SettingController {
             });
             console.info("Writing new config to file. " + JSON.stringify(jsonData));
             //call check config script
-            exec("/usr/sbin/abc-monitor-check-config", function (error, stdout, stderr) {
+            exec("sudo /usr/sbin/abc-monitor-check-config", function (error, stdout, stderr) {
                 if (error) {
                     //write old data back
                     fs.writeFile(cfg.fileMonitor, JSON.stringify(jsonDataOld));
@@ -583,7 +583,7 @@ class SettingController {
                 } else {
                     console.info("Activating config.");
                     //call generate config script
-                    exec("/usr/sbin/abc-monitor-activate-config", function (error, stdout, stderr) {
+                    exec("sudo /usr/sbin/abc-monitor-activate-config", function (error, stdout, stderr) {
                         if (error) {
                             respond.status(400).send({
                                 "msg": stderr
