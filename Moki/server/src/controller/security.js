@@ -103,7 +103,7 @@ class securityController extends Controller {
     super.request(req, res, next, [
       //EVENTS BY IP ADDR
       { index: "logstash*", template: agg_filter_animation, params: ['attrs.source', "timebucketAnimation", "timestamp_gte", "timestamp_lte", 10], filter: "attrs.type:limit OR attrs.type:message-dropped OR attrs.type:auth-failed OR attrs.type:log-reply OR attrs.type:fbl-new OR attrs.type:fgl-new" }
-    ])
+    ]);
   }
 
 
@@ -146,7 +146,7 @@ class securityController extends Controller {
     super.request(req, res, next, [
       //TOP SUBNETS /24
       { index: "logstash*", template: agg_filter_animation, params: ['attrs.sourceSubnets', "timebucketAnimation", "timestamp_gte", "timestamp_lte", 10], filter: "attrs.type:limit OR attrs.type:message-dropped OR attrs.type:auth-failed OR attrs.type:log-reply OR attrs.type:fbl-new OR attrs.type:fgl-new" }
-    ])
+    ]);
   }
 
 
@@ -189,14 +189,14 @@ class securityController extends Controller {
     super.request(req, res, next, [
       //EVENTS BY COUNTRY
       { index: "logstash*", template: agg_filter_animation, params: ['attrs.country_code2', "timebucketAnimation", "timestamp_gte", "timestamp_lte", 10], filter: "attrs.type:limit OR attrs.type:message-dropped OR attrs.type:auth-failed OR attrs.type:log-reply OR attrs.type:fbl-new OR attrs.type:fgl-new" }
-    ])
+    ]);
   }
 
   static getEventsByCountryLimit(req, res, next) {
     super.request(req, res, next, [
       //EVENTS BY COUNTRY
       { index: "logstash*", template: agg_filter_animation, params: ['attrs.country_code2', "timebucketAnimation", "timestamp_gte", "timestamp_lte", 3], filter: "attrs.type:limit OR attrs.type:message-dropped OR attrs.type:auth-failed OR attrs.type:log-reply OR attrs.type:fbl-new OR attrs.type:fgl-new" }
-    ])
+    ]);
   }
 
 
@@ -235,11 +235,11 @@ class securityController extends Controller {
    *             schema:
    *               $ref: '#/definitions/ChartResponseError'
    */
-  static getEventsByIP(req, res, next) {
+  static getEventsByIPWeb(req, res, next) {
     super.request(req, res, next, [
       //EVENTS BY IP ADDR
       { index: "logstash*", template: agg_filter_animation, params: ['attrs.source', "timebucketAnimation", "timestamp_gte", "timestamp_lte", 3], filter: "attrs.type:limit OR attrs.type:message-dropped OR attrs.type:auth-failed OR attrs.type:log-reply OR attrs.type:fbl-new OR attrs.type:fgl-new" }
-    ])
+    ]);
   }
 
 
@@ -282,7 +282,7 @@ class securityController extends Controller {
     super.request(req, res, next, [
       //GEOIP MAP
       { index: "logstash*", template: geoipAnimation, params: ["timebucketAnimation", "timestamp_gte", "timestamp_lte"], filter: "attrs.type:limit OR attrs.type:message-dropped OR attrs.type:auth-failed OR attrs.type:log-reply OR attrs.type:fbl-new OR attrs.type:fgl-new" }
-    ])
+    ]);
   }
 
   /**

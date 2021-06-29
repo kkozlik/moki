@@ -43,7 +43,7 @@ async function getWebFilter() {
           if (line.app === "m_settings") {
             line.attrs.forEach(attrs => {
               if (attrs.attribute === "webFilter") {
-                resolve(attrs.value)
+                resolve(attrs.value);
               }
             });
           }
@@ -63,42 +63,41 @@ async function isRequireJWT() {
     fs.readFile(c.fileMonitor, (err2, data) => {
       if (err2) {
         console.error(`Problem with reading default file. ${err2}`);
-        reject;
+        reject();
       }
       const jsonData = JSON.parse(data);
       if ('general' in jsonData && jsonData.general['global-config']) {
-
-        jsonData.general['global-config'].forEach(data => {
-          if (data.app === "m_config") {
-            data.attrs.forEach(attrs => {
+        jsonData.general['global-config'].forEach(line => {
+          if (line.app === "m_config") {
+            line.attrs.forEach(attrs => {
               if (attrs.attribute === "requireJwt") {
                 resolve(attrs.value);
               }
-            })
+            });
           }
-        })
+        });
       }
 
       //get value from defaults.json
       fs.readFile(c.fileDefaults, (err2, data) => {
         if (err2) {
           console.error(`Problem with reading default file. ${err2}`);
-          reject;
+          reject();
         }
         const jsonData = JSON.parse(data);
         jsonData.forEach(data => {
           if (data.app === "m_config") {
             data.attrs.forEach(attrs => {
               if (attrs.attribute === "requireJwt") {
-                resolve(attrs.value)
+                resolve(attrs.value);
               }
-            })
+            });
           }
-        })
-      })
-    })
-    reject;
-  })
+        });
+      });
+    });
+    reject();
+  });
 }
 
 function getActualConfig() {
@@ -138,7 +137,6 @@ function getActualConfig() {
       }
       return jsonDefaults;
     });
-    reject;
   });
 }
 

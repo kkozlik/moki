@@ -49,7 +49,7 @@ async function checkSelectedTypes(types, dashboardName) {
     fs.readFile(cfg.fileGUILayout, (err, layout) => {
       if (err) {
         console.error(`Problem with reading default file. ${err}`);
-        reject(newHTTPError(400, `Problem with reading data: ${err}`));
+        reject(err);
       }
       const jsonLayout = JSON.parse(layout);
       const selectedTypes = jsonLayout.types[dashboardName];
