@@ -9,6 +9,18 @@ class SaveFilters extends Component {
     constructor(props) {
         super(props);
         this.save = this.save.bind(this);
+        this.getFilters = this.getFilters.bind(this);
+        this.state = {
+            filters: []
+        }
+
+        this.getFilters();
+    }
+
+    async getFilters(){
+        var filters = await getFilters();
+        console.log(filters);
+        this.setState({filters: filters});
     }
 
     uid() {
@@ -22,7 +34,7 @@ class SaveFilters extends Component {
         } else {
             var dashboardName = document.getElementById("filterTitle").getAttribute("dashboard");
             document.getElementsByClassName("close")[0].click();
-            var filters = getFilters();
+            var filters = await getFilters();
             var isSetTimerange = document.getElementById("time").checked;
 
             var data = [];
@@ -82,7 +94,7 @@ class SaveFilters extends Component {
     }
 
     render() {
-        var filters = getFilters();
+        var filters = this.state.filters;
         var dashboard = window.location.pathname;
         return (
             <span>

@@ -139,8 +139,8 @@ class StoredFilters extends Component {
         if (filters.length !== 0) {
             return (
                 <React.Fragment>
-                    {filters.map((item, key) =>
-                        <div className="rowFilter" key={item.id} >
+                    { filters.map((item, key) =>
+                       <div className="rowFilter" key={item.id} >
                             <span className="iconsStoredFilter" onClick={this.activateFilter} filterid={item.id}>
                                 <img style={{ "width": "10px" }} alt="activateIcon" src={enableIcon} title="activate filter" />
                             </span >
