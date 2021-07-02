@@ -55,9 +55,8 @@ class SaveFilters extends Component {
                 data.push({ timerange: store.getState().timerange });
             }
 
-
             var tls = storePersistent.getState().user["tls-cn"] !== "N/A" ? storePersistent.getState().user["tls-cn"] : "";
-            var checksum = storePersistent.getState().profile[0] ? storePersistent.getState().profile[0].userprefs.validation_code : "";
+            var checksum = storePersistent.getState().profile[0] ? storePersistent.getState().profile[0].userprefs.mode === "plain" ? "plain" : storePersistent.getState().profile[0].userprefs.validation_code : "plain";
             var domainID = storePersistent.getState().user.domainID !== "N/A" ? storePersistent.getState().user.domainID : "";
             var Url = "api/filters/save";
             try {
