@@ -10,7 +10,7 @@
       "url": "http://www.apache.org/licenses/LICENSE-2.0"
     }
   ],
-  "homepage": "." ,
+  "homepage": ".",
   "dependencies": {
     "@moki-client/es-response-parser": "git+ssh://git@github.com/intuitivelabs/es-response-parser-private.git#master",
     "@moki-client/gui": "git+ssh://git@github.com/intuitivelabs/moki-gui-intuitive.git#master",
@@ -50,11 +50,12 @@
     "@babel/plugin-syntax-jsx": "^7.12.13",
     "@babel/preset-react": "^7.12.13",
     "eslint": "^7.20.0",
-    "eslint-plugin-react": "^7.22.0"
+    "eslint-plugin-react": "^7.22.0",
+    "terser": "^5.7.1"
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "(cd ./node_modules/@moki-client/gui/; npm run build) && react-scripts build",
+    "build": "(cd ./node_modules/@moki-client/gui/; npm run build) && react-scripts build && ./drop_console.sh",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
