@@ -4,14 +4,14 @@ const { cfg } = require('../modules/config');
 
 function getFiltersConcat(filters) {
   // get filters, if no place "*", if more than 1, concat with AND
-  let filter = '*';
-  if (filters && filters.length != 0) {
-    var filtersList = [];
-    for (var i = 0; i < filters.length; i++) {
-      var tit = filters[i].title;
+  const filter = '*';
+  if (filters && filters.length !== 0) {
+    const filtersList = [];
+    for (let i = 0; i < filters.length; i++) {
+      let tit = filters[i].title;
       //replace double shash with ASCII - ES had a problem to parse it
       if (tit.includes("\\")) {
-        tit = tit.replace("\\", String.fromCharCode(92))
+        tit = tit.replace("\\", String.fromCharCode(92));
       }
 
       //wildcard search - special ES query
@@ -22,22 +22,20 @@ function getFiltersConcat(filters) {
             "wildcard": {
               [tit.substring(0, tit.indexOf(":"))]: tit.substring(tit.indexOf(":") + 1)
             }
-          })
-        }
-        else {
+          });
+        } else {
           filtersList.push({
             "wildcard": {
               "attrs.all_copy": tit
             }
-          })
+          });
         }
-      }
-      else {
+      } else {
         filtersList.push({
           "query_string": {
             "query": tit
           }
-        })
+        });
       }
     }
     return filtersList;
@@ -51,41 +49,41 @@ async function checkSelectedTypes(types, dashboardName) {
     fs.readFile(cfg.fileGUILayout, (err, layout) => {
       if (err) {
         console.error(`Problem with reading default file. ${err}`);
-        reject(newHTTPError(400, `Problem with reading data: ${err}`));
+        reject(err);
       }
       const jsonLayout = JSON.parse(layout);
-      var selectedTypes = jsonLayout.types[dashboardName];
-      var field = dashboardName == "exceeded" ? "exceeded" : "attrs.type";
+      const selectedTypes = jsonLayout.types[dashboardName];
+      const field = dashboardName === "exceeded" ? "exceeded" : "attrs.type";
       //filter out not selected types
-      var filtredTypes = types.filter(item => selectedTypes.includes(item));
+      let filtredTypes = types.filter(item => selectedTypes.includes(item));
       //if no spec types, return selected types from file
-      if (types.length == 0) { filtredTypes = selectedTypes }
+      if (types.length === 0) { filtredTypes = selectedTypes; }
       //concat types with OR
-      if (filtredTypes.length == 0) { resolve("noTypes") }
-      else {
-        var result = "";
-        for (var i = 0; i < filtredTypes.length; i++) {
-          if (i == 0) {
+      if (filtredTypes.length === 0) {
+        resolve("noTypes");
+      } else {
+        let result = "";
+        for (let i = 0; i < filtredTypes.length; i++) {
+          if (i === 0) {
             result = field + ":" + filtredTypes[i];
-          }
-          else {
-            result = result + " OR " + field + ":" + filtredTypes[i]
+          } else {
+            result = result + " OR " + field + ":" + filtredTypes[i];
           }
         }
-        resolve(result)
+        resolve(result);
       }
-    })
-  })
+    });
+  });
 }
 
 //concat all enable types (if exceeded use field exceeded, otherwise attrs.type)
 function getTypesConcat(value, type = "attrs.type") {
   console.info(value);
   // concat types with OR
-  var types = '*';
-  if (value && value.length != 0) {
-    for (var i = 0; i < value.length; i++) {
-      if (i == 0) {
+  let types = '*';
+  if (value && value.length !== 0) {
+    for (let i = 0; i < value.length; i++) {
+      if (i === 0) {
         types = type + ":" + value[i].id;
       } else {
         types = types + " OR " + type + ":" + value[i].id;
@@ -96,8 +94,7 @@ function getTypesConcat(value, type = "attrs.type") {
 }
 
 function getQueries(filter, types, timestamp_gte, timestamp_lte, userFilter, chartFilter, domain, isEncryptChecksumFilter, exists) {
-
-  var queries = [];
+  const queries = [];
   if (isEncryptChecksumFilter !== "*") {
     queries.push({
       "match": {
@@ -116,7 +113,7 @@ function getQueries(filter, types, timestamp_gte, timestamp_lte, userFilter, cha
 
   //add user filters 
   if (filter !== '*') {
-    for (var i = 0; i < filter.length; i++) {
+    for (let i = 0; i < filter.length; i++) {
       queries.push(filter[i]);
     }
   }
@@ -137,7 +134,6 @@ function getQueries(filter, types, timestamp_gte, timestamp_lte, userFilter, cha
       }
     });
   }
-
 
   queries.push({
     "range": {
