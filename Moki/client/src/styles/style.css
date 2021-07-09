@@ -188,6 +188,24 @@
     color: white;
 }
 
+.custom-control-input:checked~.custom-control-label::before {
+    border-radius: 3px !important;
+    color: var(--main) !important;
+}
+
+.custom-switch .custom-control-label::before {
+    border-radius: 3px !important;
+    color: var(--main) !important;
+}
+
+.custom-switch .custom-control-label::after {
+    top: calc(2px);
+}
+
+.custom-control-label::before {
+    top: 0;
+}
+
 #context {
     float: right;
     position: absolute;
@@ -203,6 +221,7 @@ label {
     justify-content: flex-start !important;
     margin-bottom: 0px !important;
     font: 14px Arial;
+    vertical-align: -webkit-baseline-middle;
 }
 
 .activeDashboard {
