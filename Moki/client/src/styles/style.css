@@ -658,6 +658,12 @@ text {
     min-width: 100px;
 }
 
+.middleButton {
+    margin-left: 50% !important;
+    margin-top: 10px;
+    min-width: 100px;
+}
+
 .filtertd {
     cursor: pointer;
     padding-right: 100px;
