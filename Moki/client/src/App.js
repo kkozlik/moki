@@ -107,6 +107,9 @@ class App extends Component {
         var dashboardsSettings = Object.keys(jsonData.settingsDashboards);
         if ((this.state.aws && !this.state.admin) || !this.state.aws) {
             dashboardsSettings = dashboardsSettings.filter(dashboard => jsonData.settingsDashboards[dashboard]);
+
+            //remove users from settings
+            dashboardsSettings = dashboardsSettings.filter(dashboard => dashboard !== "users");
         }
         this.setState({
             dashboardsSettings: dashboardsSettings
