@@ -131,7 +131,7 @@ class SettingController {
 *             example:
 *               error: "bash: not found"
 */
-  static loadGUILayout(res) {
+  static loadGUILayout(req, res) {
     fs.readFile(cfg.fileGUILayout, function (err, defaults) {
       if (err) {
         res.status(400).send({

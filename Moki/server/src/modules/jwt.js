@@ -77,7 +77,7 @@ async function getJWTsipUserFilter(req) {
   }
   console.log("parsed Header: ", JSON.stringify(parsedHeader));
   const sip = parsedHeader['custom:sip'];
-  const jwtbit = parsedHeader['custom:adminlevel'];
+  let jwtbit = parsedHeader['custom:adminlevel'];
   const domainID = parsedHeader['custom:domainid'];
   const subId = parsedHeader.sub;
 
@@ -90,6 +90,8 @@ async function getJWTsipUserFilter(req) {
     console.log("ACCESS getJWTsipUserFilter: no admin-level defined ");
     throw new Error("ACCESS: no  admin-level defined");
   }
+
+  jwtbit = parseInt(jwtbit);
   // Root SuperAdmin Level
   if (jwtbit === 0) {
     console.log(`ACCESS: JWT admin level 0, NO FILTERS for user ${subId}`);
