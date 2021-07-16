@@ -120,10 +120,10 @@ function getActualConfig() {
       if ('general' in jsonData && jsonData.general['global-config']) {
         jsonData.general['global-config'].forEach(data => {
           jsonDefaults.forEach(defaults => {
-            if (data.app === defaults.app) {
+            if (data.app == defaults.app) {
               data.attrs.forEach(attrs => {
                 defaults.attrs.forEach(defaultsAttrs => {
-                  if (attrs.attribute === defaultsAttrs.attribute) {
+                  if (attrs.attribute == defaultsAttrs.attribute) {
                     defaultsAttrs.value = attrs.value;
                     if (attrs.comments) {
                       defaultsAttrs.comments = attrs.comments;
