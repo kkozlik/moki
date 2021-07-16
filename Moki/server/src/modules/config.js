@@ -2,8 +2,8 @@
 const dotenv = require('dotenv');
 const fs = require('fs');
 const path = require('path');
-
 const appDir = path.dirname(require.main.filename);
+
 dotenv.config();
 
 const c = {
@@ -18,7 +18,7 @@ const c = {
   fileMonitor: '/etc/abc-monitor/monitor.json',
   fileGUILayout: '/etc/abc-monitor/monitor-layout.json',
   rootDir: appDir,
-  es: process.env.ES || 'localhost:9200'
+  es: process.env.ES || 'localhost:9200',
 };
 
 if (c.nodeEnv === 'test') {
@@ -26,7 +26,7 @@ if (c.nodeEnv === 'test') {
 }
 
 function readJsonFileSync(filepath, encoding) {
-  return (typeof (encoding) === 'undefined') ? JSON.parse(fs.readFileSync(filepath, 'utf8')) : JSON.parse(fs.readFileSync(filepath, encoding));
+  return (typeof (encoding) == 'undefined') ? JSON.parse(fs.readFileSync(filepath, 'utf8')) : JSON.parse(fs.readFileSync(filepath, encoding));
 }
 
 // get filter for website
@@ -35,24 +35,25 @@ async function getWebFilter() {
     fs.readFile(c.fileMonitor, (err2, data) => {
       if (err2) {
         console.error(`Problem with reading default file. ${err2}`);
-        reject();
+        reject;
       }
       const jsonData = JSON.parse(data);
       if ('general' in jsonData && jsonData.general['global-config']) {
-        jsonData.general['global-config'].forEach(line => {
-          if (line.app === "m_settings") {
-            line.attrs.forEach(attrs => {
+
+        jsonData.general['global-config'].forEach(data => {
+          if (data.app === "m_settings") {
+            data.attrs.forEach(attrs => {
               if (attrs.attribute === "webFilter") {
-                resolve(attrs.value);
+                resolve(attrs.value)
               }
-            });
+            })
           }
-        });
+        })
         resolve("nodata");
       }
-    });
-    reject();
-  });
+    })
+    reject;
+  })
 }
 
 
@@ -63,41 +64,42 @@ async function isRequireJWT() {
     fs.readFile(c.fileMonitor, (err2, data) => {
       if (err2) {
         console.error(`Problem with reading default file. ${err2}`);
-        reject();
+        reject;
       }
       const jsonData = JSON.parse(data);
       if ('general' in jsonData && jsonData.general['global-config']) {
-        jsonData.general['global-config'].forEach(line => {
-          if (line.app === "m_config") {
-            line.attrs.forEach(attrs => {
+
+        jsonData.general['global-config'].forEach(data => {
+          if (data.app === "m_config") {
+            data.attrs.forEach(attrs => {
               if (attrs.attribute === "requireJwt") {
                 resolve(attrs.value);
               }
-            });
+            })
           }
-        });
+        })
       }
 
       //get value from defaults.json
       fs.readFile(c.fileDefaults, (err2, data) => {
         if (err2) {
           console.error(`Problem with reading default file. ${err2}`);
-          reject();
+          reject;
         }
         const jsonData = JSON.parse(data);
         jsonData.forEach(data => {
           if (data.app === "m_config") {
             data.attrs.forEach(attrs => {
               if (attrs.attribute === "requireJwt") {
-                resolve(attrs.value);
+                resolve(attrs.value)
               }
-            });
+            })
           }
-        });
-      });
-    });
-    reject();
-  });
+        })
+      })
+    })
+    reject;
+  })
 }
 
 function getActualConfig() {
@@ -137,6 +139,7 @@ function getActualConfig() {
       }
       return jsonDefaults;
     });
+    reject;
   });
 }
 
