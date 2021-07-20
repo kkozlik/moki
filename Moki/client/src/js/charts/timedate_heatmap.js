@@ -90,25 +90,10 @@ export default class timedateHeatmap extends Component {
 
         if (data === undefined || data.length === 0) {
             rootsvg.attr("height", 100);
-            rootsvg.append("line")
-                .attr("x1", 0)
-                .attr("y1", 10)
-                .attr("x2", width)
-                .attr("y2", 10)
-                .attr("stroke-width", 0.4)
-                .attr("stroke", "#808080");
 
             rootsvg.append('svg:image')
                 .attr("xlink:href", emptyIcon)
                 .attr('transform', 'translate(' + width / 2 + ',25)')
-
-            rootsvg.append("line")
-                .attr("x1", 0)
-                .attr("y1", 90)
-                .attr("x2", width)
-                .attr("y2", 90)
-                .attr("stroke-width", 0.4)
-                .attr("stroke", "#808080");
 
         } else {
             var y_elements = d3.set(data.map(function (item) {
@@ -350,7 +335,7 @@ export default class timedateHeatmap extends Component {
         var bucket = getTimeBucket();
         return (<div id={
             this.props.id
-        }> <h3 className="alignLeft title"> {
+        }  className="chart"> <h3 className="alignLeft title"> {
             this.props.name
         } <span className="smallText"> (interval: {bucket})</span></h3>
         </div>)

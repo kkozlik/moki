@@ -104,25 +104,9 @@ export default class heatmap extends Component {
         if (data.length === 0) {
             rootsvg.attr("height", 100);
 
-            rootsvg.append("line")
-                .attr("x1", 0)
-                .attr("y1", 10)
-                .attr("x2", widthSum)
-                .attr("y2", 10)
-                .attr("stroke-width", 0.4)
-                .attr("stroke", "#808080");
-
             rootsvg.append('svg:image')
                 .attr("xlink:href", emptyIcon)
                 .attr('transform', 'translate(' + (widthSum / 2) + ',25)')
-
-            rootsvg.append("line")
-                .attr("x1", 0)
-                .attr("y1", 90)
-                .attr("x2", widthSum)
-                .attr("y2", 90)
-                .attr("stroke-width", 0.4)
-                .attr("stroke", "#808080");
 
         } else {
 
@@ -348,7 +332,7 @@ export default class heatmap extends Component {
     render() {
         return (<div id={
             this.props.id
-        } > <h3 className="alignLeft title" > {
+        }  className="chart"> <h3 className="alignLeft title" > {
             this.props.name
         } </h3>
             {window.location.pathname !== "/connectivity" && <Animation name={this.props.name} type={this.props.type} setData={this.setData} dataAll={this.state.data} />}

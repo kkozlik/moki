@@ -83,7 +83,7 @@ class RegistrationCharts extends Component {
             var userAgents = parseBucketData(data.responses[2]);
 
             //TOP REG. EXPIRED
-            var topRegExpired = parseUri(data.responses[3]);
+            var topRegExpired = await parseUri(data.responses[3]);
 
             //TRANSPORT PROTOCOL
             var transportProtocol = parseBucketData(data.responses[4]);

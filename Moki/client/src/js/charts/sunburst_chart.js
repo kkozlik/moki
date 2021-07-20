@@ -62,25 +62,9 @@ export default class sunburst extends Component {
                 .attr('height', height)
                 .attr('id', 'sunburstChartSVG');
 
-            g.append("line")
-                .attr("x1", 0)
-                .attr("y1", 10)
-                .attr("x2", svgWidth)
-                .attr("y2", 10)
-                .attr("stroke-width", 0.4)
-                .attr("stroke", "#808080");
-
             g.append('svg:image')
                 .attr("xlink:href", emptyIcon)
                 .attr('transform', 'translate(' + svgWidth / 2 + ',30)');
-
-            g.append("line")
-                .attr("x1", 0)
-                .attr("y1", 90)
-                .attr("x2", svgWidth)
-                .attr("y2", 90)
-                .attr("stroke-width", 0.4)
-                .attr("stroke", "#808080");
 
         } else {
             //get number of parent nodes
@@ -399,7 +383,7 @@ export default class sunburst extends Component {
     }
 
     render() {
-        return (<div id="sunburstChart" > < h3 className="alignLeft title" > {
+        return (<div id="sunburstChart"  className="chart"> < h3 className="alignLeft title" > {
             this.props.name
         } </h3></div>)
     }

@@ -53,25 +53,9 @@ export default class topology extends Component {
                 .attr('height', 300)
                 .attr('id', 'topologyChartSVG');
 
-            g.append("line")
-                .attr("x1", 0)
-                .attr("y1", 10)
-                .attr("x2", width)
-                .attr("y2", 10)
-                .attr("stroke-width", 0.4)
-                .attr("stroke", "#808080");
-
             g.append('svg:image')
                 .attr("xlink:href", emptyIcon)
                 .attr('transform', 'translate(' + width / 2 + ',100)')
-
-            g.append("line")
-                .attr("x1", 0)
-                .attr("y1", 190)
-                .attr("x2", width)
-                .attr("y2", 190)
-                .attr("stroke-width", 0.4)
-                .attr("stroke", "#808080");
 
         } else {
 
@@ -284,7 +268,7 @@ export default class topology extends Component {
     }
 
     render() {
-        return ( <div id = "topologyChart" > <h3 className = "alignLeft title" > {
+        return ( <div id = "topologyChart"  className="chart"> <h3 className = "alignLeft title" > {
             this.props.name
         } </h3>
         {window.location.pathname !== "/connectivity" && <Animation name={this.props.name} type={this.props.type} setData={this.setData} dataAll={this.state.data} />}

@@ -386,6 +386,6 @@ export default class StackedChart extends Component {
     }
 
     render() {
-        return (<div id={this.props.id}> <h3 className="alignLeft title">{this.props.name}</h3></div>)
+        return (<div id={this.props.id}  className="chart"> <h3 className="alignLeft title">{this.props.name}</h3></div>)
     }
 }

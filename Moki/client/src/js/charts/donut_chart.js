@@ -104,25 +104,9 @@ export default class StackedChart extends Component {
                 .attr('height', 100)
                 .attr('id', id + 'SVG');
 
-            svg.append("line")
-                .attr("x1", 0)
-                .attr("y1", 10)
-                .attr("x2", svgWidth)
-                .attr("y2", 10)
-                .attr("stroke-width", 0.4)
-                .attr("stroke", "#808080");
-
             svg.append('svg:image')
                 .attr("xlink:href", emptyIcon)
                 .attr('transform', 'translate(' + svgWidth / 2 + ',30)');
-
-            svg.append("line")
-                .attr("x1", 0)
-                .attr("y1", 90)
-                .attr("x2", svgWidth)
-                .attr("y2", 90)
-                .attr("stroke-width", 0.4)
-                .attr("stroke", "#808080");
 
         } else {
 
@@ -251,7 +235,7 @@ export default class StackedChart extends Component {
     }
 
     render() {
-        return (<div id={this.props.id}>
+        return (<div id={this.props.id}  className="chart">
             <h3 className="alignLeft title" > {
                 this.props.name
             } </h3>

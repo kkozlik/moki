@@ -795,7 +795,7 @@ export default class listChart extends Component {
             pageButtonRenderer
         };
         return (
-            <div key={"table" + this.props.name}>
+            <div key={"table" + this.props.name}  className="chart">
 
                 {columnsList &&
                     <ToolkitProvider

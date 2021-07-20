@@ -60,7 +60,7 @@ export default class datebarChart extends Component {
         }
 
         return (
-            <div id="valueChart">
+            <div id="valueChart"  className="chart">
                 <h3 className="alignLeft title" >{this.props.name}</h3>
                 <h4 className={"alignLeft " + this.props.biggerFont} style={{ "color": this.state.color }}>{niceNumber(this.state.data, this.props.name)}</h4>
             </div>

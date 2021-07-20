@@ -57,7 +57,7 @@ class ConnectivityCharts extends Dashboard {
                             "FROM TO"
                         }
                         width={
-                            (store.getState().width - 300) / 2
+                            (store.getState().width - 300)
                         }
                         height={
                             300

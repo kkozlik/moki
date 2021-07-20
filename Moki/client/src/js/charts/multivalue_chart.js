@@ -103,7 +103,7 @@ export default class multivalueChart extends Component {
 
 
         return (
-            <div id={this.props.id} style={{ "width": "100%" }}>
+            <div id={this.props.id} style={{ "width": "100%" }}  className="chart">
                 <h3 className="alignLeft title">{this.props.name}</h3>
                 <table style={{ "width": "100%" }}>
                     <tbody>

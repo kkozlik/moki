@@ -89,11 +89,7 @@ export default class StackedChart extends Component {
         });
 
 
-
-
-        rootsvg.append("g")
-            .attr("class", "y axis")
-            .attr("transform", "translate(" + margin.left + ",0)").call(yAxis);
+      
 
         rootsvg.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -104,6 +100,10 @@ export default class StackedChart extends Component {
                 .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')')
 
         } else {
+            
+            rootsvg.append("g")
+            .attr("class", "y axis")
+            .attr("transform", "translate(" + margin.left + ",0)").call(yAxis);
 
             function wrap(text, width) {
                 //split by /
@@ -340,7 +340,7 @@ export default class StackedChart extends Component {
     render() {
         return (<div id={
             this.props.id
-        } > <h3 className="alignLeft title" > {
+        }  className="chart"> <h3 className="alignLeft title" > {
             this.props.name
         } </h3></div >)
     }

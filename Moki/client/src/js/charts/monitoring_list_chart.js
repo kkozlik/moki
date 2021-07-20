@@ -35,7 +35,7 @@ render() {
             );
     }
     return (
-        <div className="MonitoringListChart">
+        <div className="MonitoringListChart chart">
             <table>
                 <tbody>
                     {rows}

@@ -84,7 +84,8 @@ class App extends Component {
                 }
             });
             monitorVersion = await response.json();
-            monitorVersion = monitorVersion.version;
+            monitorVersion = monitorVersion.error ? "" : monitorVersion.version;
+
         } catch (error) {
             console.error(error);
         }
@@ -470,8 +471,8 @@ class App extends Component {
                         <div className="row" >
                             <div className="errorBar" > {this.state.error} </div>
                         </div>
-                        <div className="row justify-content-between" >
-                            <span id="user" className="tab top" >
+                        <div className="row justify-content-between header" style={{"marginRight": 0, "marginLeft":0}} >
+                            <span id="user" className="top" >
                                 {aws === true && <DecryptPasswordPopup />}
                                 {sipUser}
                                 {aws === true && (!this.state.admin && !this.state.siteAdmin) && <a href="/logout" > Log out </a>}
@@ -489,7 +490,7 @@ class App extends Component {
                                 <Redirect to={dashboards.includes("home") ? "/home" : "/" + dashboards[0]} />
                             </Switch>
                         </div>
-                        <span style={{ "float": "right" }}>
+                        <span className="footer" style={{ "float": "right" }}>
                             <div id="monitorName" className="top monitorName"> {this.state.monitorName.toUpperCase()} </div>
                             <img src={this.state.logo} alt="logo" style={{ "height": "15px", "float": "right" }} />
                         </span>
@@ -506,8 +507,8 @@ class App extends Component {
                         <div className="row" >
                             <div className="errorBar" > {this.state.error} </div>
                         </div>
-                        <div className="d-flex justify-content-between" >
-                            <span id="user" className="tab top">
+                        <div className="d-flex justify-content-between header" >
+                            <span id="user" className="top">
                                 {aws === true && <DecryptPasswordPopup />}
                                 {sipUser}
                                 {aws === true && !this.state.admin && <a href="/logout"> Log out </a>}</span>
@@ -524,7 +525,7 @@ class App extends Component {
                                 <Route path='/sequenceDiagram/' render={() => <Sequence />} />
                                 <Redirect to="/" />
                             </Switch>
-                            <span style={{ "float": "right" }}>
+                            <span className="footer" style={{ "float": "right" }}>
                                 <div id="monitorName" className="top monitorName"> {this.state.monitorName.toUpperCase()} </div>
                                 <img src={this.state.logo} alt="logo" style={{ "height": "15px", "float": "right" }} />
                             </span>
@@ -538,10 +539,10 @@ class App extends Component {
                 <span id="decryptpopupplaceholder"></span>
                 {(this.state.isLoading) ? loadingScreen :
                     <Router>
-                        <div className="container-fluid"> {sipUserSwitch}
+                        <div className="container-fluid" style={{"backgroundColor": "#f6f6f6"}}> {sipUserSwitch}
                         </div>
                     </Router>
-                }
+                } 
             </span>
         );
     }

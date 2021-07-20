@@ -460,7 +460,7 @@ export default class geoIpMap extends Component {
     }
 
     render() {
-        return (<div id="geoIpMap" > <h3 className="alignLeft title" > {
+        return (<div id="geoIpMap"  className="chart"> <h3 className="alignLeft title" > {
             this.props.name
         } </h3><Animation display={this.props.displayAnimation} name={this.props.name} type={this.props.type} setData={this.setData} dataAll={this.state.data} autoplay={this.props.autoplay} /></div >)
     }

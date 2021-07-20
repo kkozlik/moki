@@ -124,7 +124,7 @@ class TableChart extends Component {
     }
     else {
       return (
-        <div className="tableChart">
+        <div className="tableChart chart">
           <h3 className="alignLeft title">{this.props.name}</h3>
           {(window.location.pathname !== "/web" && (this.props.name === "EVENTS BY IP ADDR" || this.props.name === "TOP SUBNETS" || this.props.name === "EVENTS BY COUNTRY")) && <Animation name={this.props.name} type={this.props.type} setData={this.setData} dataAll={this.state.data} />}
           {this.state.data[0] && this.state.data[0].length > 0 &&
