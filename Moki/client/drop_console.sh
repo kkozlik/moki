@@ -3,7 +3,7 @@
 DIR=`mktemp -d`
 
 for i in build/static/js/*.js; do
-    npx terser $i --source-map "content='${i}.map'" -c drop_console=false -o ${DIR}/`basename $i` ;
+    npx terser $i --source-map "content='${i}.map'" -c drop_console=true -o ${DIR}/`basename $i` ;
 done
 
 if [[ ! -d build/static/js_orig ]]; then
