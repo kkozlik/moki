@@ -120,14 +120,14 @@ class Filter extends Component {
                     className="btn-primary filterButtonClose btn-small"
                     filter={this.props.title}
                     onClick={this.editFilter}
-                    style={{ "display": "inline-block", "minHeight": "35px" }}
+                    style={{ "display": "inline-block", "minHeight": "30px" }}
                     editid={this.props.id}> OK
                 </button>
                 <button type="button"
                     className="btn-secondary filterButtonClose btn-small"
                     onClick={this.closeFilterPopup}
                     editid={this.props.id}
-                    style={{ "display": "inline-block", "minHeight": "35px" }} > X
+                    style={{ "display": "inline-block", "minHeight": "30px" }} > X
                   </button>
             </span>
             <button style={{ backgroundColor: this.state.color }}

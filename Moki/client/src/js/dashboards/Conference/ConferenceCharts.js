@@ -73,32 +73,32 @@ class ConferenceCharts extends Dashboard {
            { this.state.isLoading && <LoadingScreenCharts />   } 
 
                 <div className="row no-gutters">
-                    <div className="col">
+                    <div className="col-auto">
                             <ValueChart data = {
                                 this.state.activeConf
-                            } name= {"ACTIVE CONFERENCES"}/> 
+                            } name= {"ACTIVE"}/> 
                     </div> 
-                    <div className="col">
+                    <div className="col-auto">
                             <ValueChart data = {
                                 this.state.sumCallEnd
                             }  name= {"LEAVEs"}/> 
                     </div>
-                    <div className="col">
+                    <div className="col-auto">
                             <ValueChart data = {
                                 this.state.sumCallStart
                             } name= {"JOINs"}/> 
                     </div>
-                    <div className="col">
+                    <div className="col-auto">
                         <ValueChart data = {
                                     this.state.durationSum
                                 } name= {"MAX DURATION"}/> 
                         </div>
-                    <div className="col">
+                    <div className="col-auto">
                             <ValueChart data = {
                                 this.state.durationAvg
                             } name= {"AVG DURATION"}/> 
                     </div>
-                    <div className="col">
+                    <div className="col-auto">
                             <ValueChart data = {
                                 this.state.avgParticipants
                             } name= {"AVG PARTICIPANT"}/> 
@@ -112,17 +112,17 @@ class ConferenceCharts extends Dashboard {
                     /> 
             </div>
             <div className = "row no-gutters" >
-                <div className="col">
+                <div className="col-auto">
                     <ListChart data = {
                         this.state.topConferences 
                     } name={"TOP CONFERENCES"} field= {"attrs.conf_id"}/> 
                 </div>
-                    <div className="col">
+                    <div className="col-auto">
                     <ListChart data = {
                         this.state.topActiveConferences 
                     } name={"TOP ACTIVE CONFERENCES"} field= {"attrs.conf_id"}/> 
                 </div>
-                <div className="col">
+                <div className="col-auto">
                     <ListChart data = {
                         this.state.topParticipants 
                     } name={"TOP PARTICIPANTS"} field= {"attrs.from.keyword"}/> 

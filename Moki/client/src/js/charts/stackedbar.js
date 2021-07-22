@@ -53,7 +53,7 @@ export default class StackedChart extends Component {
         var svg = d3.select('#' + id);
         var margin = {
             top: 13,
-            right: 20,
+            right: 50,
             bottom: 50,
             left: 35
         };
@@ -92,7 +92,6 @@ export default class StackedChart extends Component {
       
 
         rootsvg.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
 
         if (data === undefined || data.length === 0) {
             rootsvg.append('svg:image')
@@ -305,7 +304,7 @@ export default class StackedChart extends Component {
             curtain.transition()
                 .duration(1200)
                 .ease(d3.easeLinear)
-                .attr('x', -2 * width - 50);
+                .attr('x', -2 * (width+500));
 
             /*
                         // add the X gridlines

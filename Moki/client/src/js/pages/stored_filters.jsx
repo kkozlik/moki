@@ -138,8 +138,8 @@ class StoredFilters extends Component {
         if (filters.length !== 0) {
             return (
                 <React.Fragment>
-                    { filters.map((item, key) =>
-                       <div className="rowFilter" key={item.id} >
+                    {filters.map((item, key) =>
+                        <div className="rowFilter" key={item.id} >
                             <span className="iconsStoredFilter" onClick={this.activateFilter} filterid={item.id}>
                                 <img style={{ "width": "10px" }} alt="activateIcon" src={enableIcon} title="activate filter" />
                             </span >
@@ -147,7 +147,7 @@ class StoredFilters extends Component {
                                 <img style={{ "width": "10px" }} alt="deleteIcon" src={disableIcon} title="delete filter" />
                             </span >
                             <b style={{ "marginLeft": "20px" }}>{item.title}: </b>
-                            {item.attribute[0].filters.length > 0 &&
+                            {item.attribute[0].filters[0].length > 0 &&
                                 item.attribute[0].filters[0].map((subitem, i) => {
                                     if (i <= 3) {
                                         return (

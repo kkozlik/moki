@@ -90,6 +90,12 @@ class App extends Component {
             console.error(error);
         }
 
+        var res = await getProfile(this.state.user);
+
+        if (res !== "ok") {
+            this.showError(JSON.stringify(res));
+        }
+
         //store layout
         var jsonData = await getLayoutSettings();
         storePersistent.dispatch(setLayout(jsonData));
@@ -149,10 +155,6 @@ class App extends Component {
             isLoading: false
         })
 
-        var res = await getProfile(this.state.user);
-        if (res !== "ok") {
-            this.showError(JSON.stringify(res));
-        }
     }
 
     /**

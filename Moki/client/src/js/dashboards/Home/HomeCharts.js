@@ -149,27 +149,27 @@ class HomeCharts extends Component {
             <div>
                 { this.state.isLoading && <LoadingScreenCharts />}
                 <div className="row no-gutters">
-                    <div className="col">
+                    <div className="col-auto">
                         <ValueChart data={
                             this.state.sumCallEnd
                         } name={"# CALLS"} />
                     </div>
-                    <div className="col">
+                    <div className="col-auto">
                         <ValueChart data={
                             this.state.sumCallAttempt
                         } name={"# ATTEMPTS"} />
                     </div>
-                    <div className="col">
+                    <div className="col-auto">
                         <ValueChart data={
                             this.state.durationSum
                         } name={"SUM DURATION"} />
                     </div>
-                    <div className="col">
+                    <div className="col-auto">
                         <ValueChart data={
                             this.state.answerSeizureRatio
                         } name={"ASR (%)"} />
                     </div>
-                    <div className="col">
+                    <div className="col-auto">
                         <ValueChart data={
                             this.state.avgDuration
                         } name={"AVG DURATION"} />
@@ -181,7 +181,7 @@ class HomeCharts extends Component {
                     } marginLeft={150} id="dateHeatmap" name={"TYPE DATE HEATMAP"} field={"attrs.type"} width={store.getState().width - 300} units={"count"} />
                 </div>
                 <div className="row no-gutters">
-                    <div className="column">
+                    <div className="col">
                         <MultipleAreaChart data={
                             this.state.parallelCalls
                         } name={"PARALLEL CALLS"} id={"parallelCalls"} width={store.getState().width - 500} units={"count"} />
@@ -193,7 +193,7 @@ class HomeCharts extends Component {
                     </div>
                 </div>
                 <div className="row no-gutters">
-                    <div className="column">
+                    <div className="col">
                         <MultipleAreaChart data={
                             this.state.parallelRegs
                         } name={"PARALLEL REGS"} id={"parallelRegs"} width={store.getState().width - 500} units={"count"} />
@@ -205,7 +205,7 @@ class HomeCharts extends Component {
                     </div>
                 </div>
                 <div className="row no-gutters">
-                    <div className="column">
+                    <div className="col">
                         <MultipleAreaChart data={
                             this.state.incidentCount
                         } name={"INCIDENTS"} units={"count"} id={"incidentCount"} width={store.getState().width - 500} />

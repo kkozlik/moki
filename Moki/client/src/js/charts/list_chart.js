@@ -103,7 +103,7 @@ class TableChart extends Component {
                       {(this.props.name.includes("COUNTRY") || this.props.name.includes("COUNTRIES")) && item.key !== "unknown" && item.key !== "" ? <ReactCountryFlag style={{ "marginRight": "5px" }} countryCode={item.key} svg /> : <span />}
                       {item.key.substring(0, 16)}
                     </td>
-                    <td className="listChart" style={{ "borderBottom": "none" }}>{item.doc_count !== "" && roundNumber(item.doc_count / this.state.data[1] * 100) + "%"}</td>
+                    <td className="listChart" style={{ "borderBottom": "none", "color": "grey" }}>{item.doc_count !== "" && roundNumber(item.doc_count / this.state.data[1] * 100) + "%"}</td>
                   </tr>
                 )
 
@@ -113,9 +113,7 @@ class TableChart extends Component {
           {((this.state.data[0] && this.state.data[0].length === 0) || this.state.data[0] === "") &&
             <table style={{ "minWidth": "17em" }}>
               <tbody>
-                <tr><td><span></span></td></tr>
-
-                <tr><td> <span className="noDataIcon"> <img alt="nodata" src={emptyIcon} className="noDataList" />  </span></td></tr>
+                 <span className="noDataIcon"> <img alt="nodata" src={emptyIcon} className="noDataList" />  </span>
               </tbody>
             </table>
           }
@@ -132,16 +130,17 @@ class TableChart extends Component {
               <tbody>{this.state.data[0].map((item, key) => {
                 return (
                   <tr key={key}>
-                    <td className="filtertd listChart filterToggleActiveWhite" id={item.key} title={item.key}>
+                    <td className="filtertd listChart filterToggleActiveWhite" id={item.key} title={item.key}> 
+                     
+                      {(this.props.name.includes("COUNTRY") || this.props.name.includes("COUNTRIES")) && item.key !== "unknown" ? <ReactCountryFlag style={{ "marginRight": "5px" }} countryCode={item.key} svg /> : <span />}
+                      {shortText(item.key)}
                       <span className="filterToggle">
                         <img onClick={this.filter} field={this.props.field} value={item.key} className="icon" alt="filterIcon" src={filter} />
                         <img field={this.props.field} value={item.key} onClick={this.unfilter} className="icon" alt="unfilterIcon" src={unfilter} />
                       </span>
-                      {(this.props.name.includes("COUNTRY") || this.props.name.includes("COUNTRIES")) && item.key !== "unknown" ? <ReactCountryFlag style={{ "marginRight": "5px" }} countryCode={item.key} svg /> : <span />}
-                      {shortText(item.key)}
                     </td>
                     <td className="alignRight listChart">{niceNumber(item.doc_count, this.props.name)}</td>
-                    <td className="alignRight listChart tab">{roundNumber(item.doc_count / this.state.data[1] * 100) + "%"}</td>
+                    <td className="alignRight listChart tab" style={{"color": "grey"}}>{roundNumber(item.doc_count / this.state.data[1] * 100) + "%"}</td>
                   </tr>
                 )
 
@@ -151,9 +150,7 @@ class TableChart extends Component {
           { ((this.state.data[0] && this.state.data[0].length === 0) || this.state.data[0] === "") &&
             <table style={{ "minWidth": "17em" }}>
               <tbody>
-                <tr><td><span></span></td></tr>
-
-                <tr><td> <span className="noDataIcon"> <img alt="nodata" src={emptyIcon} className="noDataList" />  </span></td></tr>
+                <span className="noDataIcon"> <img alt="nodata" src={emptyIcon} className="noDataList" />  </span>
               </tbody>
             </table>
           }

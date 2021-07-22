@@ -133,12 +133,12 @@ class RegistrationCharts extends Component {
                     width={store.getState().width - 300}
                 />  </div>
             <div className="row no-gutters">
-                <div className="column">
+                <div className="col-10">
                     <MultipleAreaChart data={
                         this.state.parallelRegs
-                    } name={"PARALLEL REGS"} id={"parallelRegs"} width={store.getState().width - 500} />
+                    } name={"PARALLEL REGS"} id={"parallelRegs"} width={store.getState().width - 600} />
                 </div>
-                <div >
+                <div className="col-1">
                     <ValueChart data={
                         this.state.regsActual
                     } name={"ACTUAL REGS"} biggerFont={"biggerFont"} />
@@ -166,7 +166,8 @@ class RegistrationCharts extends Component {
                         width={500}
                         height={170}
                         legendSize={100}
-                    />
+                    /></div>
+                     <div className="col" >
                     <DonutChart data={
                         this.state.userAgents
                     }
@@ -177,7 +178,8 @@ class RegistrationCharts extends Component {
                         width={(store.getState().width/2)-100}
                         height={170}
                         legendSize={350}
-                    />  </div> <div className="col" >
+                    />  </div> 
+                    <div className="col" >
                     <DonutChart
                         data={this.state.transportProtocol}
                         name={"TRANSPORT PROTOCOL"}
@@ -187,7 +189,8 @@ class RegistrationCharts extends Component {
                         width={500}
                         height={170}
                         legendSize={50}
-                    />  </div> <div className="col" >
+                    />  </div> 
+                    <div className="col" >
                     <ListChart
                         data={this.state.topRegExpired}
                         name={"TOP REG. EXPIRED"}

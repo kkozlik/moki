@@ -305,8 +305,8 @@ class filterBar extends Component {
                                         {url === "/conference" && <input className="text-left form-control form-check-input filter-right" type="text" id="filterRoom" placeholder="CONF ID" onKeyUp={this.specFilter} />}
                                         {url === "/connectivityCA" && srcRealms}
                                         {url === "/connectivityCA" && dstRealms}
-                                        <img className="icon iconMain" alt="search" src={search} title="search" onClick={this.addFilter} id="filterButton" />
-                                        {<Popup trigger={<img className="icon iconMain" alt="storeIcon" src={loadIcon} title="stored filters" />} modal>
+                                        <img className="icon iconMain shadow" alt="search" src={search} title="search" onClick={this.addFilter} id="filterButton" />
+                                        {<Popup trigger={<img className="icon iconMain shadow" alt="storeIcon" src={loadIcon} title="stored filters" />} modal>
                                             {close => (
                                                 <div className="Advanced">
                                                     <button className="close" id="storedFiltersClose" onClick={close}> &times; </button>
@@ -316,7 +316,7 @@ class filterBar extends Component {
                                                 </div>
                                             )}
                                         </Popup>}
-                                        {<Popup trigger={<img className="icon iconMain" alt="storeIcon" src={saveIcon} title="save filters" />} modal>
+                                        {<Popup trigger={<img className="icon iconMain shadow" alt="storeIcon" src={saveIcon} title="save filters" />} modal>
                                             {close => (
                                                 <div className="Advanced">
                                                     <button className="close" id="saveFiltersClose" onClick={close}> &times; </button>

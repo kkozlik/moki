@@ -59,13 +59,13 @@ export default class heatmap extends Component {
         }
 
         //compute max label length to get bottom margin
-        var marginBottom = 100;
+        var marginBottom = 50;
         var marginLeft = 100;
         if (data && data.length > 0) {
             var maxTextWidth = d3.max(data.map(n => n.attr1.length));
-            marginBottom = maxTextWidth > 50 ? 150 : (maxTextWidth * 7) + 10;
             maxTextWidth = d3.max(data.map(n => n.attr2.length));
-            marginLeft = maxTextWidth > 50 ? 150 : maxTextWidth > 15 ? maxTextWidth * 8 : maxTextWidth * 13;
+            marginBottom = maxTextWidth > 23 ? 150 : maxTextWidth > 15 ? maxTextWidth * 8 : maxTextWidth * 13;
+            marginLeft = maxTextWidth > 23 ? 150 : maxTextWidth > 15 ? maxTextWidth * 8 : maxTextWidth * 13;
         }
 
         var margin = {
@@ -92,7 +92,7 @@ export default class heatmap extends Component {
                 .range(colorOneShade);
             this.setState({ colorScale: colorScale });
         }
-        var height = 350;
+        var height = 250;
         var widthSum = passWidth;
         var rootsvg = d3.select('#' + id)
             .append("svg")

@@ -69,7 +69,7 @@ export default class listChart extends Component {
                     formatExtraData: "attrs." + field,
                     formatter: (cell, obj, i, formatExtraData) => {
                         return <span className="filterToggleActive"><span className="filterToggle">
-                            <img onClick={this.filter} field={formatExtraData} value={cell} className="icon" alt="filterIcon" src={filter} /><img field={formatExtraData} value={cell} onClick={this.unfilter} className="icon" alt="unfilterIcon" src={unfilter} /></span >    {cell}
+                                {cell}<img onClick={this.filter} field={formatExtraData} value={cell} className="icon" alt="filterIcon" src={filter} /><img field={formatExtraData} value={cell} onClick={this.unfilter} className="icon" alt="unfilterIcon" src={unfilter} /></span >
                         </span>
                     }
                 });

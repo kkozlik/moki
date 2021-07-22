@@ -18,9 +18,10 @@
     background-clip: padding-box;
     border-radius: .25rem;
     transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
-    margin-right: 10px;
     margin-top: 10px;
+    margin-right: 5px;
     box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    width: 100%;
 }
 
 
@@ -272,7 +273,11 @@ body {
 
 .col {
     padding-left: 0px !important;
-    max-width: max-content !important;
+    margin-right: 10px;
+    flex-grow: 1;
+}
+.col-10 {
+    margin-right: 0.6rem;
 }
 
 .col-xl-10 {
@@ -336,6 +341,11 @@ p {
     min-width: 180px;
     padding-bottom: 5px;
     padding-right: 10px;
+    max-width: max-content;
+}
+
+#sunburstChart {
+    padding-bottom: 20px;
 }
 
 .header {
@@ -601,16 +611,14 @@ text {
 
 .filterToggleActive:hover .filterToggle {
     display: inline-table;
-    position: absolute;
-    background-color: rgba(236, 236, 236, 0.9);
+    position: initial;
     cursor: pointer;
     opacity: 1;
 }
 
 .filterToggleActiveWhite:hover .filterToggle {
-    display: inline-table;
-    position: absolute;
-    background-color: white;
+    display: contents;
+    position: initial;
     cursor: pointer;
     opacity: 1;
 }
@@ -666,9 +674,19 @@ text {
     color: indigo;
 }
 
+tr:hover {
+    background-color: #ececec;
+}
+
+tr:hover td {
+    background-color: transparent; /* or #000 */
+}
+
 .tableChart {
     width: max-content;
     min-width: 300px;
+    padding-right: 15px;
+    padding-bottom: 1px;
 }
 
 .biggerFont {
@@ -690,9 +708,10 @@ text {
 
 .filtertd {
     cursor: pointer;
-    padding-right: 100px;
+    width: max-content;
     padding-bottom: 5px;
     padding-top: 5px;
+    padding-right: 5px;
 }
 
 .tabletd {
@@ -866,7 +885,6 @@ input[type=text] {
     background-color: #333;
     padding: 0;
     float: left;
-    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
     /*  position: fixed; */
 }
 
@@ -919,6 +937,9 @@ input[type=text] {
     height: 60px;
 }
 
+.bg-dark {
+    box-shadow: rgb(0 0 0 / 15%) 1.95px 1.95px 2.6px;
+}
 
 /* Closed submenu icon */
 
@@ -975,7 +996,7 @@ input[type=text] {
 }
 
 .filter:hover {
-    color: darkcyan;
+    color: transparent !important;
 }
 
 
@@ -1045,6 +1066,19 @@ button {
     color: #2c2c2c;
 }
 
+#dropdownMenuButton:hover {
+    color: white !important;
+  }
+
+#dropdownMenuExportButton:hover {
+    color: white !important;
+  }
+
+
+.filter:hover{
+    color: transparent !important;
+  }
+
 .iconReload {
     margin: 0px !important;
 }
@@ -1052,7 +1086,6 @@ button {
 .icon {
     margin-left: 5px;
     cursor: pointer;
-    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
 }
 
 .iconMain {

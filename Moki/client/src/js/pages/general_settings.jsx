@@ -188,7 +188,7 @@ class Settings extends Component {
                 }
                 return response.json();
             }).then(function (responseData) {
-                if(responseData.msg){
+                if (responseData.msg) {
                     alert(responseData.msg);
                 }
 
@@ -315,29 +315,14 @@ class Settings extends Component {
         var Tagdata = this.generateTags();
 
 
-        return (<div className="container-fluid" > {
-            this.state.wait && < SavingScreen />
-        } <p className="settingsH" > General </p> {
-                Generaldata
-            }
-
-            <p className="settingsH" > Firewall </p> {
-                Firewalldata
-            }
-            <p className="settingsH" > Authentication </p> {
-                Authdata
-            }
-            <p className="settingsH" > Events </p> {
-                Eventsdata
-            } <p className="settingsH" > Elasticsearch and logstash </p> {
-                LEdata
-            } <p className="settingsH" > Slowlog </p> {
-                Slowlogdata
-            } <p className="settingsH" > Tags </p> {
-                Tagdata
-            }
-
-
+        return (<div className="container-fluid" > {this.state.wait && < SavingScreen />}
+            <div className="chart"><p className="settingsH" > General </p> {Generaldata} </div>
+            <div className="chart"> <p className="settingsH" > Firewall </p> {Firewalldata}</div>
+            <div className="chart"><p className="settingsH" > Authentication </p> {Authdata}</div>
+            <div className="chart"><p className="settingsH" > Events </p> {Eventsdata} </div>
+            <div className="chart"><p className="settingsH" > Elasticsearch and logstash </p> {LEdata} </div>
+            <div className="chart"><p className="settingsH" > Slowlog </p> {Slowlogdata} </div>
+            <div className="chart"><p className="settingsH" > Tags </p> {Tagdata}</div>
             <div className="btn-group rightButton" >
                 <button type="button"
                     className="btn btn-primary "
