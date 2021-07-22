@@ -2,13 +2,13 @@
 
 // TODO: rename to app.js (this isn't a server isn't ;) )
 
-const app = require('@moki-server/server/modules/express'); 
+const app = require('@moki-server/server/modules/express');
 const { cfg } = require('./modules/config');
 
 
 // const port = process.env.PORT || 5000;
 // start server
-let server = app.listen(cfg.port, cfg.addr);
+const server = app.listen(cfg.port, cfg.addr);
 
 // eslint-disable-next-line no-console
 server.on('listening', () => {
@@ -20,5 +20,5 @@ module.exports = app;
 process.on('SIGTERM', () => {
   server.close(() => {
     console.log('Process terminated');
-  })
-})
+  });
+});

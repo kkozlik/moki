@@ -25,38 +25,38 @@ const ProfileController = require('./profile');
 // controller boilerplate code
 
 function newHTTPError(status, msg) {
-    const err = new Error(msg);
-    err.status = status;
-    return err;
+  const err = new Error(msg);
+  err.status = status;
+  return err;
 }
 
 // generate a not found error (400)
 function newBadRequest(msg) {
-    return newHTTPError(400, msg);
+  return newHTTPError(400, msg);
 }
 
 module.exports = {
-    newHTTPError: () => newHTTPError,
-    newBadRequest: () => newBadRequest,
-    AdminController,
-    CallsController,
-    ConferenceController,
-    ConnectivityCAController,
-    ConnectivityController,
-    DiagramController,
-    DiagnosticsController,
-    ExceededController,
-    HomeController,
-    MonitoringController,
-    MicroanalysisController,
-    NetworkController,
-    OverviewController,
-    QoSController,
-    RealmController,
-    RegistrationController,
-    SettingController,
-    SecurityController,
-    SystemController,
-    TransportController,
-    ProfileController
+  newHTTPError: () => newHTTPError,
+  newBadRequest: () => newBadRequest,
+  AdminController,
+  CallsController,
+  ConferenceController,
+  ConnectivityCAController,
+  ConnectivityController,
+  DiagramController,
+  DiagnosticsController,
+  ExceededController,
+  HomeController,
+  MonitoringController,
+  MicroanalysisController,
+  NetworkController,
+  OverviewController,
+  QoSController,
+  RealmController,
+  RegistrationController,
+  SettingController,
+  SecurityController,
+  SystemController,
+  TransportController,
+  ProfileController
 };
