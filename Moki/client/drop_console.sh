@@ -1,5 +1,9 @@
 #!/usr/bin/bash
 
+if [[ ! -v NODE_ENV ]] || [[ $NODE_ENV != 'production' ]]; then
+    exit
+fi
+
 DIR=`mktemp -d`
 
 for i in build/static/js/*.js; do

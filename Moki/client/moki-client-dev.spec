@@ -1,7 +1,7 @@
 %global	moki_user	mokic
 %global moki_group	mokic
 
-Name:		  moki-client
+Name:		  moki-client-dev
 Version:  10.1.0
 #Release:  1%{?dist}
 Release:	1.amzn2
@@ -17,8 +17,11 @@ BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root
 #BuildRequires:  npm, yarn
 #Requires:	yarn
 
+%package
+Summary:	moki-client react app dev
+
 %description
-moki-client aka react application
+moki-client react appliction developement pack
 
 %prep
 
@@ -27,11 +30,14 @@ moki-client aka react application
 %build
 # build moki react front
 #cd Moki/client
-NODE_ENV=production npm install --production
 npm install
 
-npm run build
-rm -rf node_modules
+%pre
+# _datadir - default to /usr/share
+getent group %{moki_group} > /dev/null || %{_sbindir}/groupadd -r %{moki_group}
+getent passwd %{moki_user} > /dev/null || \
+    useradd -r -d /usr/share/Moki -g %{moki_group}  -s /sbin/nologin -c "moki client dev" %{moki_user}
+exit 0
 
 %install
 ## install html file
@@ -69,12 +75,22 @@ find %{buildroot}/usr/share/Moki -name "package.json" -exec sed -i 's#%{buildroo
 rm -rf %{buildroot}
 
 %post
+systemctl daemon-reload
+echo "Enabling and restarting moki dev service"
+systemctl -q enable moki-client
+systemctl -q restart moki-client
+
+%postun
+rm -rf %{buildroot}/usr/share/Moki/client
 
 %files
-#/opt/abc-monitor-gui/www
-/usr/share/Moki/build
+%defattr(-,%{moki_user},%{moki_group})
+#/usr/share/Moki/client
+/usr/share/Moki/client
+/usr/lib/systemd/system/moki-client.service
 #/usr/share/Moki/styles/
-#/usr/share/Moki
+#/usr/share/Moki/client
+#/etc/abc-monitor/debug.flag
 
 %changelog
 * Thu Jul 22 2021 Cristian Constantin <cristian@intutivelabs.com> 10.1.0
