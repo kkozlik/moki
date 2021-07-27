@@ -40,10 +40,10 @@ rm -rf node_modules
 #install html/*.html %{buildroot}/opt/abc-monitor-gui/www/
 
 # install moki
-install -d %{buildroot}/usr/share/Moki/client
-cp -r package*.json %{buildroot}/usr/share/Moki/client/
-cp -r public %{buildroot}/usr/share/Moki/client/
-cp -r src %{buildroot}/usr/share/Moki/client/
+#install -d %{buildroot}/usr/share/Moki/client
+#cp -r package*.json %{buildroot}/usr/share/Moki/client/
+#cp -r public %{buildroot}/usr/share/Moki/client/
+#cp -r src %{buildroot}/usr/share/Moki/client/
 cp -r build %{buildroot}/usr/share/Moki/
 
 # install moki def logo
@@ -51,19 +51,19 @@ cp -r build %{buildroot}/usr/share/Moki/
 #cp -r src/styles/logo.png %{buildroot}/usr/share/Moki/styles/
 
 # install moki service file
-install -d %{buildroot}/usr/lib/systemd/system
-install -m 0644 moki-client.service %{buildroot}/usr/lib/systemd/system/
+#install -d %{buildroot}/usr/lib/systemd/system
+#install -m 0644 moki-client.service %{buildroot}/usr/lib/systemd/system/
 
 # perform moki API install
-cd %{buildroot}/usr/share/Moki/client
-npm install
+#cd %{buildroot}/usr/share/Moki/client
+#npm install
 
 # dump flag file
 #mkdir -p %{buildroot}/etc/abc-monitor
 #touch %{buildroot}/etc/abc-monitor/debug.flag
 
 # fix absolute paths that npm leaves there due to npm feature/bug
-find %{buildroot}/usr/share/Moki -name "package.json" -exec sed -i 's#%{buildroot}##' '{}' \;
+#find %{buildroot}/usr/share/Moki -name "package.json" -exec sed -i 's#%{buildroot}##' '{}' \;
 
 %clean
 rm -rf %{buildroot}
