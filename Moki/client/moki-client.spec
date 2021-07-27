@@ -40,7 +40,7 @@ rm -rf node_modules
 #install html/*.html %{buildroot}/opt/abc-monitor-gui/www/
 
 # install moki
-#install -d %{buildroot}/usr/share/Moki/client
+install -d %{buildroot}/usr/share/Moki/
 #cp -r package*.json %{buildroot}/usr/share/Moki/client/
 #cp -r public %{buildroot}/usr/share/Moki/client/
 #cp -r src %{buildroot}/usr/share/Moki/client/
