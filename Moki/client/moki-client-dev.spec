@@ -5,7 +5,7 @@ Name:		  moki-client-dev
 Version:  10.1.0
 #Release:  1%{?dist}
 Release:	1.amzn2
-Summary:	GUI part of moki
+Summary:	GUI part of moki (dev)
 
 Group:		Applications/Internet
 License:	Commercial
@@ -16,9 +16,6 @@ BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root
 #Requires:	elasticsearch
 #BuildRequires:  npm, yarn
 #Requires:	yarn
-
-%package
-Summary:	moki-client react app dev
 
 %description
 moki-client react appliction developement pack
