@@ -29,6 +29,8 @@ moki-client react appliction developement pack
 #cd Moki/client
 npm install
 
+npm run build
+
 %pre
 # _datadir - default to /usr/share
 getent group %{moki_group} > /dev/null || %{_sbindir}/groupadd -r %{moki_group}
