@@ -87,6 +87,7 @@ rm -rf %{buildroot}/usr/share/Moki/client
 #/usr/share/Moki/client
 /usr/share/Moki/client
 /usr/lib/systemd/system/moki-client.service
+/usr/share/Moki/build
 #/usr/share/Moki/styles/
 #/usr/share/Moki/client
 #/etc/abc-monitor/debug.flag
