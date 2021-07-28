@@ -58,7 +58,6 @@ export default class listChart extends Component {
         //insert filtered columns
         for (i = 0; i < searchable.length; i++) {
             var field = searchable[i];
-            console.log('_source.attrs.' + field);
             columns.push(
                 {
                     dataField: '_source.attrs.' + field,

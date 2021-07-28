@@ -136,7 +136,6 @@ class StoredFilters extends Component {
 
     render() {
         var filters = this.state.filters;
-        console.log(filters);
         if (filters.length !== 0) {
             return (
                 <React.Fragment>
