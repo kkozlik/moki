@@ -69,7 +69,9 @@ export default class listChart extends Component {
                     formatExtraData: "attrs." + field,
                     formatter: (cell, obj, i, formatExtraData) => {
                         return <span className="filterToggleActive"><span className="filterToggle">
-                            <img onClick={this.filter} field={formatExtraData} value={cell} className="icon" alt="filterIcon" src={filter} /><img field={formatExtraData} value={cell} onClick={this.unfilter} className="icon" alt="unfilterIcon" src={unfilter} /></span >    {cell}
+                                <img onClick={this.filter} field={formatExtraData} value={cell} className="icon" alt="filterIcon" src={filter} />
+                                <img field={formatExtraData} value={cell} onClick={this.unfilter} className="icon" alt="unfilterIcon" src={unfilter} /></span >
+                                {cell}
                         </span>
                     }
                 });
@@ -795,7 +797,7 @@ export default class listChart extends Component {
             pageButtonRenderer
         };
         return (
-            <div key={"table" + this.props.name}>
+            <div key={"table" + this.props.name}  className="chart">
 
                 {columnsList &&
                     <ToolkitProvider
@@ -812,7 +814,7 @@ export default class listChart extends Component {
                         {
                             props => (
                                 <div key={"tablechart"}>
-                                    <h3 className="alignLeft title inline" >{this.props.id}</h3>
+                                    <h3 className="alignLeft title inline" style={{"float": "inherit"}} >{this.props.id}</h3>
                                     {this.props.id !== "LAST LOGIN EVENTS" && <img className="icon" alt="tagIcon" src={tagIcon} title="add tag" onClick={() => this.openPopupTag()} />}
 
                                     {this.props.id !== "LAST LOGIN EVENTS" && <div id="popupTag" className="popupTag" style={{ "display": "none" }}>

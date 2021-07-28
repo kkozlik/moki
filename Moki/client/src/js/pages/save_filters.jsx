@@ -9,17 +9,13 @@ class SaveFilters extends Component {
     constructor(props) {
         super(props);
         this.save = this.save.bind(this);
-        this.getFilters = this.getFilters.bind(this);
         this.state = {
             filters: []
         }
-
-        this.getFilters();
     }
 
-    async getFilters(){
+    async componentDidMount(){
         var filters = await getFilters();
-        console.log(filters);
         this.setState({filters: filters});
     }
 
@@ -55,8 +51,9 @@ class SaveFilters extends Component {
                 data.push({ timerange: store.getState().timerange });
             }
 
+
             var tls = storePersistent.getState().user["tls-cn"] !== "N/A" ? storePersistent.getState().user["tls-cn"] : "";
-            var checksum = storePersistent.getState().profile[0] ? storePersistent.getState().profile[0].userprefs.mode === "plain" ? "plain" : storePersistent.getState().profile[0].userprefs.validation_code : "plain";
+            var checksum = storePersistent.getState().profile[0] ? storePersistent.getState().profile[0].userprefs.validation_code : "";
             var domainID = storePersistent.getState().user.domainID !== "N/A" ? storePersistent.getState().user.domainID : "";
             var Url = "api/filters/save";
             try {
@@ -97,12 +94,12 @@ class SaveFilters extends Component {
         var dashboard = window.location.pathname;
         return (
             <span>
-                <p className="modalText" > <b>Title: </b><input type="text" id="filterTitle" style={{ "width": "400px" }} dashboard={dashboard} /></p>
-                <p>include timerange?  <input type="checkbox" id="time" /></p>
+                <p className="modalText" > <b>Name: </b><input type="text" id="filterTitle" style={{ "width": "400px" }} dashboard={dashboard} /></p>
+                <p><b>Timerange:</b><input type="checkbox" id="time" style={{"verticalAlign": "middle", "marginLeft": "5px"}}/> </p>
                 <div className="modalText" >
                     <b>Active filters:</b>
                     {filters.length === 0 && <p className="tab" >No active filters</p>}
-                    {filters.map((item) => <p className="tab" key={item.id}>{item.title}</p>)}
+                    {filters.length > 0 && filters.map((item) => <p className="tab" key={item.id}>{item.title}</p>)}
                 </div>
                 <button type="button"
                     className="btn btn-primary filterButtonClose"

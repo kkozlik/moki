@@ -70,9 +70,9 @@ export default class CountUpChart extends Component {
     render() {
         var bucket = getTimeBucket();
         return (
-            <div id="valueChart">
+            <div id="valueChart"  className="chart" >
                 {window.location.pathname === "/web" && <Animation name={this.props.name} type={this.props.type} setData={this.setData} dataAll={this.state.data} autoplay={this.props.autoplay} display={this.props.displayAnimation} />}
-                <h3 className="alignLeft title" >{this.props.name}</h3>
+                <h3 className="alignLeft title" style={{"float": "inherit"}}>{this.props.name}</h3>
                 <h4 className={"alignLeft " + this.props.biggerFont} title={"last " + bucket}>{this.state.count.toLocaleString()}</h4>
                 <h4 className={"alignLeft "} title={"difference to previous"}><span style={{ "color": this.state.valueAgo === 0 ? "black" : this.state.valueAgo > 0 ? "green" : "red"}}>{this.state.valueAgo > 0 ? "(+"+this.state.valueAgo+")" : "("+this.state.valueAgo  + ")"}</span></h4>
             </div>

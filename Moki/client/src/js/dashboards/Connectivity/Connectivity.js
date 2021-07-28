@@ -19,7 +19,7 @@ class Connectivity extends Component {
       
     render() {
         return (
-           <div className="container-fluid">
+           <div className="container-fluid" style={{"paddingRight": "0"}}>
                 <FilterBar tags={this.props.tags} />
                 <TypeBar/>
                 <ConnectivityCharts  showError={this.showError} />

@@ -91,13 +91,13 @@ class ConnectivityCACharts extends Dashboard {
       return (<div> {
           this.state.isLoading && < LoadingScreenCharts />
       } <div className="row no-gutters" >
-              <div className="col" >
+              <div className="col-auto" >
                   <ValueChart data={
                       this.state.sumCallEnd
                   }
                       name={
                           "ENDs"
-                      } />  </div> <div className="col" >
+                      } />  </div> <div className="col-auto" >
                   <ValueChart data={
                       this.state.sumCallAttempt
                   }
@@ -105,7 +105,7 @@ class ConnectivityCACharts extends Dashboard {
                           "ATTEMPTs"
                       }
                   />  </div>
-              <div className="col" >
+              <div className="col-auto" >
                   <ValueChart data={
                       this.state.sumCallStart
                   }
@@ -113,7 +113,7 @@ class ConnectivityCACharts extends Dashboard {
                           "STARTs"
                       }
                   />  </div>
-              <div className="col" >
+              <div className="col-auto" >
                   <ValueChart data={
                       this.state.durationSum
                   }

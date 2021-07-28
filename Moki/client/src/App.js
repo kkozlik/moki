@@ -84,9 +84,16 @@ class App extends Component {
                 }
             });
             monitorVersion = await response.json();
-            monitorVersion = monitorVersion.version;
+            monitorVersion = monitorVersion.error ? "" : monitorVersion.version;
+
         } catch (error) {
             console.error(error);
+        }
+
+        var res = await getProfile(this.state.user);
+
+        if (res !== "ok") {
+            this.showError(JSON.stringify(res));
         }
 
         //store layout
@@ -148,10 +155,6 @@ class App extends Component {
             isLoading: false
         })
 
-        var res = await getProfile(this.state.user);
-        if (res !== "ok") {
-            this.showError(JSON.stringify(res));
-        }
     }
 
     /**
@@ -467,17 +470,18 @@ class App extends Component {
                 sipUserSwitch = <div className="row" id="body-row" >
                     <NavBar redirect={this.redirect} toggle={this.toggle} aws={this.state.aws} dashboardsUser={this.state.dashboardsUser} dashboards={this.state.dashboards} dashboardsSettings={this.state.dashboardsSettings} />
                     <div id="context" className={"margin250"}>
-                        <div className="row" >
-                            <div className="errorBar" > {this.state.error} </div>
-                        </div>
-                        <div className="row justify-content-between" >
-                            <span id="user" className="tab top" >
+
+                        <div className="row justify-content-between header" style={{"marginRight": 0, "marginLeft":0}} >
+                            <span id="user" className="top" >
                                 {aws === true && <DecryptPasswordPopup />}
                                 {sipUser}
                                 {aws === true && (!this.state.admin && !this.state.siteAdmin) && <a href="/logout" > Log out </a>}
                             </span>
 
                             <TimerangeBar showError={this.showError} />
+                        </div>
+                        <div className="row" >
+                            <div className="errorBar" > {this.state.error} </div>
                         </div>
                         <div className="row" >
                             <Switch >
@@ -489,7 +493,7 @@ class App extends Component {
                                 <Redirect to={dashboards.includes("home") ? "/home" : "/" + dashboards[0]} />
                             </Switch>
                         </div>
-                        <span style={{ "float": "right" }}>
+                        <span className="footer" style={{ "float": "right" }}>
                             <div id="monitorName" className="top monitorName"> {this.state.monitorName.toUpperCase()} </div>
                             <img src={this.state.logo} alt="logo" style={{ "height": "15px", "float": "right" }} />
                         </span>
@@ -503,15 +507,15 @@ class App extends Component {
                 sipUserSwitch = <div className="row"
                     id="body-row">
                     <div className="col" >
-                        <div className="row" >
-                            <div className="errorBar" > {this.state.error} </div>
-                        </div>
-                        <div className="d-flex justify-content-between" >
-                            <span id="user" className="tab top">
+                        <div className="d-flex justify-content-between header" >
+                            <span id="user" className="top">
                                 {aws === true && <DecryptPasswordPopup />}
                                 {sipUser}
                                 {aws === true && !this.state.admin && <a href="/logout"> Log out </a>}</span>
                             <TimerangeBar showError={this.showError} />
+                        </div>
+                        <div className="row" >
+                            <div className="errorBar" > {this.state.error} </div>
                         </div>
                         <FilterBar redirect={this.state.redirect} />
                         <div>
@@ -524,7 +528,7 @@ class App extends Component {
                                 <Route path='/sequenceDiagram/' render={() => <Sequence />} />
                                 <Redirect to="/" />
                             </Switch>
-                            <span style={{ "float": "right" }}>
+                            <span className="footer" style={{ "float": "right" }}>
                                 <div id="monitorName" className="top monitorName"> {this.state.monitorName.toUpperCase()} </div>
                                 <img src={this.state.logo} alt="logo" style={{ "height": "15px", "float": "right" }} />
                             </span>
@@ -538,10 +542,10 @@ class App extends Component {
                 <span id="decryptpopupplaceholder"></span>
                 {(this.state.isLoading) ? loadingScreen :
                     <Router>
-                        <div className="container-fluid"> {sipUserSwitch}
+                        <div className="container-fluid" style={{"backgroundColor": "#f6f6f6"}}> {sipUserSwitch}
                         </div>
                     </Router>
-                }
+                } 
             </span>
         );
     }

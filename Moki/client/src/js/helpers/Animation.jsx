@@ -235,7 +235,7 @@ class Animation extends Component {
         var display = this.props.display === "none" ? "none" : "block";
         var interval = (store.getState().timerange[1] - store.getState().timerange[0]) / 30000;
         interval = interval / 60 > 1 ? Math.round(interval / 60) + "min" : interval + "s";
-        return (<div style={{ "display": display }}>
+        return (<div style={{ "display": display, "paddingTop": "10px" }}>
             <span onClick={this.loadData} id={this.props.name}>
                 <img style={{ "marginLeft": "10px", "marginRight": "0px" }} className="iconRefresh" alt="playIcon" src={this.state.icon} title="play" />
             </span>
@@ -245,7 +245,7 @@ class Animation extends Component {
             }
             { this.state.animationTime ? <span className="slidecontainer">
                 <input type="range" min="0" max={this.state.data.length - 1} onInput={this.changeSliderInput} value={this.state.count} className="slider" id="animationRange">
-                </input>{new Date(this.state.animationTime).toLocaleString() + " + " + interval}</span> : ""
+                </input><span style={{"color": "grey"}}>{new Date(this.state.animationTime).toLocaleString() + " + " + interval}</span></span> : ""
             }
         </div>
         );

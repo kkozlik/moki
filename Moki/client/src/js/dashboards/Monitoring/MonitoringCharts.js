@@ -211,6 +211,7 @@ class MonitoringCharts extends Component {
         }
 
             <h4> CPU </h4> <div className="row no-gutters bottomMargin" >
+            <div className="col-auto" style={{"marginRight" : "5px"}}>
                 <GaugeChart data={
                     this.state.cpu
                 }
@@ -224,7 +225,8 @@ class MonitoringCharts extends Component {
                         300
                     }
                 />
-
+                </div>
+                <div className="col-auto">
                 <ValueChart data={
                     this.state.loadAverage1m
                 }
@@ -232,7 +234,8 @@ class MonitoringCharts extends Component {
                         "1-MIN LOAD AVG"
                     }
                 />
-
+</div>
+<div className="col-auto">
                 <ValueChart data={
                     this.state.loadAverage5m
                 }
@@ -240,15 +243,16 @@ class MonitoringCharts extends Component {
                         "5-MIN LOAD AVG"
                     }
                 />
-
+</div> <div className="col-auto">
                 <ValueChart data={
                     this.state.loadAverage15m
                 }
                     name={
                         "15-MIN LOAD AVG"
                     }
-                /> </div>
-            <h4> MEMORY </h4> <div className="row no-gutters bottomMargin" >
+                /> 
+                </div></div>
+            <h4> MEMORY </h4> <div className="row no-gutters bottomMargin" > <div className="col-auto">
                 <ValueChart data={
                     this.state.memoryBytes
                 }
@@ -256,9 +260,9 @@ class MonitoringCharts extends Component {
                         "TOTAL MEMORY (MB)"
                     }
                 />
-
+ </div>
             </div> <h4> DISK(Linux only) </h4> <div className="row no-gutters bottomMargin" >
-
+            <div className="col-auto">
                 <MultiListChart data={
                     this.state.disk
                 }
@@ -267,7 +271,7 @@ class MonitoringCharts extends Component {
                     }
                 />  </div>
 
-
+</div>
             <div className="row no-gutters bottomMargin" >
                 <span> <h4 style={
                     {
@@ -283,8 +287,7 @@ class MonitoringCharts extends Component {
                     /></h4>
 
 
-                    <
-                        GaugeChart data={
+<div className="col">  <GaugeChart data={
                             this.state.heapUsedPercent
                         }
                         name={
@@ -296,7 +299,7 @@ class MonitoringCharts extends Component {
                         width={
                             300
                         }
-                    /> </span> <span> <h4 style={
+                    /></div> </span> <span> <h4 style={
                         {
                             "marginTop": "20px"
                         }

@@ -13,6 +13,21 @@
     min-width: fit-content;
 }
 
+.chart {
+    background-color: #fff;
+    background-clip: padding-box;
+    border-radius: .25rem;
+    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+    margin-top: 10px;
+    margin-right: 5px;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    width: 100%;
+}
+
+.chartMinHeight {
+    min-height: 293px;
+}
+
 
 /*code styling for <pre><code>*/
 
@@ -144,7 +159,7 @@
 }
 
 .margin70 {
-    margin-left: 70px;
+    margin-left: 60px;
     /* max-width: 1400px;*/
 }
 
@@ -209,7 +224,7 @@
 #context {
     float: right;
     position: absolute;
-    padding-right: 20px;
+    background-color: #f6f6f6;
     /* width: intrinsic;           /* Safari/WebKit uses a non-standard name */
     width: -moz-available;
     /* Firefox/Gecko */
@@ -262,7 +277,11 @@ body {
 
 .col {
     padding-left: 0px !important;
-    max-width: max-content !important;
+    margin-right: 10px;
+    flex-grow: 1;
+}
+.col-10 {
+    margin-right: 0.6rem;
 }
 
 .col-xl-10 {
@@ -324,6 +343,23 @@ p {
 
 #valueChart {
     min-width: 180px;
+    padding-bottom: 5px;
+    padding-right: 10px;
+    max-width: max-content;
+}
+
+#sunburstChart {
+    padding-bottom: 20px;
+}
+
+.header {
+    margin-left: 0px;
+    width: 100%;
+    color: white;
+    padding-top: 0;
+    background-color:  var(--main);
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    align-items: flex-end;
 }
 
 h5 {
@@ -428,9 +464,9 @@ h5 {
 }
 
 #tooltipshare {
-    border-width: 1px;
+    border-width: 0;
     border-style: ridge;
-    background-color: white;
+    background-color: grey;
     padding: 5px;
     position: absolute;
     top: 28px;
@@ -439,9 +475,9 @@ h5 {
 }
 
 #downloadAllTooltip {
-    border-width: 1px;
+    border-width: 0;
     border-style: ridge;
-    background-color: white;
+    background-color: grey;
     padding: 5px;
     position: absolute;
     z-index: 1000000;
@@ -572,21 +608,21 @@ text {
 }
 
 #filterBar {
+    margin-top: 0.3rem;
     margin-left: 10px;
 }
 
+
 .filterToggleActive:hover .filterToggle {
     display: inline-table;
-    position: absolute;
-    background-color: rgba(236, 236, 236, 0.9);
+    position: initial;
     cursor: pointer;
     opacity: 1;
 }
 
 .filterToggleActiveWhite:hover .filterToggle {
-    display: inline-table;
-    position: absolute;
-    background-color: white;
+    display: contents;
+    position: initial;
     cursor: pointer;
     opacity: 1;
 }
@@ -642,9 +678,19 @@ text {
     color: indigo;
 }
 
+tr:hover {
+    background-color: #ececec;
+}
+
+tr:hover td {
+    background-color: transparent; /* or #000 */
+}
+
 .tableChart {
     width: max-content;
     min-width: 300px;
+    padding-right: 15px;
+    padding-bottom: 1px;
 }
 
 .biggerFont {
@@ -666,9 +712,10 @@ text {
 
 .filtertd {
     cursor: pointer;
-    padding-right: 100px;
+    width: max-content;
     padding-bottom: 5px;
     padding-top: 5px;
+    padding-right: 5px;
 }
 
 .tabletd {
@@ -681,6 +728,10 @@ text {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+}
+
+.table{
+    width: 90%;
 }
 
 table {
@@ -754,7 +805,6 @@ input[type=text] {
 
 .top {
     /*text-transform: uppercase;*/
-    margin-top: 10px;
     margin-bottom: 0px !important;
 }
 
@@ -818,7 +868,13 @@ input[type=text] {
     max-width: none !important;
 }
 
+.footer {
+    padding-right: 10px;
+    margin-top: 10px;
+}
+
 .navbar {
+    padding: 0 1.5rem 0 0.6rem;
     margin-top: 2px;
     width: 100%;
 }
@@ -855,6 +911,9 @@ input[type=text] {
     color: white;
 }
 
+a.nav-item  {
+    color: grey;
+}
 
 /* Submenu item*/
 
@@ -885,6 +944,9 @@ input[type=text] {
     height: 60px;
 }
 
+.bg-dark {
+    box-shadow: rgb(0 0 0 / 15%) 1.95px 1.95px 2.6px;
+}
 
 /* Closed submenu icon */
 
@@ -923,6 +985,11 @@ input[type=text] {
     margin-right: 15px;
 }
 
+.right {
+    float: right;
+    margin-right: 5px;
+}
+
 
 /*------------------------filter bar-----------------------------*/
 
@@ -930,7 +997,6 @@ input[type=text] {
     background-color: #56747F;
     border-width: 0px;
     color: white;
-    margin-left: 10px;
     border-radius: 4px;
     min-width: 150px;
     min-height: 30px;
@@ -942,7 +1008,7 @@ input[type=text] {
 }
 
 .filter:hover {
-    color: darkcyan;
+    color: transparent !important;
 }
 
 
@@ -996,6 +1062,7 @@ input[type=text] {
 .noDataList {
     margin-left: 3em;
     padding: 1em;
+    padding-top: 120px;
 }
 
 .tabletd:hover .filterIcons {
@@ -1006,12 +1073,24 @@ input[type=text] {
 .buttonHover {
     display: none;
     margin-top: -18px;
-    padding: 2px;
 }
 
 button {
     color: #2c2c2c;
 }
+
+#dropdownMenuButton:hover {
+    color: white !important;
+  }
+
+#dropdownMenuExportButton:hover {
+    color: white !important;
+  }
+
+
+.filter:hover{
+    color: transparent !important;
+  }
 
 .iconReload {
     margin: 0px !important;
@@ -1077,6 +1156,11 @@ button {
     font-size: 1.2rem !important;
 }
 
+.filterBody {
+    margin-right: 5px;
+    box-shadow: rgb(0 0 0 / 15%) 1.95px 1.95px 2.6px;
+}
+
 .Advance {
     overflow-y: scroll;
     height: 80vh;
@@ -1132,6 +1216,7 @@ pre {
 
 #user {
     font-size: 1rem;
+    padding-bottom: 2px;
 }
 
 
@@ -1147,12 +1232,12 @@ pre {
     font-size: small;
     cursor: pointer;
     min-width: 100px;
+    box-shadow: rgb(0 0 0 / 15%) 1.95px 1.95px 2.6px;
 }
 
 .typeBar {
-    margin-top: 5px;
     margin-bottom: 5px;
-    margin-left: 25px;
+    margin-left: 20px;
 }
 
 .column {
@@ -1225,10 +1310,9 @@ input {
 }
 
 #searchBar {
-    margin-top: 10px;
+    margin-top: 6px;
     height: 30px;
-    margin-left: 20px;
-    padding: 0;
+    margin-right: 5px;
     display: table-cell;
     font-size: 1rem;
     line-height: 1.5;
@@ -1238,7 +1322,7 @@ input {
     background-clip: padding-box;
     border: 1px solid #ced4da;
     border-radius: .25rem;
-    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
 }
 
 @media (max-width: 1365px) {
@@ -1249,8 +1333,7 @@ input {
 
 .FilterSearchBar {
     width: 100%;
-    margin-left: 20px;
-    margin-top: -10px;
+    margin-left: 30px;
 }
 
 .bottomMargin {
@@ -1270,6 +1353,7 @@ input {
     line-height: 1.42857143;
     margin-bottom: 0px;
     margin-top: 10px;
+    float: left;
 }
 
 .list {
@@ -1345,10 +1429,10 @@ thead th {
     width: 80px;
 }
 
-th,
-td {
+/*
+th, td {
     border-bottom: 1px solid #ddd;
-}
+}*/
 
 small {
     font: 10px sans-serif;
@@ -1358,10 +1442,15 @@ small {
 /*------------------------time picker--------------------------*/
 
 .btn {
-    background-color: white;
+    background-color:  var(--main);
     margin-right: 5px;
     margin-left: 5px;
     border-radius: .25rem !important;
+    color: white;
+}
+
+.shadow {
+    box-shadow: rgb(0 0 0 / 15%) 1.95px 1.95px 2.6px;
 }
 
 #timeMenu {

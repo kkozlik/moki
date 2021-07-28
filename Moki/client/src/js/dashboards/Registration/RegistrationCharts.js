@@ -83,7 +83,7 @@ class RegistrationCharts extends Component {
             var userAgents = parseBucketData(data.responses[2]);
 
             //TOP REG. EXPIRED
-            var topRegExpired = parseUri(data.responses[3]);
+            var topRegExpired = await parseUri(data.responses[3]);
 
             //TRANSPORT PROTOCOL
             var transportProtocol = parseBucketData(data.responses[4]);
@@ -133,12 +133,12 @@ class RegistrationCharts extends Component {
                     width={store.getState().width - 300}
                 />  </div>
             <div className="row no-gutters">
-                <div className="column">
+                <div className="col-10">
                     <MultipleAreaChart data={
                         this.state.parallelRegs
-                    } name={"PARALLEL REGS"} id={"parallelRegs"} width={store.getState().width - 500} />
+                    } name={"PARALLEL REGS"} id={"parallelRegs"} width={store.getState().width - 600} />
                 </div>
-                <div >
+                <div className="col-1">
                     <ValueChart data={
                         this.state.regsActual
                     } name={"ACTUAL REGS"} biggerFont={"biggerFont"} />
@@ -163,10 +163,11 @@ class RegistrationCharts extends Component {
                         name={"TYPES"}
                         field={"attrs.type"}
                         id="types"
-                        width={500}
+                        width={400}
                         height={170}
-                        legendSize={100}
-                    />
+                        legendSize={150}
+                    /></div>
+                     <div className="col" >
                     <DonutChart data={
                         this.state.userAgents
                     }
@@ -177,7 +178,8 @@ class RegistrationCharts extends Component {
                         width={(store.getState().width/2)-100}
                         height={170}
                         legendSize={350}
-                    />  </div> <div className="col" >
+                    />  </div> 
+                    <div className="col" >
                     <DonutChart
                         data={this.state.transportProtocol}
                         name={"TRANSPORT PROTOCOL"}
@@ -187,7 +189,8 @@ class RegistrationCharts extends Component {
                         width={500}
                         height={170}
                         legendSize={50}
-                    />  </div> <div className="col" >
+                    />  </div> 
+                    <div className="col" >
                     <ListChart
                         data={this.state.topRegExpired}
                         name={"TOP REG. EXPIRED"}

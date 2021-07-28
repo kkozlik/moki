@@ -26,6 +26,7 @@ export const getSearchableFields=()=>{
         "source",
         "conf_id",
         "reason",
+        "sip-reason",
         "tags"
         ]);
 }

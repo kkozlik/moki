@@ -35,7 +35,7 @@ class Realm extends Component {
 
   render() {
     return (
-      <div className="container-fluid">
+      <div className="container-fluid" style={{"paddingRight": "0"}}>
         <FilterBar tags={this.props.tags} />
         <RealmCharts showError={this.showError} hostnames={this.state.hostnames} />
         <RealmTable tags={this.props.tags} />

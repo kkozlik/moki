@@ -52,8 +52,8 @@ export default class StackedChart extends Component {
         }
         var svg = d3.select('#' + id);
         var margin = {
-            top: 13,
-            right: 20,
+            top: 30,
+            right: 50,
             bottom: 50,
             left: 35
         };
@@ -89,14 +89,9 @@ export default class StackedChart extends Component {
         });
 
 
-
-
-        rootsvg.append("g")
-            .attr("class", "y axis")
-            .attr("transform", "translate(" + margin.left + ",0)").call(yAxis);
+      
 
         rootsvg.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
 
         if (data === undefined || data.length === 0) {
             rootsvg.append('svg:image')
@@ -104,6 +99,10 @@ export default class StackedChart extends Component {
                 .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')')
 
         } else {
+            
+            rootsvg.append("g")
+            .attr("class", "y axis")
+            .attr("transform", "translate(" + margin.left + ",0)").call(yAxis);
 
             function wrap(text, width) {
                 //split by /
@@ -305,7 +304,7 @@ export default class StackedChart extends Component {
             curtain.transition()
                 .duration(1200)
                 .ease(d3.easeLinear)
-                .attr('x', -2 * width - 50);
+                .attr('x', -2 * (width+500));
 
             /*
                         // add the X gridlines
@@ -340,7 +339,7 @@ export default class StackedChart extends Component {
     render() {
         return (<div id={
             this.props.id
-        } > <h3 className="alignLeft title" > {
+        }  className="chart chartMinHeight"> <h3 className="alignLeft title" > {
             this.props.name
         } </h3></div >)
     }
