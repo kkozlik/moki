@@ -52,7 +52,7 @@ export default class StackedChart extends Component {
         }
         var svg = d3.select('#' + id);
         var margin = {
-            top: 13,
+            top: 30,
             right: 50,
             bottom: 50,
             left: 35
@@ -339,7 +339,7 @@ export default class StackedChart extends Component {
     render() {
         return (<div id={
             this.props.id
-        }  className="chart"> <h3 className="alignLeft title" > {
+        }  className="chart chartMinHeight"> <h3 className="alignLeft title" > {
             this.props.name
         } </h3></div >)
     }

@@ -163,9 +163,9 @@ class RegistrationCharts extends Component {
                         name={"TYPES"}
                         field={"attrs.type"}
                         id="types"
-                        width={500}
+                        width={400}
                         height={170}
-                        legendSize={100}
+                        legendSize={150}
                     /></div>
                      <div className="col" >
                     <DonutChart data={

@@ -29,7 +29,7 @@ class StoredFilters extends Component {
        Load data 
        */
     async load() {
-        var checksum = storePersistent.getState().profile[0] ? storePersistent.getState().profile[0].userprefs.mode === "plain" ? "plain" : storePersistent.getState().profile[0].userprefs.validation_code : "plain";
+        var checksum = storePersistent.getState().profile[0] ? storePersistent.getState().profile[0].userprefs.validation_code : "";
         var Url = "api/filters";
         var jsonData;
         try {
@@ -79,6 +79,7 @@ class StoredFilters extends Component {
             if (storedFilters[i].id === filterID)
                 filters = storedFilters[i];
         }
+
         document.getElementsByClassName("close")[0].click();
         //redirect according to dashboard name
         var name = filters.attribute[1].name;
@@ -135,6 +136,7 @@ class StoredFilters extends Component {
 
     render() {
         var filters = this.state.filters;
+        console.log(filters);
         if (filters.length !== 0) {
             return (
                 <React.Fragment>

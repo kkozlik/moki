@@ -24,6 +24,10 @@
     width: 100%;
 }
 
+.chartMinHeight {
+    min-height: 293px;
+}
+
 
 /*code styling for <pre><code>*/
 
@@ -155,7 +159,7 @@
 }
 
 .margin70 {
-    margin-left: 70px;
+    margin-left: 60px;
     /* max-width: 1400px;*/
 }
 
@@ -460,9 +464,9 @@ h5 {
 }
 
 #tooltipshare {
-    border-width: 1px;
+    border-width: 0;
     border-style: ridge;
-    background-color: white;
+    background-color: grey;
     padding: 5px;
     position: absolute;
     top: 28px;
@@ -471,9 +475,9 @@ h5 {
 }
 
 #downloadAllTooltip {
-    border-width: 1px;
+    border-width: 0;
     border-style: ridge;
-    background-color: white;
+    background-color: grey;
     padding: 5px;
     position: absolute;
     z-index: 1000000;
@@ -907,6 +911,9 @@ input[type=text] {
     color: white;
 }
 
+a.nav-item  {
+    color: grey;
+}
 
 /* Submenu item*/
 
@@ -1050,6 +1057,7 @@ input[type=text] {
 .noDataList {
     margin-left: 3em;
     padding: 1em;
+    padding-top: 120px;
 }
 
 .tabletd:hover .filterIcons {
@@ -1340,6 +1348,7 @@ input {
     line-height: 1.42857143;
     margin-bottom: 0px;
     margin-top: 10px;
+    float: left;
 }
 
 .list {

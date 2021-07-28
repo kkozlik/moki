@@ -58,6 +58,7 @@ export default class listChart extends Component {
         //insert filtered columns
         for (i = 0; i < searchable.length; i++) {
             var field = searchable[i];
+            console.log('_source.attrs.' + field);
             columns.push(
                 {
                     dataField: '_source.attrs.' + field,
@@ -69,7 +70,9 @@ export default class listChart extends Component {
                     formatExtraData: "attrs." + field,
                     formatter: (cell, obj, i, formatExtraData) => {
                         return <span className="filterToggleActive"><span className="filterToggle">
-                                {cell}<img onClick={this.filter} field={formatExtraData} value={cell} className="icon" alt="filterIcon" src={filter} /><img field={formatExtraData} value={cell} onClick={this.unfilter} className="icon" alt="unfilterIcon" src={unfilter} /></span >
+                                <img onClick={this.filter} field={formatExtraData} value={cell} className="icon" alt="filterIcon" src={filter} />
+                                <img field={formatExtraData} value={cell} onClick={this.unfilter} className="icon" alt="unfilterIcon" src={unfilter} /></span >
+                                {cell}
                         </span>
                     }
                 });
@@ -812,7 +815,7 @@ export default class listChart extends Component {
                         {
                             props => (
                                 <div key={"tablechart"}>
-                                    <h3 className="alignLeft title inline" >{this.props.id}</h3>
+                                    <h3 className="alignLeft title inline" style={{"float": "inherit"}} >{this.props.id}</h3>
                                     {this.props.id !== "LAST LOGIN EVENTS" && <img className="icon" alt="tagIcon" src={tagIcon} title="add tag" onClick={() => this.openPopupTag()} />}
 
                                     {this.props.id !== "LAST LOGIN EVENTS" && <div id="popupTag" className="popupTag" style={{ "display": "none" }}>

@@ -48,7 +48,7 @@ export default class sunburst extends Component {
             chart.remove();
         }
         var width = 180;
-        var height = 170;
+        var height = 220;
         var svgWidth = widthSvg;
         var legendRectSize = 15;
         var legendSpacing = 2;
@@ -89,8 +89,9 @@ export default class sunburst extends Component {
                 .attr('id', 'sunburstChartSVG')
                 .attr('width', svgWidth)
                 .attr('height', height)
+                .attr('style', "padding-top: 20px")
                 .append('g')
-                .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')');
+                .attr('transform', 'translate(' + width / 2 + ',' + height/ 2 + ')');
 
             // Data strucure
             var partition = d3.partition()
@@ -383,7 +384,7 @@ export default class sunburst extends Component {
     }
 
     render() {
-        return (<div id="sunburstChart"  className="chart"> < h3 className="alignLeft title" > {
+        return (<div id="sunburstChart"  className="chart chartMinHeight"> <h3 className="alignLeft title" > {
             this.props.name
         } </h3></div>)
     }
