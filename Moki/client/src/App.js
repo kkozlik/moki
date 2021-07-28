@@ -470,9 +470,7 @@ class App extends Component {
                 sipUserSwitch = <div className="row" id="body-row" >
                     <NavBar redirect={this.redirect} toggle={this.toggle} aws={this.state.aws} dashboardsUser={this.state.dashboardsUser} dashboards={this.state.dashboards} dashboardsSettings={this.state.dashboardsSettings} />
                     <div id="context" className={"margin250"}>
-                        <div className="row" >
-                            <div className="errorBar" > {this.state.error} </div>
-                        </div>
+
                         <div className="row justify-content-between header" style={{"marginRight": 0, "marginLeft":0}} >
                             <span id="user" className="top" >
                                 {aws === true && <DecryptPasswordPopup />}
@@ -481,6 +479,9 @@ class App extends Component {
                             </span>
 
                             <TimerangeBar showError={this.showError} />
+                        </div>
+                        <div className="row" >
+                            <div className="errorBar" > {this.state.error} </div>
                         </div>
                         <div className="row" >
                             <Switch >
@@ -506,15 +507,15 @@ class App extends Component {
                 sipUserSwitch = <div className="row"
                     id="body-row">
                     <div className="col" >
-                        <div className="row" >
-                            <div className="errorBar" > {this.state.error} </div>
-                        </div>
                         <div className="d-flex justify-content-between header" >
                             <span id="user" className="top">
                                 {aws === true && <DecryptPasswordPopup />}
                                 {sipUser}
                                 {aws === true && !this.state.admin && <a href="/logout"> Log out </a>}</span>
                             <TimerangeBar showError={this.showError} />
+                        </div>
+                        <div className="row" >
+                            <div className="errorBar" > {this.state.error} </div>
                         </div>
                         <FilterBar redirect={this.state.redirect} />
                         <div>

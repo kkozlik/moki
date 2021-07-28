@@ -21,13 +21,13 @@ export default class GaugeChart extends Component {
          var height = 70;
          var svg = d3.select('#' + id).append("svg");
          if (data === 0) {
-            svg.attr('width', width)
-                .attr('height', 70)
+            svg.attr('width', 250)
+                .attr('height', 250)
                 .attr('id', id + 'SVG');
 
             svg.append('svg:image')
                 .attr("xlink:href", emptyIcon)
-                .attr('transform', 'translate(' + width / 2 + ',30)');
+                .attr('transform', 'translate(' + 0 + ','+250/2+')');
 
         } else {  
 
@@ -83,7 +83,7 @@ export default class GaugeChart extends Component {
     render() {
         return ( <div id = {
                 this.props.id
-            }  className="chart">
+            }  className="chart chartMinHeight">
             <h3 className = "alignLeft title" > {
                 this.props.name
             } </h3></div> )

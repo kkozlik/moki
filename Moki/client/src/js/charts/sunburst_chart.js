@@ -384,8 +384,8 @@ export default class sunburst extends Component {
     }
 
     render() {
-        return (<div id="sunburstChart"  className="chart chartMinHeight"> <h3 className="alignLeft title" > {
+        return (<div id="sunburstChart"  className="chart chartMinHeight"> <h3 className="alignLeft title" style={{"float": "inherit"}} > {
             this.props.name
-        } </h3></div>)
+        }</h3></div>)
     }
 }

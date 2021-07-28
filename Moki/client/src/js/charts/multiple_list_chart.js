@@ -101,7 +101,7 @@ row(list){
 render() {
     return (
         <div className="tableChart chart">
-         <h3 className="alignLeft title">{this.props.name}</h3>
+         <h3 className="alignLeft title" style={{"float": "inherit"}}>{this.props.name}</h3>
        {this.props.data.length > 0 &&
           <table>
           <tbody>

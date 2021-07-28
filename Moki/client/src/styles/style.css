@@ -985,6 +985,11 @@ a.nav-item  {
     margin-right: 15px;
 }
 
+.right {
+    float: right;
+    margin-right: 5px;
+}
+
 
 /*------------------------filter bar-----------------------------*/
 

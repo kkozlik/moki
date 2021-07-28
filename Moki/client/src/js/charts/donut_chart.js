@@ -100,13 +100,13 @@ export default class StackedChart extends Component {
         var svg = d3.select('#' + id).append("svg");
 
         if (data.length === 0) {
-            svg.attr('width', svgWidth)
+            svg.attr('width', 250)
                 .attr('height', 250)
                 .attr('id', id + 'SVG');
 
             svg.append('svg:image')
                 .attr("xlink:href", emptyIcon)
-                .attr('transform', 'translate(' + svgWidth / 2 + ','+250/2+')');
+                .attr('transform', 'translate(' + 0 + ','+250/2+')');
 
         } else {
 

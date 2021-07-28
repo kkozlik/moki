@@ -195,7 +195,7 @@ class CallCharts extends Dashboard {
                     {this.state.charts["CALL SUCCESS RATIO"] && <div className="col-auto" style={{"marginRight": "5px"}}>
                         <SunburstChart data={
                             this.state.callSuccessRatio
-                        } name={"CALL SUCCESS RATIO"} width={((store.getState().width - 300) / 2) + 200} ends={this.state.sumCallEnd} units={"count"} />
+                        } name={"CALL SUCCESS RATIO"} width={((store.getState().width - 300) / 2)} ends={this.state.sumCallEnd} units={"count"} />
                     </div>}
                     {this.state.charts["SIP-CODE COUNT"] && <div className="col-auto">
                         <ListChart data={
