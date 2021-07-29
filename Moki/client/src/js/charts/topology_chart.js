@@ -92,7 +92,7 @@ export default class topology extends Component {
             var simulation = d3.forceSimulation()
                 .force("link", d3.forceLink().id(function (d) {
                     return d.id;
-                }).distance(150).strength(2))
+                }).distance(100).strength(2))
                 .force("charge", d3.forceManyBody())
                 .force("center", d3.forceCenter(width / 2, height / 2));
 
@@ -101,7 +101,7 @@ export default class topology extends Component {
                 .append("svg")
                 .attr('id', 'topologyChartSVG')
                 .attr('width', width)
-                .attr('height', height);
+                .attr('height', height+100);
             /* .append('g')
              .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')');*/
 
@@ -210,11 +210,11 @@ export default class topology extends Component {
                         dr = Math.sqrt(dx * dx + dy * dy),
 
                         // Defaults for normal edge.
-                        drx = dr,
-                        dry = dr,
+                        drx = 0,
+                        dry = 0,
                         xRotation = 0, // degrees
                         largeArc = 0, // 1 or 0
-                        sweep = 1; // 1 or 0
+                        sweep = 0; // 1 or 0
 
                     // Self edge.
                     if (x1 === x2 && y1 === y2) {
@@ -249,7 +249,7 @@ export default class topology extends Component {
             }
 
             function dragstarted(d) {
-                if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+                if (!d3.event.active) simulation.alphaTarget(0.01).restart();
                 d.fx = d.x;
                 d.fy = d.y;
             }
