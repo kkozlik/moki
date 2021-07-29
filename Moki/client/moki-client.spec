@@ -30,7 +30,18 @@ moki-client aka react application
 NODE_ENV=production npm install --production
 npm install
 
+# use _either_ of the following statements for building an optimized js app.
+
+# - if source maps for js code is needed in the production build (i.e. do NOT set GENERATE_SOURCEMAP env variable).
+#   however, beware that in this case all `console.*` statements from source code are still present in the `*.js.map` files and can
+#   be inspected easily by anyone having access to the GUI:
+#
+# NODE_ENV=production npm run build
+#
+# - removes all the console log statements; does not produce js source map:
+#
 GENERATE_SOURCEMAP=false NODE_ENV=production npm run build
+
 rm -rf node_modules
 
 %install
