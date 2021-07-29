@@ -30,7 +30,7 @@ moki-client aka react application
 NODE_ENV=production npm install --production
 npm install
 
-npm run build
+GENERATE_SOURCEMAP=false NODE_ENV=production npm run build
 rm -rf node_modules
 
 %install
