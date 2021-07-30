@@ -26,7 +26,6 @@ moki-client aka react application
 
 %build
 # build moki react front
-#cd Moki/client
 NODE_ENV=production npm install --production
 npm install
 
@@ -45,47 +44,32 @@ GENERATE_SOURCEMAP=false NODE_ENV=production npm run build
 rm -rf node_modules
 
 %install
-## install html file
-#mkdir -p %{buildroot}/opt/abc-monitor-gui/
-#mkdir -p %{buildroot}/opt/abc-monitor-gui/www
-#install html/*.html %{buildroot}/opt/abc-monitor-gui/www/
-
 # install moki
 install -d %{buildroot}/usr/share/Moki/
-#cp -r package*.json %{buildroot}/usr/share/Moki/client/
-#cp -r public %{buildroot}/usr/share/Moki/client/
-#cp -r src %{buildroot}/usr/share/Moki/client/
 cp -r build %{buildroot}/usr/share/Moki/
 
-# install moki def logo
-#install -d %{buildroot}/usr/share/Moki/styles/
-#cp -r src/styles/logo.png %{buildroot}/usr/share/Moki/styles/
-
-# install moki service file
-#install -d %{buildroot}/usr/lib/systemd/system
-#install -m 0644 moki-client.service %{buildroot}/usr/lib/systemd/system/
-
-# perform moki API install
-#cd %{buildroot}/usr/share/Moki/client
-#npm install
+# install nginx configuration file
+install -d %{buildroot}/etc/nginx/conf.d
+install -m 0644 nginx/monitor-prod.conf %{buildroot}/etc/nginx/conf.d/monitor.conf
 
 # dump flag file
 #mkdir -p %{buildroot}/etc/abc-monitor
 #touch %{buildroot}/etc/abc-monitor/debug.flag
 
-# fix absolute paths that npm leaves there due to npm feature/bug
-#find %{buildroot}/usr/share/Moki -name "package.json" -exec sed -i 's#%{buildroot}##' '{}' \;
-
 %clean
 rm -rf %{buildroot}
 
 %post
+echo "Restarting nginx server"
+systemctl -q restart nginx
+
+%postun
+echo "Restarting nginx server"
+systemctl -q restart nginx
 
 %files
-#/opt/abc-monitor-gui/www
 /usr/share/Moki/build
-#/usr/share/Moki/styles/
-#/usr/share/Moki
+/etc/nginx/conf.d/monitor.conf
 
 %changelog
 * Thu Jul 22 2021 Cristian Constantin <cristian@intutivelabs.com> 10.1.0
