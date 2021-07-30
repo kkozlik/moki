@@ -26,7 +26,6 @@ moki-client react appliction developement pack
 
 %build
 # build moki react front
-#cd Moki/client
 npm install
 
 npm run build
@@ -39,11 +38,6 @@ getent passwd %{moki_user} > /dev/null || \
 exit 0
 
 %install
-## install html file
-#mkdir -p %{buildroot}/opt/abc-monitor-gui/
-#mkdir -p %{buildroot}/opt/abc-monitor-gui/www
-#install html/*.html %{buildroot}/opt/abc-monitor-gui/www/
-
 # install moki
 install -d %{buildroot}/usr/share/Moki/client
 cp -r package*.json %{buildroot}/usr/share/Moki/client/
@@ -51,13 +45,13 @@ cp -r public %{buildroot}/usr/share/Moki/client/
 cp -r src %{buildroot}/usr/share/Moki/client/
 cp -r build %{buildroot}/usr/share/Moki/
 
-# install moki def logo
-#install -d %{buildroot}/usr/share/Moki/styles/
-#cp -r src/styles/logo.png %{buildroot}/usr/share/Moki/styles/
-
 # install moki service file
 install -d %{buildroot}/usr/lib/systemd/system
 install -m 0644 moki-client.service %{buildroot}/usr/lib/systemd/system/
+
+# install nginx configuration file
+install -d %{buildroot}/etc/nginx/conf.d
+install -m 0644 nginx/monitor-dev.conf %{buildroot}/etc/nginx/conf.d/monitor.conf
 
 # perform moki API install
 cd %{buildroot}/usr/share/Moki/client
@@ -78,18 +72,24 @@ systemctl daemon-reload
 echo "Enabling and restarting moki dev service"
 systemctl -q enable moki-client
 systemctl -q restart moki-client
+echo "Restarting nginx server"
+systemctl -q restart nginx
+
+%preun
+systemctl -q stop moki-client
+systemctl -q disable moki-client
 
 %postun
 rm -rf %{buildroot}/usr/share/Moki/client
+# reload systemd since moki-client was removed
+systemctl daemon-reload
 
 %files
 %defattr(-,%{moki_user},%{moki_group})
-#/usr/share/Moki/client
 /usr/share/Moki/client
 /usr/lib/systemd/system/moki-client.service
 /usr/share/Moki/build
-#/usr/share/Moki/styles/
-#/usr/share/Moki/client
+/etc/nginx/conf.d/monitor.conf
 #/etc/abc-monitor/debug.flag
 
 %changelog
