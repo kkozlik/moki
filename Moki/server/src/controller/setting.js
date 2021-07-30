@@ -1,7 +1,7 @@
 // setting.js hold the setting endpoints
 
 const fs = require('fs');
-const { 
+const { exec
 } = require('child_process');
 const { newHTTPError } = require('./index');
 const { cfg, setMonitorVersion } = require('../modules/config');
@@ -541,7 +541,7 @@ class SettingController {
     jsonData["m_version"] = monitorVersion;
 
     //write it to monitor file
-    fs.writeFile(cfg.fileMonitor, JSON.stringify(jsonData), function (error) {
+    fs.writeFile(cfg.fileMonitor, JSON.stringify(jsonData, null, 2), function (error) {
       if (error) {
         respond.status(400).send({"msg": error });
       }
@@ -550,7 +550,7 @@ class SettingController {
       exec("sudo /usr/sbin/abc-monitor-check-config", function (error, stdout, stderr) {
         if (error) {
           //write old data back
-          fs.writeFile(cfg.fileMonitor, JSON.stringify(jsonDataOld));
+          fs.writeFile(cfg.fileMonitor, JSON.stringify(jsonDataOld), null, 2);
           console.error("Config checked failed. Writing old config back. " + stderr);
           respond.status(400).send({
             "msg": stderr
