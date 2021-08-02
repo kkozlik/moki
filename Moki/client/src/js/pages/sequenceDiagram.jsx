@@ -34,8 +34,7 @@ class SequenceDiagram extends Component {
      */
   async load() {
     var thiss = this;
-    //var path = "/data/sbcsync/traffic_log/"+window.location.pathname.substring(17);
-    var path = "/usr/share/Moki/client/src/js/pages/loop.pcap"
+    var path = "/data/sbcsync/traffic_log/"+window.location.pathname.substring(17);
 
     if (window.location.search) {
       if (window.location.search === "?id=") {
