@@ -105,6 +105,15 @@ export default class MultipleLineChart extends Component {
             .range([0, width])
             .domain([minTime, maxTime]);
 
+        //if idle, do minus 100 for all values
+        if (id.includes("Idle")) {
+            for (var i = 0; i < data.length; i++) {
+                for (var j = 0; j < data[i].values.length; j++) {
+                    data[i].values[j].value = 100 - data[i].values[j].value;
+                }
+            }
+        }
+
         //max value    
         var max = 0;
         for (var i = 0; i < data.length; i++) {
