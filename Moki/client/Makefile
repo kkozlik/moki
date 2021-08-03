@@ -1,5 +1,10 @@
 NAME			= moki-client
-RPM_NAME	= $(NAME)
+ifeq ($(TYPE), dev)
+	RPM_NAME	= $(NAME)-dev
+else
+	RPM_NAME	= $(NAME)
+endif 
+
 RELEASE		= dev
 
 RELEASE			?= $(shell sed -n 's/^ *Version: *//p' $(NAME).spec 2> /dev/null || echo "alpha")
