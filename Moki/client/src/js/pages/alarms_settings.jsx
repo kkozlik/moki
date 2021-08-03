@@ -665,7 +665,7 @@ class Settings extends Component {
                         () => this.checkAll("URI")
                     }
                 /> <div> URI TYPE ALARMS</div> </span> <div key="URI"
-                    className="top" > {
+                    className="top chart" > {
                     URIdata
                 } </div> <span className="form-inline settingsH form-horizontal" > < input type="checkbox"
                     id="checkboxIPall"
@@ -677,7 +677,7 @@ class Settings extends Component {
                         () => this.checkAll("IP")
                     }
                 /><div>IP TYPE ALARMS</div> </span> <div key="IP"
-                    className="top" > {
+                    className="top chart" > {
                     IPdata
                 } </div>
 
@@ -691,7 +691,7 @@ class Settings extends Component {
                     () => this.checkAll("SYSTEM")
                 } /><div>  SYSTEM TYPE ALARMS</div> </span>
             <div key="System"
-                className="top" > {
+                className="top chart" > {
                     Systemdata
                 } </div>
             <span className="form-inline settingsH form-horizontal" > <input type="checkbox"
@@ -705,7 +705,7 @@ class Settings extends Component {
                 }
             /><div>  CA TYPE ALARMS</div> </span>
             <div key="CA"
-                className="top" > {
+                className="top chart" > {
                     CAdata
                 } </div>
 

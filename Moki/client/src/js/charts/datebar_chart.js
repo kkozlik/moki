@@ -10,7 +10,7 @@ import {
     setTimerange
 } from "../actions/index";
 import Colors from '../helpers/style/Colors';
-import emptyIcon from "../../styles/icons/empty.png";
+import emptyIcon from "../../styles/icons/empty_small.png";
 import {
     getTimeBucket, getTimeBucketInt
 } from "../helpers/getTimeBucket";
@@ -111,7 +111,17 @@ export default class datebarChart extends Component {
             .attr('id', id + 'SVG')
             .append('g');
 
-        svg.append('g')
+
+        svg.attr('transform', `translate(${margin.left}, ${margin.top})`);
+
+        if (data.length === 0) {
+            svg.append('svg:image')
+                .attr("xlink:href", emptyIcon)
+                .attr('transform', 'translate(' + (width - 60) / 2 + ',' + height / 2 + ')')
+
+        } else {
+
+            svg.append('g')
             .attr('class', 'x axis')
             .attr('transform', `translate(0, ${height})`)
             .call(xAxis);
@@ -125,16 +135,6 @@ export default class datebarChart extends Component {
             .attr('dy', '.71em')
             .style('text-anchor', 'end')
             .text('Count');
-
-        svg.attr('transform', `translate(${margin.left}, ${margin.top})`);
-
-        if (data.length === 0) {
-            svg.append('svg:image')
-                .attr("xlink:href", emptyIcon)
-                .attr('transform', 'translate(' + (width - 60) / 2 + ',' + height / 2 + ')')
-
-        } else {
-
 
             svg.append("g")
                 .attr("class", "brush")
@@ -264,7 +264,7 @@ export default class datebarChart extends Component {
         var bucket = getTimeBucket();
         return (<div id={
             this.props.id
-        } > <h3 className="alignLeft title" > {
+        }  className="chart"> <h3 className="alignLeft title" > {
             this.props.name
         } <span className="smallText"> (interval: {bucket})</span></h3></div >)
     }

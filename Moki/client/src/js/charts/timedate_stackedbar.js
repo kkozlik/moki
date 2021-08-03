@@ -1,13 +1,13 @@
-import React, { Component} from 'react';
+import React, { Component } from 'react';
 import * as d3 from "d3";
 import ColorType from '../helpers/style/ColorType';
 import Colors from '../helpers/style/Colors';
-import {timestampBucket} from '../bars/TimestampBucket.js';
+import { timestampBucket } from '../bars/TimestampBucket.js';
 import store from "../store/index";
 import storePersistent from "../store/indexPersistent";
-import { setTimerange} from "../actions/index";
-import {createFilter} from '@moki-client/gui';
-import { getTimeBucket, getTimeBucketInt} from "../helpers/getTimeBucket";
+import { setTimerange } from "../actions/index";
+import { createFilter } from '@moki-client/gui';
+import { getTimeBucket, getTimeBucketInt } from "../helpers/getTimeBucket";
 import emptyIcon from "../../styles/icons/empty_small.png";
 
 /*
@@ -77,7 +77,7 @@ export default class StackedChart extends Component {
         //  .append('g');
 
         //max and min date
-        var maxTime = store.getState().timerange[1]+getTimeBucketInt();
+        var maxTime = store.getState().timerange[1] + getTimeBucketInt();
         var minTime = store.getState().timerange[0] - (60 * 1000); //minus one minute fix for round up
 
         var x = d3.scaleBand().range([0, width]).padding(0.1);
@@ -108,16 +108,6 @@ export default class StackedChart extends Component {
             return d;
         });
 
-
-        rootsvg.append("g")
-            .attr("class", "x axis")
-            .attr("transform", "translate(" + margin.left + "," + (height) + ")")
-            .call(xAxis);
-
-        rootsvg.append("g")
-            .attr("class", "y axis")
-            .attr("transform", "translate(" + margin.left + ",0)").call(yAxis);
-
         rootsvg.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
         if (data === undefined || data.length === 0) {
@@ -126,6 +116,15 @@ export default class StackedChart extends Component {
                 .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')')
 
         } else {
+
+            rootsvg.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(" + margin.left + "," + (height) + ")")
+                .call(xAxis);
+
+            rootsvg.append("g")
+                .attr("class", "y axis")
+                .attr("transform", "translate(" + margin.left + ",0)").call(yAxis);
 
             var dataLength = 0;
             for (var o = 0; o < data.length; o++) {
@@ -179,7 +178,7 @@ export default class StackedChart extends Component {
 
             });
 */
-            var keys =  storePersistent.getState().layout.types[this.props.keys];
+            var keys = storePersistent.getState().layout.types[this.props.keys];
             //var id = 0;
             var stack = d3.stack()
                 //.keys(["Register new", "Registration expired", "Register del"])
@@ -292,7 +291,7 @@ export default class StackedChart extends Component {
                     // .style("left", this.getAttribute("x") + 300 + "px")
                     //   .style("top", this.getAttribute("y") + 300 + "px");
 
-                    tooltip.select("div").html("<strong>Time: </strong> " + parseDate(d.data.time) + " + "+getTimeBucket()+"<br/><strong>Value:</strong> " + d3.format(',')(d[1] - d[0]) + units + "<br/><strong>Type: </strong>" + this.parentNode.getAttribute("type") + "<br/> ");
+                    tooltip.select("div").html("<strong>Time: </strong> " + parseDate(d.data.time) + " + " + getTimeBucket() + "<br/><strong>Value:</strong> " + d3.format(',')(d[1] - d[0]) + units + "<br/><strong>Type: </strong>" + this.parentNode.getAttribute("type") + "<br/> ");
                     d3.select(this).style("cursor", "pointer");
 
 
@@ -318,7 +317,7 @@ export default class StackedChart extends Component {
 
                 var tooltips = document.getElementById("tooltip" + id);
                 if (tooltip) {
-                        tooltips.style.opacity = 0;
+                    tooltips.style.opacity = 0;
                 }
             });
 
@@ -410,7 +409,7 @@ export default class StackedChart extends Component {
         var bucket = getTimeBucket();
         return (<div id={
             this.props.id
-        } > <h3 className="alignLeft title" > {
+        } className="chart"> <h3 className="alignLeft title" > {
             this.props.name
         } <span className="smallText"> (interval: {bucket})</span></h3></div >)
     }

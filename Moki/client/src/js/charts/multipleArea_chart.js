@@ -184,21 +184,6 @@ export default class MultipleAreaChart extends Component {
 
         var yAxis = d3.axisLeft(yScale).ticks(5);
 
-
-        svg.append("g")
-            .attr("class", "y axis")
-            .call(yAxis)
-            .append('text')
-            .attr("y", 15)
-            .attr("transform", "rotate(-90)")
-            .attr("fill", "#000");
-
-        svg.append("g")
-            .attr("class", "x axis")
-            .attr("transform", `translate(0, ${height})`)
-            .call(xAxis);
-
-
         svg.attr("transform", "translate(" + margin.left + "," + margin.right + ")");
 
 
@@ -212,6 +197,18 @@ export default class MultipleAreaChart extends Component {
 
         } else {
 
+            svg.append("g")
+            .attr("class", "y axis")
+            .call(yAxis)
+            .append('text')
+            .attr("y", 15)
+            .attr("transform", "rotate(-90)")
+            .attr("fill", "#000");
+
+        svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", `translate(0, ${height})`)
+            .call(xAxis);
 
 
             svg.append("g")
@@ -387,7 +384,7 @@ export default class MultipleAreaChart extends Component {
         var bucket = getTimeBucket();
         return (<div id={
             this.props.id
-        } >
+        }  className="chart">
             <h3 className="alignLeft title" > {
                 this.props.name
             } <span className="smallText"> (interval: {bucket})</span></h3></div>)

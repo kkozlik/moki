@@ -68,12 +68,12 @@ class OverviewCharts extends Dashboard {
             <div>
                 { this.state.isLoading && <LoadingScreenCharts />}
                 <div className="row  no-gutters">
-                    {this.state.charts["DISTINCT IP"] && <div className="col">
+                    {this.state.charts["DISTINCT IP"] && <div className="col-auto">
                         <ValueChart data={
                             this.state.distinctIP
                         } name={"DISTINCT IP"} />
                     </div>}
-                    {this.state.charts["TOTAL EVENTS"] && <div className="col">
+                    {this.state.charts["TOTAL EVENTS"] && <div className="col-auto">
                         <ValueChart data={
                             this.state.totalEvents
                         } name={"# EVENTS"} />

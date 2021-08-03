@@ -87,7 +87,7 @@ class RestrictedCharts extends Dashboard {
         return (<div> {
             this.state.isLoading && < LoadingScreenCharts left="0" />
         } <div className="row no-gutters" >
-                <div className="col" >
+                <div className="col-auto" >
                     <ValueChart data={
                         this.state.sumCallEnd
                     }
@@ -97,7 +97,7 @@ class RestrictedCharts extends Dashboard {
                         fontSize={
                             "1.5rem"
                         }
-                    />  </div> <div className="col" >
+                    />  </div> <div className="col-auto" >
                     <ValueChart data={
                         this.state.sumCallAttempt
                     }
@@ -107,7 +107,7 @@ class RestrictedCharts extends Dashboard {
                         fontSize={
                             "1.5rem"
                         }
-                    />  </div> <div className="col" >
+                    />  </div> <div className="col-auto" >
                     <ValueChart data={
                         this.state.durationSum
                     }
@@ -117,7 +117,7 @@ class RestrictedCharts extends Dashboard {
                         fontSize={
                             "1.5rem"
                         }
-                    />  </div>  <div className="col" >
+                    />  </div>  <div className="col-auto" >
                     <ValueChart data={
                         this.state.answerSeizureRatio
                     }
@@ -127,7 +127,7 @@ class RestrictedCharts extends Dashboard {
                         fontSize={
                             "1.5rem"
                         }
-                    />  </div> <div className="col" >
+                    />  </div> <div className="col-auto" >
                     <ValueChart data={
                         this.state.avgDuration
                     }
@@ -137,7 +137,7 @@ class RestrictedCharts extends Dashboard {
                         fontSize={
                             "1.5rem"
                         }
-                    />  </div> <div className="col" >
+                    />  </div> <div className="col-auto" >
                     <ValueChart data={
                         this.state.avgMoS
                     }
@@ -177,7 +177,7 @@ class RestrictedCharts extends Dashboard {
                 />  </div>
 
             <div className="row no-gutters" >
-                <div className="col-5 col-md-4" >
+                <div className="col-auto" >
                     <ListChart data={
                         this.state.sourceIP
                     }
@@ -187,7 +187,7 @@ class RestrictedCharts extends Dashboard {
                         field={
                             "attrs.source"
                         }
-                    />  </div> <div className="col" >
+                    />  </div> <div className="col-auto" >
                     <ListChart data={
                         this.state.callingCountries
                     }
@@ -197,7 +197,7 @@ class RestrictedCharts extends Dashboard {
                         field={
                             "geoip.country_code2"
                         }
-                    />  </div> <div className="col-5 col-md-4" >
+                    />  </div> <div className="col-auto" >
                     <ListChart data={
                         this.state.top10to
                     }
@@ -207,7 +207,7 @@ class RestrictedCharts extends Dashboard {
                         field={
                             "attrs.to.keyword"
                         }
-                    />  </div>  <div className="col-5 col-md-4" >
+                    />  </div>  <div className="col-auto" >
                     <ListChart data={
                         this.state.fromUA
                     }

@@ -1,522 +1,543 @@
 import React, {
-    Component
+  Component
 } from 'react';
 import * as d3 from "d3";
 import {
-    downloadPcap
+  downloadPcap
 } from '../helpers/download/downloadPcap';
 import downloadIcon from "../../styles/icons/download.png";
 import downloadPcapIcon from "../../styles/icons/downloadPcap.png";
 import {
-    downloadPcapMerged
+  downloadPcapMerged
 } from '../helpers/download/downloadPcapMerged';
 import {
-    downloadSD
+  downloadSD
 } from '../helpers/download/downloadSD';
 
 class SequenceDiagram extends Component {
-    constructor(props) {
-        super(props);
-        this.load = this.load.bind(this);
-        this.check = this.check.bind(this);
-        this.state = {
-            data: "",
-            nodesNames: []
-        }
+  constructor(props) {
+    super(props);
+    this.load = this.load.bind(this);
+    this.check = this.check.bind(this);
+    this.state = {
+      data: "",
+      nodesNames: []
     }
+  }
 
-    componentWillMount() {
-        this.load();
-    }
+  componentWillMount() {
+    this.load();
+  }
 
-    /*
-       Load data 
-       */
-    async load() {
-        var thiss = this;
-        var path = "/data/sbcsync/traffic_log/"+window.location.pathname.substring(17);
+  /*
+     Load data 
+     */
+  async load() {
+    var thiss = this;
+    var path = "/data/sbcsync/traffic_log/"+window.location.pathname.substring(17);
 
-        if(window.location.search){
-            if(window.location.search === "?id="){
-                alert("To see merged PCAPs files, you need to select them first.");
-            }
-            var array = window.location.search.split(",");
-            //remove ?id=
-            array[0] = array[0].substring(4);
-            path = array;
-        }
-
-        try {
-           await fetch("/api/diagram", {
-                method: "POST",
-                credentials: 'include',
-                body: 
-                    JSON.stringify({
-                        url: path
-                    }),
-                headers: {
-                    "Content-Type": "application/json",
-                    "Access-Control-Allow-Credentials": "include"
-                }
-            })
-            .then(function(response){ 
-                if(response.status !== 200){
-                    return response.status
-                }
-                return  response.text();
-            })
-            .then(function(res) {
-                var xml = "";
-                 if(!res || isFinite(res) || res === ""){
-                     xml = res;
-                     
-                 }
-                else{
-                    const parser = new DOMParser();
-                    xml = parser.parseFromString(res, 'text/xml');
-                    
-                //get nodes names
-                var nodes = xml.querySelectorAll('object');  
-                var nodesNames = [];
-                for(var i =0; i <nodes.length; i++){
-                        nodesNames.push(nodes[i].getAttribute("name"));
-                                        
-                }
-                   
-                 }
-                thiss.setState({
-                    data: xml,
-                    nodesNames: nodesNames
-                });
-                          
-            })
-      
-        } catch (error) {
-            console.error(error);
-            alert("Problem with receiving data. " + error);
-        }
-
-    }
-    
-    check(name){
-        var data = this.state.data;
-        var checkbox = document.getElementById(name);
-        if(checkbox.checked){
-             //find callr tags that should be rename to call
-             var nodes = data.querySelectorAll('callr'); 
-            for(var i = 0; i < nodes.length; i++){
-                if(nodes[i].getAttribute("src") === name || nodes[i].getAttribute("dst") === name){
-                    
-                     var newNode = document.createElement('call');
-                    newNode.innerHTML = nodes[i].innerHTML;
-                    newNode.setAttribute("src", nodes[i].getAttribute("src"));
-                    newNode.setAttribute("dst", nodes[i].getAttribute("dst"));
-                    newNode.setAttribute("desc", nodes[i].getAttribute("desc"));
-                    newNode.setAttribute("color", nodes[i].getAttribute("color"));
-                    nodes[i].parentNode.replaceChild(newNode, nodes[i]);
-                }
-            }
-            
-        }
-        else{
-            //change tag name from call to callr
-            nodes = data.querySelectorAll('call');  
-            for(i = 0; i < nodes.length; i++){
-                if(nodes[i].getAttribute("src") === name || nodes[i].getAttribute("dst") === name){
-                    
-                    newNode = document.createElement('callr');
-                    newNode.innerHTML = nodes[i].innerHTML;
-                    newNode.setAttribute("src", nodes[i].getAttribute("src"));
-                    newNode.setAttribute("dst", nodes[i].getAttribute("dst"));
-                    newNode.setAttribute("desc", nodes[i].getAttribute("desc"));
-                    newNode.setAttribute("color", nodes[i].getAttribute("color"));
-                    nodes[i].parentNode.replaceChild(newNode, nodes[i]);
-                }
-            }
-        
-        }
-        this.setState({data: data});
-    }
-    
-    
-async getPcap(event){
-    if(window.location.search){
-        var array = window.location.search.split(",");
-        //remove ?id=
-        array[0] = array[0].substring(4);
-        var filename = array;
-
-         await downloadPcapMerged(filename).then(function(data) {
-         if(typeof data === 'string'){ 
-             alert(data);
-         }
-         else {
-             var blob = new Blob([data], { type: "pcap" });
-             const element = document.createElement("a");
-             element.download = "merge-"+Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 10)+".pcap";
-             element.href = URL.createObjectURL(blob);
-             document.body.appendChild(element); 
-             element.click();
-         }
- })
-        }
-    else {
-  filename = window.location.pathname.substring(17);
-  await downloadPcap(filename).then(function(data) {
-
-     if(typeof data === 'string'){ 
-         alert(data);
-     }
-     else {
-         var blob = new Blob([data], { type: "pcap" });
-         const element = document.createElement("a");
-         element.download = filename;
-         element.href = URL.createObjectURL(blob);
-         document.body.appendChild(element); 
-         element.click();
-     }
- })
-    }
-} 
-    
-       
-async getDiagram(event){
-    if(window.location.search){
-        var array = window.location.search.split(",");
-        //remove ?id=
-        array[0] = array[0].substring(4);
-        var filename = array;
-
-         await downloadSD(filename).then(function(data) {
-             var blob = new Blob([data], { type: "pcap" });
-             const element = document.createElement("a");
-             element.download = "merge-"+Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 10)+".html";
-             element.href = URL.createObjectURL(blob);
-             document.body.appendChild(element); 
-             element.click();
-        
- })
-        }
-    else {
-  filename = window.location.pathname.substring(17);
-  await downloadSD(filename).then(function(data) {
-         var blob = new Blob([data], { type: "html" });
-         const element = document.createElement("a");
-         element.download = filename+".html";
-         element.href = URL.createObjectURL(blob);
-         document.body.appendChild(element); 
-         element.click();
-        })
-    }
-} 
-    
-    render() {
-    
-        var data = this.state.data;
-         var classes =  [];
-        const renderDiagram = ()=>{
-      if(!data || data === ""){
-        return <div style={{"textAlign": "center",
-    "margin": "auto", "marginTop": "10%", "marginLeft": "80px"}}><b>Trying to get pcap file...</b></div>
+    if (window.location.search) {
+      if (window.location.search === "?id=") {
+        alert("To see merged PCAPs files, you need to select them first.");
       }
-     else if( isFinite(data) ){
-        return <div style={{"textAlign": "center",
-    "margin": "auto", "marginTop": "10%", "marginLeft": "80px"}}><b>Whoops</b><p>Pcap file not found. You can extend the storage time for pcaps in the settings.</p></div>
-      }else{
-           var margin = { top: 0, right: 20, bottom: 20, left: 0 };
-    var  width = 1200 - margin.left - margin.right;
-          
-    /*change data format 
-    
-     id, time, src, dst, msg, color, details
-    
-    */
-          var dataNew = [];
-          var calls = data.querySelectorAll('call');
-          var date = "";
-          for (var i = 0; i < calls.length; i++){
-              var details = [];
-              var textLine = calls[i].querySelectorAll('text-line');
-              date = calls[i].querySelectorAll('text-line')[0].innerHTML.substr(6);
-              for(var j = 2; j <textLine.length; j++){
-                details.push(textLine[j].innerHTML);
-                  if(textLine[j].innerHTML.includes("Date")){
-                    date = textLine[j].innerHTML.substr(5);
-                  }
-              }
-              
-          dataNew.push({
-                id: i,
-                time: date,
-                src: calls[i].getAttribute("src"),
-                dst: calls[i].getAttribute("dst"),
-                msg: calls[i].getAttribute("desc"),
-                color: calls[i].getAttribute("color"), 
-                details: details
-          })
+      var array = window.location.search.split(",");
+      //remove ?id=
+      array[0] = array[0].substring(4);
+      path = array;
+    }
+
+    try {
+      await fetch("/api/diagram", {
+        method: "POST",
+        credentials: 'include',
+        body:
+          JSON.stringify({
+            url: path
+          }),
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Credentials": "include"
+        }
+      })
+        .then(function (response) {
+          if (response.status !== 200) {
+            return response.status
           }
- 
-          
-    classes =  this.state.nodesNames;
-    var chart = document.getElementById("diagramSVG");
-    if(chart){
-            chart.remove();
-        }
-          
-        function  syntaxHighlight(data) {
-            var result = ["<div><b>"+data.msg+"</b></div>"];
-            data = data.details;
-            for(var j = 0; j < data.length; j++){
-                  var nameIndex = data[j].indexOf(":");
-                if(nameIndex !== -1){
-                result = result + "<div><span className='key'><b>"+data[j].substring(0, nameIndex)+": </b></span><span className='value'>"+data[j].substring(nameIndex+1)+"<span></div>";
-                }
-                else if(data[j].includes("c=") || data[j].includes("m=") ){
-                     result = result + "<div><span className='value' style='color:green'>"+data[j]+"<span></div>";
-                }
-                else {
-                 result = result + "<div><span className='value'>"+data[j]+"<span></div>";
-                }
-              }
-           
-            return result;
-        }
-          
-           var svg = d3.select('#diagram')
-    .append('svg')
-    .attr('width', width + margin.left + margin.right)
-    .attr('id', 'diagramSVG') 
-    .attr('transform', `translate(${margin.left}, ${margin.right})`);
-  
-      var XPAD = 100;
-      var YPAD = 30;
-      var VERT_SPACE = parseInt(width/classes.length);
-      var VERT_PAD = 20;
+          return response.text();
+        })
+        .then(function (res) {
+          var xml = "";
+          if (!res || isFinite(res) || res === "") {
+            xml = res;
 
-      var MESSAGE_SPACE = 30;
-      svg.attr("height", (dataNew.length+2)*MESSAGE_SPACE);
+          }
+          else {
+            const parser = new DOMParser();
+            xml = parser.parseFromString(res, 'text/xml');
 
-      var MESSAGE_LABEL_X_OFFSET = -40;
-      var MESSAGE_LABEL_Y_OFFSET = 75;
-      var MESSAGE_ARROW_Y_OFFSET = 80;    
-      
-      var CLASS_WIDTH = VERT_SPACE-10; 
-          
-    // Draw vertical lines
-      classes.forEach(function(c, i) {
+            //get nodes names
+            var nodes = xml.querySelectorAll('object');
+            var nodesNames = [];
+            for (var i = 0; i < nodes.length; i++) {
+              nodesNames.push(nodes[i].getAttribute("name"));
+
+            }
+
+          }
+          thiss.setState({
+            data: xml,
+            nodesNames: nodesNames
+          });
+
+        })
+
+    } catch (error) {
+      console.error(error);
+      alert("Problem with receiving data. " + error);
+    }
+
+  }
+
+  check(name) {
+    var data = this.state.data;
+    var checkbox = document.getElementById(name);
+    if (checkbox.checked) {
+      //find callr tags that should be rename to call
+      var nodes = data.querySelectorAll('callr');
+      for (var i = 0; i < nodes.length; i++) {
+        if (nodes[i].getAttribute("src") === name || nodes[i].getAttribute("dst") === name) {
+
+          var newNode = document.createElement('call');
+          newNode.innerHTML = nodes[i].innerHTML;
+          newNode.setAttribute("src", nodes[i].getAttribute("src"));
+          newNode.setAttribute("dst", nodes[i].getAttribute("dst"));
+          newNode.setAttribute("desc", nodes[i].getAttribute("desc"));
+          newNode.setAttribute("color", nodes[i].getAttribute("color"));
+          nodes[i].parentNode.replaceChild(newNode, nodes[i]);
+        }
+      }
+
+    }
+    else {
+      //change tag name from call to callr
+      nodes = data.querySelectorAll('call');
+      for (i = 0; i < nodes.length; i++) {
+        if (nodes[i].getAttribute("src") === name || nodes[i].getAttribute("dst") === name) {
+
+          newNode = document.createElement('callr');
+          newNode.innerHTML = nodes[i].innerHTML;
+          newNode.setAttribute("src", nodes[i].getAttribute("src"));
+          newNode.setAttribute("dst", nodes[i].getAttribute("dst"));
+          newNode.setAttribute("desc", nodes[i].getAttribute("desc"));
+          newNode.setAttribute("color", nodes[i].getAttribute("color"));
+          nodes[i].parentNode.replaceChild(newNode, nodes[i]);
+        }
+      }
+
+    }
+    this.setState({ data: data });
+  }
+
+
+  async getPcap(event) {
+    if (window.location.search) {
+      var array = window.location.search.split(",");
+      //remove ?id=
+      array[0] = array[0].substring(4);
+      var filename = array;
+
+      await downloadPcapMerged(filename).then(function (data) {
+        if (typeof data === 'string') {
+          alert(data);
+        }
+        else {
+          var blob = new Blob([data], { type: "pcap" });
+          const element = document.createElement("a");
+          element.download = "merge-" + Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 10) + ".pcap";
+          element.href = URL.createObjectURL(blob);
+          document.body.appendChild(element);
+          element.click();
+        }
+      })
+    }
+    else {
+      filename = window.location.pathname.substring(17);
+      await downloadPcap(filename).then(function (data) {
+
+        if (typeof data === 'string') {
+          alert(data);
+        }
+        else {
+          var blob = new Blob([data], { type: "pcap" });
+          const element = document.createElement("a");
+          element.download = filename;
+          element.href = URL.createObjectURL(blob);
+          document.body.appendChild(element);
+          element.click();
+        }
+      })
+    }
+  }
+
+
+  async getDiagram(event) {
+    if (window.location.search) {
+      var array = window.location.search.split(",");
+      //remove ?id=
+      array[0] = array[0].substring(4);
+      var filename = array;
+
+      await downloadSD(filename).then(function (data) {
+        var blob = new Blob([data], { type: "pcap" });
+        const element = document.createElement("a");
+        element.download = "merge-" + Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 10) + ".html";
+        element.href = URL.createObjectURL(blob);
+        document.body.appendChild(element);
+        element.click();
+
+      })
+    }
+    else {
+      filename = window.location.pathname.substring(17);
+      await downloadSD(filename).then(function (data) {
+        var blob = new Blob([data], { type: "html" });
+        const element = document.createElement("a");
+        element.download = filename + ".html";
+        element.href = URL.createObjectURL(blob);
+        document.body.appendChild(element);
+        element.click();
+      })
+    }
+  }
+
+  render() {
+
+    var data = this.state.data;
+    var classes = [];
+    const renderDiagram = () => {
+      if (!data || data === "") {
+        return <div style={{
+          "textAlign": "center",
+          "margin": "auto", "marginTop": "10%", "marginLeft": "80px"
+        }}><b>Trying to get pcap file...</b></div>
+      }
+      else if (isFinite(data)) {
+        return <div style={{
+          "textAlign": "center",
+          "margin": "auto", "marginTop": "10%", "marginLeft": "80px"
+        }}><b>Whoops</b><p>Pcap file not found. You can extend the storage time for pcaps in the settings.</p></div>
+      } else {
+        var margin = { top: 0, right: 20, bottom: 20, left: 0 };
+        var width = 1200 - margin.left - margin.right;
+
+        /*change data format 
+        
+         id, time, src, dst, msg, color, details
+        
+        */
+        var dataNew = [];
+        var calls = data.querySelectorAll('call');
+        var date = "";
+        for (var i = 0; i < calls.length; i++) {
+          var details = [];
+          var textLine = calls[i].querySelectorAll('text-line');
+          date = calls[i].querySelectorAll('text-line')[0].innerHTML.substr(6);
+          for (var j = 2; j < textLine.length; j++) {
+            details.push(textLine[j].innerHTML);
+            if (textLine[j].innerHTML.includes("Date")) {
+              date = textLine[j].innerHTML.substr(5);
+            }
+          }
+
+          dataNew.push({
+            id: i,
+            time: date,
+            src: calls[i].getAttribute("src"),
+            dst: calls[i].getAttribute("dst"),
+            msg: calls[i].getAttribute("desc"),
+            color: calls[i].getAttribute("color"),
+            details: details
+          })
+        }
+
+
+        classes = this.state.nodesNames;
+        var chart = document.getElementById("diagramSVG");
+        if (chart) {
+          chart.remove();
+        }
+
+        function syntaxHighlight(data) {
+          var result = ["<div><b>" + data.msg + "</b></div>"];
+          data = data.details;
+          for (var j = 0; j < data.length; j++) {
+            var nameIndex = data[j].indexOf(":");
+            if (nameIndex !== -1) {
+              result = result + "<div><span className='key'><b>" + data[j].substring(0, nameIndex) + ": </b></span><span className='value'>" + data[j].substring(nameIndex + 1) + "<span></div>";
+            }
+            else if (data[j].includes("c=") || data[j].includes("m=")) {
+              result = result + "<div><span className='value' style='color:green'>" + data[j] + "<span></div>";
+            }
+            else {
+              result = result + "<div><span className='value'>" + data[j] + "<span></div>";
+            }
+          }
+
+          return result;
+        }
+
+        var svg = d3.select('#diagram')
+          .append('svg')
+          .attr('width', width + margin.left + margin.right)
+          .attr('id', 'diagramSVG')
+          .attr('transform', `translate(${margin.left}, ${margin.right})`);
+
+        var XPAD = 100;
+        var YPAD = 30;
+        var VERT_SPACE = parseInt(width / classes.length);
+        var VERT_PAD = 20;
+
+        var MESSAGE_SPACE = 30;
+        svg.attr("height", (dataNew.length + 2) * MESSAGE_SPACE + 20);
+
+        var MESSAGE_LABEL_X_OFFSET = -40;
+        var MESSAGE_LABEL_Y_OFFSET = 75;
+        var MESSAGE_ARROW_Y_OFFSET = 80;
+
+        var CLASS_WIDTH = VERT_SPACE - 10;
+
+        // Draw vertical lines
+        classes.forEach(function (c, i) {
           svg.append("line")
-          .style("stroke", "#888")
-          .style("stroke-dasharray", ("3, 3"))
-          .attr("x1", XPAD + i * VERT_SPACE)
-          .attr("y1", YPAD + 20)
-          .attr("x2", XPAD + i * VERT_SPACE)
-          .attr("y2", YPAD + VERT_PAD + dataNew.length * (MESSAGE_SPACE+5));  
-      });
-          
+            .style("stroke", "#888")
+            .style("stroke-dasharray", ("3, 3"))
+            .attr("x1", XPAD + i * VERT_SPACE)
+            .attr("y1", YPAD + 20)
+            .attr("x2", XPAD + i * VERT_SPACE)
+            .attr("y2", YPAD + VERT_PAD + dataNew.length * (MESSAGE_SPACE + 5));
+        });
+
         // Draw classes
-      classes.forEach(function(c, i) {
-        var x = XPAD + i * VERT_SPACE;
-        svg.append("g")
-          .attr("transform", "translate(" + x + "," + YPAD + ")")
-          .attr("class", "class-rect")
-          .append("rect")
-          .attr({x: -CLASS_WIDTH/2, y:0, width: CLASS_WIDTH, height: "24px"});
+        classes.forEach(function (c, i) {
+          var x = XPAD + i * VERT_SPACE;
+          svg.append("g")
+            .attr("transform", "translate(" + x + "," + YPAD + ")")
+            .attr("class", "class-rect")
+            .append("rect")
+            .attr({ x: -CLASS_WIDTH / 2, y: 0, width: CLASS_WIDTH, height: "24px" });
 
         });
-      
-      // Draw class labels 
-      classes.forEach(function(c, i) {
-        var x = XPAD + i * VERT_SPACE;
-         svg.append("g")
-          .attr("transform", "translate(" + x + "," + YPAD + ")")
-          .append("text")
-          .attr("class", "class-label")
-          .attr("text-anchor", "middle")
-          .text(function (d) { return c; })
-          .attr("dy", "16px");
-      });
-                
-         // Draw message arrows
-      dataNew.forEach(function(m, i) {
-        var y = MESSAGE_ARROW_Y_OFFSET + (i) * MESSAGE_SPACE;
-       svg.append("line")
-          .style("stroke", function (d) { return m.color; })
-          .attr("x1", XPAD + classes.indexOf(m.src) * VERT_SPACE)
-          .attr("y1", y)
-          .attr("x2", XPAD + classes.indexOf(m.dst) * VERT_SPACE)
-          .attr("y2", y)
-          .attr("marker-end", "url(#end"+m.id+")")
-            
-      });
-                  
-          // Draw message timestamps
-      dataNew.forEach(function(m, i) {
-        var xPos = XPAD + MESSAGE_LABEL_X_OFFSET;
-        var yPos = MESSAGE_LABEL_Y_OFFSET + i * MESSAGE_SPACE;
 
-        svg.append("g")
-          .attr("transform", "translate(" + xPos + "," + yPos + ")")
-          .attr("class", "first")
-          .attr("text-anchor", "middle")
-          .append("text")
-          .style("font-size", "10px")
-          .text(function (d) { 
-            if(m.time.includes("+")) {
-                return m.time;}
-            else { return m.time;}
-          });
-      });
-      
-    // create tooltips for each record
-      dataNew.forEach(function(m, i) {
-      d3.select("#diagram").append("div")   
-    .attr("class", "tooltipDiagram tooltiptextCSS")
-    .attr("id", "tooltip"+i)
-      .style("display", "none")
-    .style("opacity", 0); 
-          
-          dragElement(document.getElementById("tooltip"+i));
-      })
-   
-   /*   function hideTooltip(){
-        document.getElementById('tooltip"+i+"').style.display='none';
-      }
-     */     
-      // Draw message labels
-      dataNew.forEach(function(m, i) {
-        var xPos = XPAD + MESSAGE_LABEL_X_OFFSET + (((classes.indexOf(m.dst) - classes.indexOf(m.src)) * VERT_SPACE) / 2) + (classes.indexOf(m.src)  * VERT_SPACE);
-        var yPos = MESSAGE_LABEL_Y_OFFSET + i * MESSAGE_SPACE;
-        svg.append("g")
-          .attr("transform", "translate(" + xPos + "," + yPos + ")") 
-          .append("text")
-         .attr("class", "tooltipCSS")
-          .attr("dx", "5px")
-          .attr("dy", "-2px")
-          .attr("text-anchor", "begin")
-          .style("cursor", "grab")
-          .style("font-size", "10px")
-          .text(function (d) { return m.msg; })
-     /*   .on("mouseover", function(d) {		
-           d3.select("#tooltip"+i).transition()		
-                .duration(200)		
-                .style("opacity", 1)
-            .style("display", "inline-block");
-            d3.select("#tooltip"+i).html("<div class='tooltipDiagramHeader'>"+m.msg+"<span style='cursor: default; float: right;' onclick=getElementById('tooltip"+i+"').style.display='none'>X</span></div><div class='tooltipDiagramBody'>"+syntaxHighlight(m)+"</div>")  
-                .style("left", (d3.event.pageX-120) + "px")		
-                .style("top", (d3.event.pageY +20) + "px");	
-            })					
-        .on("mouseout", function(d) {	
-            if(d3.select("#tooltip"+i)._groups[0][0].getAttribute('clicked') !== "true"){
-                d3.select("#tooltip"+i).transition()		
-                .duration(500)	
-                    .style("display", "none")
-                .style("opacity", 0);	
-            }
-        })*/
-           .on("click", function(d) {   
-                 //set z-index to front when you click on popup
-     var allTooltips = document.getElementsByClassName("tooltipDiagram");
-      for(var j = 0; j < allTooltips.length; j++){
-        allTooltips[j].style['z-index'] = 10; 
-      }
-           
-               d3.select("#tooltip"+i).transition()        
-                .duration(200)   
+        // Draw class labels 
+        classes.forEach(function (c, i) {
+          var x = XPAD + i * VERT_SPACE;
+          svg.append("g")
+            .attr("transform", "translate(" + x + "," + YPAD + ")")
+            .append("text")
+            .attr("class", "class-label")
+            .attr("text-anchor", "middle")
+            .text(function (d) { return c; })
+            .attr("dy", "16px");
+        });
+
+
+        var curve = d3.line()
+          .curve(d3.curveBasisClosed);
+
+        // Draw message arrows
+        dataNew.forEach(function (m, i) {
+          if (m.src === m.dst) {
+            var y = MESSAGE_ARROW_Y_OFFSET + (i) * MESSAGE_SPACE;
+            var pathData = curve([[XPAD + classes.indexOf(m.src) * VERT_SPACE-10, y-20], [XPAD + classes.indexOf(m.src) * VERT_SPACE + 10, y + 45], [XPAD + classes.indexOf(m.src) * VERT_SPACE + 45, y + 10]]);
+            svg.append("path")
+              .attr("d", pathData)
+              .attr("stroke", function (d) { return m.color; })
+              .attr("fill", "transparent")
+              .attr("marker-end", "url(#end" + m.id + ")");
+
+          }
+          else {
+            var y = MESSAGE_ARROW_Y_OFFSET + (i) * MESSAGE_SPACE;
+            svg.append("line")
+              .style("stroke", function (d) { return m.color; })
+              .attr("x1", XPAD + classes.indexOf(m.src) * VERT_SPACE)
+              .attr("y1", y)
+              .attr("x2", XPAD + classes.indexOf(m.dst) * VERT_SPACE)
+              .attr("y2", y)
+              .attr("marker-end", "url(#end" + m.id + ")")
+          }
+        }
+        );
+
+        // Draw message timestamps
+        dataNew.forEach(function (m, i) {
+          var xPos = XPAD + MESSAGE_LABEL_X_OFFSET;
+          var yPos = MESSAGE_LABEL_Y_OFFSET + i * MESSAGE_SPACE;
+
+          svg.append("g")
+            .attr("transform", "translate(" + xPos + "," + yPos + ")")
+            .attr("class", "first")
+            .attr("text-anchor", "middle")
+            .append("text")
+            .style("font-size", "10px")
+            .text(function (d) {
+              if (m.time.includes("+")) {
+                return m.time;
+              }
+              else { return m.time; }
+            });
+        });
+
+        // create tooltips for each record
+        dataNew.forEach(function (m, i) {
+          d3.select("#diagram").append("div")
+            .attr("class", "tooltipDiagram tooltiptextCSS")
+            .attr("id", "tooltip" + i)
+            .style("display", "none")
+            .style("opacity", 0);
+
+          dragElement(document.getElementById("tooltip" + i));
+        })
+
+        /*   function hideTooltip(){
+             document.getElementById('tooltip"+i+"').style.display='none';
+           }
+          */
+        // Draw message labels
+        dataNew.forEach(function (m, i) {
+          var xPos = XPAD + MESSAGE_LABEL_X_OFFSET + (((classes.indexOf(m.dst) - classes.indexOf(m.src)) * VERT_SPACE) / 2) + (classes.indexOf(m.src) * VERT_SPACE);
+          var yPos = MESSAGE_LABEL_Y_OFFSET + i * MESSAGE_SPACE;
+          svg.append("g")
+            .attr("transform", "translate(" + xPos + "," + yPos + ")")
+            .append("text")
+            .attr("class", "tooltipCSS")
+            .attr("dx", "5px")
+            .attr("dy", "-2px")
+            .attr("text-anchor", "begin")
+            .style("cursor", "grab")
+            .style("font-size", "10px")
+            .text(function (d) { return m.msg; })
+            /*   .on("mouseover", function(d) {		
+                  d3.select("#tooltip"+i).transition()		
+                       .duration(200)		
+                       .style("opacity", 1)
+                   .style("display", "inline-block");
+                   d3.select("#tooltip"+i).html("<div class='tooltipDiagramHeader'>"+m.msg+"<span style='cursor: default; float: right;' onclick=getElementById('tooltip"+i+"').style.display='none'>X</span></div><div class='tooltipDiagramBody'>"+syntaxHighlight(m)+"</div>")  
+                       .style("left", (d3.event.pageX-120) + "px")		
+                       .style("top", (d3.event.pageY +20) + "px");	
+                   })					
+               .on("mouseout", function(d) {	
+                   if(d3.select("#tooltip"+i)._groups[0][0].getAttribute('clicked') !== "true"){
+                       d3.select("#tooltip"+i).transition()		
+                       .duration(500)	
+                           .style("display", "none")
+                       .style("opacity", 0);	
+                   }
+               })*/
+            .on("click", function (d) {
+              //set z-index to front when you click on popup
+              var allTooltips = document.getElementsByClassName("tooltipDiagram");
+              for (var j = 0; j < allTooltips.length; j++) {
+                allTooltips[j].style['z-index'] = 10;
+              }
+
+              d3.select("#tooltip" + i).transition()
+                .duration(200)
                 .style("display", "inline-block")
                 .attr("clicked", "true")
-               .style("z-index", 20)
-                .style("opacity", 1);  
-               
-             d3.select("#tooltip"+i).html("<div class='tooltipDiagramHeader'>"+m.msg+"<span style='cursor: default; float: right; margin-right:5px' onclick=getElementById('tooltip"+i+"').style.display='none'>X</span></div><div class='tooltipDiagramBody'>"+syntaxHighlight(m)+"</div>")  
-                .style("left", (d3.event.pageX-120) + "px")
-                .style("top", (d3.event.pageY+20) + "px");
-           })
+                .style("z-index", 20)
+                .style("opacity", 1);
 
-      });  
-          //getElementById('tooltip"+i+"').setAttribute('clicked', 'false')
-           // Arrow style
-      svg.append("svg:defs").selectAll(".arrows")
-        .data(dataNew)
-        .enter()
-        .append("svg:marker")
-          .attr("id", function(d){ return "end"+d.id})
+              d3.select("#tooltip" + i).html("<div class='tooltipDiagramHeader'>" + m.msg + "<span style='cursor: default; float: right; margin-right:5px' onclick=getElementById('tooltip" + i + "').style.display='none'>X</span></div><div class='tooltipDiagramBody'>" + syntaxHighlight(m) + "</div>")
+                .style("left", (d3.event.pageX - 120) + "px")
+                .style("top", (d3.event.pageY + 20) + "px");
+            })
+
+        });
+        //getElementById('tooltip"+i+"').setAttribute('clicked', 'false')
+        // Arrow style
+        svg.append("svg:defs").selectAll(".arrows")
+          .data(dataNew)
+          .enter()
+          .append("svg:marker")
+          .attr("id", function (d) { return "end" + d.id })
           .attr("viewBox", "0 -5 10 10")
           .attr("refX", 10)
           .attr("refY", 0)
           .attr("markerWidth", 6)
           .attr("markerHeight", 6)
           .attr("orient", "auto")
-          .style("fill", function(d) { return  d.color})
-        .append("svg:path")
+          .style("fill", function (d) { return d.color })
+          .append("svg:path")
           .attr("d", "M0,-5L10,0L0,5");
-    
 
-function dragElement(elmnt) {
-  var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-  if (document.getElementById(elmnt.id + "Header")) {
-    // if present, the header is where you move the DIV from:
-    document.getElementById(elmnt.id + "Header").onmousedown = dragMouseDown;
-  } else {
-    // otherwise, move the DIV from anywhere inside the DIV:
-    elmnt.onmousedown = dragMouseDown;
-  }
 
-  function dragMouseDown(e) {
-    var path = e.path || (e.composedPath && e.composedPath());
-      if(path && path[0].getAttribute("class") === "tooltipDiagramHeader"){
-     
-    e = e || window.event;
-    e.preventDefault();
-    // get the mouse cursor position at startup:
-    pos3 = e.clientX;
-    pos4 = e.clientY;
-    document.onmouseup = closeDragElement;
-    // call a function whenever the cursor moves:
-    document.onmousemove = elementDrag;
-  }
-      
-      //set z-index to front when you click on popup
-     var allTooltips = document.getElementsByClassName("tooltipDiagram");
-      for(var j = 0; j < allTooltips.length; j++){
-        allTooltips[j].style['z-index'] = 10; 
-      }
-    path[0].parentElement.style['z-index'] = 20;   
-     
+        function dragElement(elmnt) {
+          var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+          if (document.getElementById(elmnt.id + "Header")) {
+            // if present, the header is where you move the DIV from:
+            document.getElementById(elmnt.id + "Header").onmousedown = dragMouseDown;
+          } else {
+            // otherwise, move the DIV from anywhere inside the DIV:
+            elmnt.onmousedown = dragMouseDown;
+          }
 
-  function elementDrag(e) {
-    e = e || window.event;
-    e.preventDefault();
-    // calculate the new cursor position:
-    pos1 = pos3 - e.clientX;
-    pos2 = pos4 - e.clientY;
-    pos3 = e.clientX;
-    pos4 = e.clientY;
-    // set the element's new position:
-    elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
-    elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
-  }
-  }
+          function dragMouseDown(e) {
+            var path = e.path || (e.composedPath && e.composedPath());
+            if (path && path[0].getAttribute("class") === "tooltipDiagramHeader") {
 
-  function closeDragElement() {
-    // stop moving when mouse button is released:
-    document.onmouseup = null;
-    document.onmousemove = null;
-  }
-}
-             
-          return <span></span>
+              e = e || window.event;
+              e.preventDefault();
+              // get the mouse cursor position at startup:
+              pos3 = e.clientX;
+              pos4 = e.clientY;
+              document.onmouseup = closeDragElement;
+              // call a function whenever the cursor moves:
+              document.onmousemove = elementDrag;
+            }
+
+            //set z-index to front when you click on popup
+            var allTooltips = document.getElementsByClassName("tooltipDiagram");
+            for (var j = 0; j < allTooltips.length; j++) {
+              allTooltips[j].style['z-index'] = 10;
+            }
+            path[0].parentElement.style['z-index'] = 20;
+
+
+            function elementDrag(e) {
+              e = e || window.event;
+              e.preventDefault();
+              // calculate the new cursor position:
+              pos1 = pos3 - e.clientX;
+              pos2 = pos4 - e.clientY;
+              pos3 = e.clientX;
+              pos4 = e.clientY;
+              // set the element's new position:
+              elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+              elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+            }
+          }
+
+          function closeDragElement() {
+            // stop moving when mouse button is released:
+            document.onmouseup = null;
+            document.onmousemove = null;
+          }
+        }
+
+        return <span></span>
       }
     }
 
-        var nodeNames = this.state.nodesNames;
-        return <span  style={{"width": "100%", "marginLeft": "30px", "marginTop":"20px"}}>
-            <span>
-                {nodeNames && <button className="noFormatButton" key="downloadPCAP" onClick={this.getPcap}> <img className="icon" alt="downloadIcon" src={downloadPcapIcon} title="download PCAP" /></button>}
-                {nodeNames && <button className="noFormatButton" key="downloadSD" onClick={this.getDiagram}> <img className="icon" alt="downloadIcon" src={downloadIcon} title="download chart" /></button>}
-             {nodeNames && nodeNames.map(name =><span style={{"marginLeft": "5px"}} key={name}><input type="checkbox" defaultChecked="true" id={name} onClick={() => this.check(name)} style={{"verticalAlign": "middle"}}></input><label style={{"marginLeft":"5px", "verticalAlign": "middle"}}>{name}</label></span>)}
-                </span>
-            <div style={{"width": "100%", "marginTop": "0px"}} id="diagram">{renderDiagram()}</div>
-        </span>
-    }
+    var nodeNames = this.state.nodesNames;
+    return <span style={{ "width": "100%", "marginLeft": "30px", "marginTop": "20px" }}>
+      <span>
+        {nodeNames && <button className="noFormatButton" key="downloadPCAP" onClick={this.getPcap}> <img className="icon" alt="downloadIcon" src={downloadPcapIcon} title="download PCAP" /></button>}
+        {nodeNames && <button className="noFormatButton" key="downloadSD" onClick={this.getDiagram}> <img className="icon" alt="downloadIcon" src={downloadIcon} title="download chart" /></button>}
+        {nodeNames && nodeNames.map(name => <span style={{ "marginLeft": "5px" }} key={name}><input type="checkbox" defaultChecked="true" id={name} onClick={() => this.check(name)} style={{ "verticalAlign": "middle" }}></input><label style={{ "marginLeft": "5px", "verticalAlign": "middle" }}>{name}</label></span>)}
+      </span>
+      <div style={{ "width": "100%", "marginTop": "0px" }} id="diagram">{renderDiagram()}</div>
+    </span>
+  }
 }
 export default SequenceDiagram;

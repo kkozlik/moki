@@ -105,6 +105,15 @@ export default class MultipleLineChart extends Component {
             .range([0, width])
             .domain([minTime, maxTime]);
 
+        //if idle, do minus 100 for all values
+        if (id.includes("Idle")) {
+            for (var i = 0; i < data.length; i++) {
+                for (var j = 0; j < data[i].values.length; j++) {
+                    data[i].values[j].value = 100 - data[i].values[j].value;
+                }
+            }
+        }
+
         //max value    
         var max = 0;
         for (var i = 0; i < data.length; i++) {
@@ -142,21 +151,6 @@ export default class MultipleLineChart extends Component {
                 .ticks(5)
         }
 
-
-        svg.append("g")
-            .attr("class", "x axis")
-            .attr("transform", `translate(0, ${height})`)
-            .call(xAxis);
-
-        svg.append("g")
-            .attr("class", "y axis")
-            .call(yAxis)
-            .append('text')
-            .attr("y", 15)
-            .attr("transform", "rotate(-90)")
-            .attr("fill", "#000");
-
-
         svg.attr("transform", "translate(" + margin.left + "," + margin.right + ")");
 
         if (data.length === 0 || (data[0].values.length === 0 && data[1].values.length === 0)) {
@@ -165,7 +159,18 @@ export default class MultipleLineChart extends Component {
                 .attr('transform', 'translate(' + (width / 3 + 20) + ',' + height / 4 + ')')
 
         } else {
+            svg.append("g")
+                .attr("class", "x axis")
+                .attr("transform", `translate(0, ${height})`)
+                .call(xAxis);
 
+            svg.append("g")
+                .attr("class", "y axis")
+                .call(yAxis)
+                .append('text')
+                .attr("y", 15)
+                .attr("transform", "rotate(-90)")
+                .attr("fill", "#000");
 
 
             svg.append("g")
@@ -254,14 +259,14 @@ export default class MultipleLineChart extends Component {
                 .style("cursor", "pointer")
                 .on("mouseover", function (d) {
                     tooltip.style("visibility", "visible");
-                    tooltip.select("div").html("<strong>Time: </strong>" + parseDate(d.date) + " + "+getTimeBucket()+"<strong><br/>Value: </strong>" + d3.format(',')(d.value) + "<br/> ");
+                    tooltip.select("div").html("<strong>Time: </strong>" + parseDate(d.date) + " + " + getTimeBucket() + "<strong><br/>Value: </strong>" + d3.format(',')(d.value) + "<br/> ");
                 })
                 .on("mouseout", function (d) {
                     tooltip.style("visibility", "hidden")
                 })
                 .on("mousemove", function (d) {
                     tooltip
-                        .style("left", (d3.event.layerX -100) + "px")
+                        .style("left", (d3.event.layerX - 100) + "px")
                         .style("top", (d3.event.layerY - 70) + "px");
 
                 })
@@ -356,7 +361,7 @@ export default class MultipleLineChart extends Component {
         var bucket = getTimeBucket();
         return (<div id={
             this.props.id
-        }>
+        } className="chart">
             <h3 className="alignLeft title" > {
                 this.props.name
             } <span className="smallText"> (interval: {bucket})</span></h3></div>)
