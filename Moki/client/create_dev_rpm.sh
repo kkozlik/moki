@@ -3,14 +3,16 @@
 # go to a temp directory we checked out the git repository
 # set as WORKDIR
 
-DIR=Moki/client
+#DIR=Moki/client
 REP=$branch_name
 NAME=moki-client-dev
 SPEC=$NAME.spec
 RPMARCH=x86_64
 
+# use il package.json
+ln -sf package.json package-intuitive.json
 
-cd $DIR
+#cd $DIR
 
 #FIXES
 ls -la
