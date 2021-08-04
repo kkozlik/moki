@@ -66,7 +66,7 @@ stop:
 ## rpmtar: Build the rpm tar ball
 rpmtar:
 	RPM_VERSION=`cat $(RPM_NAME).spec|grep -e "^Version:"|awk '{print $$2}'`; \
-  RPM_RELEASE=`cat $(RPM_NAME).spec|grep -e "^Release:"|awk '{print $$2}'`; \
+  	RPM_RELEASE=`cat $(RPM_NAME).spec|grep -e "^Release:"|awk '{print $$2}'`; \
   	echo "RPM_VERSION=$${RPM_VERSION}"; \
   	echo "RPM_RELEASE=$${RPM_VERSION}"; \
   	tar -C .. \
@@ -83,13 +83,27 @@ rpmtar:
   	--exclude=*.bz2 \
   	--exclude=*.tar \
   	--exclude=*~ \
+  	--exclude=node_modules \
   	-cf - $(notdir $(CURDIR)) | \
   	(mkdir -p tmp/_tar1; mkdir -p tmp/_tar2 ; \
   	cd tmp/_tar1; tar -xf - ) && \
   	mv tmp/_tar1/$(notdir $(CURDIR)) \
   	tmp/_tar2/"$(RPM_NAME)-$${RPM_VERSION}" && \
   	(cd tmp/_tar2 && tar -zcf ../../"$(RPM_NAME)-$${RPM_VERSION}-$${RPM_RELEASE}".tar.gz "$(RPM_NAME)-$${RPM_VERSION}" ) ; \
-  	rm -rf tmp
+  	rm -rf tmp; \
+  	mkdir -p ~/rpmbuild/SOURCES ; \
+  	cp "$(RPM_NAME)-$${RPM_VERSION}-$${RPM_RELEASE}".tar.gz ~/rpmbuild/SOURCES
+
+.PHONY: rpm
+rpm: rpmtar
+	rpmbuild --clean -bb $(RPM_NAME).spec
+
+.PHONY: clean
+clean:
+	RPM_VERSION=`cat $(RPM_NAME).spec|grep -e "^Version:"|awk '{print $$2}'`; \
+  	RPM_RELEASE=`cat $(RPM_NAME).spec|grep -e "^Release:"|awk '{print $$2}'`; \
+  	rm -f ~/rpmbuild/SOURCES/$(RPM_NAME)-$${RPM_VERSION}-$${RPM_RELEASE}.tar.gz ; \
+  	rm -f ~/rpmbuild/RPMS/x86_64/$(RPM_NAME)-$${RPM_VERSION}-$${RPM_RELEASE}.x86_64.rpm;
 
 .PHONY:		help
 ## help: Prints this help message
