@@ -5,13 +5,22 @@
 
 #DIR=Moki/client
 REP=$branch_name
+REPOTYPE="dev"
 NAME=moki-client-dev
 SPEC=$NAME.spec
 # architecture - static for now
 RPMARCH=x86_64
 RPM_SRC_DIR="/var/lib/jenkins/rpmbuild/RPMS/x86_64"
 # repository type - dev for this automatic build
-REPOTYPE="dev"
+RPM_VERSION=`cat $SPEC|grep -e "^Version:"|awk '{print $2}'`
+# repo location
+if [[ "$branch" == "master" ]] ; then 
+	RPM_REPO_DIR="$HOME/repointernal/rpm/dev/$RPMARCH"
+else
+	RPM_REPO_DIR="$HOME/repointernal/rpm/branch/$branch/$RPMARCH"
+fi
+
+sed -i "s/Release:.*/Release:\t$BUILD_NUMBER/" $SPEC
 
 # vendorize the package.json
 # use il package.json
@@ -23,24 +32,14 @@ ln -sf package.json package-intuitive.json
 rm -rf node_modules
 #sed -i 's/"homepage.*/"homepage": ".",/g' package.json
 
-
-RPM_VERSION=`cat $SPEC|grep -e "^Version:"|awk '{print $2}'`
-sed -i "s/Release:.*/Release:\t$BUILD_NUMBER/" $SPEC
-
 # clean package-lock.json
 rm -f package-lock.json
 
 # build the package
+make TYPE=dev clean
 make TYPE=dev rpm
 
 ### upload rpms
-
-# repo location
-if [[ "$branch" == "master" ]] ; then 
-	RPM_REPO_DIR="$HOME/repointernal/rpm/dev/$RPMARCH"
-else
-	RPM_REPO_DIR="$HOME/repointernal/rpm/branch/$branch/$RPMARCH"
-fi
 
 mkdir -p $RPM_REPO_DIR
 
