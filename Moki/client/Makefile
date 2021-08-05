@@ -95,10 +95,12 @@ rpmtar:
   	cp "$(RPM_NAME)-$${RPM_VERSION}-$${RPM_RELEASE}".tar.gz ~/rpmbuild/SOURCES
 
 .PHONY: rpm
+## rpm: Build the rpm package
 rpm: rpmtar
 	rpmbuild --clean -bb $(RPM_NAME).spec
 
 .PHONY: clean
+## clean: remove the tarball and rpm package artifacts
 clean:
 	RPM_VERSION=`cat $(RPM_NAME).spec|grep -e "^Version:"|awk '{print $$2}'`; \
   	RPM_RELEASE=`cat $(RPM_NAME).spec|grep -e "^Release:"|awk '{print $$2}'`; \
