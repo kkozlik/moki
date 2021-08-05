@@ -58,9 +58,9 @@ RPM_SRC_DIR="/var/lib/jenkins/rpmbuild/RPMS/x86_64"
 
 #mv $RPM_SRC_DIR/$NAME-${RPM_VERSION}-${BUILD_NUMBER}.x86_64.rpm $RPM_REPO_DIR
 
-#if test -f $RPM_SRC_DIR/$NAME-${RPM_VERSION}-${BUILD_NUMBER}.x86_64.rpm ; then
-#  mv $RPM_SRC_DIR/$NAME-${RPM_VERSION}-${BUILD_NUMBER}.x86_64.rpm $RPM_REPO_DIR
-#fi
+if test -f $RPM_SRC_DIR/$NAME-${RPM_VERSION}-${BUILD_NUMBER}.x86_64.rpm ; then
+  mv $RPM_SRC_DIR/$NAME-${RPM_VERSION}-${BUILD_NUMBER}.x86_64.rpm $RPM_REPO_DIR
+fi
 
 
 rm ~/rpmbuild/SOURCES/$NAME-${RPM_VERSION}-${BUILD_NUMBER}.tar.gz
