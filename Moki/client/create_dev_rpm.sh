@@ -9,6 +9,7 @@ NAME=moki-client-dev
 SPEC=$NAME.spec
 RPMARCH=x86_64
 
+# vendorize the package.json
 # use il package.json
 ln -sf package.json package-intuitive.json
 
@@ -16,7 +17,6 @@ ln -sf package.json package-intuitive.json
 
 #FIXES
 ls -la
-rm -f package-lock.json
 rm -rf node_modules
 #sed -i 's/"homepage.*/"homepage": ".",/g' package.json
 
@@ -74,5 +74,7 @@ cd $RPM_REPO_DIR
 
 createrepo ./
 
- sycn to S3
+# sync to S3
 aws s3 sync --delete $HOME/repointernal/rpm/$REPOTYPE s3://repointernal/rpm/$REPOTYPE
+
+echo $?
