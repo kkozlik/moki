@@ -20,18 +20,9 @@ ln -sf package.json package-intuitive.json
 #cd $DIR
 
 #FIXES
-ls -la
 rm -rf node_modules
 #sed -i 's/"homepage.*/"homepage": ".",/g' package.json
 
-# FIXME1 - manual fix for not commited files yet
-#cp /var/lib/jenkins/tmp/moki-intuitive/package-client.json ./package.json
-#mv Makefile-ok Makefile
-
-# FIXME2 - for testing now to remove the intuitive part
-#rm -rf ./src/js/dashboards/Account
-#rm -rf ./src/js/dashboards/Domains
-#rm -rf ./src/js/dashboards/Web
 
 RPM_VERSION=`cat $SPEC|grep -e "^Version:"|awk '{print $2}'`
 sed -i "s/Release:.*/Release:\t$BUILD_NUMBER/" $SPEC
