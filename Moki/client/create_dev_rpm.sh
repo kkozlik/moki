@@ -40,13 +40,7 @@ sed -i "s/Release:.*/Release:\t$BUILD_NUMBER/" $SPEC
 rm -f package-lock.json
 
 # build the package
-make TYPE=dev rpmtar
-mkdir -p ~/rpmbuild/SOURCES
-cp $NAME-${RPM_VERSION}-${BUILD_NUMBER}.tar.gz ~/rpmbuild/SOURCES
-
-#cat $NAME-dev.spec
-
-rpmbuild --clean -bb $NAME.spec
+make TYPE=dev rpm
 
 ### upload rpms
 
@@ -58,8 +52,6 @@ else
 fi
 
 mkdir -p $RPM_REPO_DIR
-
-
 
 if test -f $RPM_SRC_DIR/$NAME-${RPM_VERSION}-${BUILD_NUMBER}.x86_64.rpm ; then
   mv $RPM_SRC_DIR/$NAME-${RPM_VERSION}-${BUILD_NUMBER}.x86_64.rpm $RPM_REPO_DIR
