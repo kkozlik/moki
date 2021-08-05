@@ -74,5 +74,5 @@ cd $RPM_REPO_DIR
 
 createrepo ./
 
- sycn to S3
+# sycn to S3
 aws s3 sync --delete $HOME/repointernal/rpm/$REPOTYPE s3://repointernal/rpm/$REPOTYPE
