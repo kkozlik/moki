@@ -7,7 +7,11 @@
 REP=$branch_name
 NAME=moki-client-dev
 SPEC=$NAME.spec
+# architecture - static for now
 RPMARCH=x86_64
+RPM_SRC_DIR="/var/lib/jenkins/rpmbuild/RPMS/x86_64"
+# repository type - dev for this automatic build
+REPOTYPE="dev"
 
 # vendorize the package.json
 # use il package.json
@@ -44,24 +48,22 @@ cp $NAME-${RPM_VERSION}-${BUILD_NUMBER}.tar.gz ~/rpmbuild/SOURCES
 
 rpmbuild --clean -bb $NAME.spec
 
-
 ### upload rpms
-# repository type - dev for this automatic build
-REPOTYPE="dev"
-
-# architecture - static for now
-RPMARCH="x86_64"
 
 # repo location
-RPM_REPO_DIR="$HOME/repointernal/rpm/$REPOTYPE/$RPMARCH"
-RPM_SRC_DIR="/var/lib/jenkins/rpmbuild/RPMS/x86_64"
+if [[ "$branch" == "master" ]] ; then 
+	RPM_REPO_DIR="$HOME/repointernal/rpm/dev/$RPMARCH"
+else
+	RPM_REPO_DIR="$HOME/repointernal/rpm/branch/$branch/$RPMARCH"
+fi
 
-#mv $RPM_SRC_DIR/$NAME-${RPM_VERSION}-${BUILD_NUMBER}.x86_64.rpm $RPM_REPO_DIR
+mkdir -p $RPM_REPO_DIR
+
+
 
 if test -f $RPM_SRC_DIR/$NAME-${RPM_VERSION}-${BUILD_NUMBER}.x86_64.rpm ; then
   mv $RPM_SRC_DIR/$NAME-${RPM_VERSION}-${BUILD_NUMBER}.x86_64.rpm $RPM_REPO_DIR
 fi
-
 
 rm ~/rpmbuild/SOURCES/$NAME-${RPM_VERSION}-${BUILD_NUMBER}.tar.gz
 
