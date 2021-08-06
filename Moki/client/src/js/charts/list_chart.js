@@ -130,18 +130,16 @@ class TableChart extends Component {
 
     }
     else {
-      var isAnimation = window.location.pathname !== "/web" && (this.props.name === "EVENTS BY IP ADDR" || this.props.name === "TOP SUBNETS" || this.props.name === "EVENTS BY COUNTRY");
-      return (
+      var isAnimation = window.location.pathname !== "/web" && (this.props.name === "EVENTS BY IP ADDR" || this.props.name === "TOP SUBNETS" || this.props.name === "EVENTS BY COUNTRY");      return (
         <div className="tableChart chart chartMinHeight">
           <h3 className="alignLeft title" style={{"float": isAnimation ? "left" : "inherit"}}>{this.props.name}</h3>
           {isAnimation && <Animation name={this.props.name} type={this.props.type} setData={this.setData} dataAll={this.state.data} />}
-          {this.state.data[0] && this.state.data[0].length > 0 &&
+          { this.state.data && this.state.data[0]  && this.state.data[0] !== "" && this.state.data[0].length > 0 &&
             <table>
-              <tbody>{this.state.data[0].map((item, key) => {
+              <tbody>{ this.state.data[0].map((item, key) => {
                 return (
                   <tr key={key}>
                     <td className="filtertd listChart filterToggleActiveWhite" id={item.key} title={item.key} style={{ "width": longestText(this.state.data)*10+50+"px" }}>
-
                       {(this.props.name.includes("COUNTRY") || this.props.name.includes("COUNTRIES")) && item.key !== "unknown" ? <ReactCountryFlag style={{ "marginRight": "5px" }} countryCode={item.key} svg /> : <span />}
                       {shortText(item.key)}
                       <span className="filterToggle">
@@ -157,7 +155,7 @@ class TableChart extends Component {
               })}</tbody>
             </table>
           }
-          {((this.state.data[0] && this.state.data[0].length === 0) || this.state.data[0] === "") &&
+          {((this.state.data && this.state.data[0] && this.state.data[0].length === 0) || (this.state.data && this.state.data[0] === "")) &&
             <table style={{ "minWidth": "17em" }}>
               <tbody>
                 <span className="noDataIcon"> <img alt="nodata" src={emptyIcon} className="noDataList" />  </span>
