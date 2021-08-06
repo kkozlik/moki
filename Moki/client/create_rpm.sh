@@ -1,9 +1,16 @@
 #!/usr/bin/sh
 
-# go to a temp directory we checked out the git repository
-# set as WORKDIR
+# see dash(1):
+#
+# -e errexit    If not interactive, exit immediately if any untested command fails.	 The
+#			    exit status of a command is considered to be explicitly tested if the com‐
+#			    mand is used to control an if, elif, while, or until; or if the command is
+#			    the left hand operand of an “&&” or “||” operator.
+# -x xtrace	    Write each command to standard error (preceded by a ‘+ ’) before it is exe‐
+#			    cuted.  Useful for debugging.
+set -ex
 
-#DIR=Moki/client
+## configuration and variables section
 REP=$branch_name
 # name of the production build
 NAME=moki-client
@@ -25,6 +32,7 @@ else
 	RPM_REMOTE_REPO_URL="s3://repointernal/rpm/branch/$branch/$RPMARCH"
 fi
 
+## code section
 # update the release with the jenkins' BUILD_NUMBER
 sed -i "s/Release:.*/Release:\t$BUILD_NUMBER/" $SPEC
 sed -i "s/Release:.*/Release:\t$BUILD_NUMBER/" $SPEC_DEV
