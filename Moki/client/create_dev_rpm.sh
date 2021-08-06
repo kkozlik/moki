@@ -24,7 +24,7 @@ sed -i "s/Release:.*/Release:\t$BUILD_NUMBER/" $SPEC
 
 # vendorize the package.json
 # use il package.json
-ln -sf package.json package-intuitive.json
+ln -sf package-intuitive.json package.json
 
 #cd $DIR
 
