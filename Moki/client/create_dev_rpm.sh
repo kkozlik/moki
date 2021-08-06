@@ -35,7 +35,7 @@ rm -rf node_modules
 # clean package-lock.json
 rm -f package-lock.json
 
-# build the package
+# build the dev package
 make TYPE=dev clean
 make TYPE=dev rpm
 
