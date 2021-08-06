@@ -14,7 +14,7 @@ SPEC_DEV=${NAME_DEV}.spec
 # architecture - static for now
 RPMARCH=x86_64
 RPM_SRC_DIR="/var/lib/jenkins/rpmbuild/RPMS/x86_64"
-# repository type - dev for this automatic build
+# rpm version is stored only in the production spec
 RPM_VERSION=`cat $SPEC|grep -e "^Version:"|awk '{print $2}'`
 # repo location
 if [[ "$branch" == "master" ]] ; then 
@@ -25,7 +25,9 @@ else
 	RPM_REMOTE_REPO_URL="s3://repointernal/rpm/branch/$branch/$RPMARCH"
 fi
 
+# update the release with the jenkins' BUILD_NUMBER
 sed -i "s/Release:.*/Release:\t$BUILD_NUMBER/" $SPEC
+sed -i "s/Release:.*/Release:\t$BUILD_NUMBER/" $SPEC_DEV
 
 # vendorize the package.json
 # use il package.json
