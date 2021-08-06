@@ -40,12 +40,14 @@ rm -rf node_modules
 # clean package-lock.json
 rm -f package-lock.json
 
-# build the dev package
+# clean previous tarball/rpm
 make TYPE=dev clean
+make clean
+
+# build the dev package
 make TYPE=dev rpm
 
 # build the production package
-make clean
 make rpm
 
 ### upload rpms
