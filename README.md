@@ -49,6 +49,6 @@ run `npm run-scripts build` in the `client` directory.
  ### build with jenkins
 use:
 
-https://108.128.70.119:8443/view/moki/job/moki-client-manual-branch-script/build?delay=0sec
+https://jenkins/view/moki/job/moki-client-manual-branch-script/build?delay=0sec
 
 and pass the name of the github branch as a parameter.
