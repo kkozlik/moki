@@ -360,6 +360,8 @@ p {
     background-color:  var(--main);
     box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
     align-items: flex-end;
+    z-index: 9999;
+    position: fixed;
 }
 
 h5 {
@@ -484,6 +486,17 @@ h5 {
 }
 
 .errorBar {
+    background-color: orangered;
+    padding-left: 30px;
+    width: 100%;
+    visibility: hidden;
+    margin-left: 15px;
+    margin-top: 38px;
+    font-weight: 800;
+    z-index: 9999999999;
+}
+
+.errorBarLoading {
     background-color: orangered;
     padding-left: 30px;
     width: 100%;

@@ -434,7 +434,7 @@ class App extends Component {
 
         //loading screen span
         var loadingScreen = <span>
-            <div className="errorBar" > {JSON.stringify(this.state.error)} </div>
+            <div className="errorBarLoading" > {JSON.stringify(this.state.error)} </div>
             <div style={{ "marginTop": (window.innerHeight / 2) - 50 }} className="row align-items-center justify-content-center">
                 <div className="loader" />
                 {this.state.logo && <img src={this.state.logo} alt="logo" style={{ "marginLeft": 10 }} />}
@@ -469,7 +469,7 @@ class App extends Component {
                 //admin context
                 sipUserSwitch = <div className="row" id="body-row" >
                     <NavBar redirect={this.redirect} toggle={this.toggle} aws={this.state.aws} dashboardsUser={this.state.dashboardsUser} dashboards={this.state.dashboards} dashboardsSettings={this.state.dashboardsSettings} />
-                    <div id="context" className={"margin250"}>
+
 
                         <div className="row justify-content-between header" style={{"marginRight": 0, "marginLeft":0}} >
                             <span id="user" className="top" >
@@ -480,10 +480,11 @@ class App extends Component {
 
                             <TimerangeBar showError={this.showError} />
                         </div>
+                        <div id="context" className={"margin250"}>
                         <div className="row" >
                             <div className="errorBar" > {this.state.error} </div>
                         </div>
-                        <div className="row" >
+                        <div className="row" style={{"marginTop": "10px"}}>
                             <Switch >
                                 {paths(this.state.dashboards, this.state.tags, this.state.hostnames, this.state.dstRealms, this.state.srcRealms, this.showError)}
                                 {paths(this.state.dashboardsSettings, this.state.tags, this.state.hostnames, this.state.dstRealms, this.state.srcRealms, this.showError)}
