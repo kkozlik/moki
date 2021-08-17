@@ -23,6 +23,7 @@ class timerangeBar extends Component {
         this.state = {
             timerange: store.getState().timerange[2],
             sipUser: storePersistent.getState().user.user,
+            autoRefresh: storePersistent.getState().layout.autoRefresh,
             timestamp_gte: store.getState().timerange[0],
             timestamp_lte: store.getState().timerange[1],
             refreshInterval: 30000,
@@ -134,7 +135,7 @@ class timerangeBar extends Component {
     //if store timernage changes, render new state
     rerenderTimerange() {
         if (store.getState().timerange[2] !== this.state.timerange) {
-           if(!this.state.isHistory) this.addHistory(this.state.timerange, this.state.timestamp_gte, this.state.timestamp_lte);
+            if (!this.state.isHistory) this.addHistory(this.state.timerange, this.state.timestamp_gte, this.state.timestamp_lte);
 
             console.info("Timerange is changed to " + store.getState().timerange[2]);
             this.setState({
@@ -191,7 +192,7 @@ class timerangeBar extends Component {
 
     //set refresh
     setRefresh() {
-        var e = document.getElementById("timeUnit"); 
+        var e = document.getElementById("timeUnit");
         var refreshInterval = document.getElementById("refresh").value * 1000
         if (e.options[e.selectedIndex].value === "minutes") {
             refreshInterval = document.getElementById("refresh").value * 60000
@@ -284,7 +285,7 @@ class timerangeBar extends Component {
         }
         //absolute time
         else {
-            this.setState({isHistory: false});
+            this.setState({ isHistory: false });
             store.dispatch(setTimerange(store.getState().timerange));
 
         }
@@ -434,7 +435,7 @@ class timerangeBar extends Component {
                 this.props.showError("Error: Timestamp 'TO' is not valid date.");
                 return;
             }
-           // this.addHistory(store.getState().timerange[2], store.getState().timerange[0], store.getState().timerange[1]);
+            // this.addHistory(store.getState().timerange[2], store.getState().timerange[0], store.getState().timerange[1]);
             const gte = Math.round((new Date(timestamp_gte)).getTime() / 1000) * 1000;
             const lte = Math.round((new Date(timestamp_lte)).getTime() / 1000) * 1000;
 
@@ -504,6 +505,7 @@ class timerangeBar extends Component {
         // const aws =store.getState().user.aws;
         let sipUserSwitch = <div />;
         var name = window.location.pathname.substr(1);
+       
         return (
             <div id="popup">
                 <div className="d-flex justify-content-between">
@@ -527,7 +529,7 @@ class timerangeBar extends Component {
                         <span className="tabletd marginRight" onClick={this.moveTimerangeForward}><img alt="timeBackIcon" src={timeBack} title="move back" /></span><span className="tabletd marginRight" onClick={this.moveTimerangeBack}> <img alt="timeForwardIcon" src={timeForward} title="move forward" /></span>
                         <span id="reload" onClick={this.reload} className="tabletd marginRight" ><img className="iconReload" alt="reloadIcon" src={reloadIcon} title="reload" /></span>
                         <span onClick={this.loadHistory} className="tabletd marginRight" ><img className="iconHistory" alt="historyIcon" src={this.state.history.length === 0 ? historyIconGrey : historyIcon} title="previous time range" /></span>
-                        <span onClick={this.refresh} className="tabletd" ><img style={{ "marginLeft": "10px", "marginRight": "0px" }} className="iconRefresh" alt="refreshIcon" src={this.state.refreshIcon} title="refresh" /></span>
+                        {this.state.autoRefresh && <span onClick={this.refresh} className="tabletd" ><img style={{ "marginLeft": "10px", "marginRight": "0px" }} className="iconRefresh" alt="refreshIcon" src={this.state.refreshIcon} title="refresh" /></span>}
                         <button className="btn dropdown-toggle" type="button" id="dropdownMenuButton" onClick={this.toggleMenu} aria-haspopup="true" aria-expanded="false">
                             {store.getState().timerange[2]}
                         </button>
@@ -597,14 +599,14 @@ class timerangeBar extends Component {
                 {name !== "web" && <div className="export" id="CSVexport">
                     <button className="close" onClick={this.exportCSVclose}>
                         &times;
-                        </button>
+                    </button>
                     <Export type="CSV" exportOpen={this.state.exportCSVOpen} close={this.exportCSVclose} />
                 </div>
                 }
                 {name !== "web" && <div className="export" id="JSONexport">
                     <button className="close" onClick={this.exportJSONclose}>
                         &times;
-                        </button>
+                    </button>
                     <Export type="JSON" exportOpen={this.state.exportJSONOpen} close={this.exportJSONclose} />
                 </div>
                 }
