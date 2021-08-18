@@ -9,4 +9,5 @@ export const SET_WIDTH_CHART = "SET_WIDTH_CHART";
 export const SET_PROFILE = "SET_PROFILE";
 export const SET_USER_PROFILE = "SET_USER_PROFILE";
 export const SET_LAYOUT = "SET_LAYOUT";
+export const SET_SETTINGS = "SET_SETTINGS";
 

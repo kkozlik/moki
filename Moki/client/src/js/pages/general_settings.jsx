@@ -226,7 +226,7 @@ class Settings extends Component {
         var alarms = [];
         if (data.length !== 0) {
             // Outer loop to create parent
-            for (var i = 0; i < data.length; i++) {
+            for(var i = 0; i < data.length; i++) {
                 //special case: number restriction
                 if (data[i].restriction && (data[i].restriction.min || data[i].restriction.max)) {
                     alarms.push(

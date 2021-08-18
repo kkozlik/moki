@@ -3,6 +3,7 @@ import { SET_WIDTH_CHART } from "../constants/action-types";
 import { SET_PROFILE } from "../constants/action-types";
 import { SET_USER_PROFILE } from "../constants/action-types";
 import {SET_LAYOUT} from "../constants/action-types";
+import {SET_SETTINGS} from "../constants/action-types";
 
 const initialState = {
   user: null,
@@ -35,6 +36,12 @@ if (action.type === SET_USER) {
   else if (action.type === SET_LAYOUT) {
     return Object.assign({}, state, {
       layout: action.payload
+    });
+  }
+
+  else if (action.type === SET_SETTINGS) {
+    return Object.assign({}, state, {
+      settings: action.payload
     });
   }
 
