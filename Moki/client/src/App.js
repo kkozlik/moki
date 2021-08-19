@@ -7,12 +7,13 @@ import NavBar from './js/bars/NavigationBar';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import TimerangeBar from './js/bars/SetTimerangeBar';
 import { getLayoutSettings } from './js/helpers/getLayout';
+import { getSettings } from './js/helpers/getSettings';
 import FilterBar from './js/bars/FilterBar';
 import Restricted from './js/dashboards/Restricted/Restricted';
 import Sequence from './js/pages/sequenceDiagram';
 import store from "./js/store/index";
 import storePersistent from "./js/store/indexPersistent";
-import { setUser, setWidthChart, setLayout } from "./js/actions/index";
+import { setUser, setWidthChart, setLayout, setSettings } from "./js/actions/index";
 import { Redirect } from 'react-router';
 import { paths } from "./js/controllers/paths.jsx";
 import { getProfile } from '@moki-client/gui';
@@ -56,7 +57,7 @@ class App extends Component {
         var thiss = this;
         //resize window function
         window.addEventListener('resize', function () {
-            if(thiss.state.resizeId) clearTimeout(thiss.state.resizeId);
+            if (thiss.state.resizeId) clearTimeout(thiss.state.resizeId);
             thiss.setState({ resizeId: setTimeout(thiss.windowResize, 500) });
         });
 
@@ -101,6 +102,14 @@ class App extends Component {
         storePersistent.dispatch(setLayout(jsonData));
         console.info(jsonData);
         console.info("Storing layout");
+
+        //get settings if exists
+        var aws = this.state.user.aws;
+        if (aws !== true) {
+            var jsonSettings = await getSettings();
+            storePersistent.dispatch(setSettings(jsonSettings));
+        }
+
         //get dashboard list
         var dashboards = Object.keys(jsonData.dashboards);
         if ((this.state.aws && !this.state.admin) || !this.state.aws) {
@@ -471,20 +480,20 @@ class App extends Component {
                     <NavBar redirect={this.redirect} toggle={this.toggle} aws={this.state.aws} dashboardsUser={this.state.dashboardsUser} dashboards={this.state.dashboards} dashboardsSettings={this.state.dashboardsSettings} />
 
 
-                        <div className="row justify-content-between header" style={{"marginRight": 0, "marginLeft":0}} >
-                            <span id="user" className="top" >
-                                {aws === true && <DecryptPasswordPopup />}
-                                {sipUser}
-                                {aws === true && (!this.state.admin && !this.state.siteAdmin) && <a href="/logout" > Log out </a>}
-                            </span>
+                    <div className="row justify-content-between header" style={{ "marginRight": 0, "marginLeft": 0 }} >
+                        <span id="user" className="top" >
+                            {aws === true && <DecryptPasswordPopup />}
+                            {sipUser}
+                            {aws === true && (!this.state.admin && !this.state.siteAdmin) && <a href="/logout" > Log out </a>}
+                        </span>
 
-                            <TimerangeBar showError={this.showError} />
-                        </div>
-                        <div id="context" className={"margin250"}>
+                        <TimerangeBar showError={this.showError} />
+                    </div>
+                    <div id="context" className={"margin250"}>
                         <div className="row" >
                             <div className="errorBar" > {this.state.error} </div>
                         </div>
-                        <div className="row" style={{"marginTop": "10px"}}>
+                        <div className="row" style={{ "marginTop": "10px" }}>
                             <Switch >
                                 {paths(this.state.dashboards, this.state.tags, this.state.hostnames, this.state.dstRealms, this.state.srcRealms, this.showError)}
                                 {paths(this.state.dashboardsSettings, this.state.tags, this.state.hostnames, this.state.dstRealms, this.state.srcRealms, this.showError)}
@@ -543,10 +552,10 @@ class App extends Component {
                 <span id="decryptpopupplaceholder"></span>
                 {(this.state.isLoading) ? loadingScreen :
                     <Router>
-                        <div className="container-fluid" style={{"backgroundColor": "#f6f6f6"}}> {sipUserSwitch}
+                        <div className="container-fluid" style={{ "backgroundColor": "#f6f6f6" }}> {sipUserSwitch}
                         </div>
                     </Router>
-                } 
+                }
             </span>
         );
     }

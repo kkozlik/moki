@@ -40,6 +40,21 @@ export default class listChart extends Component {
         //get columns name from layout 
         var name = window.location.pathname.substring(1);
         var layout = storePersistent.getState().layout.table;
+
+        //if there is settings with min pages, use it
+        var count = 10;
+
+        var aws = storePersistent.getState().user.aws;
+        if (aws !== true) {
+            if (storePersistent.getState().settings.length > 0) {
+                for (var i = 0; i < storePersistent.getState().settings[0].attrs.length; i++) {
+                    if (storePersistent.getState().settings[0].attrs[i].attribute === "eventTableCount") {
+                        count = storePersistent.getState().settings[0].attrs[i].value;
+                    }
+                }
+            }
+        }
+
         var searchable = layout[name] ? layout[name] : layout.default;
         //remove the same
         var removeIndices = [];
@@ -69,9 +84,9 @@ export default class listChart extends Component {
                     formatExtraData: "attrs." + field,
                     formatter: (cell, obj, i, formatExtraData) => {
                         return <span className="filterToggleActive"><span className="filterToggle">
-                                <img onClick={this.filter} field={formatExtraData} value={cell} className="icon" alt="filterIcon" src={filter} />
-                                <img field={formatExtraData} value={cell} onClick={this.unfilter} className="icon" alt="unfilterIcon" src={unfilter} /></span >
-                                {cell}
+                            <img onClick={this.filter} field={formatExtraData} value={cell} className="icon" alt="filterIcon" src={filter} />
+                            <img field={formatExtraData} value={cell} onClick={this.unfilter} className="icon" alt="unfilterIcon" src={unfilter} /></span >
+                            {cell}
                         </span>
                     }
                 });
@@ -84,7 +99,8 @@ export default class listChart extends Component {
             selectedRowsList: [],
             tags: this.props.tags,
             checkall: false,
-            selected: []
+            selected: [],
+            count: count
         }
 
         this.filter = this.filter.bind(this);
@@ -95,8 +111,7 @@ export default class listChart extends Component {
         this.handleOnSelect = this.handleOnSelect.bind(this);
         this.handleOnSelectAll = this.handleOnSelectAll.bind(this);
         this.getRecord = this.getRecord.bind(this);
-
-
+        storePersistent.subscribe(() => constructor());
 
     }
 
@@ -207,7 +222,6 @@ export default class listChart extends Component {
 
     //define searchable field from SearchableFields.js
     isSearchable(field) {
-
         var searchable = getSearchableFields();
         for (var j = 0; j < searchable.length; j++) {
             if ("attrs." + searchable[j] === field) {
@@ -219,8 +233,6 @@ export default class listChart extends Component {
 
     //insert columns iinto table
     async componentDidMount() {
-
-
         //store already exclude alarms list
         if (window.location.pathname === "/exceeded") {
             try {
@@ -323,13 +335,10 @@ export default class listChart extends Component {
             //get rid of race condition by waiting before getting new data again
             if (result.result && result.result === "updated") {
                 setTimeout(function () {
-
                     //alert("Tag has been saved."); 
                     document.getElementById("popupTag").style.display = "none";
                     document.getElementById("tag").value = "";
                     document.getElementsByClassName("iconReload")[0].click();
-
-
                 }, 1000);
             }
             else {
@@ -384,10 +393,6 @@ export default class listChart extends Component {
             }));
         }
     }
-
-
-
-
 
     render() {
         var thiss = this;
@@ -584,10 +589,10 @@ export default class listChart extends Component {
 
                                                     //attrs.to or attrs.from, use keyword 
                                                     : cell === "from" || cell === "to" ?
-                                                        <p key={cell} field={"attrs." + cell+".keyword"} value={row._source.attrs[cell]}>
+                                                        <p key={cell} field={"attrs." + cell + ".keyword"} value={row._source.attrs[cell]}>
                                                             <span className="spanTab">{cell}: </span>
-                                                            <img onClick={this.filter} field={"attrs." + cell+".keyword"} value={row._source.attrs[cell]} title="filter" className="icon" alt="filterIcon" src={filter} />
-                                                            <img field={"attrs." + cell+".keyword"} value={row._source.attrs[cell]} onClick={this.unfilter} className="icon" alt="unfilterIcon" title="unfilter" src={unfilter} />
+                                                            <img onClick={this.filter} field={"attrs." + cell + ".keyword"} value={row._source.attrs[cell]} title="filter" className="icon" alt="filterIcon" src={filter} />
+                                                            <img field={"attrs." + cell + ".keyword"} value={row._source.attrs[cell]} onClick={this.unfilter} className="icon" alt="unfilterIcon" title="unfilter" src={unfilter} />
                                                             <span className="spanTab">{row._source.attrs[cell]}</span>
                                                         </p>
                                                         :
@@ -632,7 +637,7 @@ export default class listChart extends Component {
                             <span />
                     )}
 
-                    { row._source.geoip ?
+                    {row._source.geoip ?
                         Object.keys(row._source.geoip).sort().map(cell =>
                             isDisplay("geoip." + cell) ?
                                 cell === "country_name" ?
@@ -652,7 +657,7 @@ export default class listChart extends Component {
                                 : <span />
                         ) : <span />}
 
-                    { this.props.name === "exceeded" || this.props.name === "system" || this.props.name === "network" || this.props.name === "realm" ?
+                    {this.props.name === "exceeded" || this.props.name === "system" || this.props.name === "network" || this.props.name === "realm" ?
                         Object.keys(row._source).sort().map(cell =>
                             isDisplay(cell) ?
                                 <p value={row._source[cell]}>
@@ -751,7 +756,7 @@ export default class listChart extends Component {
                                     this.setState({ columns: columns });
                                 }
                                 }>
-                                { column.text}
+                                {column.text}
                             </button>
 
                         ))
@@ -794,10 +799,11 @@ export default class listChart extends Component {
         };
 
         const options = {
-            pageButtonRenderer
+            pageButtonRenderer,
+            sizePerPage: this.state.count
         };
         return (
-            <div key={"table" + this.props.name}  className="chart">
+            <div key={"table" + this.props.name} className="chart">
 
                 {columnsList &&
                     <ToolkitProvider
@@ -814,7 +820,7 @@ export default class listChart extends Component {
                         {
                             props => (
                                 <div key={"tablechart"}>
-                                    <h3 className="alignLeft title inline" style={{"float": "inherit"}} >{this.props.id}</h3>
+                                    <h3 className="alignLeft title inline" style={{ "float": "inherit" }} >{this.props.id}</h3>
                                     {this.props.id !== "LAST LOGIN EVENTS" && <img className="icon" alt="tagIcon" src={tagIcon} title="add tag" onClick={() => this.openPopupTag()} />}
 
                                     {this.props.id !== "LAST LOGIN EVENTS" && <div id="popupTag" className="popupTag" style={{ "display": "none" }}>
@@ -852,8 +858,6 @@ export default class listChart extends Component {
                             )
                         }
                     </ToolkitProvider>
-
-
                 }
             </div>
         );
