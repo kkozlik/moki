@@ -29,6 +29,8 @@ import { downloadSD } from '../helpers/download/downloadSD';
 import { tableColumns } from '../helpers/TableColumns';
 import { getPcap } from '../helpers/getPcap.js';
 import { downloadPcapMerged } from '../helpers/download/downloadPcapMerged';
+import {parseTimestamp} from "../helpers/parseTimestamp";
+
 var FileSaver = require('file-saver');
 var JSZip = require("jszip");
 
@@ -624,7 +626,7 @@ export default class listChart extends Component {
                                         cell === "reg_expire" || cell === "ua_expire" ?
                                             <p value={row._source.attrs[cell]}>
                                                 <span className="spanTab">{cell}: </span>
-                                                <span className="tab">{new Date(row._source.attrs[cell] * 1000).toLocaleString()}</span>
+                                                <span className="tab">{parseTimestamp(new Date(row._source.attrs[cell] * 1000))}</span>
                                             </p>
                                             :
 

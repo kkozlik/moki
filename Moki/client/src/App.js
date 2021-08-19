@@ -108,7 +108,7 @@ class App extends Component {
         if (aws !== true) {
             var jsonSettings = await getSettings();
             storePersistent.dispatch(setSettings(jsonSettings));
-        }
+       }
 
         //get dashboard list
         var dashboards = Object.keys(jsonData.dashboards);

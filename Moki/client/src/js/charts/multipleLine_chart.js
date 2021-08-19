@@ -22,6 +22,7 @@ import emptyIcon from "../../styles/icons/empty_small.png";
 import {
     getTimeBucketInt, getTimeBucket
 } from "../helpers/getTimeBucket";
+import {parseTimestamp} from "../helpers/parseTimestamp";
 
 export default class MultipleLineChart extends Component {
     constructor(props) {
@@ -187,8 +188,8 @@ export default class MultipleLineChart extends Component {
                 var extent = d3.event.selection;
                 var timestamp_gte = xScale.invert(extent[0]);
                 var timestamp_lte = xScale.invert(extent[1]);
-                var timestamp = timestamp_gte + " - " + timestamp_lte;
-                store.dispatch(setTimerange([timestamp_gte, timestamp_lte, timestamp]));
+                var timestamp_readiable = parseTimestamp(new Date(Math.trunc(timestamp_gte))) + " - " + parseTimestamp(new Date(Math.trunc(timestamp_lte)));
+                store.dispatch(setTimerange([timestamp_gte, timestamp_lte, timestamp_readiable]));
 
             }
 
@@ -259,7 +260,7 @@ export default class MultipleLineChart extends Component {
                 .style("cursor", "pointer")
                 .on("mouseover", function (d) {
                     tooltip.style("visibility", "visible");
-                    tooltip.select("div").html("<strong>Time: </strong>" + parseDate(d.date) + " + " + getTimeBucket() + "<strong><br/>Value: </strong>" + d3.format(',')(d.value) + "<br/> ");
+                    tooltip.select("div").html("<strong>Time: </strong>" + parseTimestamp(d.date) + " + " + getTimeBucket() + "<strong><br/>Value: </strong>" + d3.format(',')(d.value) + "<br/> ");
                 })
                 .on("mouseout", function (d) {
                     tooltip.style("visibility", "hidden")

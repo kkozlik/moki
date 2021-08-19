@@ -15,6 +15,7 @@ import { exportJSON } from "./export";
 import { getPcap } from './getPcap';
 import { exclude } from './exclude';
 import storePersistent from "../store/indexPersistent";
+import {parseTimestamp} from "../helpers/parseTimestamp";
 
 /*
 create new filter based on html tag with field with attribute as name 
@@ -117,7 +118,7 @@ export function tableColumns(dashboard, tags) {
                 headerStyle: { width: '170px' },
                 formatter: (cell, obj) => {
                     var ob = obj._source;
-                    return new Date(ob['@timestamp']).toLocaleString();
+                    return parseTimestamp(new Date(ob['@timestamp']));
                 }
 
             }, {
@@ -240,7 +241,7 @@ export function tableColumns(dashboard, tags) {
             headerStyle: { width: '170px' },
             formatter: (cell, obj) => {
                 var ob = obj._source;
-                return new Date(ob['@timestamp']).toLocaleString();
+                return parseTimestamp(new Date(ob['@timestamp']));
             }
 
         },
@@ -317,7 +318,7 @@ export function tableColumns(dashboard, tags) {
             headerStyle: { width: '170px' },
             formatter: (cell, obj) => {
                 var ob = obj._source;
-                return new Date(ob['@timestamp']).toLocaleString();
+                return parseTimestamp(new Date(ob['@timestamp']));
             }
 
         }, {
@@ -436,7 +437,7 @@ export function tableColumns(dashboard, tags) {
             headerStyle: { width: '170px' },
             formatter: (cell, obj) => {
                 var ob = obj._source;
-                return new Date(ob['@timestamp']).toLocaleString();
+                return parseTimestamp(new Date(ob['@timestamp']));
             }
 
         }, {
@@ -558,7 +559,7 @@ export function tableColumns(dashboard, tags) {
                 headerStyle: { width: '170px' },
                 formatter: (cell, obj) => {
                     var ob = obj._source;
-                    return new Date(ob['@timestamp']).toLocaleString();
+                    return parseTimestamp(new Date(ob['@timestamp']));
                 }
 
             }, {
@@ -677,7 +678,7 @@ export function tableColumns(dashboard, tags) {
             headerStyle: { width: '170px' },
             formatter: (cell, obj) => {
                 var ob = obj._source;
-                return new Date(ob['@timestamp']).toLocaleString();
+                return parseTimestamp(new Date(ob['@timestamp']));
             }
 
         }, {
@@ -791,7 +792,7 @@ export function tableColumns(dashboard, tags) {
                 headerStyle: { width: '170px' },
                 formatter: (cell, obj) => {
                     var ob = obj._source;
-                    return new Date(ob['@timestamp']).toLocaleString();
+                    return parseTimestamp(new Date(ob['@timestamp']));
                 }
 
             }, {
@@ -929,7 +930,7 @@ export function tableColumns(dashboard, tags) {
             headerStyle: { width: '170px' },
             formatter: (cell, obj) => {
                 var ob = obj._source;
-                return new Date(ob['@timestamp']).toLocaleString();
+                return parseTimestamp(new Date(ob['@timestamp']));
             }
 
         }, {
@@ -1046,7 +1047,7 @@ export function tableColumns(dashboard, tags) {
             headerStyle: { width: '170px' },
             formatter: (cell, obj) => {
                 var ob = obj._source;
-                return new Date(ob['@timestamp']).toLocaleString();
+                return parseTimestamp(new Date(ob['@timestamp']));
             }
 
         }, {
@@ -1127,7 +1128,7 @@ export function tableColumns(dashboard, tags) {
             headerStyle: { width: '170px' },
             formatter: (cell, obj) => {
                 var ob = obj._source;
-                return new Date(ob['@timestamp']).toLocaleString();
+                return parseTimestamp(new Date(ob['@timestamp']));
             }
 
         }, {
@@ -1242,7 +1243,7 @@ export function tableColumns(dashboard, tags) {
             headerStyle: { width: '170px' },
             formatter: (cell, obj) => {
                 var ob = obj._source;
-                return new Date(ob['@timestamp']).toLocaleString();
+                return parseTimestamp(new Date(ob['@timestamp']));
             }
 
         }, {
@@ -1360,7 +1361,7 @@ export function tableColumns(dashboard, tags) {
 
             formatter: (cell, obj) => {
                 var ob = obj._source;
-                return new Date(ob['@timestamp']).toLocaleString();
+                return parseTimestamp(new Date(ob['@timestamp']));
             },
         }, {
             dataField: '_source.attrs.type',
@@ -1443,7 +1444,7 @@ export function tableColumns(dashboard, tags) {
             headerStyle: { width: '170px' },
             formatter: (cell, obj) => {
                 var ob = obj._source;
-                return new Date(ob['@timestamp']).toLocaleString();
+                return parseTimestamp(new Date(ob['@timestamp']));
             }
 
         }, {
@@ -1526,7 +1527,7 @@ export function tableColumns(dashboard, tags) {
             headerStyle: { width: '170px' },
             formatter: (cell, obj) => {
                 var ob = obj._source;
-                return new Date(ob['@timestamp']).toLocaleString();
+                return parseTimestamp(new Date(ob['@timestamp']));
             }
 
         }, {
@@ -1648,7 +1649,7 @@ export function tableColumns(dashboard, tags) {
             headerStyle: { width: '170px' },
             formatter: (cell, obj) => {
                 var ob = obj._source;
-                return new Date(parseInt(ob['ts-start'])).toLocaleString();
+                return parseTimestamp(new Date(parseInt(ob['ts-start'])));
             }
         }, {
             dataField: '_source.tls-cn',
@@ -1710,7 +1711,7 @@ export function tableColumns(dashboard, tags) {
             headerStyle: { width: '170px' },
             formatter: (cell, obj) => {
                 var ob = obj._source;
-                return new Date(ob['@timestamp']).toLocaleString();
+                return parseTimestamp(new Date(ob['@timestamp']));
             }
 
         }, {
@@ -1721,7 +1722,6 @@ export function tableColumns(dashboard, tags) {
             formatter: (cell, obj) => {
                 var ob = obj._source;
                 if (ob.attrs && ob.attrs.type) {
-
                     return <span className="filterToggleActive"><span className="filterToggle">
                         <img onClick={doFilter} field="attrs.type" value={ob.attrs.type} className="icon" alt="filterIcon" src={filterIcon} /><img field="attrs.type" value={ob.attrs.type} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span >{ob.attrs.type}
                     </span>

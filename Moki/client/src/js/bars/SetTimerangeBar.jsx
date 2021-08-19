@@ -16,16 +16,31 @@ import refreshStopIcon from "../../styles/icons/refreshStop.png";
 import Export from "./Export";
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+import { parseTimestamp } from "../helpers/parseTimestamp";
 
 class timerangeBar extends Component {
     constructor(props) {
         super(props);
+
+        var timeFormat = "hh:mm:ss";
+        var dateFormat = "MM-DD-YYYY";
+        if (storePersistent.getState().settings && storePersistent.getState().settings.length > 0) {
+            for (var i = 0; i < storePersistent.getState().settings[0].attrs.length; i++) {
+                if (storePersistent.getState().settings[0].attrs[i].attribute === "timeFormat") {
+                    timeFormat = storePersistent.getState().settings[0].attrs[i].value;
+                }
+                if (storePersistent.getState().settings[0].attrs[i].attribute === "dateFormat") {
+                    dateFormat = storePersistent.getState().settings[0].attrs[i].value;
+                }
+            }
+        }
+
         this.state = {
-            timerange: store.getState().timerange[2],
+            timerange: parseTimestamp(new Date(Math.trunc(Math.round(new Date().getTime() / 1000) - (6 * 3600)) * 1000)) + " + 6 hours",
             sipUser: storePersistent.getState().user.user,
             autoRefresh: storePersistent.getState().layout.autoRefresh,
-            timestamp_gte: store.getState().timerange[0],
-            timestamp_lte: store.getState().timerange[1],
+            timestamp_gte: (Math.round(new Date().getTime() / 1000) - (6 * 3600)) * 1000,
+            timestamp_lte: (Math.round(new Date().getTime() / 1000)) * 1000,
             refreshInterval: 30000,
             refreshIcon: refreshIcon,
             historyIcon: historyIconGrey,
@@ -35,9 +50,13 @@ class timerangeBar extends Component {
             refreshValue: 30,
             click: false,
             history: [],
+            timeFormat: timeFormat,
+            dateFormat: dateFormat,
             exportCSVOpen: false,
             exportJSONOpen: false
         }
+        store.dispatch(setTimerange([(Math.round(new Date().getTime() / 1000) - (6 * 3600)) * 1000, (Math.round(new Date().getTime() / 1000)) * 1000, parseTimestamp(new Date(Math.trunc(Math.round(new Date().getTime() / 1000) - (6 * 3600)) * 1000)) + " + 6 hours"]));
+
         this.setTimerange = this.setTimerange.bind(this);
         this.close = this.close.bind(this);
         this.share = this.share.bind(this);
@@ -63,7 +82,6 @@ class timerangeBar extends Component {
         this.toggleMenu = this.toggleMenu.bind(this);
         store.subscribe(() => this.rerenderTimerange());
 
-
         //change timerange if set in url
         //format: from=XXXXXXX&to=YYYYYYYY
 
@@ -76,7 +94,7 @@ class timerangeBar extends Component {
             var timestamp_lte = parseInt(parameters.substring(parameters.indexOf("to=") + 3));
             var refreshTime = parameters.indexOf("refresh=") !== -1 ? parseInt(parameters.substring(parameters.indexOf("refresh=") + 8)) : 0;
             if (timestamp_gte && timestamp_lte) {
-                var timestamp_readiable = new Date(timestamp_gte).toLocaleString() + " - " + new Date(timestamp_lte).toLocaleString();
+                var timestamp_readiable = parseTimestamp(new Date(timestamp_gte)) + " - " + parseTimestamp(new Date(timestamp_lte));
 
                 store.dispatch(setTimerange([timestamp_gte, timestamp_lte, timestamp_readiable]));
 
@@ -93,7 +111,7 @@ class timerangeBar extends Component {
                     var timestamp_lte = Math.round((new Date()).getTime() / 1000) * 1000;
                     var timestamp_gte = store.getState().timerange[0];
                     timestamp_gte = timestamp_lte - (timestamp_lteOld - timestamp_gte);
-                    var timestamp_readiable = new Date(timestamp_gte).toLocaleString() + " - " + new Date(timestamp_lte).toLocaleString();
+                    var timestamp_readiable = parseTimestamp(new Date(timestamp_gte)) + " - " + parseTimestamp(new Date(timestamp_lte));
                     store.dispatch(setTimerange([timestamp_gte, timestamp_lte, timestamp_readiable]))
                 }
                 console.info("setting auto refresh every " + refreshTime + " ms.");
@@ -242,7 +260,7 @@ class timerangeBar extends Component {
             var timestamp_lte = Math.round((new Date()).getTime() / 1000) * 1000;
             var timestamp_gte = store.getState().timerange[0];
             timestamp_gte = timestamp_lte - (timestamp_lteOld - timestamp_gte);
-            var timestamp_readiable = new Date(timestamp_gte).toLocaleString() + " - " + new Date(timestamp_lte).toLocaleString();
+            var timestamp_readiable = parseTimestamp(new Date(timestamp_gte)) + " - " + parseTimestamp(new Date(timestamp_lte));
             store.dispatch(setTimerange([timestamp_gte, timestamp_lte, timestamp_readiable]))
         }
         refresh();
@@ -304,7 +322,7 @@ class timerangeBar extends Component {
     setToNow() {
         var timestamp_gte = store.getState().timerange[0];
         var timestamp_lte = new Date();
-        var timestamp_readiable = new Date(timestamp_gte).toLocaleString() + " - " + new Date(timestamp_lte).toLocaleString();
+        var timestamp_readiable = parseTimestamp(new Date(timestamp_gte)) + " - " + parseTimestamp(new Date(timestamp_lte));
 
         store.dispatch(setTimerange([timestamp_gte, timestamp_lte, timestamp_readiable]));
 
@@ -317,7 +335,7 @@ class timerangeBar extends Component {
     moveTimerangeForward(event) {
         var timestamp_gte = store.getState().timerange[0] - (store.getState().timerange[1] - store.getState().timerange[0]);
         var timestamp_lte = store.getState().timerange[1];
-        var timestamp_readiable = new Date(timestamp_gte).toLocaleString() + " - " + new Date(timestamp_lte).toLocaleString();
+        var timestamp_readiable = parseTimestamp(new Date(timestamp_gte)) + " - " + parseTimestamp(new Date(timestamp_lte));
 
         this.setState({
             timerange: timestamp_readiable,
@@ -331,7 +349,7 @@ class timerangeBar extends Component {
         var timestamp_gte = store.getState().timerange[0];
         var timestamp_lte = store.getState().timerange[1] + (store.getState().timerange[1] - store.getState().timerange[0]);
 
-        var timestamp_readiable = new Date(timestamp_gte).toLocaleString() + " - " + new Date(timestamp_lte).toLocaleString();
+        var timestamp_readiable = parseTimestamp(new Date(timestamp_gte)) + " - " + parseTimestamp(new Date(timestamp_lte));
 
         this.setState({
             timerange: timestamp_readiable
@@ -344,7 +362,7 @@ class timerangeBar extends Component {
 
     //set timerange
     changeTimerange(timestamp_gte, timestamp_lte) {
-        var timestamp_readiable = new Date(Math.trunc(timestamp_gte)).toLocaleString() + " - " + new Date(Math.trunc(timestamp_lte)).toLocaleString();
+        var timestamp_readiable = parseTimestamp(new Date(Math.trunc(timestamp_gte))) + " - " + parseTimestamp(new Date(Math.trunc(timestamp_lte)));
         this.setState({
             timerange: timestamp_readiable,
             isHistory: false
@@ -361,31 +379,31 @@ class timerangeBar extends Component {
         var timestamp_lte = new Date();
         if (timerange === "Last 6 hours") {
             timestamp_gte = (Math.round(timestamp_lte.getTime() / 1000) - (6 * 3600)) * 1000;
-            timerange = new Date(Math.trunc(timestamp_gte)).toLocaleString() + " + 6 hours";
+            timerange = parseTimestamp(new Date(Math.trunc(timestamp_gte))) + " + 6 hours";
         }
         else if (timerange === "Last 12 hours") {
             timestamp_gte = (Math.round(timestamp_lte.getTime() / 1000) - (12 * 3600)) * 1000;
-            timerange = new Date(Math.trunc(timestamp_gte)).toLocaleString() + " + 12 hours";
+            timerange = parseTimestamp(new Date(Math.trunc(timestamp_gte))) + " + 12 hours";
         }
         else if (timerange === "Last 1 day") {
             timestamp_gte = (Math.round(timestamp_lte.getTime() / 1000) - (24 * 3600)) * 1000;
-            timerange = new Date(Math.trunc(timestamp_gte)).toLocaleString() + " + 1 day";
+            timerange = parseTimestamp(new Date(Math.trunc(timestamp_gte))) + " + 1 day";
         }
         else if (timerange === "Last 3 days") {
             timestamp_gte = (Math.round(timestamp_lte.getTime() / 1000) - (72 * 3600)) * 1000;
-            timerange = new Date(Math.trunc(timestamp_gte)).toLocaleString() + " + 3 days";
+            timerange = parseTimestamp(new Date(Math.trunc(timestamp_gte))) + " + 3 days";
         }
         else if (timerange === "Last 15 min") {
             timestamp_gte = (Math.round(timestamp_lte.getTime() / 1000) - (15 * 60)) * 1000;
-            timerange = new Date(Math.trunc(timestamp_gte)).toLocaleString() + " + 15 min";
+            timerange = parseTimestamp(new Date(Math.trunc(timestamp_gte))) + " + 15 min";
         }
         else if (timerange === "Last 5 min") {
             timestamp_gte = (Math.round(timestamp_lte.getTime() / 1000) - (5 * 60)) * 1000;
-            timerange = new Date(Math.trunc(timestamp_gte)).toLocaleString() + " + 5 min";
+            timerange = parseTimestamp(new Date(Math.trunc(timestamp_gte))) + " + 5 min";
         }
         else if (timerange === "Last 1 hour") {
             timestamp_gte = (Math.round(timestamp_lte.getTime() / 1000) - (3600)) * 1000;
-            timerange = new Date(Math.trunc(timestamp_gte)).toLocaleString() + " + 1 hour";
+            timerange = parseTimestamp(new Date(Math.trunc(timestamp_gte))) + " + 1 hour";
         }
         else if (timerange === "Today") {
             timestamp_gte = new Date();
@@ -505,7 +523,7 @@ class timerangeBar extends Component {
         // const aws =store.getState().user.aws;
         let sipUserSwitch = <div />;
         var name = window.location.pathname.substr(1);
-       
+
         return (
             <div id="popup">
                 <div className="d-flex justify-content-between">
@@ -555,7 +573,8 @@ class timerangeBar extends Component {
                                             <p>From:</p>
                                             <Datetime closeOnTab
                                                 closeOnSelect
-                                                timeFormat="HH:mm:ss"
+                                                timeFormat={this.state.timeFormat}
+                                                dateFormat={this.state.dateFormat}
                                                 className="timestamp_gteInput"
                                                 input={true}
                                                 onBlur={this.focousOutGte}
@@ -564,7 +583,8 @@ class timerangeBar extends Component {
                                             <p>To: <button className="link" onClick={this.setToNow}>(now)</button></p>
                                             <Datetime closeOnTab
                                                 closeOnSelect
-                                                timeFormat="HH:mm:ss"
+                                                timeFormat={this.state.timeFormat}
+                                                dateFormat={this.state.dateFormat}
                                                 onBlur={this.focousOutLte}
                                                 onChange={this.focousOutLte}
                                                 defaultValue={new Date(this.state.timestamp_lte)}
