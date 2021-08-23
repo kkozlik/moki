@@ -76,13 +76,11 @@ echo "Restarting nginx server"
 systemctl -q restart nginx
 
 %preun
-systemctl -q stop moki-client
-systemctl -q disable moki-client
+%systemd_preun moki-client.service
 
 %postun
 rm -rf %{buildroot}/usr/share/Moki/client
-# reload systemd since moki-client was removed
-systemctl daemon-reload
+%systemd_postun_with_restart moki-client.service
 
 %files
 %defattr(-,%{moki_user},%{moki_group})
