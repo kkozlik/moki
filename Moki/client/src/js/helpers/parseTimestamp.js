@@ -1,8 +1,9 @@
 import storePersistent from "../store/indexPersistent";
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 export const parseTimestamp = (timestamp) => {       
         var aws = storePersistent.getState().user.aws;
+        //format is stored in json file
         if (aws !== true) {
                 var timeFormat = "";
                 var dateFormat = "";
@@ -18,10 +19,15 @@ export const parseTimestamp = (timestamp) => {
                 }
 
                 var format = dateFormat + " " + timeFormat;
-
                 return moment(timestamp).format(format);
         }
+        //format is stored in user profile
         else {
-                return new Date(timestamp).toLocaleString();
+                var userprefs = storePersistent.getState().profile[0].userprefs;
+                var format = userprefs.date_format + " " + userprefs.time_format;
+
+                //return moment(timestamp).format(format);
+                return moment.tz(timestamp, userprefs.timezone).format(format);
+
         }
 }

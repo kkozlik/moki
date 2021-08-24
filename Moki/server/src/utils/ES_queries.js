@@ -96,8 +96,13 @@ async function insertES(indexName, event, res) {
 ES update query
 */
 async function updateES(indexName, queries, script, params, res) {
+  console.log("queries");
+  console.log(queries);
   return new Promise(function (resolve, reject) {
     const client = connectToES(res);
+
+    console.log("{index: " + indexName + ",type: '_doc', refresh: true, body: {query: { bool: { must:" + JSON.stringify(queries) + "} },'script': { 'source': " + JSON.stringify(script) + ",'lang': 'painless','params': " + JSON.stringify(params) + "}}");
+
     client.updateByQuery({
       index: indexName,
       type: '_doc',
@@ -108,10 +113,10 @@ async function updateES(indexName, queries, script, params, res) {
             must: queries
           }
         },
-        "script": {
-          "source": script,
-          "lang": "painless",
-          "params": params
+        script: {
+          source: script,
+          lang: "painless",
+          params: params
         }
       }
     }, (error, response) => {

@@ -362,6 +362,7 @@ p {
     align-items: flex-end;
     z-index: 9999;
     position: fixed;
+    min-height: 38px;
 }
 
 h5 {

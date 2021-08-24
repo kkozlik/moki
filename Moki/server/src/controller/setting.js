@@ -1,8 +1,7 @@
 // setting.js hold the setting endpoints
 
 const fs = require('fs');
-const { exec
-} = require('child_process');
+const { exec } = require('child_process');
 const { newHTTPError } = require('./index');
 const { cfg, setMonitorVersion } = require('../modules/config');
 const { connectToES } = require('../modules/elastic');
@@ -209,7 +208,9 @@ class SettingController {
     if (user.jwtbit === 0) {
       condition = {
         index: 'filters',
-        type: '_doc' };}
+        type: '_doc'
+      };
+    }
     //site admin, show only domain and encrypt filter
     else if (user.jwtbit === 1) {
       condition = {
@@ -224,7 +225,9 @@ class SettingController {
               ]
             }
           }
-        } }; }
+        }
+      };
+    }
     //user, show domain, encrypt and user filter
     else {
       condition = {
@@ -250,7 +253,8 @@ class SettingController {
         res.json(400, error);
       }
       else {
-        res.json(200, response);}
+        res.json(200, response);
+      }
     });
   }
 
@@ -541,16 +545,16 @@ class SettingController {
     jsonData["m_version"] = monitorVersion;
 
     //write it to monitor file
-    fs.writeFile(cfg.fileMonitor, JSON.stringify(jsonData, null, 2), function (error) {
+    fs.writeFile(cfg.fileMonitor, JSON.stringify(jsonData), function (error) {
       if (error) {
-        respond.status(400).send({"msg": error });
+        respond.status(400).send({ "msg": error });
       }
       console.info("Writing new config to file. " + JSON.stringify(jsonData));
       //call check config script
       exec("sudo /usr/sbin/abc-monitor-check-config", function (error, stdout, stderr) {
         if (error) {
           //write old data back
-          fs.writeFile(cfg.fileMonitor, JSON.stringify(jsonDataOld), null, 2);
+          fs.writeFile(cfg.fileMonitor, JSON.stringify(jsonDataOld));
           console.error("Config checked failed. Writing old config back. " + stderr);
           respond.status(400).send({
             "msg": stderr

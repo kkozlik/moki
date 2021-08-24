@@ -113,8 +113,6 @@ export default class listChart extends Component {
         this.handleOnSelect = this.handleOnSelect.bind(this);
         this.handleOnSelectAll = this.handleOnSelectAll.bind(this);
         this.getRecord = this.getRecord.bind(this);
-        storePersistent.subscribe(() => constructor());
-
     }
 
     static getDerivedStateFromProps(nextProps, prevState) {
@@ -804,19 +802,15 @@ export default class listChart extends Component {
             pageButtonRenderer,
             sizePerPage: this.state.count
         };
+
         return (
             <div key={"table" + this.props.name} className="chart">
-
                 {columnsList &&
                     <ToolkitProvider
                         keyField="_id"
-                        data={
-                            this.state.data
-                        }
+                        data={ Array.isArray(this.state.data) ? this.state.data : [] }
                         columnToggle
-                        columns={
-                            this.state.columns
-                        }
+                        columns={ this.state.columns  }
                         noDataIndication={() => <NoDataIndication />}>
 
                         {
