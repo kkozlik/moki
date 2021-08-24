@@ -6,7 +6,7 @@ import { SET_WIDTH_CHART } from "../constants/action-types";
 const initialState = {
   types: [],
   filters: [],
-  timerange: [(Math.round(new Date().getTime() / 1000) - (6 * 3600)) * 1000, (Math.round(new Date().getTime() / 1000)) * 1000, new Date(Math.trunc(Math.round(new Date().getTime() / 1000) - (6 * 3600)) * 1000).toLocaleString() + " + 6 hours"],
+  timerange: "",
   width: window.innerWidth
 };
 

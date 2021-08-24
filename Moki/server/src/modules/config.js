@@ -143,6 +143,19 @@ function getActualConfig() {
   });
 }
 
+//get second default
+async function getDefaults() {
+  return new Promise(function (resolve, reject) {
+    fs.readFile("/etc/abc-monitor/defaults_intuitive.json", (err, defaults) => {
+      if (err) {
+        console.error(`Problem with reading default file. ${err}`);
+        reject;
+      }
+      resolve(JSON.parse(defaults));
+    })
+  })
+}
+
 module.exports = {
   cfg: c,
   setMonitorVersion: (v) => {
@@ -154,5 +167,6 @@ module.exports = {
   },
   getActualConfig,
   isRequireJWT,
-  getWebFilter
+  getWebFilter,
+  getDefaults
 };

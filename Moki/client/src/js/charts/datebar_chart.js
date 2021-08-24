@@ -17,6 +17,7 @@ import {
 import {
     durationFormat
 } from "../helpers/durationFormat";
+import {parseTimestamp} from "../helpers/parseTimestamp";
 
 export default class datebarChart extends Component {
     constructor(props) {
@@ -152,7 +153,7 @@ export default class datebarChart extends Component {
                 var extent = d3.event.selection;
                 var timestamp_gte = xScale.invert(extent[0]);
                 var timestamp_lte = xScale.invert(extent[1]);
-                var timestamp_readiable = new Date(Math.trunc(timestamp_gte)).toLocaleString() + " - " + new Date(Math.trunc(timestamp_lte)).toLocaleString()
+                var timestamp_readiable = parseTimestamp(new Date(Math.trunc(timestamp_gte))) + " - " + parseTimestamp(new Date(Math.trunc(timestamp_lte)))
                 store.dispatch(setTimerange([timestamp_gte, timestamp_lte, timestamp_readiable]));
 
 
@@ -217,7 +218,7 @@ export default class datebarChart extends Component {
                     if (name.includes("DURATION")) {
                         value = durationFormat(d.agg.value);
                     }
-                    tooltip.select("div").html("<strong>Value:</strong> " + value + units + "</br><strong>Time: </strong>" + parseDate(timestamp)+ " + "+getTimeBucket());
+                    tooltip.select("div").html("<strong>Value:</strong> " + value + units + "</br><strong>Time: </strong>" + parseTimestamp(timestamp)+ " + "+getTimeBucket());
                 })
                 .on('mouseout', () => //tooltip.transition().style('opacity', 0));
                     tooltip.style("visibility", "hidden"))

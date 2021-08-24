@@ -227,8 +227,42 @@ class Settings extends Component {
         if (data.length !== 0) {
             // Outer loop to create parent
             for(var i = 0; i < data.length; i++) {
+                 //special case: time format
+                 if (data[i].attribute === "dateFormat") {
+                    alarms.push(
+                        <div key={data[i].attribute + "key"} className="tab ">
+                            <span className="form-inline row justify-content-start paddingBottom">
+                                <span className="col-6" >
+                                    <label> {data[i].label} </label>
+                                    {data[i].details ? <div className="smallText">{data[i].details}</div> : ""}
+                                </span>
+                                {<select className="text-left form-control form-check-input" defaultValue={data[i].value} id={data[i].attribute} restriction={JSON.stringify(data[i].restriction)} label={data[i].attribute} onChange={(e) => { this.check(e.target.getAttribute("label"), e.target.value, e.target.getAttribute("restriction")) }} >
+                                         <option value={"DD/MM/YYYY"} key={"20/12/2020"}>20/12/2020</option>
+                                         <option value={"MM/DD/YYYY"} key={"12/20/2020"}>12/20/2020</option> 
+                                         <option value={"YYYY-MM-DD"} key={"2020-20-12"}>2020-20-12</option> 
+                                         <option value={"DD-MMM-YYYY"} key={"20-Dec-2020"}>20-Dec-2020</option> 
+                                         <option value={"DD MMM, YYYY"} key={"20 Dec, 2020"}>20 Dec, 2020</option>
+                                         <option value={"MMM DD, YYYY"} key={"Dec 20, 2020"}>Dec 20, 2020</option>
+                                </select>} 
+                                </span></div>);
+                }
+                 //special case:  date format
+                else  if (data[i].attribute === "timeFormat") {
+                    alarms.push(
+                        <div key={data[i].attribute + "key"} className="tab ">
+                            <span className="form-inline row justify-content-start paddingBottom">
+                                <span className="col-6" >
+                                    <label> {data[i].label} </label>
+                                    {data[i].details ? <div className="smallText">{data[i].details}</div> : ""}
+                                </span>
+                                {<select className="text-left form-control form-check-input" defaultValue={data[i].value} id={data[i].attribute} restriction={JSON.stringify(data[i].restriction)} label={data[i].attribute} onChange={(e) => { this.check(e.target.getAttribute("label"), e.target.value, e.target.getAttribute("restriction")) }} >
+                                         <option value={"hh:mm:ss A"} key={"9:40 AM"}>7:40:20 AM</option>
+                                         <option value={"HH:mm:ss"} key={"9:40:20"}>19:40:20</option> 
+                                </select>} 
+                            </span></div>);
+                }
                 //special case: number restriction
-                if (data[i].restriction && (data[i].restriction.min || data[i].restriction.max)) {
+                else if (data[i].restriction && (data[i].restriction.min || data[i].restriction.max)) {
                     alarms.push(
                         <div key={data[i].attribute + "key"} className="tab ">
                             <span className="form-inline row justify-content-start paddingBottom">

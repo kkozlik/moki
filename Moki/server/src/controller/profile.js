@@ -1,3 +1,4 @@
+
 const {
   searchES,
   newIndexES,
@@ -6,8 +7,9 @@ const {
   updateES,
   deleteES
 } = require('../utils/ES_queries');
+const moment = require('moment-timezone');
 const AdminController = require('./admin');
-
+const { getDefaults } = require('../modules/config');
 const indexName = "profiles";
 
 class ProfileController {
@@ -99,6 +101,8 @@ class ProfileController {
     });
   }
 
+
+
   //get setings from ES
   //users index
   //req.body: attribute 
@@ -125,6 +129,7 @@ class ProfileController {
                 "monitor_name": { "type": "text", "index": "false" },
                 "timezone": { "type": "text", "index": "false" },
                 "time_format": { "type": "text", "index": "false" },
+                "date_format": { "type": "text", "index": "false" },
                 "mode": { "type": "text", "index": "false" },
                 "validation_code": { "type": "text", "index": "false" }
               }
@@ -134,14 +139,15 @@ class ProfileController {
 
         if (response === "ok") {
           //add new default user profile
+          //get timezone from server
+          var tz = new Date().getTimezoneOffset() === 0 ? "Etc/GMT+"+new Date().getTimezoneOffset() : "Etc/GMT"+new Date().getTimezoneOffset();
+
+          //get user defaults config
+          let jsonDefaults = await getDefaults();
+          jsonDefaults.userprefs.timezone = tz;
           response = await insertES(indexName, {
             "tls-cn": "default",
-            "userprefs": {
-              "timezone": "",
-              "time_format": "en-US",
-              "validation_code": "",
-              "mode": "plain"
-            }
+            "userprefs": jsonDefaults.userprefs
           }, res);
 
           if (response === "ok") {
@@ -155,6 +161,7 @@ class ProfileController {
             newIndex = true;
           }
           console.info("Created new profile index a inserted default values.");
+
         }
         else {
           res.status(400).send({

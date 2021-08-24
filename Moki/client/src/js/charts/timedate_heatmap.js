@@ -8,6 +8,7 @@ import emptyIcon from "../../styles/icons/empty_small.png";
 import { getTimeBucket, getTimeBucketInt} from "../helpers/getTimeBucket";
 import {ColorsRedGreen} from "../helpers/style/ColorsRedGreen";
 import { ColorsGreen} from "../helpers/style/ColorsGreen";
+import {parseTimestamp} from "../helpers/parseTimestamp";
 
 export default class timedateHeatmap extends Component {
     constructor(props) {
@@ -155,7 +156,7 @@ export default class timedateHeatmap extends Component {
                 var extent = d3.event.selection;
                 var timestamp_gte = Math.round(xScale.invert(extent[0]));
                 var timestamp_lte = Math.round(xScale.invert(extent[1]));
-                var timestamp_readiable = new Date(Math.trunc(timestamp_gte)).toLocaleString() + " - " + new Date(Math.trunc(timestamp_lte)).toLocaleString()
+                var timestamp_readiable = parseTimestamp(new Date(Math.trunc(timestamp_gte))) + " - " + parseTimestamp(new Date(Math.trunc(timestamp_lte)))
                 store.dispatch(setTimerange([timestamp_gte, timestamp_lte, timestamp_readiable]));
 
             }
@@ -262,7 +263,7 @@ export default class timedateHeatmap extends Component {
                         if (d.value === 5) value = "Partially Available";
                     }
 
-                    tooltip.select("div").html("<strong>" + d.attr2.charAt(0).toUpperCase() + d.attr2.slice(1) + ": </strong>" + value + units + "<br/><strong>Time: </strong>" + new Date(d.attr1).toLocaleString()+ " + "+getTimeBucket());
+                    tooltip.select("div").html("<strong>" + d.attr2.charAt(0).toUpperCase() + d.attr2.slice(1) + ": </strong>" + value + units + "<br/><strong>Time: </strong>" + parseTimestamp(new Date(d.attr1))+ " + "+getTimeBucket());
 
 
                   /*  if (d3.mouse(d3.event.target)[0] > window.innerWidth - 600) {

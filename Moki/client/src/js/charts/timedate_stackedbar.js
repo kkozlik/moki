@@ -9,6 +9,7 @@ import { setTimerange } from "../actions/index";
 import { createFilter } from '@moki-client/gui';
 import { getTimeBucket, getTimeBucketInt } from "../helpers/getTimeBucket";
 import emptyIcon from "../../styles/icons/empty_small.png";
+import {parseTimestamp} from "../helpers/parseTimestamp";
 
 /*
 format:
@@ -148,7 +149,7 @@ export default class StackedChart extends Component {
                 var timestamp_gte = Math.round(xScale.invert(extent[0]));
                 var timestamp_lte = Math.round(xScale.invert(extent[1]));
 
-                var timestamp_readiable = new Date(Math.trunc(timestamp_gte)).toLocaleString() + " - " + new Date(Math.trunc(timestamp_lte)).toLocaleString();
+                var timestamp_readiable = parseTimestamp(new Date(Math.trunc(timestamp_gte))) + " - " + parseTimestamp(new Date(Math.trunc(timestamp_lte)));
                 store.dispatch(setTimerange([timestamp_gte, timestamp_lte, timestamp_readiable]));
 
             }
@@ -291,7 +292,7 @@ export default class StackedChart extends Component {
                     // .style("left", this.getAttribute("x") + 300 + "px")
                     //   .style("top", this.getAttribute("y") + 300 + "px");
 
-                    tooltip.select("div").html("<strong>Time: </strong> " + parseDate(d.data.time) + " + " + getTimeBucket() + "<br/><strong>Value:</strong> " + d3.format(',')(d[1] - d[0]) + units + "<br/><strong>Type: </strong>" + this.parentNode.getAttribute("type") + "<br/> ");
+                    tooltip.select("div").html("<strong>Time: </strong> " + parseTimestamp(d.data.time) + " + " + getTimeBucket() + "<br/><strong>Value:</strong> " + d3.format(',')(d[1] - d[0]) + units + "<br/><strong>Type: </strong>" + this.parentNode.getAttribute("type") + "<br/> ");
                     d3.select(this).style("cursor", "pointer");
 
 
