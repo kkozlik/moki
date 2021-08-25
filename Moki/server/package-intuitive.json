@@ -27,6 +27,7 @@
   "dependencies": {
     "@moki-server/server": "git+ssh://git@github.com/intuitivelabs/moki-server-intuitive.git#master",
     "body-parser": "^1.18.3",
+    "moment-timezone": "^0.5.33",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "ejs": "^3.1.5",
