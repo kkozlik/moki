@@ -113,6 +113,7 @@ class ProfileController {
       const tls = user["tls-cn"];
       const domain = user["domain"];
       let newIndex = false;
+      let jsonDefaults = await getDefaults();
 
       //check if it is neccesary to create new index
       const existIndex = await existsIndexES(indexName, res);
@@ -137,46 +138,48 @@ class ProfileController {
           }
         }, res);
 
-        if (response === "ok") {
-          //add new default user profile
-          //get timezone from server
-          var tz = new Date().getTimezoneOffset() === 0 ? "Etc/GMT+"+new Date().getTimezoneOffset() : "Etc/GMT"+new Date().getTimezoneOffset();
-
-          //get user defaults config
-          let jsonDefaults = await getDefaults();
-          jsonDefaults.userprefs.timezone = tz;
-          response = await insertES(indexName, {
-            "tls-cn": "default",
-            "userprefs": jsonDefaults.userprefs
-          }, res);
-
-          if (response === "ok") {
-            //add new default domain profile
-            response = await insertES(indexName, {
-              "domain": "default",
-              "userprefs": {
-                "monitor_name": "Monitor"
-              }
-            }, res);
-            newIndex = true;
-          }
-          console.info("Created new profile index a inserted default values.");
-
-        }
-        else {
+        if (response !== "ok") {
           res.status(400).send({
-            "msg": "Problem with creating default profile. " + JSON.stringify(response)
+            "msg": "Problem with creating profile index. " + JSON.stringify(response)
           });
           return;
+        }
+        else {
+          newIndex = true;
         }
       }
       if (existIndex || newIndex) {
         //search for user settings
         let userProfile = await searchES(indexName, [{ query_string: { "query": "event.tls-cn:" + tls } }], res);
-        //if nothing, search for defaults
+
+        //default user profile
+        //get timezone from server
+        var tz = new Date().getTimezoneOffset() === 0 ? "Etc/GMT+" + new Date().getTimezoneOffset() : "Etc/GMT" + new Date().getTimezoneOffset();
+
+        //get user defaults config
+        jsonDefaults.userprefs.timezone = tz;
+
+        let userProfileDefault = {
+          "tls-cn": "default",
+          "userprefs": jsonDefaults.userprefs
+        };
+
+
+        //no user profile, use default
         if (userProfile.hits.hits.length === 0) {
-          userProfile = await searchES(indexName, [{ query_string: { "query": "event.tls-cn:default" } }], res);
+          userProfile = userProfileDefault;
         }
+        //check if all parameters in default profile are also in user profile
+        else {
+          userProfile = userProfile.hits.hits[0]._source.event;
+          let keys = Object.keys(userProfileDefault.userprefs);
+          for (let i = 0; i < keys.length; i++) {
+            if (!userProfile.userprefs[keys[i]]) {
+              userProfile.userprefs[keys[i]] = userProfileDefault.userprefs[keys[i]];
+            }
+          }
+        }
+
 
         let domainProfile;
         //domain is undefined for admin
@@ -184,14 +187,26 @@ class ProfileController {
           domainProfile = await searchES(indexName, [{ query_string: { "query": "event.domain:" + domain } }], res);
         }
 
-        //if nothing, return default where domain and tls-cn == "default"
-        if (domain === "N/A" || domainProfile.hits.hits.length === 0) {
-          domainProfile = await searchES(indexName, [
-            { query_string: { "query": "event.domain:default" } }
-          ], res);
+        let defaultDomainProfile = {
+          "domain": "default",
+          "userprefs": jsonDefaults.domainprefs
         }
 
-        res.json(200, [userProfile.hits.hits[0]._source.event, domainProfile.hits.hits[0]._source.event]);
+        //if nothing, return default where domain and tls-cn == "default"
+        if (domain === "N/A" || domainProfile.hits.hits.length === 0) {
+          domainProfile = defaultDomainProfile;
+        } //check if all parameters in default profile are also in user profile
+        else {
+          domainProfile = domainProfile.hits.hits[0]._source.event;
+          keys = Object.keys(defaultDomainProfile.userprefs);
+          for (i = 0; i < keys.length; i++) {
+            if (!domainProfile.userprefs[keys[i]]) {
+              domainProfile.userprefs[keys[i]] = defaultDomainProfile.userprefs[keys[i]];
+            }
+          }
+        }
+
+        res.json(200, [userProfile, domainProfile]);
       }
       else {
         res.status(400).send({
