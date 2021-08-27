@@ -15,7 +15,8 @@ import { exportJSON } from "./export";
 import { getPcap } from './getPcap';
 import { exclude } from './exclude';
 import storePersistent from "../store/indexPersistent";
-import {parseTimestamp} from "../helpers/parseTimestamp";
+import { parseTimestamp } from "../helpers/parseTimestamp";
+import SimpleSequenceDiagram from "../charts/simpleSequenceDiagram";
 
 /*
 create new filter based on html tag with field with attribute as name 
@@ -27,7 +28,7 @@ export const doFilter = (event) => {
 create raw new filter without changing it's value
 */
 export const doFilterRaw = (event) => {
-    createFilter( event.currentTarget.getAttribute('value'));
+    createFilter(event.currentTarget.getAttribute('value'));
 }
 
 /*
@@ -212,16 +213,28 @@ export function tableColumns(dashboard, tags) {
 
                         {ob.attrs.filenameDownload && <a href={"/sequenceDiagram/" + ob.attrs.filenameDownload} target="_blank" rel="noopener noreferrer"><img className="icon" alt="viewIcon" src={viewIcon} title="view PCAP" /></a>
                         }
-
+                        {ob.dbg.msg_trace && <Popup trigger={<img className="icon" alt="viewIcon" src={viewIcon} title="diagram" />} modal>
+                            {close => (
+                                <div className="Advanced">
+                                    <button className="close" onClick={close}>
+                                        &times;
+                                    </button>
+                                    <div className="contentAdvanced" style={{ "padding": "0px" }}>
+                                        <SimpleSequenceDiagram data={ob} />
+                                    </div>
+                                </div>
+                            )}
+                        </Popup>
+                        }
                         {<Popup trigger={<img className="icon" alt="detailsIcon" src={detailsIcon} title="details" />} modal>
                             {close => (
                                 <div className="Advanced">
                                     <button className="link close export" onClick={() => exportJSON(ob)}>
                                         Export json
-                            </button>
+                                    </button>
                                     <button className="close" onClick={close}>
                                         &times;
-                            </button>
+                                    </button>
                                     <div className="contentAdvanced">
                                         <pre> <div dangerouslySetInnerHTML={{ __html: syntaxHighlight(ob) }} /></pre>
 
@@ -415,10 +428,10 @@ export function tableColumns(dashboard, tags) {
                             <div className="Advanced">
                                 <button className="link close export" onClick={() => exportJSON(ob)}>
                                     Export json
-                            </button>
+                                </button>
                                 <button className="close" onClick={close}>
                                     &times;
-                            </button>
+                                </button>
                                 <div className="contentAdvanced">
                                     <pre> <div dangerouslySetInnerHTML={{ __html: syntaxHighlight(ob) }} /></pre>
 
@@ -534,10 +547,10 @@ export function tableColumns(dashboard, tags) {
                             <div className="Advanced">
                                 <button className="link close export" onClick={() => exportJSON(ob)}>
                                     Export json
-                            </button>
+                                </button>
                                 <button className="close" onClick={close}>
                                     &times;
-                            </button>
+                                </button>
                                 <div className="contentAdvanced">
                                     <pre> <div dangerouslySetInnerHTML={{ __html: syntaxHighlight(ob) }} /></pre>
 
@@ -654,10 +667,10 @@ export function tableColumns(dashboard, tags) {
                                 <div className="Advanced">
                                     <button className="link  close export" onClick={() => exportJSON(ob)}>
                                         Export json
-                            </button>
+                                    </button>
                                     <button className="close" onClick={close}>
                                         &times;
-                            </button>
+                                    </button>
                                     <div className="contentAdvanced">
                                         <pre> <div dangerouslySetInnerHTML={{ __html: syntaxHighlight(ob) }} /></pre>
 
@@ -767,10 +780,10 @@ export function tableColumns(dashboard, tags) {
                             <div className="Advanced">
                                 <button className="link close export" onClick={() => exportJSON(ob)}>
                                     Export json
-                            </button>
+                                </button>
                                 <button className="close" onClick={close}>
                                     &times;
-                            </button>
+                                </button>
                                 <div className="contentAdvanced">
                                     <pre> <div dangerouslySetInnerHTML={{ __html: syntaxHighlight(ob) }} /></pre>
 
@@ -805,13 +818,13 @@ export function tableColumns(dashboard, tags) {
                     var value = "";
                     var notvalue = "";
                     for (var i = 0; i < ob.exceeded.length; i++) {
-                        if(i === 0 ){
-                            value = "exceeded: "+ob.exceeded[i];
-                            notvalue  = "NOT (exceeded: "+ob.exceeded[i];
+                        if (i === 0) {
+                            value = "exceeded: " + ob.exceeded[i];
+                            notvalue = "NOT (exceeded: " + ob.exceeded[i];
                         }
                         else {
-                            value = value + " AND exceeded:"+ob.exceeded[i];
-                            notvalue = notvalue + " AND exceeded:"+ob.exceeded[i];
+                            value = value + " AND exceeded:" + ob.exceeded[i];
+                            notvalue = notvalue + " AND exceeded:" + ob.exceeded[i];
                         }
                     }
                     notvalue = notvalue + ")";
@@ -859,13 +872,13 @@ export function tableColumns(dashboard, tags) {
                     var value = "";
                     var notvalue = "";
                     for (var i = 0; i < ob["exceeded-by"].length; i++) {
-                        if(i === 0 ){
-                            value = "exceeded-by: "+ob["exceeded-by"][i];
-                            notvalue  = "NOT (exceeded-by: "+ob["exceeded-by"][i];
+                        if (i === 0) {
+                            value = "exceeded-by: " + ob["exceeded-by"][i];
+                            notvalue = "NOT (exceeded-by: " + ob["exceeded-by"][i];
                         }
                         else {
-                            value = value + " AND exceeded-by:"+ob["exceeded-by"][i];
-                            notvalue = notvalue + " AND exceeded-by:"+ob["exceeded-by"][i];
+                            value = value + " AND exceeded-by:" + ob["exceeded-by"][i];
+                            notvalue = notvalue + " AND exceeded-by:" + ob["exceeded-by"][i];
                         }
                     }
                     notvalue = notvalue + ")";
@@ -898,10 +911,10 @@ export function tableColumns(dashboard, tags) {
                                 <div className="Advanced">
                                     <button className="link  close export" onClick={() => exportJSON(ob)}>
                                         Export json
-                            </button>
+                                    </button>
                                     <button className="close" onClick={close}>
                                         &times;
-                            </button>
+                                    </button>
                                     <div className="contentAdvanced">
                                         <pre> <div dangerouslySetInnerHTML={{ __html: syntaxHighlight(ob) }} /></pre>
 
@@ -945,7 +958,7 @@ export function tableColumns(dashboard, tags) {
                 </span>
             }
         }, {
-            dataField: '_source.attrs.from', 
+            dataField: '_source.attrs.from',
             text: 'FROM',
             sort: true,
             editable: false,
@@ -1016,17 +1029,29 @@ export function tableColumns(dashboard, tags) {
                     }
                     <button className="noFormatButton" onClick={() => downloadAll(ob)} file={ob.attrs.filenameDownload} data={obj}>  <img className="icon" alt="downloadIcon" src={downloadIcon} title="download all" /></button>
 
-                    {ob.attrs.filenameDownload && <a href={"/sequenceDiagram/" + ob.attrs.filenameDownload} target="_blank" rel="noopener noreferrer"><img className="icon" alt="viewIcon" src={viewIcon} title="view PCAP" /></a>
+                    {ob.attrs.filenameDownload && <a href={"/sequenceDiagram/" + ob.attrs.filenameDownload} target="_blank" rel="noopener noreferrer"><img className="icon" alt="viewIcon" src={viewIcon} title="view PCAP" /></a>}
+                    {ob.dbg.msg_trace && <Popup trigger={<img className="icon" alt="viewIcon" src={viewIcon} title="diagram" />} modal>
+                        {close => (
+                            <div className="Advanced">
+                                <button className="close" onClick={close}>
+                                    &times;
+                                </button>
+                                <div className="contentAdvanced" style={{ "padding": "0px" }}>
+                                    <SimpleSequenceDiagram data={ob} />
+                                </div>
+                            </div>
+                        )}
+                    </Popup>
                     }
                     {<Popup trigger={<img className="icon" alt="detailsIcon" src={detailsIcon} title="details" />} modal>
                         {close => (
                             <div className="Advanced">
                                 <button className="link  close export" onClick={() => exportJSON(ob)}>
                                     Export json
-                            </button>
+                                </button>
                                 <button className="close" onClick={close}>
                                     &times;
-                            </button>
+                                </button>
                                 <div className="contentAdvanced">
                                     <pre> <div dangerouslySetInnerHTML={{ __html: syntaxHighlight(ob) }} /></pre>
 
@@ -1104,10 +1129,10 @@ export function tableColumns(dashboard, tags) {
                             <div className="Advanced">
                                 <button className="link close export" onClick={() => exportJSON(ob)}>
                                     Export json
-                            </button>
+                                </button>
                                 <button className="close" onClick={close}>
                                     &times;
-                            </button>
+                                </button>
                                 <div className="contentAdvanced">
                                     <pre> <div dangerouslySetInnerHTML={{ __html: syntaxHighlight(ob) }} /></pre>
 
@@ -1214,15 +1239,28 @@ export function tableColumns(dashboard, tags) {
                     {ob.attrs.filenameDownload && <a href={"/sequenceDiagram/" + ob.attrs.filenameDownload} target="_blank" rel="noopener noreferrer"><img className="icon" alt="viewIcon" src={viewIcon} title="view PCAP" /></a>
                     }
 
+                    {ob.dbg.msg_trace && <Popup trigger={<img className="icon" alt="viewIcon" src={viewIcon} title="diagram" />} modal>
+                        {close => (
+                            <div className="Advanced">
+                                <button className="close" onClick={close}>
+                                    &times;
+                                </button>
+                                <div className="contentAdvanced" style={{ "padding": "0px" }}>
+                                    <SimpleSequenceDiagram data={ob} />
+                                </div>
+                            </div>
+                        )}
+                    </Popup>
+                    }
                     {<Popup trigger={<img className="icon" alt="detailsIcon" src={detailsIcon} title="details" />} modal>
                         {close => (
                             <div className="Advanced">
                                 <button className="link close export" onClick={() => exportJSON(ob)}>
                                     Export json
-                            </button>
+                                </button>
                                 <button className="close" onClick={close}>
                                     &times;
-                            </button>
+                                </button>
                                 <div className="contentAdvanced">
                                     <pre> <div dangerouslySetInnerHTML={{ __html: syntaxHighlight(ob) }} /></pre>
 
@@ -1336,10 +1374,10 @@ export function tableColumns(dashboard, tags) {
                             <div className="Advanced">
                                 <button className="link close export" onClick={() => exportJSON(ob)}>
                                     Export json
-                            </button>
+                                </button>
                                 <button className="close" onClick={close}>
                                     &times;
-                            </button>
+                                </button>
                                 <div className="contentAdvanced">
                                     <pre> <div dangerouslySetInnerHTML={{ __html: syntaxHighlight(ob) }} /></pre>
 
@@ -1420,10 +1458,10 @@ export function tableColumns(dashboard, tags) {
                             <div className="Advanced">
                                 <button className="link close export" onClick={() => exportJSON(ob)}>
                                     Export json
-                            </button>
+                                </button>
                                 <button className="close" onClick={close}>
                                     &times;
-                            </button>
+                                </button>
                                 <div className="contentAdvanced">
                                     <pre> <div dangerouslySetInnerHTML={{ __html: syntaxHighlight(ob) }} /></pre>
 
@@ -1502,10 +1540,10 @@ export function tableColumns(dashboard, tags) {
                             <div className="Advanced">
                                 <button className="link close export" onClick={() => exportJSON(ob)}>
                                     Export json
-                            </button>
+                                </button>
                                 <button className="close" onClick={close}>
                                     &times;
-                            </button>
+                                </button>
                                 <div className="contentAdvanced">
                                     <pre> <div dangerouslySetInnerHTML={{ __html: syntaxHighlight(ob) }} /></pre>
 
@@ -1625,10 +1663,10 @@ export function tableColumns(dashboard, tags) {
                             <div className="Advanced">
                                 <button className="link close export" onClick={() => exportJSON(ob)}>
                                     Export json
-                            </button>
+                                </button>
                                 <button className="close" onClick={close}>
                                     &times;
-                            </button>
+                                </button>
                                 <div className="contentAdvanced">
                                     <pre> <div dangerouslySetInnerHTML={{ __html: syntaxHighlight(ob) }} /></pre>
 
@@ -1687,10 +1725,10 @@ export function tableColumns(dashboard, tags) {
                             <div className="Advanced">
                                 <button className="link close export" onClick={() => exportJSON(ob)}>
                                     Export json
-                            </button>
+                                </button>
                                 <button className="close" onClick={close}>
                                     &times;
-                            </button>
+                                </button>
                                 <div className="contentAdvanced">
                                     <pre> <div dangerouslySetInnerHTML={{ __html: syntaxHighlight(ob) }} /></pre>
 
@@ -1806,10 +1844,10 @@ export function tableColumns(dashboard, tags) {
                             <div className="Advanced">
                                 <button className="link close export" onClick={() => exportJSON(ob)}>
                                     Export json
-                            </button>
+                                </button>
                                 <button className="close" onClick={close}>
                                     &times;
-                            </button>
+                                </button>
                                 <div className="contentAdvanced">
                                     <pre> <div dangerouslySetInnerHTML={{ __html: syntaxHighlight(ob) }} /></pre>
 

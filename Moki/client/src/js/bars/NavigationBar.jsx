@@ -128,7 +128,7 @@ class navBar extends Component {
         var navbarSettings = renderNavBar(dashboardsSettings);
         var navbarUser = renderNavBar(this.state.dashboardsUser);
         return (
-            <div id="sidebar-container" className="sidebar-expanded d-none d-md-block sticky-top">
+            <div id="sidebar-container" className="sidebar-expanded d-none d-md-block">
                 <ul className="list-group">
                     <li className="list-group-myitem sidebar-separator-title d-flex align-items-center menu-collapsed" style={{"height": "38px"}}>
                         <small className="menu-collapsed">DASHBOARDS</small>
