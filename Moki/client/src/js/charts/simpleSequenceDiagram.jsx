@@ -243,11 +243,11 @@ class SimpleSequenceDiagram extends Component {
                 <div className="col-auto" style={{ "marginRight": "5px" }}>
                     <div style={{ "width": "100%", "marginTop": "0px" }} id="simpleSequenceDiagram"></div>
                 </div>
-                <div className="col-auto" style={{ "marginRight": "5px", "marginTop": "20px" }}>
+                <div className="col" style={{ "marginRight": "5px", "marginTop": "20px" }}>
                     <span className="preStyle" >
                         {eventDetails.map(attr => (
                             deep_value(dataAll, attr) !== "" ?
-                                <div><b>{attr}: </b><span>{deep_value(dataAll, attr)}</span></div>
+                                <div><b>{attr}: </b><span className="rowSplit">{deep_value(dataAll, attr)}</span></div>
                                 : ""
                         ))}
                     </span>
