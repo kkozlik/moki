@@ -13,6 +13,13 @@
     min-width: fit-content;
 }
 
+.rowSplit {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    hyphens: auto;
+    white-space: normal; 
+}
+
 .chart {
     background-color: #fff;
     background-clip: padding-box;
@@ -164,13 +171,14 @@
 }
 
 
+
 /* popup window */
 
 .contentAdvanced {
     padding: 20px;
     height: fit-content;
-    width: fit-content;
     overflow: hidden;
+    max-width: 900px;
 }
 
 .iconsStoredFilter {
@@ -574,7 +582,7 @@ select {
     padding: 0 !important;
     margin: 0 !important;
     -webkit-appearance: none;
-    -moz-appearance: none;
+  -moz-appearance: none;
 }
 
 
