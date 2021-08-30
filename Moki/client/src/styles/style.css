@@ -228,7 +228,7 @@
     /* width: intrinsic;           /* Safari/WebKit uses a non-standard name */
     width: -moz-available;
     /* Firefox/Gecko */
-    width: -webkit-fill-available;
+    width:  auto;
     /* Chrome */
 }
 
@@ -273,6 +273,7 @@ body {
     box-sizing: content-box;
     min-width: fit-content;
     color: black !important;
+    background-color: #f6f6f6;
 }
 
 .col {
@@ -572,6 +573,8 @@ select {
     height: 30px !important;
     padding: 0 !important;
     margin: 0 !important;
+    -webkit-appearance: none;
+    -moz-appearance: none;
 }
 
 
@@ -826,6 +829,14 @@ input[type=text] {
     width: 300px !important;
     padding: .2rem !important;
     height: 30px;
+}
+
+.form-check-input {
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: .25rem;
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
 }
 
 .paddingBottom {
@@ -1336,12 +1347,12 @@ input {
     font-size: 1rem;
     line-height: 1.5;
     color: #495057;
-    width: 94%;
     background-color: #fff;
     background-clip: padding-box;
     border: 1px solid #ced4da;
     border-radius: .25rem;
     box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    margin-right: 10px;
 }
 
 @media (max-width: 1365px) {
