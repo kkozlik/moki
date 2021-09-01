@@ -30,6 +30,7 @@ module.exports = () => {
     .get('/layout', SettingController.loadGUILayout)
     .get('/setting', SettingController.load)
     .get('/defaults', SettingController.defaults)
+    .get('/status', SettingController.systemStatus)
     .get('/monitor/version', SettingController.loadMonitorVersion)
     .post('/monitor/logo', SettingController.loadLogo)
     .post('/filters', SettingController.loadFilters)

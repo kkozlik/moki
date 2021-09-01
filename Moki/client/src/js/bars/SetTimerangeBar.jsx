@@ -445,12 +445,12 @@ class timerangeBar extends Component {
             const timestamp_gte = document.getElementsByClassName("timestamp_gteInput")[0].childNodes[0].value;
 
             if (new Date(timestamp_gte).getTime() < 0) {
-                this.props.showError("Error: Timestamp 'FROM' is not valid date.");
+                alert("Error: Timestamp 'FROM' is not valid date.");
                 return;
             }
 
             if (new Date(timestamp_lte).getTime() < 0) {
-                this.props.showError("Error: Timestamp 'TO' is not valid date.");
+                alert("Error: Timestamp 'TO' is not valid date.");
                 return;
             }
             // this.addHistory(store.getState().timerange[2], store.getState().timerange[0], store.getState().timerange[1]);
@@ -458,7 +458,7 @@ class timerangeBar extends Component {
             const lte = Math.round((new Date(timestamp_lte)).getTime() / 1000) * 1000;
 
             if (gte - lte > 0) {
-                this.props.showError("Error: Timestamp 'FROM' has to be lower than 'TO'.");
+                alert("Error: Timestamp 'FROM' has to be lower than 'TO'.");
                 return;
             }
             var timestamp_readiable = timestamp_gte + " - " + timestamp_lte;

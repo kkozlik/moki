@@ -498,22 +498,31 @@ h5 {
 .errorBar {
     background-color: orangered;
     padding-left: 30px;
-    width: 100%;
-    visibility: hidden;
+    width: 87%;
     margin-left: 15px;
+    font-size: medium;
+    padding: 4px;
     margin-top: 38px;
-    font-weight: 800;
-    z-index: 9999999999;
+    position: fixed;
+    z-index: 9999999;
 }
 
-.errorBarLoading {
+.errorBarLoading{
     background-color: orangered;
     padding-left: 30px;
     width: 100%;
-    visibility: hidden;
     margin-left: 15px;
-    font-weight: 800;
-    z-index: 9999999999;
+    font-size: medium;
+    padding: 4px;
+    position: fixed;
+    z-index: 9999999;
+}
+
+.closeButton {
+    line-height: 20px;
+    background-color: transparent;
+    border: 0;
+    
 }
 
 h6 {

@@ -18,6 +18,7 @@ import { Redirect } from 'react-router';
 import { paths } from "./js/controllers/paths.jsx";
 import { getProfile } from '@moki-client/gui';
 import DecryptPasswordPopup from '@moki-client/gui/src/menu/decryptPasswordPopup';
+import Notificationbar from './js/bars/Notificationbar';
 
 //General class - check user level, profile from ES, monitor_layout before loading monitor
 //return router with dashboards and bars
@@ -26,7 +27,7 @@ class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            error: "",
+            error: [],
             redirect: false,
             isLoading: true,
             aws: false,
@@ -46,6 +47,7 @@ class App extends Component {
             resizeId: ""
         }
         this.showError = this.showError.bind(this);
+        this.deleteAllErrors = this.deleteAllErrors.bind(this);
         this.redirect = this.redirect.bind(this);
         this.getHostnames = this.getHostnames.bind(this);
         this.getSipUser();
@@ -94,7 +96,27 @@ class App extends Component {
         var res = await getProfile(this.state.user);
 
         if (res !== "ok") {
-            this.showError(JSON.stringify(res));
+            //this.showError(JSON.stringify(res));
+        }
+
+        //check if logstash is running
+        const response = await fetch("/api/status", {
+            method: "GET",
+            timeout: 10000,
+            credentials: 'include',
+            headers: {
+                "Content-Type": "application/json",
+                "Access-Control-Allow-Credentials": "include"
+            }
+        });
+
+        const json = await response.json();
+        if (!response.ok) {
+            //this.showError(JSON.stringify(json.error));
+            return;
+        }
+        if (json.logstash.code) {
+            this.showError("Logstash is not running.");
         }
 
         //store layout
@@ -108,7 +130,7 @@ class App extends Component {
         if (aws !== true) {
             var jsonSettings = await getSettings();
             storePersistent.dispatch(setSettings(jsonSettings));
-       }
+        }
 
         //get dashboard list
         var dashboards = Object.keys(jsonData.dashboards);
@@ -164,6 +186,21 @@ class App extends Component {
             isLoading: false
         })
 
+    }
+
+    /**
+* set error state -> past it to child and display it
+* @param {string}  error 
+* */
+    showError(error) {
+        console.log(error);
+        if (error.length > 0) {
+            this.setState({ error: [...this.state.error, error] });
+        }
+    }
+
+    deleteAllErrors() {
+        this.setState({ error: [] });
     }
 
     /**
@@ -243,7 +280,7 @@ class App extends Component {
 
                 const json = await response.json();
                 if (!response.ok) {
-                    this.showError(JSON.stringify(json.error));
+                    //this.showError(JSON.stringify(json.error));
                     return;
                 }
                 var hostnames = [];
@@ -401,28 +438,6 @@ class App extends Component {
         }
     }
 
-    /**
-* dislay an error in error bar in GUI for 10 sec
-* @param {string}  error an error to display
-* @return {} stores in state 
-* */
-    showError(error) {
-        if (error !== "" && document.getElementsByClassName("errorBar").length > 0) {
-            document.getElementsByClassName("errorBar")[0].style.visibility = "visible";
-            this.setState({
-                error: error
-            })
-
-            setTimeout(function () {
-                this.setState({
-                    error: ""
-                });
-                document.getElementsByClassName("errorBar")[0].style.visibility = "hidden";
-            }.bind(this), 10000); // wait 10 seconds, then reset to false
-        }
-
-    }
-
     redirect() {
         if (this.state.redirect === "false") {
             this.setState({
@@ -443,7 +458,7 @@ class App extends Component {
 
         //loading screen span
         var loadingScreen = <span>
-            <div className="errorBarLoading" > {JSON.stringify(this.state.error)} </div>
+            <Notificationbar className="errorBarLoading" error={this.state.error} deleteAllErrors={this.deleteAllErrors}></Notificationbar>
             <div style={{ "marginTop": (window.innerHeight / 2) - 50 }} className="row align-items-center justify-content-center">
                 <div className="loader" />
                 {this.state.logo && <img src={this.state.logo} alt="logo" style={{ "marginLeft": 10 }} />}
@@ -478,8 +493,6 @@ class App extends Component {
                 //admin context
                 sipUserSwitch = <div className="row" id="body-row" >
                     <NavBar redirect={this.redirect} toggle={this.toggle} aws={this.state.aws} dashboardsUser={this.state.dashboardsUser} dashboards={this.state.dashboards} dashboardsSettings={this.state.dashboardsSettings} />
-
-
                     <div className="row justify-content-between header" style={{ "marginRight": 0, "marginLeft": 0 }} >
                         <span id="user" className="top" >
                             {aws === true && <DecryptPasswordPopup />}
@@ -487,13 +500,12 @@ class App extends Component {
                             {aws === true && (!this.state.admin && !this.state.siteAdmin) && <a href="/logout" > Log out </a>}
                         </span>
 
-                        <TimerangeBar showError={this.showError} />
+                        <TimerangeBar />
                     </div>
+
                     <div id="context" className={"margin250"}>
-                        <div className="row" >
-                            <div className="errorBar" > {this.state.error} </div>
-                        </div>
-                        <div className="row" style={{ "marginTop": "10px" }}>
+                        <Notificationbar className="errorBar" error={this.state.error} deleteAllErrors={this.deleteAllErrors}></Notificationbar>
+                        <div className="row">
                             <Switch >
                                 {paths(this.state.dashboards, this.state.tags, this.state.hostnames, this.state.dstRealms, this.state.srcRealms, this.showError)}
                                 {paths(this.state.dashboardsSettings, this.state.tags, this.state.hostnames, this.state.dstRealms, this.state.srcRealms, this.showError)}
@@ -524,10 +536,8 @@ class App extends Component {
                                 {aws === true && !this.state.admin && <a href="/logout"> Log out </a>}</span>
                             <TimerangeBar showError={this.showError} />
                         </div>
-                        <div className="row" >
-                            <div className="errorBar" > {this.state.error} </div>
-                        </div>
                         <FilterBar redirect={this.state.redirect} />
+                        <Notificationbar className="errorBarLoading" error={this.state.error} deleteAllErrors={this.deleteAllErrors}></Notificationbar>
                         <div>
                             <Switch >
                                 <Route exact path='/index' render={() => < Restricted name="restricted" showError={this.showError} tags={this.state.tags} />} />
