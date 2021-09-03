@@ -50,7 +50,7 @@ cp -r build %{buildroot}/usr/share/Moki/
 
 # install nginx configuration file
 install -d %{buildroot}/etc/nginx/conf.d
-install -m 0644 nginx/monitor-prod.conf %{buildroot}/etc/nginx/conf.d/monitor.conf
+#install -m 0644 nginx/monitor-prod.conf %{buildroot}/etc/nginx/conf.d/monitor.conf
 
 # dump flag file
 #mkdir -p %{buildroot}/etc/abc-monitor
@@ -69,7 +69,7 @@ systemctl -q restart nginx
 
 %files
 /usr/share/Moki/build
-/etc/nginx/conf.d/monitor.conf
+#/etc/nginx/conf.d/monitor.conf
 
 %changelog
 * Thu Jul 22 2021 Cristian Constantin <cristian@intutivelabs.com> 10.1.0
