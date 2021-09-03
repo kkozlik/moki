@@ -23,20 +23,22 @@ export const parseTimestamp = (timestamp, ms = false) => {
         }
         //format is stored in user profile
         else {
-                var userprefs = storePersistent.getState().profile[0].userprefs;
-                var format = userprefs.date_format + " " + userprefs.time_format;
+                if (storePersistent.getState().profile[0]) {
+                        var userprefs = storePersistent.getState().profile[0].userprefs;
+                        var format = userprefs.date_format + " " + userprefs.time_format;
 
-                if (ms === true) {
-                        if (userprefs.time_format === "hh:mm:ss A") {
-                                format = userprefs.date_format + " " + "hh:mm:ss.SSS A";
+                        if (ms === true) {
+                                if (userprefs.time_format === "hh:mm:ss A") {
+                                        format = userprefs.date_format + " " + "hh:mm:ss.SSS A";
+                                }
+                                else {
+                                        format = userprefs.date_format + " " + userprefs.time_format + ".SSS";
+                                }
                         }
-                        else {
-                                format = userprefs.date_format + " " + userprefs.time_format + ".SSS";
-                        }
+
+                        //return moment(timestamp).format(format);
+                        return moment.tz(timestamp, userprefs.timezone).format(format);
                 }
-
-                //return moment(timestamp).format(format);
-                return moment.tz(timestamp, userprefs.timezone).format(format);
 
         }
 }

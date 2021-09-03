@@ -7,9 +7,7 @@ import {
 
 import store from "../store/index";
 import storePersistent from "../store/indexPersistent";
-import {
-  elasticsearchConnection
-} from '@moki-client/gui';
+import { elasticsearchConnection } from '@moki-client/gui';
 
 class Dashboard extends Component {
 
@@ -68,18 +66,24 @@ class Dashboard extends Component {
   }
 
   async loadData() {
-    this.getLayout();
-    this.setState({ isLoading: true });
-    var data = await elasticsearchConnection(this.state.dashboardName);
-    if (typeof data === "string" && data.includes("ERROR:")) {
-      this.props.showError(data);
+    try {
+      this.getLayout();
+      this.setState({ isLoading: true });
+      var data = await elasticsearchConnection(this.state.dashboardName);
+
+      if (typeof data === "string") {
+        this.props.showError(data);
+        this.setState({ isLoading: false });
+        return;
+      } else if (data) {
+        await this.processESData(data);
+        this.setState(this.transientState);
+        this.setState({ isLoading: false });
+        console.info(new Date() + " MOKI CALLS: finished parsíng data");
+      }
+    } catch (e) {
+      this.props.showError("Monitor server is not running.");
       this.setState({ isLoading: false });
-      return;
-    } else if (data) {
-      await this.processESData(data);
-      this.setState(this.transientState);
-      this.setState({ isLoading: false });
-      console.info(new Date() + " MOKI CALLS: finished parsíng data");
     }
   }
 }

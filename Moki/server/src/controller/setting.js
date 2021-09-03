@@ -865,6 +865,32 @@ class SettingController {
       return next(e);
     });
   }
+
+
+  /*
+  get system stats - on logstash, elasticsearch
+  */
+  static systemStatus(req, res, next) {
+    async function search() {
+      let logstash = "";
+      //get systemctl status logstash
+      exec("systemctl is-active  logstash", function (error, stdout) {
+        if (!error) {
+          logstash = stdout;
+        } else {
+          logstash = error;
+        }
+
+        return res.json({
+          logstash: logstash
+        });
+      });
+    }
+
+    return search().catch((e) => {
+      return next(e);
+    });
+  }
 }
 
 module.exports = SettingController;
