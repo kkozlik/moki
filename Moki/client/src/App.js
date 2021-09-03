@@ -467,9 +467,7 @@ class App extends Component {
 
         //get userto display
         var sipUser = storePersistent.getState().user;
-        var style = {"paddingBottom": "7px", "paddingLeft": "7px"};
         if (sipUser) {
-            style = "";
             sipUser = storePersistent.getState().user.email ? storePersistent.getState().user.user + ": " + storePersistent.getState().user.email : storePersistent.getState().user.user;
         } else {
             sipUser = "";
@@ -478,6 +476,8 @@ class App extends Component {
         var sipUserSwitch;
         const aws = this.state.aws;
         var url = window.location.pathname;
+        var style = aws ? "" :{"paddingBottom": "7px", "paddingLeft": "7px"};
+
         //show just diagram
         if (this.state.dashboards.length > 0) {
             if ((aws === false || this.state.admin || this.state.siteAdmin) && url.includes("sequenceDiagram")) {
@@ -497,7 +497,7 @@ class App extends Component {
                 sipUserSwitch = <div className="row" id="body-row" >
                     <NavBar redirect={this.redirect} toggle={this.toggle} aws={this.state.aws} dashboardsUser={this.state.dashboardsUser} dashboards={this.state.dashboards} dashboardsSettings={this.state.dashboardsSettings} />
                     <div className="row justify-content-between header" style={{ "marginRight": 0, "marginLeft": 0 }} >
-                        <span id="user" className="top" style={{style}}>
+                        <span id="user" className="top" style={style}>
                             {aws === true && <DecryptPasswordPopup />}
                             {sipUser}
                             {aws === true && (!this.state.admin && !this.state.siteAdmin) && <a href="/logout" > Log out </a>}

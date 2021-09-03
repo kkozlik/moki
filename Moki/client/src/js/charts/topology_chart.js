@@ -10,43 +10,46 @@ export default class topology extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            data: this.props.data    
+            data: this.props.data
         }
         this.setData = this.setData.bind(this);
     }
-    
-    static getDerivedStateFromProps(nextProps, prevState){
-        if(nextProps.data!==prevState.data){
-          return { data: nextProps.data};
-       }
-       else return null;
-     }
-     
-     componentDidUpdate(prevProps, prevState) {
-       if(prevProps.data!==this.props.data){
-        this.setState({ data: this.props.data });
-        this.draw(this.state.data, this.props.width, this.props.height, this.props.units);
-       }
-     }
+
+    static getDerivedStateFromProps(nextProps, prevState) {
+        if (nextProps.data !== prevState.data) {
+            return { data: nextProps.data };
+        }
+        else return null;
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (prevProps.data !== this.props.data) {
+            this.setState({ data: this.props.data });
+            this.draw(this.state.data, this.props.width, this.props.height, this.props.units);
+        }
+    }
 
 
     setData(data) {
-        this.setState({data: data});
+        this.setState({ data: data });
     }
 
     draw(data, width, height, units) {
-        units = units ? " ("+units+")" : "";
+        units = units ? " (" + units + ")" : "";
         //FOR UPDATE: remove chart if it's already there
         var chart = document.getElementById("topologyChartSVG");
         if (chart) {
             chart.remove();
         }
-        var links = data[2];
-        var nodes = data[0];
+
+
+
+        var links = data ? data[2] : [];
+        var nodes = data ? data[0] : [];
         var xScale = d3.scaleOrdinal(Colors);
 
 
-        if (data.length === 0 || links.length === 0 || nodes.length === 0) {
+        if (!data || data.length === 0 || links.length === 0 || nodes.length === 0) {
             var g = d3.select('#topologyChart')
                 .append("svg")
                 .attr('width', width)
@@ -101,7 +104,7 @@ export default class topology extends Component {
                 .append("svg")
                 .attr('id', 'topologyChartSVG')
                 .attr('width', width)
-                .attr('height', height+100);
+                .attr('height', height + 100);
             /* .append('g')
              .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')');*/
 
@@ -164,18 +167,18 @@ export default class topology extends Component {
                     .on("end", dragended))
                 .style("cursor", "pointer")
                 .on('mouseover', (d) => {
-                
-                tooltip = d3.select('#topologyChart').append('div')
-                .attr('class', 'tooltip tooltipTopology')
-                .style("width", "250px")
-                .style("height", "90px")
-                .style("background", "white")
-                .style("position", "absolute")
-                .style("box-shadow", "0px 0px 6px black")
-                .style("padding", "10px")
-                .style('opacity', 0.9)
-                .html(`<span><strong>${d.ip}</strong>: ${d.value + units}</span>`)
-                        .style('left', `${d3.event.layerX-10}px`)
+
+                    tooltip = d3.select('#topologyChart').append('div')
+                        .attr('class', 'tooltip tooltipTopology')
+                        .style("width", "250px")
+                        .style("height", "90px")
+                        .style("background", "white")
+                        .style("position", "absolute")
+                        .style("box-shadow", "0px 0px 6px black")
+                        .style("padding", "10px")
+                        .style('opacity', 0.9)
+                        .html(`<span><strong>${d.ip}</strong>: ${d.value + units}</span>`)
+                        .style('left', `${d3.event.layerX - 10}px`)
                         .style('top', `${(d3.event.layerY - 100)}px`);
 
                 })
@@ -199,7 +202,7 @@ export default class topology extends Component {
             function ticked() {
                 for (let i = 0; i < 5; i++) {
                     simulation.tick();
-                  }
+                }
                 link.attr("d", function (d) {
                     var x1 = d.source.x,
                         y1 = d.source.y,
@@ -265,13 +268,14 @@ export default class topology extends Component {
                 d.fy = null;
             }
         }
+        
     }
 
     render() {
-        return ( <div id = "topologyChart"  className="chart"> <h3 className = "alignLeft title" > {
+        return (<div id="topologyChart" className="chart"> <h3 className="alignLeft title" > {
             this.props.name
         } </h3>
-        {window.location.pathname !== "/connectivity" && <Animation name={this.props.name} type={this.props.type} setData={this.setData} dataAll={this.state.data} />}
-         </div > )
+            {window.location.pathname !== "/connectivity" && <Animation name={this.props.name} type={this.props.type} setData={this.setData} dataAll={this.state.data} />}
+        </div >)
     }
 }

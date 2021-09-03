@@ -85,13 +85,6 @@ export default class heatmap extends Component {
 
         const buckets = 10;
         var colorScale = this.state.colorScale;
-        //store global color scale (for animation)
-        if (colorScale === "") {
-            colorScale = d3.scaleQuantile()
-                .domain([0, buckets - 1, d3.max(data, (d) => d.value)])
-                .range(colorOneShade);
-            this.setState({ colorScale: colorScale });
-        }
         var height = 250;
         var widthSum = passWidth;
         var rootsvg = d3.select('#' + id)
@@ -101,7 +94,7 @@ export default class heatmap extends Component {
             //  .attr("style", "margin-bottom: 30px;")
             .attr("height", height + margin.top + margin.bottom);
 
-        if (data.length === 0) {
+        if (!data || data.length === 0) {
             rootsvg.attr("height", 100);
 
             rootsvg.append('svg:image')
@@ -109,6 +102,14 @@ export default class heatmap extends Component {
                 .attr('transform', 'translate(' + (widthSum / 2) + ',25)')
 
         } else {
+
+            //store global color scale (for animation)
+            if (colorScale === "") {
+                colorScale = d3.scaleQuantile()
+                    .domain([0, buckets - 1, d3.max(data, (d) => d.value)])
+                    .range(colorOneShade);
+                this.setState({ colorScale: colorScale });
+            }
 
             var x_elements = d3.set(data.map(function (item) {
                 return item.attr1;
@@ -202,7 +203,7 @@ export default class heatmap extends Component {
                 .on("mouseover", function (d) {
                     d3.select(this).style("stroke", "orange");
                     tooltip.style("visibility", "visible")
-                        .style('left', `${d3.event.layerX }px`)
+                        .style('left', `${d3.event.layerX}px`)
                         .style('top', `${(d3.event.layerY - 50)}px`);
 
                     if (d3.mouse(d3.event.target)[0] > window.innerWidth - 600) {
@@ -332,7 +333,7 @@ export default class heatmap extends Component {
     render() {
         return (<div id={
             this.props.id
-        }  className="chart"> <h3 className="alignLeft title" > {
+        } className="chart"> <h3 className="alignLeft title" > {
             this.props.name
         } </h3>
             {window.location.pathname !== "/connectivity" && <Animation name={this.props.name} type={this.props.type} setData={this.setData} dataAll={this.state.data} />}
