@@ -29,7 +29,7 @@ import { downloadSD } from '../helpers/download/downloadSD';
 import { tableColumns } from '../helpers/TableColumns';
 import { getPcap } from '../helpers/getPcap.js';
 import { downloadPcapMerged } from '../helpers/download/downloadPcapMerged';
-import {parseTimestamp} from "../helpers/parseTimestamp";
+import { parseTimestamp } from "../helpers/parseTimestamp";
 
 var FileSaver = require('file-saver');
 var JSZip = require("jszip");
@@ -451,26 +451,28 @@ export default class listChart extends Component {
                 var zip = new JSZip();
                 for (var i = 0; i < selectedData.length; i++) {
                     var record = thiss.getRecord(selectedData[i]);
-                    var filename = record._source.attrs.filename;
-                    await downloadPcap(record._source.attrs.filename).then(function (data) {
-                        filename = filename ? filename.substring(0, filename.length - 5) : "";
-                        filename = filename ? filename.substring(filename.lastIndexOf("/") + 1) : Math.random().toString(36).substring(7);
-                        if (typeof data !== 'string') {
-                            var blob = new Blob([data], { type: "pcap" });
-                            zip.file(filename, blob);
-                        }
-                        var json = new Blob([JSON.stringify(record)], { type: 'text/plain' });
-                        zip.file(filename + ".json", json);
-                    })
+                    var filename = record._source.attrs.filename ? record._source.attrs.filename : Math.random().toString(36).substring(7);
+                    if (record._source.attrs.filename) {
+                        await downloadPcap(record._source.attrs.filename).then(function (data) {
+                            filename = filename ? filename.substring(0, filename.length - 5) : "";
+                            filename = filename ? filename.substring(filename.lastIndexOf("/") + 1) : Math.random().toString(36).substring(7);
+                            if (typeof data !== 'string') {
+                                var blob = new Blob([data], { type: "pcap" });
+                                zip.file(filename, blob);
+                            }
+                        })
+                    }
 
                     //download sd
-
                     if (record._source.attrs.filename) {
                         var sd = await downloadSD(record._source.attrs.filename);
                         if (sd && !sd.includes("Error")) {
                             zip.file(filename + ".html", sd);
                         }
                     }
+
+                    var json = new Blob([JSON.stringify(record)], { type: 'text/plain' });
+                    zip.file(filename + ".json", json);
 
                 }
                 zip.generateAsync({ type: "blob" })
@@ -808,9 +810,9 @@ export default class listChart extends Component {
                 {columnsList &&
                     <ToolkitProvider
                         keyField="_id"
-                        data={ Array.isArray(this.state.data) ? this.state.data : [] }
+                        data={Array.isArray(this.state.data) ? this.state.data : []}
                         columnToggle
-                        columns={ this.state.columns  }
+                        columns={this.state.columns}
                         noDataIndication={() => <NoDataIndication />}>
 
                         {
