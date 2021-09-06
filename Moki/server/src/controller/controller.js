@@ -137,6 +137,10 @@ class Controller {
 
         timebucket = getTimestampBucket(timestamp_gte, timestamp_lte);
 
+        if (requests[i].index.includes("collectd")){
+          isEncryptChecksumFilter = "*";
+        }
+
         if (requests[i].params) {
           //check if params contains "timebucket", insert it
           let params = requests[i].params;
