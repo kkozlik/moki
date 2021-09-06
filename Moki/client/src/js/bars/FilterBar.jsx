@@ -293,7 +293,7 @@ class filterBar extends Component {
         )
 
         return (
-            <div className="row" style={{"marginLeft": "0px"}}>
+            <div className="row" style={{"marginLeft": "0px", "marginTop": "35px"}}>
                 <div className="FilterSearchBar">
                     <div className="text-nowrap row">
                         <Navbar variant="light">
