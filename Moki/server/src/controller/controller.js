@@ -239,7 +239,7 @@ class Controller {
       const querySize = req.body.size ? req.body.size : 500;
 
       //if no types from client, get types from monitor_layout
-      if (types.length === 0) {
+      if (!types || types.length === 0) {
         types = await checkSelectedTypes([], dashboard);
       }
       //or if client request types, use this instead 
