@@ -214,7 +214,7 @@ export function tableColumns(dashboard, tags) {
 
                         {ob.attrs.filenameDownload && <a href={"/sequenceDiagram/" + ob.attrs.filenameDownload} target="_blank" rel="noopener noreferrer"><img className="icon" alt="viewIcon" src={viewIcon} title="view PCAP" /></a>
                         }
-                        {ob.dbg.msg_trace && <Popup trigger={<img className="icon" alt="viewIcon" src={viewIcon} title="diagram" />} modal>
+                        {ob.dbg && ob.dbg.msg_trace && <Popup trigger={<img className="icon" alt="viewIcon" src={viewIcon} title="diagram" />} modal>
                             {close => (
                                 <div className="Advanced">
                                     <button className="close" onClick={close}>
@@ -1031,7 +1031,7 @@ export function tableColumns(dashboard, tags) {
                     <button className="noFormatButton" onClick={() => downloadAll(ob)} file={ob.attrs.filenameDownload} data={obj}>  <img className="icon" alt="downloadIcon" src={downloadIcon} title="download all" /></button>
 
                     {ob.attrs.filenameDownload && <a href={"/sequenceDiagram/" + ob.attrs.filenameDownload} target="_blank" rel="noopener noreferrer"><img className="icon" alt="viewIcon" src={viewIcon} title="view PCAP" /></a>}
-                    {ob.dbg.msg_trace && <Popup trigger={<img className="icon" alt="viewIcon" src={viewIcon} title="diagram" />} modal>
+                    {ob.dbg && ob.dbg.msg_trace && <Popup trigger={<img className="icon" alt="viewIcon" src={viewIcon} title="diagram" />} modal>
                         {close => (
                             <div className="Advanced">
                                 <button className="close" onClick={close}>
@@ -1240,7 +1240,7 @@ export function tableColumns(dashboard, tags) {
                     {ob.attrs.filenameDownload && <a href={"/sequenceDiagram/" + ob.attrs.filenameDownload} target="_blank" rel="noopener noreferrer"><img className="icon" alt="viewIcon" src={viewIcon} title="view PCAP" /></a>
                     }
 
-                    {ob.dbg.msg_trace && <Popup trigger={<img className="icon" alt="viewIcon" src={viewIcon} title="diagram" />} modal>
+                    {ob.dbg && ob.dbg.msg_trace && <Popup trigger={<img className="icon" alt="viewIcon" src={viewIcon} title="diagram" />} modal>
                         {close => (
                             <div className="Advanced">
                                 <button className="close" onClick={close}>
