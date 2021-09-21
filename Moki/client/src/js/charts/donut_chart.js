@@ -237,9 +237,7 @@ export default class StackedChart extends Component {
 
     render() {
         return (<div id={this.props.id}  className="chart chartMinHeight" style={{"paddingBottom": "10px", "paddingLeft": "10px"}}>
-            <h3 className="alignLeft title" > {
-                this.props.name
-            } </h3>
+            <h3 className="alignLeft title" style={{"float": "inherit"}}> {this.props.name} </h3>
         </div>)
     }
 }
