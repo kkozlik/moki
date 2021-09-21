@@ -44,6 +44,7 @@ class MicroanalysisCharts extends Dashboard {
             charts: [],
             distinctIP: [],
             topNodes: [],
+            versions: [],
             isLoading: true
         }
         this.callBacks = {
@@ -117,7 +118,10 @@ class MicroanalysisCharts extends Dashboard {
                 [{ result: 'distinctIP', func: parseAggDistinct }],
 
                 //TOP NODES
-                [{ result: 'topNodes', func: parseListData }]
+                [{ result: 'topNodes', func: parseListData }],
+
+                 //SIP VERSIONS 
+                 [{ result: 'versions', func: parseBucketData }]
             ]
         }
     }
@@ -167,6 +171,17 @@ class MicroanalysisCharts extends Dashboard {
                         name={"TOP SUBNETS /24"}
                         field={"attrs.sourceSubnets"}
                     />  </div>}
+                {this.state.charts["VERSIONS"] && <div className="col-auto" style={{"marginRight": "5px"}} >
+                    <DonutChart
+                        data={this.state.versions}
+                        units={"count"}
+                        name={"SIPCMBEAT VERSIONS"}
+                        id="versions"
+                        width={500}
+                        legendSize={50}
+                        height={200}
+                        field="agent.version" />
+                </div>}
                 {this.state.charts["r-URI"] && <div className="col-auto" >
                     <ListChart data={this.state.prefixStripped}
                         name={"r-URI - short"}
