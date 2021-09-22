@@ -149,6 +149,13 @@ class App extends Component {
             //remove users from settings
             dashboardsSettings = dashboardsSettings.filter(dashboard => dashboard !== "users");
         }
+
+        //for admin level aws remove WBlist
+        if (this.state.aws && this.state.admin) {
+            dashboardsSettings = dashboardsSettings.filter(dashboard => dashboard !== "wblist" );
+            dashboardsSettings = dashboardsSettings.filter(dashboard => dashboard !== "config");
+        }
+
         this.setState({
             dashboardsSettings: dashboardsSettings
         });

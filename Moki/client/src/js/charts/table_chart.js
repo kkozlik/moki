@@ -718,7 +718,7 @@ export default class listChart extends Component {
             selected: this.state.selected,
             onSelect: this.handleOnSelect,
             onSelectAll: this.handleOnSelectAll
-        }
+        };
 
         const columnsList = this.state.columns;
         var CustomToggleList = ({
@@ -840,7 +840,7 @@ export default class listChart extends Component {
                                         }
                                         bordered={false}
                                         bootstrap4
-                                        selectRow={selectRowProp}
+                                        selectRow={this.props.checkbox === false ? undefined : selectRowProp}
                                         hover
                                         printable
                                         expandRow={this.props.id !== "LAST LOGIN EVENTS" ?
