@@ -77,13 +77,13 @@ export default class listChart extends Component {
             var field = searchable[i];
             columns.push(
                 {
-                    dataField: '_source.attrs.' + field,
-                    text: field.toUpperCase(),
+                    dataField: '_source.' + field,
+                    text: field.substring(field.indexOf(".")+1).toUpperCase(),
                     hidden: true,
                     editable: false,
                     sort: true,
                     headerStyle: { width: '150px' },
-                    formatExtraData: "attrs." + field,
+                    formatExtraData:  field,
                     formatter: (cell, obj, i, formatExtraData) => {
                         return <span className="filterToggleActive"><span className="filterToggle">
                             <img onClick={this.filter} field={formatExtraData} value={cell} className="icon" alt="filterIcon" src={filter} />
