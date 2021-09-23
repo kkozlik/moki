@@ -146,17 +146,16 @@ class AdminController {
     const jti = parsedHeaderAccessToken['jti'];
     const sourceIP = IPs[0];
 
-    //store login to ES
-    if (oldJti !== jti) {
-      storeLoginInES(domainID, subId, jwtbit, email, sourceIP);
-    }
-    oldJti = jti;
-
     if (jwtbit === undefined) {
       //default user for web dashboard
       return res.json({ user: `DEFAULT`, aws: true });
     }
 
+    //store login to ES
+    if (oldJti !== jti) {
+      storeLoginInES(domainID, subId, jwtbit, email, sourceIP);
+    }
+    oldJti = jti;
 
     // subscriber id and admin level must be always set
     if (subId === undefined) {
