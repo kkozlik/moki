@@ -23,7 +23,7 @@ export const parseTimestamp = (timestamp, ms = false) => {
         }
         //format is stored in user profile
         else {
-                if (storePersistent.getState().profile[0]) {
+                if (storePersistent.getState().profile[0] && storePersistent.getState().profile[0].userprefs) {
                         var userprefs = storePersistent.getState().profile[0].userprefs;
                         var format = userprefs.date_format + " " + userprefs.time_format;
 
@@ -38,6 +38,9 @@ export const parseTimestamp = (timestamp, ms = false) => {
 
                         //return moment(timestamp).format(format);
                         return moment.tz(timestamp, userprefs.timezone).format(format);
+                }
+                else {
+                        return new Date(timestamp).toLocaleString();
                 }
 
         }
