@@ -1340,7 +1340,7 @@ input {
     width: 85%;
     overflow-y: hidden;
     z-index: 9999999;
-    margin-left: 20px;
+    margin-top: 35px;
     position: absolute;
     background-color: white;
 }

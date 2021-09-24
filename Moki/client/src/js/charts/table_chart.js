@@ -62,7 +62,7 @@ export default class listChart extends Component {
         var removeIndices = [];
         for (var i = 0; i < searchable.length; i++) {
             for (var j = 0; j < columns.length; j++) {
-                if (searchable[i] && columns[j].dataField === "_source.attrs." + searchable[i]) {
+                if (searchable[i] && columns[j].dataField === "_source." + searchable[i]) {
                     removeIndices.push(i);
                 }
             }
