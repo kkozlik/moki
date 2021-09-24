@@ -85,11 +85,18 @@ class filterBar extends Component {
         }
     }
 
-    //geoip is without attrs
+    //check if attribute prefix is correct
     addAttrs(value) {
-        //if next 5 chars are not attrs or geoip, add "attrs"
-        var substr = value.substring(0, 6);
-        if (substr !== "attrs." && substr !== "geoip.") {
+        if (value.indexOf(".") === -1) {
+            var searchable = getSearchableFields();
+            value = value.substring(0, value.indexOf(":"));
+            //remove spaces
+            value.replace(/\s+/g, '');
+            for (var i = 0; i < searchable.length; i++) {
+                if (searchable[i].substring(searchable[i].indexOf(".") + 1) === value) {
+                    return searchable[i].substring(0, searchable[i].indexOf(".")+1);
+                }
+            }
             return "attrs.";
         }
         else {
@@ -282,18 +289,18 @@ class filterBar extends Component {
         var url = window.location.pathname;
         filters = renderFilters(this.deleteFilter, this.disableFilter, this.enableFilter, this.pinFilter, this.editFilter, this.negationFilter, this.unpinFilter);
         var srcRealms = (<select className="text-left form-control form-check-input filter-right" id="srcRealms" placeholder="SRC REALMS" onChange={this.specFilter}> <option value="" disabled selected>SRC REALM</option>
-            { this.state.srcRealms.map((realm) => {
+            {this.state.srcRealms.map((realm) => {
                 return <option value={realm.key} key={realm.key + "src"}>{realm.key}</option>
             })} </select>
         )
         var dstRealms = (<select className="text-left form-control form-check-input filter-right" id="dstRealms" placeholder="DST REALMS" onChange={this.specFilter}> <option value="" disabled selected>DST REALM</option>
-            { this.state.dstRealms.map((realm) => {
+            {this.state.dstRealms.map((realm) => {
                 return <option value={realm.key} key={realm.key + "dst"}>{realm.key}</option>
             })} </select>
         )
 
         return (
-            <div className="row" style={{"marginLeft": "0px", "marginTop": "35px"}}>
+            <div className="row" style={{ "marginLeft": "0px", "marginTop": "35px" }}>
                 <div className="FilterSearchBar">
                     <div className="text-nowrap row">
                         <Navbar variant="light">
@@ -332,7 +339,7 @@ class filterBar extends Component {
                         </Navbar>
                     </div>
                 </div>
-                <div className="row" style={{"marginLeft": "0"}}>
+                <div className="row" style={{ "marginLeft": "0" }}>
                     <div className="filterBar" id="filterBar">
                         {filters}
                     </div>
