@@ -179,7 +179,8 @@ export default class StackedChart extends Component {
 
             });
 */
-            var keys = storePersistent.getState().layout.types[this.props.keys] ? storePersistent.getState().layout.types[this.props.keys] : this.props.keys;
+            var keys = this.props.keys ? this.props.keys : storePersistent.getState().layout.types[this.props.keys] ? storePersistent.getState().layout.types[this.props.keys] : storePersistent.getState().layout.types["overview"];
+
             //var id = 0;
             var stack = d3.stack()
                 //.keys(["Register new", "Registration expired", "Register del"])
