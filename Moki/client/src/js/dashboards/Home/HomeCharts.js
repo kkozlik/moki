@@ -12,7 +12,7 @@ import MultipleAreaChart from '../../charts/multipleArea_chart';
 import store from "../../store/index";
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import { elasticsearchConnection } from '@moki-client/gui';
-import {parseQueryStringData, parseDateHeatmap, parseAggData, parseAggSumBucketData, parseMultipleLineDataShareAxis, parseMultipleLineDataShareAxisWithoutAgg, parseAggQueryWithoutScriptValue, parseAggQuerySumValue } from '@moki-client/es-response-parser';
+import { parseQueryStringData, parseDateHeatmap, parseAggData, parseAggSumBucketData, parseMultipleLineDataShareAxis, parseMultipleLineDataShareAxisWithoutAgg, parseAggQueryWithoutScriptValue, parseAggQuerySumValue } from '@moki-client/es-response-parser';
 
 class HomeCharts extends Component {
 
@@ -62,84 +62,88 @@ class HomeCharts extends Component {
         this.setState({ isLoading: true });
         var data = await elasticsearchConnection("/home/charts");
 
-        if (typeof data === "string" && data.includes("ERROR:")) {
-            console.log(typeof data === "string" && data.includes("ERROR:"));
-
+        if (typeof data === "string") {
             this.props.showError(data);
             this.setState({ isLoading: false });
             return;
 
-        } else if (data) {
-            //parse data
-            //SUM CALL-END
-            var sumCallEnd = parseQueryStringData(data.responses[0]);
+        } else {
+            if (data.msg) {
+                this.props.showError(data.msg);
+                this.setState({ isLoading: false });
+                return;
+            }
+            else {
+                //parse data
+                //SUM CALL-END
+                var sumCallEnd = parseQueryStringData(data.responses[0]);
 
-            //SUM CALL-ATTEMPT
-            var sumCallAttempt = parseQueryStringData(data.responses[1]);
+                //SUM CALL-ATTEMPT
+                var sumCallAttempt = parseQueryStringData(data.responses[1]);
 
-            //DURATION SUM 
-            var durationSum = parseAggData(data.responses[3]);
+                //DURATION SUM 
+                var durationSum = parseAggData(data.responses[3]);
 
-            //ANSWER-SEIZURE RATIO
-            var answerSeizureRatio = parseAggSumBucketData(data.responses[4]);
+                //ANSWER-SEIZURE RATIO
+                var answerSeizureRatio = parseAggSumBucketData(data.responses[4]);
 
-            //AVG DURATION
-            var avgDuration = parseAggData(data.responses[5]);
+                //AVG DURATION
+                var avgDuration = parseAggData(data.responses[5]);
 
-            // DATE HEATMAP
-            var typeDateHeatmap = await parseDateHeatmap(data.responses[6]);
+                // DATE HEATMAP
+                var typeDateHeatmap = await parseDateHeatmap(data.responses[6]);
 
-            //PARALLEL CALLS
-            var parallelCalls = parseMultipleLineDataShareAxis("Calls", data.responses[7], "Calls-1d", data.responses[8]);
+                //PARALLEL CALLS
+                var parallelCalls = parseMultipleLineDataShareAxis("Calls", data.responses[7], "Calls-1d", data.responses[8]);
 
-            //PARALLEL REGS
-            var parallelRegs = parseMultipleLineDataShareAxis("Regs", data.responses[9], "Regs-1d", data.responses[10]);
+                //PARALLEL REGS
+                var parallelRegs = parseMultipleLineDataShareAxis("Regs", data.responses[9], "Regs-1d", data.responses[10]);
 
-            //ACTUALL REGS
-            var regsActual = parseAggQuerySumValue(data.responses[11]);
+                //ACTUALL REGS
+                var regsActual = parseAggQuerySumValue(data.responses[11]);
 
-            //ACTUALL CALLS
-            var callsActual = parseAggQuerySumValue(data.responses[12]);
+                //ACTUALL CALLS
+                var callsActual = parseAggQuerySumValue(data.responses[12]);
 
-            //INCIDENT COUNT
-            var incidentCount = parseMultipleLineDataShareAxisWithoutAgg("Incident", data.responses[13], "Incident-1d", data.responses[14]);
+                //INCIDENT COUNT
+                var incidentCount = parseMultipleLineDataShareAxisWithoutAgg("Incident", data.responses[13], "Incident-1d", data.responses[14]);
 
-            //ACTUALL INCIDENT
-            var incidentActual = parseQueryStringData(data.responses[15]);
+                //ACTUALL INCIDENT
+                var incidentActual = parseQueryStringData(data.responses[15]);
 
-            //ACTUALL REGS MINUTE AGO
-            var callsActualMinuteAgo = parseAggQuerySumValue(data.responses[16]);
+                //ACTUALL REGS MINUTE AGO
+                var callsActualMinuteAgo = parseAggQuerySumValue(data.responses[16]);
 
-            //ACTUALL CALLS MINUTE AGO
-            var regsActualMinuteAgo = parseAggQuerySumValue(data.responses[17]);
+                //ACTUALL CALLS MINUTE AGO
+                var regsActualMinuteAgo = parseAggQuerySumValue(data.responses[17]);
 
-            //ACTUALL INCIDENT MINUTE AGO
-            var incidentActualMinuteAgo = parseQueryStringData(data.responses[18]);
+                //ACTUALL INCIDENT MINUTE AGO
+                var incidentActualMinuteAgo = parseQueryStringData(data.responses[18]);
 
-            console.info(new Date() + " MOKI HOME: finished parsíng data");
+                console.info(new Date() + " MOKI HOME: finished parsíng data");
 
-            this.setState({
+                this.setState({
 
-                sumCallAttempt: sumCallAttempt,
-                sumCallEnd: sumCallEnd,
-                durationSum: durationSum,
-                answerSeizureRatio: answerSeizureRatio,
-                avgDuration: avgDuration,
-                typeDateHeatmap: typeDateHeatmap,
-                parallelCalls: parallelCalls,
-                parallelRegs: parallelRegs,
-                regsActual: regsActual,
-                callsActual: callsActual,
-                incidentCount: incidentCount,
-                incidentActual: incidentActual,
-                callsActualMinuteAgo: callsActualMinuteAgo,
-                regsActualMinuteAgo: regsActualMinuteAgo,
-                incidentActualMinuteAgo: incidentActualMinuteAgo,
-                isLoading: false
+                    sumCallAttempt: sumCallAttempt,
+                    sumCallEnd: sumCallEnd,
+                    durationSum: durationSum,
+                    answerSeizureRatio: answerSeizureRatio,
+                    avgDuration: avgDuration,
+                    typeDateHeatmap: typeDateHeatmap,
+                    parallelCalls: parallelCalls,
+                    parallelRegs: parallelRegs,
+                    regsActual: regsActual,
+                    callsActual: callsActual,
+                    incidentCount: incidentCount,
+                    incidentActual: incidentActual,
+                    callsActualMinuteAgo: callsActualMinuteAgo,
+                    regsActualMinuteAgo: regsActualMinuteAgo,
+                    incidentActualMinuteAgo: incidentActualMinuteAgo,
+                    isLoading: false
 
-            });
+                });
 
-
+            }
         }
     }
 
@@ -147,7 +151,7 @@ class HomeCharts extends Component {
     render() {
         return (
             <div>
-                { this.state.isLoading && <LoadingScreenCharts />}
+                {this.state.isLoading && <LoadingScreenCharts />}
                 <div className="row no-gutters">
                     <div className="col-auto">
                         <ValueChart data={
