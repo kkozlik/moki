@@ -363,7 +363,7 @@ export default class MultipleLineChart extends Component {
         return (<div id={
             this.props.id
         } className="chart">
-            <h3 className="alignLeft title" > {
+            <h3 className="alignLeft title" style={{"float": "inherit"}}> {
                 this.props.name
             } <span className="smallText"> (interval: {bucket})</span></h3></div>)
     }
