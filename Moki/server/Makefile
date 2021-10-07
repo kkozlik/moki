@@ -150,10 +150,10 @@ install_mon:
 	install -d $(DESTDIR)/usr/lib/systemd/system
 	install -m 0644 moki-server.service $(DESTDIR)/usr/lib/systemd/system/
 	# perform moki API install
-	cd $(DESTDIR)/usr/share/Moki/server
-	npm install
-	mv node_modules node_modules_dev
-	NODE_ENV=production npm install --production
+	cd $(DESTDIR)/usr/share/Moki/server ; \
+	npm install ; \
+	mv node_modules node_modules_dev ; \
+	NODE_ENV=production npm install --production ; \
 	mv node_modules node_modules_prod
 	# fix absolute paths that npm leaves there due to npm feature/bug
 	find $(DESTDIR)/usr/share/Moki -name "package.json" -exec sed -i 's#$(DESTDIR)##' '{}' \;
