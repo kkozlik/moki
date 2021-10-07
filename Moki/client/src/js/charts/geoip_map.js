@@ -4,14 +4,11 @@ import React, {
 import * as d3 from "d3";
 import * as topojson from "topojson-client";
 import map from "./world_map.json";
-import {
-    createFilter
-} from '@moki-client/gui';
-//import cities from "./world_cities.json";
-//import cities from "./worldcities-limit500.csv";
+import { createFilter } from '@moki-client/gui';
 import cities from "./cities_11.csv";
 import emptyIcon from "../../styles/icons/empty.png";
 import Animation from '../helpers/Animation';
+import { getGeoData, decryptGeoData } from '@moki-client/gui';
 var geohash = require('ngeohash');
 
 export default class geoIpMap extends Component {
@@ -52,7 +49,16 @@ export default class geoIpMap extends Component {
         this.draw(data, this.props.width, this.props.units, this.props.name);
     }
 
-    draw(data, width, units, name, dataNotShown = this.state.dataNotShown) {
+    async draw(data, width, units, name, dataNotShown = this.state.dataNotShown) {
+       
+        var geoData = await getGeoData();
+        if (geoData && geoData.responses[0].aggregations.agg.buckets.length > 0) {
+            data = await decryptGeoData(geoData.responses[0].aggregations.agg.buckets);
+        }
+        console.log("*********************************");
+        console.log(data);
+
+
         width = width < 0 ? 1028 : width;
         units = units ? " (" + units + ")" : "";
         //FOR UPDATE: remove chart if it's already there
@@ -61,7 +67,7 @@ export default class geoIpMap extends Component {
             chart.remove();
             var tooltips = document.getElementById("tooltipgeoIpMap");
             if (tooltips) {
-                    tooltips.remove();
+                tooltips.remove();
             }
         }
 
@@ -226,8 +232,8 @@ export default class geoIpMap extends Component {
                 var tooltip = d3.select('#geoIpMap').append('div')
                     .attr('id', 'tooltipgeoIpMap')
                     .attr("class", "tooltipCharts");
-    
-    
+
+
                 tooltip.append("div");
 
                 //cites
@@ -291,29 +297,29 @@ export default class geoIpMap extends Component {
 
         var rScale = d3.scaleSqrt();
 
-       //get max value
-       var maxValue = 0;
-       var minValue = data.length > 0 ? data[0].doc_count : 0;
-       for (var i = 0; i < data.length; i++) {
-           if (maxValue < data[i].doc_count) {
-               maxValue = data[i].doc_count;
-           }
-           if (minValue > data[i].doc_count) {
-               minValue = data[i].doc_count;
-           }
-       }
+        //get max value
+        var maxValue = 0;
+        var minValue = data.length > 0 ? data[0].doc_count : 0;
+        for (var i = 0; i < data.length; i++) {
+            if (maxValue < data[i].doc_count) {
+                maxValue = data[i].doc_count;
+            }
+            if (minValue > data[i].doc_count) {
+                minValue = data[i].doc_count;
+            }
+        }
 
-       //check also dataNotShown max and min value
-       for (i = 0; i < dataNotShown.length; i++) {
-           if (maxValue < dataNotShown[i].doc_count) {
-               maxValue = dataNotShown[i].doc_count;
-           }
-           if (minValue > dataNotShown[i].doc_count) {
-               minValue = dataNotShown[i].doc_count;
-           }
-       }
+        //check also dataNotShown max and min value
+        for (i = 0; i < dataNotShown.length; i++) {
+            if (maxValue < dataNotShown[i].doc_count) {
+                maxValue = dataNotShown[i].doc_count;
+            }
+            if (minValue > dataNotShown[i].doc_count) {
+                minValue = dataNotShown[i].doc_count;
+            }
+        }
 
-       rScale.domain([minValue - 1, maxValue + 1]).range([3, 12]);
+        rScale.domain([minValue - 1, maxValue + 1]).range([3, 12]);
         //remove old pins if exists
         var pins = document.getElementsByClassName("pins");
         if (pins.length > 0) {
@@ -373,8 +379,8 @@ export default class geoIpMap extends Component {
                 return "translate(-10,-10)";
             })
             .on("mouseover", function (d) {
-                var types  = d.aggs.buckets.map(type =>
-                    " <br/><strong>"+type.key+": </strong> "+type.doc_count
+                var types = d.aggs.buckets.map(type =>
+                    " <br/><strong>" + type.key + ": </strong> " + type.doc_count
                 );
 
                 tooltip.style("visibility", "visible");
@@ -419,13 +425,13 @@ export default class geoIpMap extends Component {
                     return "translate(-10,-10)";
                 })
                 .on("mouseover", function (d) {
-                    var types  = d.types.buckets.map(type =>
-                        "<br/><strong>"+type.key+": </strong> "+type.doc_count
+                    var types = d.types.buckets.map(type =>
+                        "<br/><strong>" + type.key + ": </strong> " + type.doc_count
                     );
 
                     tooltip.style("visibility", "visible");
                     d3.select(this).style("cursor", "pointer");
-                    tooltip.select("div").html("<strong>AVG longitude: </strong>" + geohash.decode(d.key).longitude + " <br/><strong>AVG latitude: </strong>" + geohash.decode(d.key).latitude + " <br/>"+types);
+                    tooltip.select("div").html("<strong>AVG longitude: </strong>" + geohash.decode(d.key).longitude + " <br/><strong>AVG latitude: </strong>" + geohash.decode(d.key).latitude + " <br/>" + types);
                 })
                 .on("mouseout", function (d) {
                     tooltip.style("visibility", "hidden")
@@ -445,10 +451,10 @@ export default class geoIpMap extends Component {
             pins
                 .transition()
                 .ease(d3.easeLinear)
-                .attr("r", function (d) { if (d.doc_count) { return rScale(d.doc_count) + 10} })
+                .attr("r", function (d) { if (d.doc_count) { return rScale(d.doc_count) + 10 } })
                 .style("opacity", function (d) { return d === 60 ? 0 : 1 })
                 .duration(500)
-                .on("end", function () { if (++i === pins.size() - 1) {   transition(); } });
+                .on("end", function () { if (++i === pins.size() - 1) { transition(); } });
 
             // Reset circles where r == 0
             pins
@@ -460,7 +466,7 @@ export default class geoIpMap extends Component {
     }
 
     render() {
-        return (<div id="geoIpMap"  className="chart"> <h3 className="alignLeft title" > {
+        return (<div id="geoIpMap" className="chart"> <h3 className="alignLeft title" > {
             this.props.name
         } </h3><Animation display={this.props.displayAnimation} name={this.props.name} type={this.props.type} setData={this.setData} dataAll={this.state.data} autoplay={this.props.autoplay} /></div >)
     }

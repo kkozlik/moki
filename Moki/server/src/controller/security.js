@@ -6,6 +6,7 @@ const agg_filter_animation = require('../../js/template_queries/agg_filter_anima
 const geoipAnimation = require('../../js/template_queries/geoip_agg_filter_animation');
 const agg_query = require('../../js/template_queries/agg_query');
 const geoip_hash_query = require('../../js/template_queries/geoip_agg_hash_filter');
+const fs = require('fs');
 
 class securityController extends Controller {
 
@@ -45,6 +46,34 @@ class securityController extends Controller {
    *               $ref: '#/definitions/ChartResponseError'
    */
   static getCharts(req, res, next) {
+
+
+/*
+    let rawdata = fs.readFileSync('/usr/share/Moki/server/src/geonames-all-cities-with-a-population-500_fin.json');
+    let json = JSON.parse(rawdata);
+
+    var data = [];
+*/
+  /*
+    for (var i = 0; i < json.length; i++) {
+      data.push({
+        geoname_id: json[i].fields.geoname_id,
+        name: json[i].fields.name,
+        longitude: json[i].fields.longitude,
+        latitude: json[i].fields.latitude,
+      })
+    }
+    */
+   /*
+    json.sort(function(a,b){
+      return a["geoname_id"] - b["geoname_id"];
+  });
+
+    let dataout = JSON.stringify(json);
+    fs.writeFileSync('/usr/share/Moki/server/src/geonames-all-cities-with-a-population-500_fin2.json', dataout);
+*/
+
+
     super.request(req, res, next, [
       //SECURITY DISTRIBUTION MAP
       { index: "logstash*", template: geoip, filter: '*' },
@@ -196,6 +225,13 @@ class securityController extends Controller {
     super.request(req, res, next, [
       //EVENTS BY COUNTRY
       { index: "logstash*", template: agg_filter_animation, params: ['attrs.country_code2', "timebucketAnimation", "timestamp_gte", "timestamp_lte", 3], filter: "attrs.type:limit OR attrs.type:message-dropped OR attrs.type:auth-failed OR attrs.type:log-reply OR attrs.type:fbl-new OR attrs.type:fgl-new" }
+    ]);
+  }
+
+  static getGeoData(req, res, next) {
+    super.request(req, res, next, [
+      //EVENTS BY COUNTRY
+      { index: "logstash*", template: agg_query, params: ["terms", 'geoip.dst.city_id'], filter: "*" },
     ]);
   }
 
