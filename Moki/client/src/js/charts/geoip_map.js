@@ -8,6 +8,7 @@ import { createFilter } from '@moki-client/gui';
 import cities from "./cities_11.csv";
 import emptyIcon from "../../styles/icons/empty.png";
 import Animation from '../helpers/Animation';
+import storePersistent from "../store/indexPersistent";
 import { getGeoData, decryptGeoData } from '@moki-client/gui';
 var geohash = require('ngeohash');
 
@@ -50,13 +51,17 @@ export default class geoIpMap extends Component {
     }
 
     async draw(data, width, units, name, dataNotShown = this.state.dataNotShown) {
-       
+        if(storePersistent.getState().user.aws){
+            console.log("***");
+            if(storePersistent.getState().profile[0].userprefs.mode === "encrypt"){
         var geoData = await getGeoData();
         if (geoData && geoData.responses[0].aggregations.agg.buckets.length > 0) {
             data = await decryptGeoData(geoData.responses[0].aggregations.agg.buckets);
         }
         console.log("*********************************");
         console.log(data);
+    }
+    }
 
 
         width = width < 0 ? 1028 : width;
@@ -379,13 +384,20 @@ export default class geoIpMap extends Component {
                 return "translate(-10,-10)";
             })
             .on("mouseover", function (d) {
+                var types;
+                if(d.aggs && d.aggs.buckets){
                 var types = d.aggs.buckets.map(type =>
                     " <br/><strong>" + type.key + ": </strong> " + type.doc_count
                 );
+                types = "<strong>City: </strong>" + d.key + " <br/>" + types;
+                }
+                else {
+                    var types = " <strong>" + d.key + ": </strong> " + d.doc_count;
+                }
 
                 tooltip.style("visibility", "visible");
                 d3.select(this).style("cursor", "pointer");
-                tooltip.select("div").html("<strong>City: </strong>" + d.key + " <br/>" + types);
+                tooltip.select("div").html( types);
             })
             .on("mouseout", function (d) {
                 tooltip.style("visibility", "hidden")

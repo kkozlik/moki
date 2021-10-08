@@ -107,6 +107,7 @@ async function updateES(indexName, queries, script, params, res) {
       index: indexName,
       type: '_doc',
       refresh: true,
+      conflicts: 'proceed',
       body: {
         query: {
           bool: {
