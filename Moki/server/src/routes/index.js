@@ -102,7 +102,8 @@ module.exports = () => {
   router
     .post('/registration/table', RegistrationController.getTable)
     .post('/registration/registrations_map', RegistrationController.getGeoip)
-    .post('/registration/charts', RegistrationController.getCharts);
+    .post('/registration/charts', RegistrationController.getCharts)
+    .post('/registration/geoData', RegistrationController.getGeoData);
 
   router
     .post('/security/charts', SecurityController.getCharts)

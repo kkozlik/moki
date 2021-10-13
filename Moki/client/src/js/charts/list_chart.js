@@ -135,7 +135,7 @@ class TableChart extends Component {
           <h3 className="alignLeft title" style={{"float": isAnimation ? "left" : "inherit"}}>{this.props.name}</h3>
           {isAnimation && <Animation name={this.props.name} type={this.props.type} setData={this.setData} dataAll={this.state.data} />}
           { this.state.data && this.state.data[0]  && this.state.data[0] !== "" && this.state.data[0].length > 0 &&
-            <table>
+            <table style={{"display": "initial"}}>
               <tbody>{ this.state.data[0].map((item, key) => {
                 return (
                   <tr key={key}>

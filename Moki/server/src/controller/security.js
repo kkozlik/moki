@@ -3,10 +3,10 @@ const geoip = require('../../js/template_queries/geoip_agg_filter');
 const datehistogram_agg_filter_query = require('../../js/template_queries/datehistogram_agg_filter_query');
 const agg_filter = require('../../js/template_queries/agg_filter');
 const agg_filter_animation = require('../../js/template_queries/agg_filter_animation');
+const two_agg_query_nolimit = require('../../js/template_queries/two_agg_query_nolimit');
 const geoipAnimation = require('../../js/template_queries/geoip_agg_filter_animation');
 const agg_query = require('../../js/template_queries/agg_query');
 const geoip_hash_query = require('../../js/template_queries/geoip_agg_hash_filter');
-const fs = require('fs');
 
 class securityController extends Controller {
 
@@ -48,30 +48,30 @@ class securityController extends Controller {
   static getCharts(req, res, next) {
 
 
-/*
-    let rawdata = fs.readFileSync('/usr/share/Moki/server/src/geonames-all-cities-with-a-population-500_fin.json');
-    let json = JSON.parse(rawdata);
-
-    var data = [];
-*/
-  /*
-    for (var i = 0; i < json.length; i++) {
-      data.push({
-        geoname_id: json[i].fields.geoname_id,
-        name: json[i].fields.name,
-        longitude: json[i].fields.longitude,
-        latitude: json[i].fields.latitude,
-      })
-    }
+    /*
+        let rawdata = fs.readFileSync('/usr/share/Moki/server/src/geonames-all-cities-with-a-population-500_fin.json');
+        let json = JSON.parse(rawdata);
+    
+        var data = [];
     */
-   /*
-    json.sort(function(a,b){
-      return a["geoname_id"] - b["geoname_id"];
-  });
-
-    let dataout = JSON.stringify(json);
-    fs.writeFileSync('/usr/share/Moki/server/src/geonames-all-cities-with-a-population-500_fin2.json', dataout);
-*/
+    /*
+      for (var i = 0; i < json.length; i++) {
+        data.push({
+          geoname_id: json[i].fields.geoname_id,
+          name: json[i].fields.name,
+          longitude: json[i].fields.longitude,
+          latitude: json[i].fields.latitude,
+        })
+      }
+      */
+    /*
+     json.sort(function(a,b){
+       return a["geoname_id"] - b["geoname_id"];
+   });
+ 
+     let dataout = JSON.stringify(json);
+     fs.writeFileSync('/usr/share/Moki/server/src/geonames-all-cities-with-a-population-500_fin2.json', dataout);
+ */
 
 
     super.request(req, res, next, [
@@ -231,7 +231,7 @@ class securityController extends Controller {
   static getGeoData(req, res, next) {
     super.request(req, res, next, [
       //EVENTS BY COUNTRY
-      { index: "logstash*", template: agg_query, params: ["terms", 'geoip.dst.city_id'], filter: "*" },
+      { index: "logstash*", template: two_agg_query_nolimit, params: ["geoip.src.iso_code", "terms", 'geoip.src.city_id'], filter: "*" },
     ]);
   }
 

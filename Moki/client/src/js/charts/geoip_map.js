@@ -51,18 +51,16 @@ export default class geoIpMap extends Component {
     }
 
     async draw(data, width, units, name, dataNotShown = this.state.dataNotShown) {
-        if(storePersistent.getState().user.aws){
-            console.log("***");
-            if(storePersistent.getState().profile[0].userprefs.mode === "encrypt"){
-        var geoData = await getGeoData();
-        if (geoData && geoData.responses[0].aggregations.agg.buckets.length > 0) {
-            data = await decryptGeoData(geoData.responses[0].aggregations.agg.buckets);
+        if (storePersistent.getState().user.aws) {
+            if (storePersistent.getState().profile[0].userprefs.mode === "encrypt") {
+                var geoData = await getGeoData(window.location.pathname.substring(1));
+                if (geoData && geoData.responses[0].aggregations.agg.buckets.length > 0) {
+                    data = await decryptGeoData(geoData.responses[0].aggregations.agg.buckets);
+                    dataNotShown = data[1];
+                    data = data[0];
+                }
+            }
         }
-        console.log("*********************************");
-        console.log(data);
-    }
-    }
-
 
         width = width < 0 ? 1028 : width;
         units = units ? " (" + units + ")" : "";
@@ -154,7 +152,7 @@ export default class geoIpMap extends Component {
                     }
                 }
 
-                rScale.domain([minValue - 1, maxValue + 1]).range([3, 12]);
+                rScale.domain([minValue - 1, maxValue + 1]).range([3, 10]);
                 var thiss = this;
                 // zoom and pan
                 const zoom = d3.zoom()
@@ -271,7 +269,7 @@ export default class geoIpMap extends Component {
                                 .style("top", (d3.event.layerY - 70) + "px");
 
                         });
-                    thiss.drawOnlyPins(g, name, data, units, svg)
+                    thiss.drawOnlyPins(g, name, data, dataNotShown, units, svg)
                     thiss.setState({
                         g: g,
                         svg: svg
@@ -280,15 +278,14 @@ export default class geoIpMap extends Component {
             }
             //rerender only pins
             else {
-                this.drawOnlyPins(this.state.g, name, data, units, this.state.svg)
+                this.drawOnlyPins(this.state.g, name, data, dataNotShown, units, this.state.svg)
             }
         }
     }
 
 
     //draw only data
-    drawOnlyPins(g, name, data, units, svg) {
-        var dataNotShown = this.props.dataNotShown;
+    drawOnlyPins(g, name, data, dataNotShown, units, svg) {
         var width = this.props.width;
         var height = 400;
         var projection = d3.geoMercator();
@@ -324,7 +321,7 @@ export default class geoIpMap extends Component {
             }
         }
 
-        rScale.domain([minValue - 1, maxValue + 1]).range([3, 12]);
+        rScale.domain([minValue - 1, maxValue + 1]).range([3, 10]);
         //remove old pins if exists
         var pins = document.getElementsByClassName("pins");
         if (pins.length > 0) {
@@ -385,11 +382,11 @@ export default class geoIpMap extends Component {
             })
             .on("mouseover", function (d) {
                 var types;
-                if(d.aggs && d.aggs.buckets){
-                var types = d.aggs.buckets.map(type =>
-                    " <br/><strong>" + type.key + ": </strong> " + type.doc_count
-                );
-                types = "<strong>City: </strong>" + d.key + " <br/>" + types;
+                if (d.aggs && d.aggs.buckets) {
+                    var types = d.aggs.buckets.map(type =>
+                        " <br/><strong>" + type.key + ": </strong> " + type.doc_count
+                    );
+                    types = "<strong>City: </strong>" + d.key + " <br/>" + types;
                 }
                 else {
                     var types = " <strong>" + d.key + ": </strong> " + d.doc_count;
@@ -397,7 +394,7 @@ export default class geoIpMap extends Component {
 
                 tooltip.style("visibility", "visible");
                 d3.select(this).style("cursor", "pointer");
-                tooltip.select("div").html( types);
+                tooltip.select("div").html(types);
             })
             .on("mouseout", function (d) {
                 tooltip.style("visibility", "hidden")
@@ -423,12 +420,19 @@ export default class geoIpMap extends Component {
                 .attr("r", function (d) {
                     return rScale(d.doc_count) < 2 ? 2 : rScale(d.doc_count);
                 })
-                .attr("fill", "red")
+                .attr("fill", "#AA59E0")
                 .attr("class", "pins")
                 .attr("z-index", 5)
-                .attr("fill-opacity", 0.3)
+                .attr("fill-opacity", 0.5)
                 .attr("transform", function (d) {
-                    if (d.key) {
+
+                    if (d.centroid && d.centroid.location && d.centroid.location.lon && d.centroid.location.lat) {
+                        return "translate(" + projection([
+                            d.centroid.location.lon,
+                            d.centroid.location.lat
+                        ]) + ")";
+                    }
+                    else if (d.key && geohash.decode(d.key)) {
                         return "translate(" + projection([
                             geohash.decode(d.key).longitude,
                             geohash.decode(d.key).latitude
@@ -437,9 +441,14 @@ export default class geoIpMap extends Component {
                     return "translate(-10,-10)";
                 })
                 .on("mouseover", function (d) {
-                    var types = d.types.buckets.map(type =>
-                        "<br/><strong>" + type.key + ": </strong> " + type.doc_count
-                    );
+                    if (d.aggs && d.aggs.buckets) {
+                        var types = d.types.buckets.map(type =>
+                            "<br/><strong>" + type.key + ": </strong> " + type.doc_count
+                        );
+                    }
+                    else {
+                        var types = " <strong>" + d.country + ": </strong> " + d.doc_count;
+                    }
 
                     tooltip.style("visibility", "visible");
                     d3.select(this).style("cursor", "pointer");
@@ -463,9 +472,9 @@ export default class geoIpMap extends Component {
             pins
                 .transition()
                 .ease(d3.easeLinear)
-                .attr("r", function (d) { if (d.doc_count) { return rScale(d.doc_count) + 10 } })
+                .attr("r", function (d) { if (d.doc_count) { return rScale(d.doc_count) + 5 } })
                 .style("opacity", function (d) { return d === 60 ? 0 : 1 })
-                .duration(500)
+                .duration(1000)
                 .on("end", function () { if (++i === pins.size() - 1) { transition(); } });
 
             // Reset circles where r == 0
