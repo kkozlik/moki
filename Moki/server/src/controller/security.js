@@ -46,34 +46,6 @@ class securityController extends Controller {
    *               $ref: '#/definitions/ChartResponseError'
    */
   static getCharts(req, res, next) {
-
-
-    /*
-        let rawdata = fs.readFileSync('/usr/share/Moki/server/src/geonames-all-cities-with-a-population-500_fin.json');
-        let json = JSON.parse(rawdata);
-    
-        var data = [];
-    */
-    /*
-      for (var i = 0; i < json.length; i++) {
-        data.push({
-          geoname_id: json[i].fields.geoname_id,
-          name: json[i].fields.name,
-          longitude: json[i].fields.longitude,
-          latitude: json[i].fields.latitude,
-        })
-      }
-      */
-    /*
-     json.sort(function(a,b){
-       return a["geoname_id"] - b["geoname_id"];
-   });
- 
-     let dataout = JSON.stringify(json);
-     fs.writeFileSync('/usr/share/Moki/server/src/geonames-all-cities-with-a-population-500_fin2.json', dataout);
- */
-
-
     super.request(req, res, next, [
       //SECURITY DISTRIBUTION MAP
       { index: "logstash*", template: geoip, filter: '*' },
