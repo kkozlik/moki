@@ -441,7 +441,7 @@ export default class geoIpMap extends Component {
                     return "translate(-10,-10)";
                 })
                 .on("mouseover", function (d) {
-                    if (d.aggs && d.aggs.buckets) {
+                    if (d.types && d.types.buckets) {
                         var types = d.types.buckets.map(type =>
                             "<br/><strong>" + type.key + ": </strong> " + type.doc_count
                         );
