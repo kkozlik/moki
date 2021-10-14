@@ -12,7 +12,7 @@ import ListChart from '../../charts/list_chart.js';
 import ValueChart from '../../charts/value_chart.js';
 import store from "../../store/index";
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
-import { parseListData, parseStackedbarTimeData, parseBucketData, parseSunburstData, parseQueryStringData, parseAggData, parseAggSumBucketData } from '@moki-client/es-response-parser';
+import { parseListData, parseList, parseStackedbarTimeData, parseBucketData, parseSunburstData, parseQueryStringData, parseAggData, parseAggSumBucketData } from '@moki-client/es-response-parser';
 
 
 
@@ -66,7 +66,7 @@ class CallCharts extends Dashboard {
                 //ANSWER-SEIZURE RATIO 8
                 [{ result: 'answerSeizureRatio', func: parseAggSumBucketData }],
                 //CALLING COUNTRIES 9
-                [{ result: 'callingCountries', func: parseListData }],
+                [{ result: 'callingCountries', func: parseList }],
                 //SUM DURATION OVER TIME 10
                 [{ result: 'sumDurationOverTime', func: parseBucketData }],
                 //MAX DURATION 11
