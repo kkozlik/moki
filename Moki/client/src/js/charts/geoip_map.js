@@ -266,7 +266,7 @@ export default class geoIpMap extends Component {
                         .on("mousemove", function (d) {
                             tooltip
                                 .style("left", (d3.event.layerX - 20) + "px")
-                                .style("top", (d3.event.layerY - 70) + "px");
+                                .style("top", (d3.event.layerY ) + "px");
 
                         });
                     thiss.drawOnlyPins(g, name, data, dataNotShown, units, svg)
@@ -343,25 +343,29 @@ export default class geoIpMap extends Component {
         g = d3.select('#svgG');
         svg = d3.select('#geoIpMap');
         var color = name === "REGISTRATIONS MAP" ? "#caa547" : "#c41d03";
-        pins = g.selectAll(".pin")
-            .data(data)
-            .enter().append("circle")
-            .attr("r", function (d) {
-                if (rScale(d.doc_count) < 2) return 2;
-                return rScale(d.doc_count);
-            })
-            .attr("fill", "transparent")
-            .attr("class", "pinsPulse")
-            .style("stroke", color)
-            .attr("transform", function (d) {
-                if (d.centroid && d.centroid.location && d.centroid.location.lon && d.centroid.location.lat) {
-                    return "translate(" + projection([
-                        d.centroid.location.lon,
-                        d.centroid.location.lat
-                    ]) + ")";
-                }
-                return "translate(-10,-10)";
-            });
+
+        if (data.length < 50) {
+            pins = g.selectAll(".pin")
+                .data(data)
+                .enter().append("circle")
+                .attr("r", function (d) {
+                    if (rScale(d.doc_count) < 2) return 2;
+                    return rScale(d.doc_count);
+                })
+                .attr("fill", "transparent")
+                .attr("class", "pinsPulse")
+                .style("stroke", color)
+                .attr("transform", function (d) {
+                    if (d.centroid && d.centroid.location && d.centroid.location.lon && d.centroid.location.lat) {
+                        return "translate(" + projection([
+                            d.centroid.location.lon,
+                            d.centroid.location.lat
+                        ]) + ")";
+                    }
+                    return "translate(-10,-10)";
+                });
+
+        }
 
         g.selectAll(".pin")
             .data(data)
@@ -483,7 +487,9 @@ export default class geoIpMap extends Component {
                 .style("opacity", 1);
         }
 
-        transition();
+        if (data.length < 50) {
+            transition();
+        }
     }
 
     render() {
