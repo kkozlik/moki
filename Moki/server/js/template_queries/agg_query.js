@@ -17,16 +17,15 @@ var getTemplate = function (agg_type, field, queries, supress) {
             }
         },
         "aggs": {
-            "nested" : { "value_count" : { "field" : field } },
+            "nested": { "value_count": { "field": field } },
             "agg": {
-                      [agg_type]: {
-                    "field": field,
-                    "size": 500,
+                [agg_type]: {
+                    "field": field
                 }
             }
-        
+
+        }
     }
-}
     return template;
 }
 
