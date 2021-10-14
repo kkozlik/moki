@@ -55,6 +55,7 @@ class SecurityCharts extends Dashboard {
                 [{ result: 'geoipHashMap', func: parseAggCities }],
             ]
         };
+
     }
 
     //render GUI

@@ -3,6 +3,7 @@ const geoip = require('../../js/template_queries/geoip_agg_filter');
 const datehistogram_agg_filter_query = require('../../js/template_queries/datehistogram_agg_filter_query');
 const agg_filter = require('../../js/template_queries/agg_filter');
 const agg_filter_animation = require('../../js/template_queries/agg_filter_animation');
+const two_agg_query_nolimit = require('../../js/template_queries/two_agg_query_nolimit');
 const geoipAnimation = require('../../js/template_queries/geoip_agg_filter_animation');
 const agg_query = require('../../js/template_queries/agg_query');
 const geoip_hash_query = require('../../js/template_queries/geoip_agg_hash_filter');
@@ -196,6 +197,13 @@ class securityController extends Controller {
     super.request(req, res, next, [
       //EVENTS BY COUNTRY
       { index: "logstash*", template: agg_filter_animation, params: ['attrs.country_code2', "timebucketAnimation", "timestamp_gte", "timestamp_lte", 3], filter: "attrs.type:limit OR attrs.type:message-dropped OR attrs.type:auth-failed OR attrs.type:log-reply OR attrs.type:fbl-new OR attrs.type:fgl-new" }
+    ]);
+  }
+
+  static getGeoData(req, res, next) {
+    super.request(req, res, next, [
+      //EVENTS BY COUNTRY
+      { index: "logstash*", template: two_agg_query_nolimit, params: ["geoip.src.iso_code", "terms", 'geoip.src.city_id'], filter: "*" },
     ]);
   }
 

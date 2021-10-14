@@ -72,6 +72,7 @@ class Controller {
         types = "*";
       }
 
+      var isEncryptChecksumFilterOld = isEncryptChecksumFilter;
       for (let i = 0; i < requests.length; i++) {
         //disable types for specific requests (e.g. different index in dashboard)
         if (requests[i].types) {
@@ -168,7 +169,6 @@ class Controller {
             isEncryptChecksumFilter = "*";
             types = "*";
           }
-
           requests[i].query = requests[i].template.getTemplate(...params, getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, requests[i].filter, domainFilter, isEncryptChecksumFilter, requests[i].exists), supress);
 
         }
@@ -191,6 +191,7 @@ class Controller {
           timestamp_gte = Math.round(req.body.timerange_gte);
         }
         types = oldtypes;
+        isEncryptChecksumFilter = isEncryptChecksumFilterOld;
       }
       console.info("SERVER search with filters: " + filters + " types: " + types + " timerange: " + timestamp_gte + "-" + timestamp_lte + " userFilter: " + userFilter + " domainFilter: " + domainFilter + " encrypt checksum: " + isEncryptChecksumFilter);
       console.log(new Date() + " send msearch");

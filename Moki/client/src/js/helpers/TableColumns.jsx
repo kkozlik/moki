@@ -1342,9 +1342,11 @@ export function tableColumns(dashboard, tags) {
             editable: false,
             formatter: (cell, obj) => {
                 var ob = obj._source;
-                return <span className="filterToggleActive"><span className="filterToggle">
-                    <img onClick={doFilter} field="geoip.country_name" value={ob.geoip.country_name} className="icon" alt="filterIcon" src={filterIcon} /><img field="geoip.country_name" value={ob.geoip.country_name} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span > {ob.geoip.country_name}
-                </span>
+                if (ob.geoip && ob.geoip.country_name) {
+                    return <span className="filterToggleActive"><span className="filterToggle">
+                        <img onClick={doFilter} field="geoip.country_name" value={ob.geoip.country_name} className="icon" alt="filterIcon" src={filterIcon} /><img field="geoip.country_name" value={ob.geoip.country_name} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span > {ob.geoip.country_name}
+                    </span>
+                }
             }
         }, {
             dataField: '_source.attrs.tags',

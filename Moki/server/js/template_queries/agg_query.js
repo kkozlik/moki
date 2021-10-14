@@ -20,7 +20,8 @@ var getTemplate = function (agg_type, field, queries, supress) {
             "nested" : { "value_count" : { "field" : field } },
             "agg": {
                       [agg_type]: {
-                    "field": field
+                    "field": field,
+                    "size": 500,
                 }
             }
         

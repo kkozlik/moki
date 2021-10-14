@@ -6,6 +6,7 @@ const geoipAnimation = require('../../js/template_queries/geoip_agg_filter_anima
 const geoip_hash_query = require('../../js/template_queries/geoip_agg_hash_filter');
 const distinct_timerange_query_string = require('../../js/template_queries/distinct_timerange_query_string');
 const two_agg_query = require('../../js/template_queries/two_agg_query');
+const two_agg_query_nolimit = require('../../js/template_queries/two_agg_query_nolimit');
 
 class registrationController extends Controller {
 
@@ -109,6 +110,13 @@ class registrationController extends Controller {
     super.request(req, res, next, [
       //GEOIP ANIMATION
       { index: "logstash*", template: geoipAnimation, params: ["timebucket", "timestamp_gte", "timestamp_lte"], filter: "attrs.type:reg-new OR attrs.type:reg-expired OR attrs.type:reg-del" }
+    ]);
+  }
+
+  static getGeoData(req, res, next) {
+    super.request(req, res, next, [
+      //EVENTS BY COUNTRY
+      { index: "logstash*", template: two_agg_query_nolimit, params: ["geoip.src.iso_code", "terms", 'geoip.src.city_id'], filter: "*" },
     ]);
   }
 

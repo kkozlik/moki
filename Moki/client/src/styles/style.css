@@ -355,7 +355,7 @@ p {
     min-width: 180px;
     padding-bottom: 5px;
     padding-right: 10px;
-    max-width: max-content;
+    width: fit-content;
 }
 
 #sunburstChart {

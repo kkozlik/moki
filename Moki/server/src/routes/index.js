@@ -102,7 +102,8 @@ module.exports = () => {
   router
     .post('/registration/table', RegistrationController.getTable)
     .post('/registration/registrations_map', RegistrationController.getGeoip)
-    .post('/registration/charts', RegistrationController.getCharts);
+    .post('/registration/charts', RegistrationController.getCharts)
+    .post('/registration/geoData', RegistrationController.getGeoData);
 
   router
     .post('/security/charts', SecurityController.getCharts)
@@ -110,7 +111,8 @@ module.exports = () => {
     .post('/security/top_subnets', SecurityController.getTopSubnets)
     .post('/security/events_by_country', SecurityController.getEventsByCountry)
     .post('/security/events_by_ip_addr', SecurityController.getEventsByIP)
-    .post('/security/table', SecurityController.getTable);
+    .post('/security/table', SecurityController.getTable)
+    .post('/security/geoData', SecurityController.getGeoData);
 
   router
     .post('/system/charts', SystemController.getCharts)
