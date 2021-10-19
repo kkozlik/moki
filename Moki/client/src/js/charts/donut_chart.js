@@ -219,9 +219,11 @@ export default class StackedChart extends Component {
                 .attr('y', legendRectSize - legendSpacing)
                 .text(function (d) {
                     for (var i = 0; i < pie(data).length; i++) {
-                        return d.key + " (" + d.doc_count + ")";
+                        return d.key.substring(0, 20) + '...' + " (" + d.doc_count + ")";
                     }
                 })
+                .append("svg:title")
+                .text(function (d) { return d.key })
                 .on("click", el => {
                     createFilter(field + ":\"" + el.key + "\"");
                     //bug fix: if you click but not move out
