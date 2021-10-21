@@ -203,7 +203,6 @@ export default class MultipleLineChart extends Component {
                     .tickFormat("")
                 )
 
-
             /* Add line into SVG */
             var line = d3.line()
                 .x(d => xScale(d.date))
@@ -220,7 +219,7 @@ export default class MultipleLineChart extends Component {
                 .append('path')
                 .attr('class', 'line')
                 .attr('d', d => d.values ? line(d.values) : 0)
-                .style('stroke', (d, i) => hostnames[d.name] ? hostnames[d.name] : color(i))
+                .style('stroke', (d, i) => hostnames && hostnames[d.name] ? hostnames[d.name] : color(i))
                 .style('opacity', lineOpacity)
                 .on("mouseover", function (d) {
                     d3.selectAll('.line')
@@ -252,7 +251,7 @@ export default class MultipleLineChart extends Component {
             lines.selectAll("circle-group" + id)
                 .data(data).enter()
                 .append("g")
-                .style("fill", (d, i) => hostnames[d.name] ? hostnames[d.name] : color(i))
+                .style("fill", (d, i) => hostnames && hostnames[d.name] ? hostnames[d.name] : color(i))
                 .selectAll("circle" + id)
                 .data(d => d.values).enter()
                 .append("g")
@@ -337,7 +336,7 @@ export default class MultipleLineChart extends Component {
                 })
                 .style('fill', function (d, i) {
                     if (i < 7) {
-                        return hostnames[d.name] ? hostnames[d.name] : color(i);
+                        return hostnames && hostnames[d.name] ? hostnames[d.name] : color(i);
                     }
                 });
 

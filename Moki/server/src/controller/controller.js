@@ -165,7 +165,7 @@ class Controller {
           }
 
           //special case: disable disableHMACfilter - for loging events - different index
-          if (requests[i].index === "lastlog*") {
+          if (requests[i].index === "lastlog*" || requests[i].index === "polda*") {
             isEncryptChecksumFilter = "*";
             types = "*";
           }
@@ -174,7 +174,7 @@ class Controller {
         }
         else {
           //special case: disable disableHMACfilter - for loging events - different index
-          if (requests[i].index === "lastlog*") {
+          if (requests[i].index === "lastlog*" || requests[i].index === "polda*") {
             isEncryptChecksumFilter = "*";
             types = "*";
           }
