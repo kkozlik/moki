@@ -51,7 +51,7 @@ export default class geoIpMap extends Component {
     }
 
     async draw(data, width, units, name, dataNotShown = this.state.dataNotShown) {
-        if (storePersistent.getState().user.aws) {
+        if (storePersistent.getState().user.aws && storePersistent.getState().profile[0] && storePersistent.getState().profile[0].userprefs) {
             if (storePersistent.getState().profile[0].userprefs.mode === "encrypt") {
                 var geoData = await getGeoData(window.location.pathname.substring(1));
                 if (geoData && geoData.responses[0].aggregations.agg.buckets.length > 0) {
