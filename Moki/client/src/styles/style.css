@@ -1,5 +1,6 @@
 :root {
     --main: #808080;
+    --second: #808080;
 }
 
 .tooltipCharts {
@@ -405,7 +406,7 @@ h5 {
 }
 
 .green {
-    color: #caa547;
+    color: var(--second);
 }
 
 .btn-small {
@@ -1015,7 +1016,7 @@ a.nav-item  {
 }
 
 .list-group-myitem {
-    background-color: var(--main);
+    background-color: var(--second);
     padding: .5rem 0 0 1rem;
     border: 0px;
 }
@@ -1148,7 +1149,7 @@ button {
 }
 
 .iconMain {
-    background: var(--main);
+    background: var(--second);
     border-radius: .25rem;
     transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
 }
@@ -1762,4 +1763,35 @@ td.rdtYear:hover {
 
 .rdtTime td {
     cursor: default;
+}
+
+
+@keyframes loader-animation {
+    0% {
+        width: 0%;
+    }
+    49% {
+        width: 100%;
+        left: 0%
+    }
+    50% {
+        left: 100%;
+    }
+    100% {
+        left: 0%;
+        width: 40%
+    }
+}
+.loaderr {
+    height: 2px;
+    width: 20%;
+}
+.loaderr .bar {
+    position: relative;
+    height: 5px;
+    background-color: black;
+    animation-name: loader-animation;
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in-out;
 }
