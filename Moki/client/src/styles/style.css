@@ -23,12 +23,16 @@
 
 .chart {
     background-color: #fff;
-    background-clip: padding-box;
     border-radius: .25rem;
-    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
     margin-top: 10px;
     margin-right: 5px;
-    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+   /* box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+     transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+         background-clip: padding-box;
+   */
+   border-color: var(--second);
+    border-style: solid;
+    border-width: thin;
     width: 100%;
 }
 
@@ -212,14 +216,20 @@
     color: white;
 }
 
-.custom-control-input:checked~.custom-control-label::before {
+#customSwitch::before  {
     border-radius: 3px !important;
-    color: var(--main) !important;
+    background-color: var(--second) !important;
+    border-color: var(--second) !important;
 }
 
-.custom-switch .custom-control-label::before {
+.custom-control-label::before {
     border-radius: 3px !important;
-    color: var(--main) !important;
+    color: var(--second) !important;
+}
+
+.custom-control-input {
+    border-radius: 3px !important;
+    background-color: var(--second) !important;
 }
 
 .custom-switch .custom-control-label::after {
@@ -233,12 +243,13 @@
 #context {
     float: right;
     position: absolute;
-    background-color: #f6f6f6;
+    background-color: white;
+    width: -webkit-fill-available;
     /* width: intrinsic;           /* Safari/WebKit uses a non-standard name */
     width: -moz-available;
     /* Firefox/Gecko */
-    width:  auto;
-    /* Chrome */
+    height: -webkit-fill-available;
+    height: -moz-available;
 }
 
 label {
@@ -283,7 +294,7 @@ body {
     box-sizing: content-box;
     min-width: fit-content;
     color: black !important;
-    background-color: #f6f6f6;
+    background-color: white;
 }
 
 .col {
@@ -857,7 +868,6 @@ input[type=text] {
     background-clip: padding-box;
     border: 1px solid #ced4da;
     border-radius: .25rem;
-    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
 }
 
 .paddingBottom {
@@ -977,7 +987,8 @@ a.nav-item  {
 
 .sidebar-separator-title {
     background-color: #333;
-    height: 35px;
+    height: 1px;
+    padding: 0 !important;
 }
 
 .sidebar-separator {
@@ -990,9 +1001,6 @@ a.nav-item  {
     height: 60px;
 }
 
-.bg-dark {
-    box-shadow: rgb(0 0 0 / 15%) 1.95px 1.95px 2.6px;
-}
 
 /* Closed submenu icon */
 
@@ -1205,7 +1213,6 @@ button {
 
 .filterBody {
     margin-right: 5px;
-    box-shadow: rgb(0 0 0 / 15%) 1.95px 1.95px 2.6px;
 }
 
 .Advance {
@@ -1284,7 +1291,6 @@ pre {
     font-size: small;
     cursor: pointer;
     min-width: 100px;
-    box-shadow: rgb(0 0 0 / 15%) 1.95px 1.95px 2.6px;
 }
 
 .typeBar {
@@ -1373,7 +1379,9 @@ input {
     background-clip: padding-box;
     border: 1px solid #ced4da;
     border-radius: .25rem;
-    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    border-color: var(--second);
+    border-style: solid;
+    border-width: thin;
     margin-right: 10px;
 }
 
@@ -1501,9 +1509,6 @@ small {
     color: white;
 }
 
-.shadow {
-    box-shadow: rgb(0 0 0 / 15%) 1.95px 1.95px 2.6px;
-}
 
 #timeMenu {
     width: 450px;
@@ -1788,8 +1793,8 @@ td.rdtYear:hover {
 }
 .loaderr .bar {
     position: relative;
-    height: 5px;
-    background-color: black;
+    height: 1px;
+    background-color: var(--main);
     animation-name: loader-animation;
     animation-duration: 3s;
     animation-iteration-count: infinite;

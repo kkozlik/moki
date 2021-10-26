@@ -7,10 +7,10 @@ import {
 } from '@moki-client/gui';
 import {
     ColorsRedGreen
-} from "../helpers/style/ColorsRedGreen";
+} from "@moki-client/gui";
 import {
     ColorsGreen
-} from "../helpers/style/ColorsGreen";
+} from "@moki-client/gui";
 import {
     durationFormat
 } from "../helpers/durationFormat";

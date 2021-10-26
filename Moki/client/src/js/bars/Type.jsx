@@ -1,14 +1,14 @@
 import React, {
     Component
 } from 'react';
-import colorType from '../helpers/style/ColorType';
+import {ColorType} from '@moki-client/gui';
 
 class Type extends Component{
 constructor(props) {
    super(props);
         this.state = {
             state: 'enable',
-            color: colorType[this.props.id],
+            color: ColorType[this.props.id],
         }
         this.disableType = this.disableType.bind(this);
 
@@ -22,7 +22,7 @@ constructor(props) {
 
         }else{
             this.setState({state: 'enable'}); 
-            this.setState({color: colorType[this.props.id]}); 
+            this.setState({color: ColorType[this.props.id]}); 
    //        }
     }
   }
@@ -36,7 +36,7 @@ constructor(props) {
 
         }else{
             this.setState({state: 'enable'}); 
-            this.setState({color: colorType[this.props.id]}); 
+            this.setState({color: ColorType[this.props.id]}); 
             this.props.enableType(events.currentTarget.getAttribute('id'));
            }
        

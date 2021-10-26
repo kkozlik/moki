@@ -140,13 +140,11 @@ class navBar extends Component {
                     </li>
                     {navbar}
                     {navbarSettings.length > 0 && <li className="list-group-myitem sidebar-separator-title d-flex align-items-center menu-collapsed">
-
-                        <small className="menu-collapsed">SETTINGS</small>
                     </li>}
                     {navbarSettings}
 
                     <li className="list-group-myitem sidebar-separator-title d-flex align-items-center menu-collapsed">
-                        <small className="menu-collapsed">USER</small>
+                       
                     </li>
 
                     {navbarUser}

@@ -17,12 +17,12 @@ import store from "../store/index";
 import {
     setTimerange
 } from "../actions/index";
-import Colors from '../helpers/style/Colors';
+import {Colors} from '@moki-client/gui';
 import emptyIcon from "../../styles/icons/empty_small.png";
 import {
     getTimeBucketInt, getTimeBucket
 } from "../helpers/getTimeBucket";
-import {parseTimestamp} from "../helpers/parseTimestamp";
+import { parseTimestamp } from "../helpers/parseTimestamp";
 
 export default class MultipleLineChart extends Component {
     constructor(props) {
@@ -49,6 +49,25 @@ export default class MultipleLineChart extends Component {
 
 
     draw(data, id, width, ticks, hostnames) {
+        //make div values if necessary
+        if (window.location.pathname === "/stats") {
+            var divData = [];
+            for (var k = 0; k < data.length; k++) {
+                divData.push({
+                    name: data[k].name,
+                    values: []
+                })
+                for (var l = 0; l < data[k].values.length-1; l++) {
+                    divData[k].values.push({
+                            date: data[k].values[l].date,
+                            value: data[k].values[l + 1].value - data[k].values[l].value
+                        });
+                }
+            }
+            data = divData;
+        }
+
+
         //FOR UPDATE: remove chart if it's already there
         var chart = document.getElementById(id + "SVG");
         if (chart) {
@@ -362,7 +381,7 @@ export default class MultipleLineChart extends Component {
         return (<div id={
             this.props.id
         } className="chart">
-            <h3 className="alignLeft title" style={{"float": "inherit"}}> {
+            <h3 className="alignLeft title" style={{ "float": "inherit" }}> {
                 this.props.name
             } <span className="smallText"> (interval: {bucket})</span></h3></div>)
     }

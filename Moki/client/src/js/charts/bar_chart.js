@@ -2,8 +2,8 @@ import React, {
     Component
 } from 'react';
 import * as d3 from "d3";
-import ColorType from '../helpers/style/ColorType';
-import Colors from '../helpers/style/Colors';
+import {ColorType} from '@moki-client/gui';
+import {Colors} from '@moki-client/gui';
 import emptyIcon from "../../styles/icons/empty_small.png";
 import Animation from '../helpers/Animation';
 

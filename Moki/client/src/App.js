@@ -152,7 +152,7 @@ class App extends Component {
 
         //for admin level aws remove WBlist
         if (this.state.aws && this.state.admin) {
-            dashboardsSettings = dashboardsSettings.filter(dashboard => dashboard !== "wblist" );
+            dashboardsSettings = dashboardsSettings.filter(dashboard => dashboard !== "wblist");
             dashboardsSettings = dashboardsSettings.filter(dashboard => dashboard !== "config");
         }
 
@@ -175,24 +175,19 @@ class App extends Component {
         });
 
         //set favicon
-        this.setState({ logo: "data:;base64," + await this.getLogo(jsonData.logo) });
-        document.getElementById("favicon").href = "data:;base64," + await this.getLogo(jsonData.favicon);
+        this.setState({ logo: "data:;base64," + await this.getLogo(jsonData.logo) },
+            async () => {
+                document.getElementById("favicon").href = "data:;base64," + await this.getLogo(jsonData.favicon);
 
-        //set main color
-        document.body.style.setProperty('--main', jsonData.color);
+                //set main and secondary color
+                document.body.style.setProperty('--main', jsonData.color);
+                document.body.style.setProperty('--second', jsonData.colorSecondary);
 
-        //set monitor name
-        /*  var monitorName = this.getUserSetting("monitor-name");
-          if (monitorName.status !== 200) {
-              */
-        this.setState({
-            monitorName: jsonData.name + " " + monitorVersion
-        });
-
-        this.setState({
-            isLoading: false
-        })
-
+                this.setState({
+                    monitorName: jsonData.name + " " + monitorVersion,
+                    isLoading: false
+                });
+            });
     }
 
     /**
@@ -467,8 +462,10 @@ class App extends Component {
         var loadingScreen = <span>
             <Notificationbar className="errorBarLoading" error={this.state.error} deleteAllErrors={this.deleteAllErrors}></Notificationbar>
             <div style={{ "marginTop": (window.innerHeight / 2) - 50 }} className="row align-items-center justify-content-center">
-                <div className="loader" />
-                {this.state.logo && <img src={this.state.logo} alt="logo" style={{ "marginLeft": 10 }} />}
+                <div class="loaderr">
+                    <div class="bar"></div>
+                </div>
+                {this.state.logo && <div><img src={this.state.logo} alt="logo" style={{ "marginLeft": "30%", "width": "50%" }} /></div>}
             </div>
         </span>
 
@@ -483,7 +480,7 @@ class App extends Component {
         var sipUserSwitch;
         const aws = this.state.aws;
         var url = window.location.pathname;
-        var style = aws ? "" :{"paddingBottom": "7px", "paddingLeft": "7px"};
+        var style = aws ? "" : { "paddingBottom": "7px", "paddingLeft": "7px" };
 
         //show just diagram
         if (this.state.dashboards.length > 0) {
@@ -504,7 +501,7 @@ class App extends Component {
                 sipUserSwitch = <div className="row" id="body-row" >
                     <NavBar redirect={this.redirect} toggle={this.toggle} aws={this.state.aws} dashboardsUser={this.state.dashboardsUser} dashboards={this.state.dashboards} dashboardsSettings={this.state.dashboardsSettings} />
                     <div className="row justify-content-between header" style={{ "marginRight": 0, "marginLeft": 0 }} >
-                        <span id="user" className="top" style={{style}}>
+                        <span id="user" className="top" style={{ style }}>
                             {aws === true && <DecryptPasswordPopup />}
                             {sipUser}
                             {aws === true && (!this.state.admin && !this.state.siteAdmin) && <a href="/logout" > Log out </a>}
@@ -526,8 +523,7 @@ class App extends Component {
                             </Switch>
                         </div>
                         <span className="footer" style={{ "float": "right" }}>
-                            <div id="monitorName" className="top monitorName"> {this.state.monitorName.toUpperCase()} </div>
-                            <img src={this.state.logo} alt="logo" style={{ "height": "15px", "float": "right" }} />
+                            <img src={this.state.logo} alt="logo" style={{ "height": "40px", "float": "right" }} />
                         </span>
                     </div>
                 </div>;
@@ -559,8 +555,7 @@ class App extends Component {
                                 <Redirect to="/" />
                             </Switch>
                             <span className="footer" style={{ "float": "right" }}>
-                                <div id="monitorName" className="top monitorName"> {this.state.monitorName.toUpperCase()} </div>
-                                <img src={this.state.logo} alt="logo" style={{ "height": "15px", "float": "right" }} />
+                                <img src={this.state.logo} alt="logo" style={{ "height": "40px", "float": "right" }} />
                             </span>
                         </div>
                     </div>
@@ -572,7 +567,7 @@ class App extends Component {
                 <span id="decryptpopupplaceholder"></span>
                 {(this.state.isLoading) ? loadingScreen :
                     <Router>
-                        <div className="container-fluid" style={{ "backgroundColor": "#f6f6f6" }}> {sipUserSwitch}
+                        <div className="container-fluid" style={{ "backgroundColor": "white" }}> {sipUserSwitch}
                         </div>
                     </Router>
                 }

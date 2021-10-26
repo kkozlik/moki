@@ -9,7 +9,7 @@ import store from "../store/index";
 import {
     setTimerange
 } from "../actions/index";
-import Colors from '../helpers/style/Colors';
+import {Colors} from '@moki-client/gui';
 import emptyIcon from "../../styles/icons/empty_small.png";
 import {
     getTimeBucket, getTimeBucketInt

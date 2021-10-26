@@ -2,7 +2,7 @@ import React, {
     Component
 } from 'react';
 import * as d3 from "d3";
-import Colors from '../helpers/style/Colors';
+import {Colors} from '@moki-client/gui';
 import emptyIcon from "../../styles/icons/empty.png";
 import Animation from '../helpers/Animation';
 
