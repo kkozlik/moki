@@ -7,7 +7,7 @@ import {
 } from '@moki-client/gui';
 import {ColorType} from '@moki-client/gui';
 import {Colors} from '@moki-client/gui';
-import {ColorsReds} from '../helpers/style/ColorsReds';
+import {ColorsReds} from '@moki-client/gui';
 import emptyIcon from "../../styles/icons/empty_small.png";
 import storePersistent from "../store/indexPersistent";
 
