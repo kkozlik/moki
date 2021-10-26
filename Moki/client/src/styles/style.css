@@ -26,13 +26,6 @@
     border-radius: .25rem;
     margin-top: 10px;
     margin-right: 5px;
-   /* box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
-     transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
-         background-clip: padding-box;
-   */
-   border-color: var(--second);
-    border-style: solid;
-    border-width: thin;
     width: 100%;
 }
 
@@ -987,8 +980,6 @@ a.nav-item  {
 
 .sidebar-separator-title {
     background-color: #333;
-    height: 1px;
-    padding: 0 !important;
 }
 
 .sidebar-separator {
@@ -1379,9 +1370,6 @@ input {
     background-clip: padding-box;
     border: 1px solid #ced4da;
     border-radius: .25rem;
-    border-color: var(--second);
-    border-style: solid;
-    border-width: thin;
     margin-right: 10px;
 }
 
