@@ -5,7 +5,7 @@ import * as d3 from "d3";
 import {
     createFilter
 } from '@moki-client/gui';
-import Colors from '../helpers/style/ColorsNoGreen';
+import {Colors} from '@moki-client/gui';
 import emptyIcon from "../../styles/icons/empty_small.png";
 
 export default class sunburst extends Component {

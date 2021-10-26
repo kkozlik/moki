@@ -6,8 +6,8 @@ import { setTimerange } from "../actions/index";
 import { createFilter} from '@moki-client/gui';
 import emptyIcon from "../../styles/icons/empty_small.png";
 import { getTimeBucket, getTimeBucketInt} from "../helpers/getTimeBucket";
-import {ColorsRedGreen} from "../helpers/style/ColorsRedGreen";
-import { ColorsGreen} from "../helpers/style/ColorsGreen";
+import {ColorsRedGreen} from "@moki-client/gui";
+import { ColorsGreen} from "@moki-client/gui";
 import {parseTimestamp} from "../helpers/parseTimestamp";
 
 export default class timedateHeatmap extends Component {

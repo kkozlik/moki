@@ -15,7 +15,7 @@ class Filter extends Component {
         super(props);
         this.state = {
             enable: this.props.state === "disable" ? "false" : "true",
-            color: this.props.state === "disable" ? 'gray' : '#58a959',
+            color: this.props.state === "disable" ? 'gray' : 'var(--second)',
             icon: this.props.state === "disable" ? enableIcon : disableIcon,
             pinIcon: unpinIcon,
             negationIcon: unpinIcon,
@@ -83,7 +83,7 @@ class Filter extends Component {
         } else {
             this.setState({
                 enable: 'true',
-                color: '#58a959',
+                color: 'var(--second)',
                 icon: disableIcon
             });
 

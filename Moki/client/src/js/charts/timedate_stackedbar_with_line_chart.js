@@ -3,8 +3,8 @@ import React, {
 } from 'react';
 import * as d3 from "d3";
 
-import ColorType from '../helpers/style/ColorType';
-import Colors from '../helpers/style/Colors';
+import ColorType from '@moki-client/gui';
+import Colors from '@moki-client/gui';
 import { timestampBucket } from '../bars/TimestampBucket.js';
 import store from "../store/index";
 import { setTimerange } from "../actions/index";

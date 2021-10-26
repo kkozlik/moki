@@ -5,9 +5,9 @@ import * as d3 from "d3";
 import {
     createFilter
 } from '@moki-client/gui';
-import ColorType from '../helpers/style/ColorType';
-import Colors from '../helpers/style/Colors';
-import Reds from '../helpers/style/ColorsReds';
+import {ColorType} from '@moki-client/gui';
+import {Colors} from '@moki-client/gui';
+import {ColorsReds} from '@moki-client/gui';
 import emptyIcon from "../../styles/icons/empty_small.png";
 import storePersistent from "../store/indexPersistent";
 
@@ -62,7 +62,7 @@ export default class StackedChart extends Component {
         var domain = 4;
         var color;
 
-        var colorScale = d3.scaleOrdinal(Reds);
+        var colorScale = d3.scaleOrdinal(ColorsReds);
         var colorScaleMix = d3.scaleOrdinal(Colors);
         var profile = storePersistent.getState().profile;
 
@@ -219,7 +219,12 @@ export default class StackedChart extends Component {
                 .attr('y', legendRectSize - legendSpacing)
                 .text(function (d) {
                     for (var i = 0; i < pie(data).length; i++) {
-                        return d.key.substring(0, 20) + '...' + " (" + d.doc_count + ")";
+                        if(d.key.length <= 20){
+                            return d.key + " (" + d.doc_count + ")";
+                        }
+                        else {
+                            return d.key.substring(0, 20) + '...' + " (" + d.doc_count + ")";
+                        }
                     }
                 })
                 .append("svg:title")
