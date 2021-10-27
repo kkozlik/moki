@@ -17,7 +17,7 @@ import ToolkitProvider from 'react-bootstrap-table2-toolkit';
 import filter from "../../styles/icons/filter.png";
 import unfilter from "../../styles/icons/unfilter.png";
 import { createFilter } from '@moki-client/gui';
-import emptyIcon from "../../styles/icons/empty.png";
+import emptyIcon from "../../styles/icons/empty_small.png";
 import tagIcon from "../../styles/icons/tag.png";
 import downloadIcon from "../../styles/icons/download.png";
 import downloadPcapIcon from "../../styles/icons/downloadPcap.png";
