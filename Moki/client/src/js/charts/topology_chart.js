@@ -3,7 +3,7 @@ import React, {
 } from 'react';
 import * as d3 from "d3";
 import {Colors} from '@moki-client/gui';
-import emptyIcon from "../../styles/icons/empty.png";
+import emptyIcon from "../../styles/icons/empty_small.png";
 import Animation from '../helpers/Animation';
 
 export default class topology extends Component {

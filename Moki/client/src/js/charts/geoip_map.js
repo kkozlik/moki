@@ -6,7 +6,7 @@ import * as topojson from "topojson-client";
 import map from "./world_map.json";
 import { createFilter } from '@moki-client/gui';
 import cities from "./cities_11.csv";
-import emptyIcon from "../../styles/icons/empty.png";
+import emptyIcon from "../../styles/icons/empty_small.png";
 import Animation from '../helpers/Animation';
 import storePersistent from "../store/indexPersistent";
 import { getGeoData, decryptGeoData } from '@moki-client/gui';
