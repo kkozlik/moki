@@ -523,7 +523,7 @@ class App extends Component {
                             </Switch>
                         </div>
                         <span className="footer" style={{ "float": "right" }}>
-                            <img src={this.state.logo} alt="logo" style={{ "height": "40px", "float": "right" }} />
+                            <img src={this.state.logo} alt="logo" id="footerlogo" />
                         </span>
                     </div>
                 </div>;
@@ -555,7 +555,7 @@ class App extends Component {
                                 <Redirect to="/" />
                             </Switch>
                             <span className="footer" style={{ "float": "right" }}>
-                                <img src={this.state.logo} alt="logo" style={{ "height": "40px", "float": "right" }} />
+                                <img src={this.state.logo} alt="logo" id="footerlogo"  />
                             </span>
                         </div>
                     </div>
