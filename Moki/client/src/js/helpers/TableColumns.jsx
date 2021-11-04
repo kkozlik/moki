@@ -869,8 +869,9 @@ export function tableColumns(dashboard, tags) {
                 sort: true,
                 editable: false,
                 formatter: (cell, obj) => {
+
+                    var ob = obj._source;
                     if (ob["exceeded-by"]) {
-                        var ob = obj._source;
                         var value = "";
                         var notvalue = "";
                         for (var i = 0; i < ob["exceeded-by"].length; i++) {
@@ -926,7 +927,7 @@ export function tableColumns(dashboard, tags) {
                             )}
                         </Popup>
                         }
-                        {(ob["exceeded-by"].includes("URI") || ob["exceeded-by"].includes("IP")) && <span id={"spanExclude" + ob["id"]}>
+                        {(ob["exceeded-by"] && (ob["exceeded-by"].includes("URI") || ob["exceeded-by"].includes("IP"))) && <span id={"spanExclude" + ob["id"]}>
                             <img className="icon" alt="excludeIcon" src={excludeIcon} title="exclude" onClick={() => openExclude(ob)} />
                             <div id={"popupExclude" + ob["id"]} className="popupTag" style={{ "display": "none", "marginLeft": "-30%", "marginTop": "2%" }}>
                                 <input type="text" id={"input" + ob["id"]} name="name" className="form-control" onKeyUp={(event) => onEnterKeyExclude(event, ob)} placeholder="comment" style={{ "display": "inline-table", "height": "30px" }} />
