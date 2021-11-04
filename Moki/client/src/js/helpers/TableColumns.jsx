@@ -869,23 +869,25 @@ export function tableColumns(dashboard, tags) {
                 sort: true,
                 editable: false,
                 formatter: (cell, obj) => {
-                    var ob = obj._source;
-                    var value = "";
-                    var notvalue = "";
-                    for (var i = 0; i < ob["exceeded-by"].length; i++) {
-                        if (i === 0) {
-                            value = "exceeded-by: " + ob["exceeded-by"][i];
-                            notvalue = "NOT (exceeded-by: " + ob["exceeded-by"][i];
+                    if (ob["exceeded-by"]) {
+                        var ob = obj._source;
+                        var value = "";
+                        var notvalue = "";
+                        for (var i = 0; i < ob["exceeded-by"].length; i++) {
+                            if (i === 0) {
+                                value = "exceeded-by: " + ob["exceeded-by"][i];
+                                notvalue = "NOT (exceeded-by: " + ob["exceeded-by"][i];
+                            }
+                            else {
+                                value = value + " AND exceeded-by:" + ob["exceeded-by"][i];
+                                notvalue = notvalue + " AND exceeded-by:" + ob["exceeded-by"][i];
+                            }
                         }
-                        else {
-                            value = value + " AND exceeded-by:" + ob["exceeded-by"][i];
-                            notvalue = notvalue + " AND exceeded-by:" + ob["exceeded-by"][i];
-                        }
+                        notvalue = notvalue + ")";
+                        return <span className="filterToggleActive"><span className="filterToggle">
+                            <img onClick={doFilterRaw} field="exceeded-by" value={value} className="icon" alt="filterIcon" src={filterIcon} /><img field="exceeded-by" value={notvalue} onClick={doFilterRaw} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span > {ob['exceeded-by'] ? ob['exceeded-by'].toString() : ""}
+                        </span>
                     }
-                    notvalue = notvalue + ")";
-                    return <span className="filterToggleActive"><span className="filterToggle">
-                        <img onClick={doFilterRaw} field="exceeded-by" value={value} className="icon" alt="filterIcon" src={filterIcon} /><img field="exceeded-by" value={notvalue} onClick={doFilterRaw} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span > {ob['exceeded-by'] ? ob['exceeded-by'].toString() : ""}
-                    </span>
                 }
             },
             tag,
