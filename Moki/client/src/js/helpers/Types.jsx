@@ -1,6 +1,6 @@
 export const Types = {
     'call-end': 'Call end',
-    'call-start': 'Call start',  
+    'call-start': 'Call start',
     'call-attempt': 'Call attempt',
     'alert': 'Alert',
     'error': 'Error',
@@ -15,7 +15,7 @@ export const Types = {
     'reg-expired': 'Reg expired',
     'auth-failed': 'Auth failed',
     'notice': 'Notice',
-    'log-reply': 'Log reply',  
+    'log-reply': 'Log reply',
     'fbl-new': 'Firewall blacklist',
     'fgl-new': 'Firewall greylist',
     'conf-leave': 'Conference leave',
@@ -35,7 +35,7 @@ export const Types = {
     "short_calls_uri": "Short calls URI",
     "limit_ip": "Limit",
     "drop_ip": "Drop",
-    "authfail_ip" : "Auth-failed IP",
+    "authfail_ip": "Auth-failed IP",
     "authfail_uri": "Auth-failed URI",
     "ip_limit_behind_uri": "IPs behind URI",
     "uri_limit_behind_ip": "URIs behind IP",
@@ -44,7 +44,14 @@ export const Types = {
     "poor_ratio_ca": "Poor ratio CA",
     "CA_unreachable": "CA unreachable",
     "poor_parallel_reg": "Poor parallel reg",
-    "security_metrics": "Security metrics"
+    "security_metrics": "Security metrics",
+    "EUA": "Evil User Agent",
+    "HUTMPC": "Parallel Calls for URI",
+    "TMAA": "Too Many Authentication",
+    "UUA": "Unknown User Agent",
+    "FHN": "From HoneyNet",
+    "HTTMPC": "Parallel Calls for Tenant",
+    "OKREG": "Successful Registration"
 }
-    
+
 export default Types;
