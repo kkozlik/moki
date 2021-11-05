@@ -17,6 +17,7 @@ import { exclude } from './exclude';
 import storePersistent from "../store/indexPersistent";
 import { parseTimestamp } from "../helpers/parseTimestamp";
 import SimpleSequenceDiagram from "../charts/simpleSequenceDiagram";
+import {Types} from '@moki-client/gui';
 
 /*
 create new filter based on html tag with field with attribute as name 
@@ -829,8 +830,15 @@ export function tableColumns(dashboard, tags) {
                         }
                     }
                     notvalue = notvalue + ")";
+
+                    var exceededName = ob.exceeded ? ob.exceeded.toString() : "";
+                     
+                   if(Types[exceededName]){
+                        exceededName = Types[exceededName];
+                   }
+                    
                     return <span className="filterToggleActive"><span className="filterToggle">
-                        <img onClick={doFilterRaw} field="exceeded" value={value} className="icon" alt="filterIcon" src={filterIcon} /><img field="exceeded" value={notvalue} onClick={doFilterRaw} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span >   {ob.exceeded ? ob.exceeded.toString() : ""}
+                        <img onClick={doFilterRaw} field="exceeded" value={value} className="icon" alt="filterIcon" src={filterIcon} /><img field="exceeded" value={notvalue} onClick={doFilterRaw} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span >   {exceededName}
                     </span>
                 }
             }, {

@@ -10,6 +10,7 @@ import {Colors} from '@moki-client/gui';
 import {ColorsReds} from '@moki-client/gui';
 import emptyIcon from "../../styles/icons/empty_small.png";
 import storePersistent from "../store/indexPersistent";
+import {Types} from '@moki-client/gui';
 
 export default class StackedChart extends Component {
     constructor(props) {
@@ -220,7 +221,12 @@ export default class StackedChart extends Component {
                 .text(function (d) {
                     for (var i = 0; i < pie(data).length; i++) {
                         if(d.key.length <= 20){
-                            return d.key + " (" + d.doc_count + ")";
+                            if( Types[d.key]){
+                                return Types[d.key] + " (" + d.doc_count + ")";
+                            }
+                            else {
+                                return d.key + " (" + d.doc_count + ")";
+                            }
                         }
                         else {
                             return d.key.substring(0, 20) + '...' + " (" + d.doc_count + ")";
