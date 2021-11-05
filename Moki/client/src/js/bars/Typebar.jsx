@@ -3,7 +3,7 @@ import React, {
 } from 'react';
 
 import Type from './Type';
-import Types from '../helpers/Types';
+import {Types} from '@moki-client/gui';
 import checkAll from "../../styles/icons/checkAll.png";
 import uncheckAll from "../../styles/icons/uncheckAll.png";
 import store from "../store/index";
@@ -51,7 +51,6 @@ class Typebar extends Component {
         if (jsonData.types[pathname]) {
             for (var i = 0; i < jsonData.types[pathname].length; i++) {
                 var dashboardTypes = jsonData.types[pathname];
-
                 //is in url
                 if (result.length > 0 && result.includes(dashboardTypes[i])) {
                     types.push({
