@@ -95,10 +95,13 @@ class TableChart extends Component {
 
     if (window.location.pathname === "/web") {
       var data = this.state.data[0];
-      while (data && data.length < 3) {
+    
+
+      while (data && data.length  < 3 && data.length !== 0) {
         data.push({ "key": "", "doc_count": "" });
 
       }
+
       return (
         <div className="tableChart chart">
           <h3 className="alignLeft title" style={{"float": isAnimation ? "left" : "inherit"}}>{this.props.name}</h3>
@@ -122,7 +125,7 @@ class TableChart extends Component {
           {((this.state.data[0] && this.state.data[0].length === 0) || this.state.data[0] === "") &&
             <table style={{ "minWidth": "17em" }}>
               <tbody>
-                <span className="noDataIcon"> <img alt="nodata" src={emptyIcon} className="noDataList" />  </span>
+                <span className="noDataIcon"> <img alt="nodata" src={emptyIcon} style={{"marginLeft": "3em", "padding": "1em", "marginTop": "10px", "marginBottom": "11px"}} />  </span>
               </tbody>
             </table>
           }

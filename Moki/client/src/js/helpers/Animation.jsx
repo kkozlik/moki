@@ -32,14 +32,16 @@ class Animation extends Component {
             count: -1,
             icon: playIcon,
             dataAll: "",
-            animation: ""
+            animation: "",
+            dataI: []
         }
         store.subscribe(() => this.hideAnimation());
     }
 
     componentWillReceiveProps(nextProps) {
         if (window.location.pathname === "/web") {
-            if (nextProps.dataAll !== this.state.dataAll) {
+            if (nextProps.dataAll !== this.state.dataAll && (nextProps.dataAll.length > 0 && nextProps.dataAll[0].length > 0)) {
+
                 this.setState({ dataAll: nextProps.dataAll });
             }
         }
@@ -150,14 +152,15 @@ class Animation extends Component {
                     if (data && data[i] && data[i].data) {
                         thiss.setState({
                             animationTime: data[i].time,
-                            count: i
+                            count: i,
+                            dataI: data[i].data
                         })
                         thiss.props.setData(data[i].data);
                     }
                     else {
                         console.info("Animation: finish, ending");
                         clearInterval(animation);
-                        thiss.props.setData(thiss.state.dataAll);
+                        thiss.props.setData(thiss.state.dataAll, false);
                         thiss.setState({
                             data: [],
                             animationTime: "",
@@ -190,8 +193,10 @@ class Animation extends Component {
     }
 
     pause() {
+        console.info("animation pause");
         clearInterval(this.state.animation);
         this.setState({ icon: playIcon });
+        if(typeof(this.props.setAnimation) === 'function') { this.props.setAnimation(false);}
     }
 
     //load selected timerange by animation

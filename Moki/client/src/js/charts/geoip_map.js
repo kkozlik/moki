@@ -19,9 +19,11 @@ export default class geoIpMap extends Component {
             data: [],
             svg: "",
             g: "",
-            dataNotShown: []
+            dataNotShown: [],
+            animation: false
         }
         this.setData = this.setData.bind(this);
+        this.setAnimation = this.setAnimation.bind(this);
     }
 
     static getDerivedStateFromProps(nextProps, prevState) {
@@ -45,12 +47,25 @@ export default class geoIpMap extends Component {
         }
     }
 
-    setData(data) {
-        this.setState({ data: data });
+    setData(data, animation = true) {
+        this.setState({
+            data: data,
+            animation: animation
+        });
         this.draw(data, this.props.width, this.props.units, this.props.name);
     }
 
+    setAnimation(animation) {
+        this.setState({
+            animation: animation
+        });
+        this.draw(this.state.data, this.props.width, this.props.units, this.props.name);
+    }
+
     async draw(data, width, units, name, dataNotShown = this.state.dataNotShown) {
+        if (data.length === 0) {
+            dataNotShown = [];
+        }
         if (storePersistent.getState().user.aws && storePersistent.getState().profile[0] && storePersistent.getState().profile[0].userprefs) {
             if (storePersistent.getState().profile[0].userprefs.mode === "encrypt") {
                 var geoData = await getGeoData(window.location.pathname.substring(1));
@@ -155,72 +170,76 @@ export default class geoIpMap extends Component {
                 rScale.domain([minValue - 1, maxValue + 1]).range([3, 10]);
                 var thiss = this;
                 // zoom and pan
+
+
                 const zoom = d3.zoom()
                     .scaleExtent([1, 20])
                     .extent([[0, 0], [width, height]])
                     .on('zoom', () => {
-                        g.style('stroke-width', `${1.5 / d3.event.transform.k}px`);
-                        g.attr('transform', d3.event.transform);
+                        if (!this.state.animation) {
+                            g.style('stroke-width', `${1.5 / d3.event.transform.k}px`);
+                            g.attr('transform', d3.event.transform);
 
-                        // draw the circles in their new positions
-                        /* d3.selectAll("circle").attr("r", d => d.doc_count ?
-                             rScale(d.doc_count) / d3.event.transform.k : 2 / d3.event.transform.k
-                         );
-     */
-                        //data values
-                        d3.selectAll("circle.pins").attr("r", function (d) {
-                            if (d.doc_count) {
-                                return rScale(d.doc_count) / d3.event.transform.k;
-                            } else {
-                                return 2 / d3.event.transform.k;
-                            }
-                        })
-
-                        //cities
-                        d3.selectAll("circle.city").attr("r", function (d) {
-                            if (d.doc_count) {
-                                if (rScale(d.doc_count) / d3.event.transform.k > 2) {
-                                    return 2;
-                                }
-                                else {
+                            // draw the circles in their new positions
+                            /* d3.selectAll("circle").attr("r", d => d.doc_count ?
+                                 rScale(d.doc_count) / d3.event.transform.k : 2 / d3.event.transform.k
+                             );
+         */
+                            //data values
+                            d3.selectAll("circle.pins").attr("r", function (d) {
+                                if (d.doc_count) {
                                     return rScale(d.doc_count) / d3.event.transform.k;
+                                } else {
+                                    return 2 / d3.event.transform.k;
                                 }
-                            } else {
-                                return 2 / d3.event.transform.k;
-                            }
-                        })
+                            })
 
-                        //display names 
-                        if (d3.event.transform.k >= 4 && first) {
-                            first = false;
-                            d3.csv(cities).then(function (city) {
-                                g.selectAll(".city_label")
-                                    .data(city)
-                                    .enter()
-                                    .append("text")
-                                    .attr("class", "city_label")
-                                    .text(function (d) {
-                                        return d.city_ascii
-                                    })
-                                    .style("font-size", "2px")
-                                    .attr("transform", function (d) {
-                                        if (d.lng && d.lat) {
-                                            return "translate(" + projection([
-                                                d.lng,
-                                                d.lat
-                                            ]) + ")";
-                                        }
-                                    })
-                            }
-                            )
-                        }
-                        //zooming out
-                        if (d3.event.transform.k < 4 && !first) {
-                            first = true;
-                            g.selectAll(".city_label").remove();
-                        }
+                            //cities
+                            d3.selectAll("circle.city").attr("r", function (d) {
+                                if (d.doc_count) {
+                                    if (rScale(d.doc_count) / d3.event.transform.k > 2) {
+                                        return 2;
+                                    }
+                                    else {
+                                        return rScale(d.doc_count) / d3.event.transform.k;
+                                    }
+                                } else {
+                                    return 2 / d3.event.transform.k;
+                                }
+                            })
 
+                            //display names 
+                            if (d3.event.transform.k >= 4 && first) {
+                                first = false;
+                                d3.csv(cities).then(function (city) {
+                                    g.selectAll(".city_label")
+                                        .data(city)
+                                        .enter()
+                                        .append("text")
+                                        .attr("class", "city_label")
+                                        .text(function (d) {
+                                            return d.city_ascii
+                                        })
+                                        .style("font-size", "2px")
+                                        .attr("transform", function (d) {
+                                            if (d.lng && d.lat) {
+                                                return "translate(" + projection([
+                                                    d.lng,
+                                                    d.lat
+                                                ]) + ")";
+                                            }
+                                        })
+                                }
+                                )
+                            }
+                            //zooming out
+                            if (d3.event.transform.k < 4 && !first) {
+                                first = true;
+                                g.selectAll(".city_label").remove();
+                            }
+                        }
                     })
+
                 svg.call(zoom);
 
 
@@ -232,16 +251,18 @@ export default class geoIpMap extends Component {
                     .attr("d", path)
                     .attr("fill", "#343a40");
 
-                var tooltip = d3.select('#geoIpMap').append('div')
-                    .attr('id', 'tooltipgeoIpMap')
-                    .attr("class", "tooltipCharts");
+                if (!this.state.animation) {
+                    var tooltip = d3.select('#geoIpMap').append('div')
+                        .attr('id', 'tooltipgeoIpMap')
+                        .attr("class", "tooltipCharts");
 
+                    tooltip.append("div");
+                }
 
-                tooltip.append("div");
 
                 //cites
                 d3.csv(cities).then(function (city) {
-                    g.selectAll("city")
+                    var cit = g.selectAll("city")
                         .data(city)
                         .enter()
                         .append("circle")
@@ -255,20 +276,23 @@ export default class geoIpMap extends Component {
                                     d.lat
                                 ]) + ")";
                             }
-                        })
-                        .on("mouseover", function (d) {
+                        });
+
+                    if (!thiss.state.animation) {
+                        cit.on("mouseover", function (d) {
                             tooltip.style("visibility", "visible");
                             tooltip.select("div").html(d.city_ascii);
                         })
-                        .on("mouseout", function (d) {
-                            tooltip.style("visibility", "hidden")
-                        })
-                        .on("mousemove", function (d) {
-                            tooltip
-                                .style("left", (d3.event.layerX - 20) + "px")
-                                .style("top", (d3.event.layerY ) + "px");
+                            .on("mouseout", function (d) {
+                                tooltip.style("visibility", "hidden")
+                            })
+                            .on("mousemove", function (d) {
+                                tooltip
+                                    .style("left", (d3.event.layerX - 20) + "px")
+                                    .style("top", (d3.event.layerY) + "px");
 
-                        });
+                            });
+                    }
                     thiss.drawOnlyPins(g, name, data, dataNotShown, units, svg)
                     thiss.setState({
                         g: g,
@@ -290,12 +314,13 @@ export default class geoIpMap extends Component {
         var height = 400;
         var projection = d3.geoMercator();
 
-        var tooltip = d3.select('#geoIpMap').append('div')
-            .attr('id', 'tooltipgeoIpMap')
-            .attr("class", "tooltipCharts");
+        if (!this.state.animation) {
+            var tooltip = d3.select('#geoIpMap').append('div')
+                .attr('id', 'tooltipgeoIpMap')
+                .attr("class", "tooltipCharts");
 
-
-        tooltip.append("div");
+            tooltip.append("div");
+        }
 
         var rScale = d3.scaleSqrt();
 
@@ -367,7 +392,7 @@ export default class geoIpMap extends Component {
 
         }
 
-        g.selectAll(".pin")
+        var pin = g.selectAll(".pin")
             .data(data)
             .enter().append("circle")
             .attr("r", function (d) {
@@ -383,8 +408,9 @@ export default class geoIpMap extends Component {
                     ]) + ")";
                 }
                 return "translate(-10,-10)";
-            })
-            .on("mouseover", function (d) {
+            });
+        if (!this.state.animation) {
+            pin.on("mouseover", function (d) {
                 var types;
                 if (d.aggs && d.aggs.buckets) {
                     var types = d.aggs.buckets.map(type =>
@@ -399,26 +425,37 @@ export default class geoIpMap extends Component {
                 tooltip.style("visibility", "visible");
                 d3.select(this).style("cursor", "pointer");
                 tooltip.select("div").html(types);
-            })
-            .on("mouseout", function (d) {
-                tooltip.style("visibility", "hidden")
-            })
-            .on("mousemove", function (d) {
-                tooltip
-                    .style("left", (d3.event.layerX - 20) + "px")
-                    .style("top", (d3.event.layerY - 100) + "px");
 
             })
-            .on("click", el => {
-                createFilter("geoip.city_name:" + el.key);
+                .on("mouseout", function (d) {
 
-                //bug fix: if you click but not move out
-                tooltip.style("visibility", "hidden")
-            });
+                    tooltip.style("visibility", "hidden")
+
+                })
+                .on("mousemove", function (d) {
+                    //position tooltip based on count of cities
+                    if (d.aggs && d.aggs.buckets) {
+                        tooltip
+                            .style("left", (d3.event.layerX - 20) + "px")
+                            .style("top", (d3.event.layerY - (d.aggs.buckets.length * 20) - 100) + "px");
+                    }
+                    else {
+                        tooltip
+                            .style("left", (d3.event.layerX - 20) + "px")
+                            .style("top", (d3.event.layerY - 100) + "px");
+                    }
+                })
+                .on("click", el => {
+                    createFilter("geoip.city_name:" + el.key);
+
+                    //bug fix: if you click but not move out
+                    tooltip.style("visibility", "hidden")
+                });
+        }
 
         //draw missing part of data 
         if (dataNotShown.length > 0) {
-            g.selectAll(".pin")
+            var pin = g.selectAll(".pin")
                 .data(dataNotShown)
                 .enter().append("circle")
                 .attr("r", function (d) {
@@ -443,8 +480,9 @@ export default class geoIpMap extends Component {
                         ]) + ")";
                     }
                     return "translate(-10,-10)";
-                })
-                .on("mouseover", function (d) {
+                });
+            if (!this.state.animation) {
+                pin.on("mouseover", function (d) {
                     if (d.types && d.types.buckets) {
                         var types = d.types.buckets.map(type =>
                             "<br/><strong>" + type.key + ": </strong> " + type.doc_count
@@ -458,14 +496,28 @@ export default class geoIpMap extends Component {
                     d3.select(this).style("cursor", "pointer");
                     tooltip.select("div").html("<strong>AVG longitude: </strong>" + geohash.decode(d.key).longitude + " <br/><strong>AVG latitude: </strong>" + geohash.decode(d.key).latitude + " <br/>" + types);
                 })
-                .on("mouseout", function (d) {
-                    tooltip.style("visibility", "hidden")
-                })
-                .on("mousemove", function (d) {
-                    tooltip
-                        .style("left", (d3.event.layerX - 20) + "px")
-                        .style("top", (d3.event.layerY - 100) + "px");
-                })
+                    .on("mouseout", function (d) {
+                        tooltip.style("visibility", "hidden")
+                    })
+                    .on("mousemove", function (d) {
+                        //position tooltip based on count of cities
+                        if (d.aggs && d.aggs.buckets) {
+                            tooltip
+                                .style("left", (d3.event.layerX - 20) + "px")
+                                .style("top", (d3.event.layerY - (d.aggs.buckets.length * 20) - 100) + "px");
+                        }
+                        else if (d.types && d.types.buckets) {
+                            tooltip
+                                .style("left", (d3.event.layerX - 20) + "px")
+                                .style("top", (d3.event.layerY - (d.types.buckets.length * 20) - 100) + "px");
+                        }
+                        else {
+                            tooltip
+                                .style("left", (d3.event.layerX - 20) + "px")
+                                .style("top", (d3.event.layerY - 100) + "px");
+                        }
+                    })
+            }
         }
 
 
@@ -495,6 +547,7 @@ export default class geoIpMap extends Component {
     render() {
         return (<div id="geoIpMap" className="chart"> <h3 className="alignLeft title" > {
             this.props.name
-        } </h3><Animation display={this.props.displayAnimation} name={this.props.name} type={this.props.type} setData={this.setData} dataAll={this.state.data} autoplay={this.props.autoplay} /></div >)
+        } </h3>
+            {window.location.pathname !== "/web" && <Animation display={this.props.displayAnimation} setAnimation={this.setAnimation} name={this.props.name} type={this.props.type} setData={this.setData} dataAll={this.state.data} autoplay={this.props.autoplay} />}</div >)
     }
 }
