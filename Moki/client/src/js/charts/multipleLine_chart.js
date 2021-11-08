@@ -11,6 +11,9 @@ import React, {
 } from 'react';
 import * as d3 from "d3";
 import {
+    createFilter
+} from '@moki-client/gui';
+import {
     timestampBucket
 } from '../bars/TimestampBucket.js';
 import store from "../store/index";
@@ -49,6 +52,7 @@ export default class MultipleLineChart extends Component {
 
 
     draw(data, id, width, ticks, hostnames) {
+        var field = this.props.field ? this.props.field : "attrs.hostname"; 
         //make div values if necessary
         if (window.location.pathname === "/stats") {
             var divData = [];
@@ -357,6 +361,9 @@ export default class MultipleLineChart extends Component {
                     if (i < 7) {
                         return hostnames && hostnames[d.name] ? hostnames[d.name] : color(i);
                     }
+                })
+                .on("click", el => {
+                    createFilter(field + ":\"" + el.name + "\"");
                 });
 
             legend.append('text')
@@ -370,6 +377,9 @@ export default class MultipleLineChart extends Component {
                     if (i < 7) {
                         return d.name;
                     }
+                })
+                .on("click", el => {
+                    createFilter(field + ":\"" + el.name + "\"");
                 });
 
 
