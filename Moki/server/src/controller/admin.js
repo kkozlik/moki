@@ -236,37 +236,46 @@ class AdminController {
     }
   }
 
+  /*
+create new user with password in htpasswd
+*/
   static async createUser(req, res) {
-    exec("sudo htpasswd -c /etc/apache2/.htpasswd " + req.body.name + " -p " + req.body.password, (error, stdout, stderr) => {
+    exec("sudo htpasswd -b -c /etc/nginx/htpasswd " + req.body.name + " " + req.body.password, (error, stdout, stderr) => {
       if (error) {
-        console.error(`Can't create new user in nginx: ${error.message}`);
+        console.error(`Can't create new user in nginx : ${error.message}`);
         return res.json({ "error": error.message });
       }
-      if (stderr) {
-        console.error(`Can't create new user in nginx: ${stderr}`);
-        return res.json({ "error": stderr });
-      }
+
       console.log(`New nginx user created: ${stdout}`);
       return res.json({ "msg": "User created" });
     });
   }
 
-  static async noNginxUser(req, res) {
+  /*
+  Check if htpasswd file exists or if it's empty. Return true in that case (= no user)
+  */
+  static noNginxUser(req, res) {
     try {
-      fs.readFile('/etc/apache2/.htpasswd', 'utf8', (err, data) => {
-        if (err) {
-          res.json({ "error": err });
-          return;
-        }
-        console.log("--------------");
-        console.log(data);
-        if(data.length === 0){
-          res.json({ "msg": true });
+      // Check if file exist
+      fs.exists('/etc/nginx/htpasswd', function (file) {
+        if (file) {
+          //read file
+          fs.readFile('/etc/nginx/htpasswd', 'utf8', function (err, data) {
+            if (err) {
+              res.json({ "msg": true });
+            }
+            if (data.length === 0) {
+              res.json({ "msg": true });
+            }
+            else {
+              res.json({ "msg": false });
+            }
+          });
         }
         else {
-          res.json({ "msg": false });
+          res.json({ "msg": true });
         }
-      })
+      });
     } catch (err) {
       return res.json({ "error": err });
     }
