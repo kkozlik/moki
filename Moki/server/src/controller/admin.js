@@ -1,6 +1,8 @@
 const elasticsearch = require('elasticsearch');
 const { parseBase64 } = require('../modules/jwt');
 const { isRequireJWT } = require('../modules/config');
+const { exec } = require("child_process");
+const fs = require('fs');
 
 let oldJti = "";
 const hfName = 'x-amzn-oidc-data';
@@ -231,6 +233,42 @@ class AdminController {
         domain: "default",
         "tls-cn": "default"
       };
+    }
+  }
+
+  static async createUser(req, res) {
+    exec("sudo htpasswd -c /etc/apache2/.htpasswd " + req.body.name + " -p " + req.body.password, (error, stdout, stderr) => {
+      if (error) {
+        console.error(`Can't create new user in nginx: ${error.message}`);
+        return res.json({ "error": error.message });
+      }
+      if (stderr) {
+        console.error(`Can't create new user in nginx: ${stderr}`);
+        return res.json({ "error": stderr });
+      }
+      console.log(`New nginx user created: ${stdout}`);
+      return res.json({ "msg": "User created" });
+    });
+  }
+
+  static async noNginxUser(req, res) {
+    try {
+      fs.readFile('/etc/apache2/.htpasswd', 'utf8', (err, data) => {
+        if (err) {
+          res.json({ "error": err });
+          return;
+        }
+        console.log("--------------");
+        console.log(data);
+        if(data.length === 0){
+          res.json({ "msg": true });
+        }
+        else {
+          res.json({ "msg": false });
+        }
+      })
+    } catch (err) {
+      return res.json({ "error": err });
     }
   }
 }
