@@ -78,12 +78,12 @@ export default class listChart extends Component {
             columns.push(
                 {
                     dataField: '_source.' + field,
-                    text: field.substring(field.indexOf(".")+1).toUpperCase(),
+                    text: field.substring(field.indexOf(".") + 1).toUpperCase(),
                     hidden: true,
                     editable: false,
                     sort: true,
                     headerStyle: { width: '150px' },
-                    formatExtraData:  field,
+                    formatExtraData: field,
                     formatter: (cell, obj, i, formatExtraData) => {
                         return <span className="filterToggleActive"><span className="filterToggle">
                             <img onClick={this.filter} field={formatExtraData} value={cell} className="icon" alt="filterIcon" src={filter} />
@@ -183,6 +183,29 @@ export default class listChart extends Component {
                     });
 
                     document.addEventListener('mouseup', function (e) {
+                        //store column width in browser localstorage
+                        if (curCol) {
+                            var width = curCol.style.width;
+                            var column = curCol.innerHTML.substr(0, curCol.innerHTML.indexOf("<"));
+                            var columns = JSON.parse(window.localStorage.getItem("columns"));
+                            var dashboard = window.location.pathname.substring(1);
+
+                            if (columns && columns[dashboard] && columns[dashboard][column]) {
+                                columns[dashboard][column] = width;
+                            }
+                            else if (columns  && columns[dashboard]) {
+                                columns[dashboard][column] = {"width": width};
+                            }
+                            else {
+                                if(columns === null){
+                                    columns= {};
+                                }
+                                //columns = { [dashboard]: { [column]: width } });
+                                columns[dashboard] = { [column]: {"width": width} };
+                            }
+                            window.localStorage.setItem("columns", JSON.stringify(columns));
+
+                        }
                         curCol = undefined;
                         nxtCol = undefined;
                         pageX = undefined;

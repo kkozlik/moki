@@ -17,7 +17,7 @@ import { exclude } from './exclude';
 import storePersistent from "../store/indexPersistent";
 import { parseTimestamp } from "../helpers/parseTimestamp";
 import SimpleSequenceDiagram from "../charts/simpleSequenceDiagram";
-import {Types} from '@moki-client/gui';
+import { Types } from '@moki-client/gui';
 
 /*
 create new filter based on html tag with field with attribute as name 
@@ -86,6 +86,23 @@ export const onEnterKeyExclude = (event, ob) => {
     }
 }
 
+// check if column width is stored in local storage
+function getColumnWidth(column, width = 0) {
+    var dashboard = window.location.pathname.substring(1);
+    var columns = JSON.parse(window.localStorage.getItem("columns"));
+    if (columns && columns[dashboard] && columns[dashboard][column]) {
+        return columns[dashboard][column];
+    }
+    else {
+        if (width !== 0) {
+            return width;
+        }
+        else {
+            return "auto";
+        }
+    }
+}
+
 export function tableColumns(dashboard, tags) {
     var tag = {
         dataField: '_source.attrs.tags',
@@ -129,6 +146,7 @@ export function tableColumns(dashboard, tags) {
                 text: 'TYPE',
                 editable: false,
                 sort: true,
+                headerStyle: { width: getColumnWidth("TYPE") },
                 formatter: (cell, obj) => {
                     var ob = obj._source;
                     return <span className="filterToggleActive">
@@ -143,6 +161,7 @@ export function tableColumns(dashboard, tags) {
                 text: 'FROM',
                 sort: true,
                 editable: false,
+                headerStyle: { width: getColumnWidth("FROM") },
                 formatter: (cell, obj) => {
                     var ob = obj._source;
                     return <span className="filterToggleActive"><span className="filterToggle">
@@ -154,6 +173,7 @@ export function tableColumns(dashboard, tags) {
                 text: 'TO',
                 sort: true,
                 editable: false,
+                headerStyle: { width: getColumnWidth("TO") },
                 formatter: (cell, obj) => {
                     var ob = obj._source;
                     return <span className="filterToggleActive"><span className="filterToggle">
@@ -166,6 +186,7 @@ export function tableColumns(dashboard, tags) {
                 text: 'DURATION',
                 sort: true,
                 editable: false,
+                headerStyle: { width: getColumnWidth("DURATION") },
                 formatter: (cell, obj) => {
                     var ob = obj._source;
                     return <span className="filterToggleActive"><span className="filterToggle">
@@ -177,6 +198,7 @@ export function tableColumns(dashboard, tags) {
                 text: 'SOURCE',
                 sort: true,
                 editable: false,
+                headerStyle: { width: getColumnWidth("SOURCE") },
                 formatter: (cell, obj) => {
                     var ob = obj._source;
                     return <span className="filterToggleActive"><span className="filterToggle">
@@ -187,7 +209,7 @@ export function tableColumns(dashboard, tags) {
                 dataField: '_source.attrs.tags',
                 text: 'TAGS',
                 sort: true,
-                headerStyle: { width: '150px !important' },
+                headerStyle: { width: getColumnWidth("TAGS", "150px") },
                 editorRenderer: (editorProps, value, row, column, rowIndex, columnIndex) => (
                     <TagRanger tags={tags} row={row} />
                 ),
@@ -202,7 +224,7 @@ export function tableColumns(dashboard, tags) {
                 dataField: '_source.filenameDownload',
                 text: 'ADVANCED',
                 editable: false,
-                headerStyle: { width: '150px' },
+                headerStyle: { width: "150px !important"},
                 formatter: (cell, obj) => {
 
                     var ob = obj._source;
@@ -265,6 +287,7 @@ export function tableColumns(dashboard, tags) {
             text: 'USER',
             editable: false,
             sort: true,
+            headerStyle: { width: getColumnWidth("USER") },
             formatter: (cell, obj) => {
                 var ob = obj._source;
                 return <span className="filterToggleActive"><span className="filterToggle">
@@ -278,6 +301,7 @@ export function tableColumns(dashboard, tags) {
             text: 'EMAIL',
             editable: false,
             sort: true,
+            headerStyle: { width: getColumnWidth("EMAIL") },
             formatter: (cell, obj) => {
                 var ob = obj._source;
                 return <span className="filterToggleActive"><span className="filterToggle">
@@ -291,6 +315,7 @@ export function tableColumns(dashboard, tags) {
             text: 'DOMAIN',
             editable: false,
             sort: true,
+            headerStyle: { width: getColumnWidth("DOMAIN") },
             formatter: (cell, obj) => {
                 var ob = obj._source;
                 return <span className="filterToggleActive"><span className="filterToggle">
@@ -304,6 +329,7 @@ export function tableColumns(dashboard, tags) {
             text: 'SOURCE',
             editable: false,
             sort: true,
+            headerStyle: { width: getColumnWidth("SOURCE") },
             formatter: (cell, obj) => {
                 var ob = obj._source;
                 return <span className="filterToggleActive"><span className="filterToggle">
@@ -317,6 +343,7 @@ export function tableColumns(dashboard, tags) {
             text: 'LEVEL',
             editable: false,
             sort: true,
+            headerStyle: { width: getColumnWidth("LEVEL") },
             formatter: (cell, obj) => {
                 var ob = obj._source;
                 return <span className="filterToggleActive"><span className="filterToggle">
@@ -341,6 +368,7 @@ export function tableColumns(dashboard, tags) {
             text: 'TYPE',
             editable: false,
             sort: true,
+            headerStyle: { width: getColumnWidth("TYPE") },
             formatter: (cell, obj) => {
                 var ob = obj._source;
                 return <span className="filterToggleActive"><span className="filterToggle">
@@ -352,6 +380,7 @@ export function tableColumns(dashboard, tags) {
             text: 'FROM',
             sort: true,
             editable: false,
+            headerStyle: { width: getColumnWidth("FROM") },
             formatter: (cell, obj) => {
                 var ob = obj._source;
                 return <span className="filterToggleActive"><span className="filterToggle">
@@ -363,6 +392,7 @@ export function tableColumns(dashboard, tags) {
             text: 'TO',
             sort: true,
             editable: false,
+            headerStyle: { width: getColumnWidth("TO") },
             formatter: (cell, obj) => {
                 var ob = obj._source;
                 return <span className="filterToggleActive"><span className="filterToggle">
@@ -375,6 +405,7 @@ export function tableColumns(dashboard, tags) {
             text: 'TLS-CN',
             sort: true,
             editable: false,
+            headerStyle: { width: getColumnWidth("TLS-CN") },
             formatter: (cell, obj) => {
                 var ob = obj._source;
                 return <span className="filterToggleActive"><span className="filterToggle">
@@ -386,6 +417,7 @@ export function tableColumns(dashboard, tags) {
             text: 'SOURCE',
             sort: true,
             editable: false,
+            headerStyle: { width: getColumnWidth("SOURCE") },
             formatter: (cell, obj) => {
                 var ob = obj._source;
                 return <span className="filterToggleActive"><span className="filterToggle">
@@ -396,7 +428,7 @@ export function tableColumns(dashboard, tags) {
             dataField: '_source.attrs.tags',
             text: 'TAGS',
             sort: true,
-            headerStyle: { width: '150px !important' },
+            headerStyle: { width: getColumnWidth("TAGS", "150px") },
             editorRenderer: (editorProps, value, row, column, rowIndex, columnIndex) => (
                 <TagRanger tags={tags} row={row} />
             ),
@@ -460,6 +492,7 @@ export function tableColumns(dashboard, tags) {
             editable: false,
             sort: true,
             text: 'TYPE',
+            headerStyle: { width: getColumnWidth("TYPE") },
             formatter: (cell, obj) => {
                 var ob = obj._source;
                 return <span className="filterToggleActive"><span className="filterToggle">
@@ -471,6 +504,7 @@ export function tableColumns(dashboard, tags) {
             editable: false,
             sort: true,
             text: 'FROM',
+            headerStyle: { width: getColumnWidth("FROM") },
             formatter: (cell, obj) => {
                 var ob = obj._source;
                 return <span className="filterToggleActive"><span className="filterToggle">
@@ -482,6 +516,7 @@ export function tableColumns(dashboard, tags) {
             editable: false,
             sort: true,
             text: 'TO',
+            headerStyle: { width: getColumnWidth("TO") },
             formatter: (cell, obj) => {
                 var ob = obj._source;
                 return <span className="filterToggleActive"><span className="filterToggle">
@@ -494,6 +529,7 @@ export function tableColumns(dashboard, tags) {
             editable: false,
             sort: true,
             text: 'CONF ID',
+            headerStyle: { width: getColumnWidth("CONF ID") },
             formatter: (cell, obj) => {
                 var ob = obj._source;
                 return <span className="filterToggleActive"><span className="filterToggle">
@@ -505,6 +541,7 @@ export function tableColumns(dashboard, tags) {
             editable: false,
             sort: true,
             text: 'SOURCE',
+            headerStyle: { width: getColumnWidth("SOURCE") },
             formatter: (cell, obj) => {
                 var ob = obj._source;
                 return <span className="filterToggleActive"><span className="filterToggle">
@@ -515,7 +552,7 @@ export function tableColumns(dashboard, tags) {
             dataField: '_source.attrs.tags',
             text: 'TAGS',
             sort: true,
-            headerStyle: { width: '150px !important' },
+            headerStyle: { width: getColumnWidth("TAGS", "150px") },
             editorRenderer: (editorProps, value, row, column, rowIndex, columnIndex) => (
                 <TagRanger tags={tags} row={row} />
             ),
@@ -583,6 +620,7 @@ export function tableColumns(dashboard, tags) {
                 editable: false,
                 sort: true,
                 classes: "tabletd",
+                headerStyle: { width: getColumnWidth("TYPE") },
                 formatter: (cell, obj) => {
                     var ob = obj._source;
                     return <span className="filterToggleActive"><span className="filterToggle">
@@ -595,6 +633,7 @@ export function tableColumns(dashboard, tags) {
                 text: 'FROM',
                 editable: false,
                 sort: true,
+                headerStyle: { width: getColumnWidth("FROM") },
                 formatter: (cell, obj) => {
                     var ob = obj._source;
                     return <span className="filterToggleActive"><span className="filterToggle">
@@ -606,6 +645,7 @@ export function tableColumns(dashboard, tags) {
                 text: 'TO',
                 editable: false,
                 sort: true,
+                headerStyle: { width: getColumnWidth("TO") },
                 formatter: (cell, obj) => {
                     var ob = obj._source;
                     return <span className="filterToggleActive"><span className="filterToggle">
@@ -618,6 +658,7 @@ export function tableColumns(dashboard, tags) {
                 text: 'DURATION',
                 sort: true,
                 editable: false,
+                headerStyle: { width: getColumnWidth("DURATION") },
                 formatter: (cell, obj) => {
                     var ob = obj._source;
                     return <span className="filterToggleActive"><span className="filterToggle">
@@ -629,6 +670,7 @@ export function tableColumns(dashboard, tags) {
                 text: 'SOURCE',
                 sort: true,
                 editable: false,
+                headerStyle: { width: getColumnWidth("SOURCE") },
                 formatter: (cell, obj) => {
                     var ob = obj._source;
                     return <span className="filterToggleActive"><span className="filterToggle">
@@ -639,12 +681,14 @@ export function tableColumns(dashboard, tags) {
                 dataField: '_source.attrs.rtp-MOScqex-avg',
                 text: 'AVG QoS',
                 sort: true,
+                headerStyle: { width: getColumnWidth("AVG QoS") },
                 editable: false,
                 classes: function callback(cell, row, rowIndex, colIndex) { if (cell <= 3) { return "red" }; }
             },
             {
                 dataField: '_source.attrs.sip-code',
                 text: 'SIP CODE',
+                headerStyle: { width: getColumnWidth("SIP CODE") },
                 sort: true,
                 editable: false
             },
@@ -701,6 +745,7 @@ export function tableColumns(dashboard, tags) {
             text: 'TYPE',
             editable: false,
             sort: true,
+            headerStyle: { width: getColumnWidth("TYPE") },
             formatter: (cell, obj) => {
                 var ob = obj._source;
                 return <span className="filterToggleActive"><span className="filterToggle">
@@ -710,6 +755,7 @@ export function tableColumns(dashboard, tags) {
         }, {
             dataField: '_source.attrs.reason',
             editable: false,
+            headerStyle: { width: getColumnWidth("REASON") },
             sort: true,
             text: 'REASON'
         }, {
@@ -717,6 +763,7 @@ export function tableColumns(dashboard, tags) {
             editable: false,
             sort: true,
             text: 'FROM',
+            headerStyle: { width: getColumnWidth("FROM") },
             formatter: (cell, obj) => {
                 var ob = obj._source;
                 return <span className="filterToggleActive"><span className="filterToggle">
@@ -728,6 +775,7 @@ export function tableColumns(dashboard, tags) {
             editable: false,
             sort: true,
             text: 'TO',
+            headerStyle: { width: getColumnWidth("TO") },
             formatter: (cell, obj) => {
                 var ob = obj._source;
                 return <span className="filterToggleActive"><span className="filterToggle">
@@ -739,6 +787,7 @@ export function tableColumns(dashboard, tags) {
             editable: false,
             sort: true,
             text: 'SOURCE',
+            headerStyle: { width: getColumnWidth("SOURCE") },
             formatter: (cell, obj) => {
                 var ob = obj._source;
                 return <span className="filterToggleActive"><span className="filterToggle">
@@ -749,7 +798,7 @@ export function tableColumns(dashboard, tags) {
             dataField: '_source.attrs.tags',
             text: 'TAGS',
             sort: true,
-            headerStyle: { width: '150px !important' },
+            headerStyle: { width: getColumnWidth("TAGS", "150px") },
             editorRenderer: (editorProps, value, row, column, rowIndex, columnIndex) => (
                 <TagRanger tags={tags} row={row} />
             ),
@@ -815,6 +864,7 @@ export function tableColumns(dashboard, tags) {
                 text: 'EXCEEDED',
                 sort: true,
                 editable: false,
+                headerStyle: { width: getColumnWidth("EXCEEDED") },
                 formatter: (cell, obj) => {
                     var ob = obj._source;
                     var value = "";
@@ -832,11 +882,11 @@ export function tableColumns(dashboard, tags) {
                     notvalue = notvalue + ")";
 
                     var exceededName = ob.exceeded ? ob.exceeded.toString() : "";
-                     
-                   if(Types[exceededName]){
+
+                    if (Types[exceededName]) {
                         exceededName = Types[exceededName];
-                   }
-                    
+                    }
+
                     return <span className="filterToggleActive"><span className="filterToggle">
                         <img onClick={doFilterRaw} field="exceeded" value={value} className="icon" alt="filterIcon" src={filterIcon} /><img field="exceeded" value={notvalue} onClick={doFilterRaw} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span >   {exceededName}
                     </span>
@@ -845,7 +895,7 @@ export function tableColumns(dashboard, tags) {
                 dataField: '_source.el-reason',
                 editable: false,
                 sort: true,
-                headerStyle: { width: '10%' },
+                headerStyle: { width: getColumnWidth("REASON", "50px") },
                 text: 'REASON',
 
             }, {
@@ -853,6 +903,7 @@ export function tableColumns(dashboard, tags) {
                 text: 'FROM',
                 sort: true,
                 editable: false,
+                headerStyle: { width: getColumnWidth("FROM") },
                 formatter: (cell, obj) => {
                     var ob = obj._source;
                     return <span className="filterToggleActive"><span className="filterToggle">
@@ -864,6 +915,7 @@ export function tableColumns(dashboard, tags) {
                 text: 'SOURCE',
                 sort: true,
                 editable: false,
+                headerStyle: { width: getColumnWidth("SOURCE") },
                 formatter: (cell, obj) => {
                     var ob = obj._source;
                     return <span className="filterToggleActive"><span className="filterToggle">
@@ -876,6 +928,7 @@ export function tableColumns(dashboard, tags) {
                 text: 'EXCEEDED BY',
                 sort: true,
                 editable: false,
+                headerStyle: { width: getColumnWidth("EXCEEDED BY") },
                 formatter: (cell, obj) => {
 
                     var ob = obj._source;
@@ -962,6 +1015,7 @@ export function tableColumns(dashboard, tags) {
             dataField: '_source.attrs.type',
             text: 'TYPE',
             sort: true,
+            headerStyle: { width: getColumnWidth("TYPE") },
             editable: false,
             formatter: (cell, obj) => {
                 var ob = obj._source;
@@ -974,6 +1028,7 @@ export function tableColumns(dashboard, tags) {
             text: 'FROM',
             sort: true,
             editable: false,
+            headerStyle: { width: getColumnWidth("FROM") },
             formatter: (cell, obj) => {
                 var ob = obj._source;
                 return <span className="filterToggleActive"><span className="filterToggle">
@@ -985,6 +1040,7 @@ export function tableColumns(dashboard, tags) {
             text: 'TO',
             sort: true,
             editable: false,
+            headerStyle: { width: getColumnWidth("TO") },
             formatter: (cell, obj) => {
                 var ob = obj._source;
                 return <span className="filterToggleActive"><span className="filterToggle">
@@ -996,6 +1052,7 @@ export function tableColumns(dashboard, tags) {
             text: 'SOURCE',
             sort: true,
             editable: false,
+            headerStyle: { width: getColumnWidth("SOURCE") },
             formatter: (cell, obj) => {
                 var ob = obj._source;
                 return <span className="filterToggleActive"><span className="filterToggle">
@@ -1007,6 +1064,7 @@ export function tableColumns(dashboard, tags) {
             text: 'METHOD',
             sort: true,
             editable: false,
+            headerStyle: { width: getColumnWidth("METHOD") },
             formatter: (cell, obj) => {
                 var ob = obj._source;
                 return <span className="filterToggleActive"><span className="filterToggle">
@@ -1017,7 +1075,7 @@ export function tableColumns(dashboard, tags) {
             dataField: '_source.attrs.tags',
             text: 'TAGS',
             sort: true,
-            headerStyle: { width: '150px !important' },
+            headerStyle: { width: getColumnWidth("TAGS", "150px") },
             editorRenderer: (editorProps, value, row, column, rowIndex, columnIndex) => (
                 <TagRanger tags={tags} row={row} />
             ),
@@ -1090,33 +1148,38 @@ export function tableColumns(dashboard, tags) {
         }, {
             dataField: '_source.attrs.rtp-lossmax',
             editable: false,
+            headerStyle: { width: getColumnWidth("RTP LOSSMAX") },
             sort: true,
             text: 'RTP LOSSMAX'
         }, {
             dataField: '_source.attrs.rtp-lossavg',
             editable: false,
+            headerStyle: { width: getColumnWidth("RTP LOSSAVG") },
             sort: true,
             text: 'RTP LOSSAVG'
         }, {
             dataField: '_source.attrs.rtp-MOScqex-min',
             editable: false,
+            headerStyle: { width: getColumnWidth("RTP MOSCQEX MIN") },
             sort: true,
             text: 'RTP MOSCQEX MIN'
         }, {
             dataField: '_source.attrs.rtp-MOScqex-avg',
             editable: false,
+            headerStyle: { width: getColumnWidth("RTP MOSCQEX AVG") },
             sort: true,
             text: 'RTP MOSCQEX AVG'
         }, {
             dataField: '_source.attrs.rtp-direction',
             editable: false,
             sort: true,
+            headerStyle: { width: getColumnWidth("DIRECTION") },
             text: 'DIRECTION'
         }, {
             dataField: '_source.attrs.tags',
             text: 'TAGS',
             sort: true,
-            headerStyle: { width: '150px !important' },
+            headerStyle: { width: getColumnWidth("TAGS", "150px") },
             editorRenderer: (editorProps, value, row, column, rowIndex, columnIndex) => (
                 <TagRanger tags={tags} row={row} />
             ),
@@ -1173,6 +1236,7 @@ export function tableColumns(dashboard, tags) {
             text: 'TYPE',
             editable: false,
             sort: true,
+            headerStyle: { width: getColumnWidth("TYPE") },
             formatter: (cell, obj) => {
                 var ob = obj._source;
                 return <span className="filterToggleActive"><span className="filterToggle">
@@ -1184,6 +1248,7 @@ export function tableColumns(dashboard, tags) {
             text: 'FROM',
             editable: false,
             sort: true,
+            headerStyle: { width: getColumnWidth("FROM") },
             formatter: (cell, obj) => {
                 var ob = obj._source;
                 return <span className="filterToggleActive"><span className="filterToggle">
@@ -1195,6 +1260,7 @@ export function tableColumns(dashboard, tags) {
             text: 'TO',
             editable: false,
             sort: true,
+            headerStyle: { width: getColumnWidth("TO") },
             formatter: (cell, obj) => {
                 var ob = obj._source;
                 return <span className="filterToggleActive"><span className="filterToggle">
@@ -1206,12 +1272,13 @@ export function tableColumns(dashboard, tags) {
             text: 'CONTACT',
             editable: false,
             sort: true,
-            headerStyle: { width: '17%' }
+            headerStyle: { width: getColumnWidth("CONTACT", "100px") },
         }, {
             dataField: '_source.attrs.source',
             text: 'SOURCE',
             editable: false,
             sort: true,
+            headerStyle: { width: getColumnWidth("SOURCE") },
             formatter: (cell, obj) => {
                 var ob = obj._source;
                 return <span className="filterToggleActive"><span className="filterToggle">
@@ -1222,7 +1289,7 @@ export function tableColumns(dashboard, tags) {
             dataField: '_source.attrs.tags',
             text: 'TAGS',
             sort: true,
-            headerStyle: { width: '150px !important' },
+            headerStyle: { width: getColumnWidth("TAGS", "150px") },
             editorRenderer: (editorProps, value, row, column, rowIndex, columnIndex) => (
                 <TagRanger tags={tags} row={row} />
             ),
@@ -1301,6 +1368,7 @@ export function tableColumns(dashboard, tags) {
             text: 'TYPE',
             sort: true,
             editable: false,
+            headerStyle: { width: getColumnWidth("TYPE") },
             formatter: (cell, obj) => {
                 var ob = obj._source;
                 return <span className="filterToggleActive"><span className="filterToggle">
@@ -1312,6 +1380,7 @@ export function tableColumns(dashboard, tags) {
             text: 'FROM',
             sort: true,
             editable: false,
+            headerStyle: { width: getColumnWidth("FROM") },
             formatter: (cell, obj) => {
                 var ob = obj._source;
                 return <span className="filterToggleActive"><span className="filterToggle">
@@ -1323,6 +1392,7 @@ export function tableColumns(dashboard, tags) {
             text: 'TO',
             sort: true,
             editable: false,
+            headerStyle: { width: getColumnWidth("TO") },
             formatter: (cell, obj) => {
                 var ob = obj._source;
                 return <span className="filterToggleActive"><span className="filterToggle">
@@ -1334,6 +1404,7 @@ export function tableColumns(dashboard, tags) {
             text: 'SOURCE',
             editable: false,
             sort: true,
+            headerStyle: { width: getColumnWidth("SOURCE") },
             formatter: (cell, obj) => {
                 var ob = obj._source;
                 return <span className="filterToggleActive"><span className="filterToggle">
@@ -1343,6 +1414,7 @@ export function tableColumns(dashboard, tags) {
         }, {
             dataField: '_source.attrs.reason',
             text: 'REASON',
+            headerStyle: { width: getColumnWidth("REASON") },
             sort: true,
             editable: false
         },
@@ -1351,6 +1423,7 @@ export function tableColumns(dashboard, tags) {
             text: 'COUNTRY_NAME',
             sort: true,
             editable: false,
+            headerStyle: { width: getColumnWidth("COUNTRY_NAME") },
             formatter: (cell, obj) => {
                 var ob = obj._source;
                 if (ob.geoip && ob.geoip.country_name) {
@@ -1363,7 +1436,7 @@ export function tableColumns(dashboard, tags) {
             dataField: '_source.attrs.tags',
             text: 'TAGS',
             sort: true,
-            headerStyle: { width: '150px !important' },
+            headerStyle: { width: getColumnWidth("TAGS", "150px") },
             editorRenderer: (editorProps, value, row, column, rowIndex, columnIndex) => (
                 <TagRanger tags={tags} row={row} />
             ),
@@ -1420,6 +1493,7 @@ export function tableColumns(dashboard, tags) {
             text: 'TYPE',
             editable: false,
             sort: true,
+            headerStyle: { width: getColumnWidth("TYPE") },
             formatter: (cell, obj) => {
                 var ob = obj._source;
                 return <span className="filterToggleActive"><span className="filterToggle">
@@ -1430,13 +1504,14 @@ export function tableColumns(dashboard, tags) {
             dataField: '_source.attrs.reason',
             editable: false,
             sort: true,
+            headerStyle: { width: getColumnWidth("REASON") },
             text: 'REASON'
         }, {
             dataField: '_source.attrs.source',
             editable: false,
             sort: true,
             text: 'SOURCE',
-
+            headerStyle: { width: getColumnWidth("SOURCE") },
             formatter: (cell, obj) => {
                 var ob = obj._source;
                 return <span className="filterToggleActive"><span className="filterToggle">
@@ -1447,7 +1522,7 @@ export function tableColumns(dashboard, tags) {
             dataField: '_source.attrs.tags',
             text: 'TAGS',
             sort: true,
-            headerStyle: { width: '150px !important' },
+            headerStyle: { width: getColumnWidth("TAGS", "150px") },
             editorRenderer: (editorProps, value, row, column, rowIndex, columnIndex) => (
                 <TagRanger tags={tags} row={row} />
             ),
@@ -1504,6 +1579,7 @@ export function tableColumns(dashboard, tags) {
             text: 'HOSTNAME',
             editable: false,
             sort: true,
+            headerStyle: { width: getColumnWidth("HOSTNAME") },
             formatter: (cell, obj) => {
                 var ob = obj._source;
                 return <span className="filterToggleActive"><span className="filterToggle">
@@ -1514,31 +1590,37 @@ export function tableColumns(dashboard, tags) {
             dataField: '_source.attrs.callfrom',
             editable: false,
             sort: true,
+            headerStyle: { width: getColumnWidth("CALL FROM") },
             text: 'CALL FROM'
         }, {
             dataField: '_source.attrs.callsto',
             editable: false,
             sort: true,
+            headerStyle: { width: getColumnWidth("CALL TO") },
             text: 'CALL TO'
         }, {
             dataField: '_source.attrs.callstartfrom',
             editable: false,
             sort: true,
+            headerStyle: { width: getColumnWidth("CALL START FROM") },
             text: 'CALL START FROM'
         }, {
             dataField: '_source.attrs.callstartto',
             editable: false,
             sort: true,
+            headerStyle: { width: getColumnWidth("CALL START TO") },
             text: 'CALL START TO'
         }, {
             dataField: '_source.attrs.bitsfrom',
             editable: false,
             sort: true,
+            headerStyle: { width: getColumnWidth("CALL BITS FROM") },
             text: 'CALL BITS FROM'
         }, {
             dataField: '_source.attrs.bitsto',
             editable: false,
             sort: true,
+            headerStyle: { width: getColumnWidth("CALL BITS TO") },
             text: 'CALL BITS TO'
         }, {
             dataField: '_source',
@@ -1587,6 +1669,7 @@ export function tableColumns(dashboard, tags) {
             text: 'TYPE',
             sort: true,
             editable: false,
+            headerStyle: { width: getColumnWidth("TYPE") },
             formatter: (cell, obj) => {
                 var ob = obj._source;
                 if (ob.attrs) {
@@ -1600,6 +1683,7 @@ export function tableColumns(dashboard, tags) {
             text: 'HOSTNAME',
             sort: true,
             editable: false,
+            headerStyle: { width: getColumnWidth("HOSTNAME") },
             formatter: (cell, obj) => {
                 var ob = obj._source;
                 if (ob.attrs) {
@@ -1613,6 +1697,7 @@ export function tableColumns(dashboard, tags) {
             text: 'TYPE INST.',
             sort: true,
             editable: false,
+            headerStyle: { width: getColumnWidth("TYPE INST.") },
             formatter: (cell, obj) => {
                 var ob = obj._source;
                 if (ob.attrs) {
@@ -1626,6 +1711,7 @@ export function tableColumns(dashboard, tags) {
             text: 'PLUGIN INST.',
             sort: true,
             editable: false,
+            headerStyle: { width: getColumnWidth("PLUGIN INST.") },
             formatter: (cell, obj) => {
                 var ob = obj._source;
                 if (ob.attrs) {
@@ -1639,6 +1725,7 @@ export function tableColumns(dashboard, tags) {
             text: 'RX',
             sort: true,
             editable: false,
+            headerStyle: { width: getColumnWidth("RX") },
             formatter: (cell, obj) => {
                 var ob = obj._source.rx;
                 if (ob) {
@@ -1651,6 +1738,7 @@ export function tableColumns(dashboard, tags) {
             text: 'TX',
             sort: true,
             editable: false,
+            headerStyle: { width: getColumnWidth("TX") },
             formatter: (cell, obj) => {
                 var ob = obj._source.tx;
                 if (ob) {
@@ -1662,6 +1750,7 @@ export function tableColumns(dashboard, tags) {
             dataField: '_source.value',
             editable: false,
             sort: true,
+            headerStyle: { width: getColumnWidth("VALUE") },
             text: 'VALUE'
         }, {
             dataField: '_source',
@@ -1771,6 +1860,7 @@ export function tableColumns(dashboard, tags) {
             text: 'TYPE',
             editable: false,
             sort: true,
+            headerStyle: { width: getColumnWidth("TYPE") },
             formatter: (cell, obj) => {
                 var ob = obj._source;
                 if (ob.attrs && ob.attrs.type) {
@@ -1784,6 +1874,7 @@ export function tableColumns(dashboard, tags) {
             text: 'HOSTNAME',
             editable: false,
             sort: true,
+            headerStyle: { width: getColumnWidth("HOSTNAME") },
             formatter: (cell, obj) => {
                 var ob = obj._source;
                 if (ob.attrs && ob.attrs.hostname) {
@@ -1797,6 +1888,7 @@ export function tableColumns(dashboard, tags) {
             text: 'TYPE INST.',
             editable: false,
             sort: true,
+            headerStyle: { width: getColumnWidth("TYPE INST.") },
             formatter: (cell, obj) => {
                 var ob = obj._source;
                 return <span className="filterToggleActive"><span className="filterToggle">
@@ -1807,12 +1899,14 @@ export function tableColumns(dashboard, tags) {
             dataField: '_source.value',
             editable: false,
             sort: true,
+            headerStyle: { width: getColumnWidth("VALUE") },
             text: 'VALUE'
         }, {
             dataField: '_source.shortterm',
             editable: false,
             text: 'SHORT TERM',
             sort: true,
+            headerStyle: { width: getColumnWidth("SHORT TERM") },
             formatter: (cell, obj) => {
                 var ob = obj._source.rx;
                 if (ob) {
@@ -1825,6 +1919,7 @@ export function tableColumns(dashboard, tags) {
             editable: false,
             text: 'MID TERM',
             sort: true,
+            headerStyle: { width: getColumnWidth("MID TERM") },
             formatter: (cell, obj) => {
                 var ob = obj._source.tx;
                 if (ob) {
@@ -1837,6 +1932,7 @@ export function tableColumns(dashboard, tags) {
             editable: false,
             text: 'LONG TERM',
             sort: true,
+            headerStyle: { width: getColumnWidth("LONG TERM") },
             formatter: (cell, obj) => {
                 var ob = obj._source.value;
                 if (ob) {
