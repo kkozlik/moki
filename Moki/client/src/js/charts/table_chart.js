@@ -7,8 +7,7 @@ it is seperate request from call charts
 import React, {
     Component
 } from 'react';
-import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
-import BootstrapTable from 'react-bootstrap-table-next';
+import BootstrapTable from '@moki-client/react-bootstrap-table-next'; 
 import cellEditFactory from 'react-bootstrap-table2-editor';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import { getSearchableFields } from "../helpers/SearchableFields.js";
