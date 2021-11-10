@@ -17,11 +17,12 @@ import store from "../store/index";
 import {
     setTimerange
 } from "../actions/index";
-import Colors from '../helpers/style/Colors';
+import {Colors} from '@moki-client/gui';
 import emptyIcon from "../../styles/icons/empty_small.png";
 import {
     getTimeBucket, getTimeBucketInt
 } from "../helpers/getTimeBucket";
+import {parseTimestamp} from "../helpers/parseTimestamp";
 
 export default class MultipleAreaChart extends Component {
     constructor(props) {
@@ -184,21 +185,6 @@ export default class MultipleAreaChart extends Component {
 
         var yAxis = d3.axisLeft(yScale).ticks(5);
 
-
-        svg.append("g")
-            .attr("class", "y axis")
-            .call(yAxis)
-            .append('text')
-            .attr("y", 15)
-            .attr("transform", "rotate(-90)")
-            .attr("fill", "#000");
-
-        svg.append("g")
-            .attr("class", "x axis")
-            .attr("transform", `translate(0, ${height})`)
-            .call(xAxis);
-
-
         svg.attr("transform", "translate(" + margin.left + "," + margin.right + ")");
 
 
@@ -212,6 +198,18 @@ export default class MultipleAreaChart extends Component {
 
         } else {
 
+            svg.append("g")
+            .attr("class", "y axis")
+            .call(yAxis)
+            .append('text')
+            .attr("y", 15)
+            .attr("transform", "rotate(-90)")
+            .attr("fill", "#000");
+
+        svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", `translate(0, ${height})`)
+            .call(xAxis);
 
 
             svg.append("g")
@@ -228,7 +226,7 @@ export default class MultipleAreaChart extends Component {
                 var extent = d3.event.selection;
                 var timestamp_gte = xScale.invert(extent[0]);
                 var timestamp_lte = xScale.invert(extent[1]);
-                var timestamp_readiable = new Date(Math.trunc(timestamp_gte)).toLocaleString() + " - " + new Date(Math.trunc(timestamp_lte)).toLocaleString();
+                var timestamp_readiable = parseTimestamp(new Date(Math.trunc(timestamp_gte))) + " - " + parseTimestamp(new Date(Math.trunc(timestamp_lte)));
 
                 store.dispatch(setTimerange([timestamp_gte, timestamp_lte, timestamp_readiable]));
 
@@ -301,7 +299,7 @@ export default class MultipleAreaChart extends Component {
                 .style("cursor", "pointer")
                 .on("mouseover", function (d) {
                     tooltip.style("visibility", "visible");
-                    tooltip.select("div").html("<strong>Time: </strong>" + parseDate(d.date) + " + "+getTimeBucket()+"<br/><strong>Value: </strong>" + d3.format(',')(d.value) + units + "<br/> ");
+                    tooltip.select("div").html("<strong>Time: </strong>" + parseTimestamp(d.date) + " + "+getTimeBucket()+"<br/><strong>Value: </strong>" + d3.format(',')(d.value) + units + "<br/> ");
                 })
                 .on("mouseout", function (d) {
                     tooltip.style("visibility", "hidden")
@@ -387,7 +385,7 @@ export default class MultipleAreaChart extends Component {
         var bucket = getTimeBucket();
         return (<div id={
             this.props.id
-        } >
+        }  className="chart">
             <h3 className="alignLeft title" > {
                 this.props.name
             } <span className="smallText"> (interval: {bucket})</span></h3></div>)

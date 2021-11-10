@@ -148,7 +148,7 @@ class StoredFilters extends Component {
                                 <img style={{ "width": "10px" }} alt="deleteIcon" src={disableIcon} title="delete filter" />
                             </span >
                             <b style={{ "marginLeft": "20px" }}>{item.title}: </b>
-                            {item.attribute[0].filters.length > 0 &&
+                            {item.attribute[0].filters[0].length > 0 &&
                                 item.attribute[0].filters[0].map((subitem, i) => {
                                     if (i <= 3) {
                                         return (

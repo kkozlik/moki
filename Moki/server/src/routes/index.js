@@ -30,6 +30,7 @@ module.exports = () => {
     .get('/layout', SettingController.loadGUILayout)
     .get('/setting', SettingController.load)
     .get('/defaults', SettingController.defaults)
+    .get('/status', SettingController.systemStatus)
     .get('/monitor/version', SettingController.loadMonitorVersion)
     .post('/monitor/logo', SettingController.loadLogo)
     .post('/filters', SettingController.loadFilters)
@@ -41,10 +42,10 @@ module.exports = () => {
     .post('/filters/delete', SettingController.deleteFilter)
     .post('/filters/save', SettingController.saveFilter);
 
-    router
+  router
     .post('/profile/save', ProfileController.storeUserSettings)
     .post('/profile/delete', ProfileController.deleteUserSettings)
-    .get('/profile', ProfileController.getUserSettings)
+    .get('/profile', ProfileController.getUserSettings);
 
   router
     .post('/download/pcap', DiagramController.downloadPcap)
@@ -66,7 +67,7 @@ module.exports = () => {
     .post('/connectivityCA/number_of_call-attemps_ca', ConnectivityCAController.getNumberOfCallAttemptsCA)
     .post('/connectivityCA/number_of_call-ends_ca', ConnectivityCAController.getNumberOfCallEndsCA)
     .post('/connectivityCA/error_code_analysis', ConnectivityCAController.getErrorCodeAnalysis)
-    .post('/connectivityCA/from_to_ca', ConnectivityCAController.getFromToCA) 
+    .post('/connectivityCA/from_to_ca', ConnectivityCAController.getFromToCA)
     .post('/connectivityCA/avg_duration_of_calls_ca', ConnectivityCAController.getDurationCA)
     .post('/connectivity/charts', ConnectivityController.getCharts);
 
@@ -101,7 +102,8 @@ module.exports = () => {
   router
     .post('/registration/table', RegistrationController.getTable)
     .post('/registration/registrations_map', RegistrationController.getGeoip)
-    .post('/registration/charts', RegistrationController.getCharts);
+    .post('/registration/charts', RegistrationController.getCharts)
+    .post('/registration/geoData', RegistrationController.getGeoData);
 
   router
     .post('/security/charts', SecurityController.getCharts)
@@ -109,7 +111,8 @@ module.exports = () => {
     .post('/security/top_subnets', SecurityController.getTopSubnets)
     .post('/security/events_by_country', SecurityController.getEventsByCountry)
     .post('/security/events_by_ip_addr', SecurityController.getEventsByIP)
-    .post('/security/table', SecurityController.getTable);
+    .post('/security/table', SecurityController.getTable)
+    .post('/security/geoData', SecurityController.getGeoData);
 
   router
     .post('/system/charts', SystemController.getCharts)

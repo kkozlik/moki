@@ -46,3 +46,9 @@ run `npm run-scripts build` in the `client` directory.
     "eject": "react-scripts eject"
   },
  ```
+ ### build with jenkins
+use:
+
+https://jenkins/view/moki/job/moki-client-manual-branch-script/build?delay=0sec
+
+and pass the name of the github branch as a parameter.

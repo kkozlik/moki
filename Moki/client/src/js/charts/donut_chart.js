@@ -5,11 +5,12 @@ import * as d3 from "d3";
 import {
     createFilter
 } from '@moki-client/gui';
-import ColorType from '../helpers/style/ColorType';
-import Colors from '../helpers/style/Colors';
-import Reds from '../helpers/style/ColorsReds';
+import {ColorType} from '@moki-client/gui';
+import {Colors} from '@moki-client/gui';
+import {ColorsReds} from '@moki-client/gui';
 import emptyIcon from "../../styles/icons/empty_small.png";
 import storePersistent from "../store/indexPersistent";
+import {Types} from '@moki-client/gui';
 
 export default class StackedChart extends Component {
     constructor(props) {
@@ -62,7 +63,7 @@ export default class StackedChart extends Component {
         var domain = 4;
         var color;
 
-        var colorScale = d3.scaleOrdinal(Reds);
+        var colorScale = d3.scaleOrdinal(ColorsReds);
         var colorScaleMix = d3.scaleOrdinal(Colors);
         var profile = storePersistent.getState().profile;
 
@@ -100,35 +101,20 @@ export default class StackedChart extends Component {
         var svg = d3.select('#' + id).append("svg");
 
         if (data.length === 0) {
-            svg.attr('width', svgWidth)
-                .attr('height', 100)
+            svg.attr('width', 250)
+                .attr('height', 250)
                 .attr('id', id + 'SVG');
-
-            svg.append("line")
-                .attr("x1", 0)
-                .attr("y1", 10)
-                .attr("x2", svgWidth)
-                .attr("y2", 10)
-                .attr("stroke-width", 0.4)
-                .attr("stroke", "#808080");
 
             svg.append('svg:image')
                 .attr("xlink:href", emptyIcon)
-                .attr('transform', 'translate(' + svgWidth / 2 + ',30)');
-
-            svg.append("line")
-                .attr("x1", 0)
-                .attr("y1", 90)
-                .attr("x2", svgWidth)
-                .attr("y2", 90)
-                .attr("stroke-width", 0.4)
-                .attr("stroke", "#808080");
+                .attr('transform', 'translate(' + 70 + ','+250/2+')');
 
         } else {
 
             var g = svg.attr('width', svgWidth)
                 .attr('height', h)
                 .attr('id', id + 'SVG')
+                .attr("style", "margin-top: 25px")
                 .append('g')
                 .attr('transform', 'translate(100,' + h / 2 + ')');
 
@@ -234,9 +220,21 @@ export default class StackedChart extends Component {
                 .attr('y', legendRectSize - legendSpacing)
                 .text(function (d) {
                     for (var i = 0; i < pie(data).length; i++) {
-                        return d.key + " (" + d.doc_count + ")";
+                        if(d.key.length <= 20){
+                            if( Types[d.key]){
+                                return Types[d.key] + " (" + d.doc_count + ")";
+                            }
+                            else {
+                                return d.key + " (" + d.doc_count + ")";
+                            }
+                        }
+                        else {
+                            return d.key.substring(0, 20) + '...' + " (" + d.doc_count + ")";
+                        }
                     }
                 })
+                .append("svg:title")
+                .text(function (d) { return d.key })
                 .on("click", el => {
                     createFilter(field + ":\"" + el.key + "\"");
                     //bug fix: if you click but not move out
@@ -251,10 +249,8 @@ export default class StackedChart extends Component {
     }
 
     render() {
-        return (<div id={this.props.id}>
-            <h3 className="alignLeft title" > {
-                this.props.name
-            } </h3>
+        return (<div id={this.props.id}  className="chart chartMinHeight" style={{"paddingBottom": "10px", "paddingLeft": "10px"}}>
+            <h3 className="alignLeft title" style={{"float": "inherit"}}> {this.props.name} </h3>
         </div>)
     }
 }

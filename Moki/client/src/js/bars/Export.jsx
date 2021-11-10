@@ -44,7 +44,7 @@ class Export extends Component {
 
             var calls = await elasticsearchConnection(name + "/table");
             //parse data
-            var data = parseTableHits(calls.hits.hits);
+            var data = await parseTableHits(calls.hits.hits);
 
             this.setState({
                 data: data

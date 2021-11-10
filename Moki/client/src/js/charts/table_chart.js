@@ -16,7 +16,7 @@ import ToolkitProvider from 'react-bootstrap-table2-toolkit';
 import filter from "../../styles/icons/filter.png";
 import unfilter from "../../styles/icons/unfilter.png";
 import { createFilter } from '@moki-client/gui';
-import emptyIcon from "../../styles/icons/empty.png";
+import emptyIcon from "../../styles/icons/empty_small.png";
 import tagIcon from "../../styles/icons/tag.png";
 import downloadIcon from "../../styles/icons/download.png";
 import downloadPcapIcon from "../../styles/icons/downloadPcap.png";
@@ -28,6 +28,8 @@ import { downloadSD } from '../helpers/download/downloadSD';
 import { tableColumns } from '../helpers/TableColumns';
 import { getPcap } from '../helpers/getPcap.js';
 import { downloadPcapMerged } from '../helpers/download/downloadPcapMerged';
+import { parseTimestamp } from "../helpers/parseTimestamp";
+
 var FileSaver = require('file-saver');
 var JSZip = require("jszip");
 
@@ -39,12 +41,27 @@ export default class listChart extends Component {
         //get columns name from layout 
         var name = window.location.pathname.substring(1);
         var layout = storePersistent.getState().layout.table;
+
+        //if there is settings with min pages, use it
+        var count = 10;
+
+        var aws = storePersistent.getState().user.aws;
+        if (aws !== true) {
+            if (storePersistent.getState().settings.length > 0) {
+                for (var i = 0; i < storePersistent.getState().settings[0].attrs.length; i++) {
+                    if (storePersistent.getState().settings[0].attrs[i].attribute === "eventTableCount") {
+                        count = storePersistent.getState().settings[0].attrs[i].value;
+                    }
+                }
+            }
+        }
+
         var searchable = layout[name] ? layout[name] : layout.default;
         //remove the same
         var removeIndices = [];
         for (var i = 0; i < searchable.length; i++) {
             for (var j = 0; j < columns.length; j++) {
-                if (searchable[i] && columns[j].dataField === "_source.attrs." + searchable[i]) {
+                if (searchable[i] && columns[j].dataField === "_source." + searchable[i]) {
                     removeIndices.push(i);
                 }
             }
@@ -59,16 +76,18 @@ export default class listChart extends Component {
             var field = searchable[i];
             columns.push(
                 {
-                    dataField: '_source.attrs.' + field,
-                    text: field.toUpperCase(),
+                    dataField: '_source.' + field,
+                    text: field.substring(field.indexOf(".")+1).toUpperCase(),
                     hidden: true,
                     editable: false,
                     sort: true,
                     headerStyle: { width: '150px' },
-                    formatExtraData: "attrs." + field,
+                    formatExtraData:  field,
                     formatter: (cell, obj, i, formatExtraData) => {
                         return <span className="filterToggleActive"><span className="filterToggle">
-                            <img onClick={this.filter} field={formatExtraData} value={cell} className="icon" alt="filterIcon" src={filter} /><img field={formatExtraData} value={cell} onClick={this.unfilter} className="icon" alt="unfilterIcon" src={unfilter} /></span >    {cell}
+                            <img onClick={this.filter} field={formatExtraData} value={cell} className="icon" alt="filterIcon" src={filter} />
+                            <img field={formatExtraData} value={cell} onClick={this.unfilter} className="icon" alt="unfilterIcon" src={unfilter} /></span >
+                            {cell}
                         </span>
                     }
                 });
@@ -81,7 +100,8 @@ export default class listChart extends Component {
             selectedRowsList: [],
             tags: this.props.tags,
             checkall: false,
-            selected: []
+            selected: [],
+            count: count
         }
 
         this.filter = this.filter.bind(this);
@@ -92,9 +112,6 @@ export default class listChart extends Component {
         this.handleOnSelect = this.handleOnSelect.bind(this);
         this.handleOnSelectAll = this.handleOnSelectAll.bind(this);
         this.getRecord = this.getRecord.bind(this);
-
-
-
     }
 
     static getDerivedStateFromProps(nextProps, prevState) {
@@ -204,7 +221,6 @@ export default class listChart extends Component {
 
     //define searchable field from SearchableFields.js
     isSearchable(field) {
-
         var searchable = getSearchableFields();
         for (var j = 0; j < searchable.length; j++) {
             if ("attrs." + searchable[j] === field) {
@@ -216,8 +232,6 @@ export default class listChart extends Component {
 
     //insert columns iinto table
     async componentDidMount() {
-
-
         //store already exclude alarms list
         if (window.location.pathname === "/exceeded") {
             try {
@@ -320,13 +334,10 @@ export default class listChart extends Component {
             //get rid of race condition by waiting before getting new data again
             if (result.result && result.result === "updated") {
                 setTimeout(function () {
-
                     //alert("Tag has been saved."); 
                     document.getElementById("popupTag").style.display = "none";
                     document.getElementById("tag").value = "";
                     document.getElementsByClassName("iconReload")[0].click();
-
-
                 }, 1000);
             }
             else {
@@ -381,10 +392,6 @@ export default class listChart extends Component {
             }));
         }
     }
-
-
-
-
 
     render() {
         var thiss = this;
@@ -443,26 +450,28 @@ export default class listChart extends Component {
                 var zip = new JSZip();
                 for (var i = 0; i < selectedData.length; i++) {
                     var record = thiss.getRecord(selectedData[i]);
-                    var filename = record._source.attrs.filename;
-                    await downloadPcap(record._source.attrs.filename).then(function (data) {
-                        filename = filename ? filename.substring(0, filename.length - 5) : "";
-                        filename = filename ? filename.substring(filename.lastIndexOf("/") + 1) : Math.random().toString(36).substring(7);
-                        if (typeof data !== 'string') {
-                            var blob = new Blob([data], { type: "pcap" });
-                            zip.file(filename, blob);
-                        }
-                        var json = new Blob([JSON.stringify(record)], { type: 'text/plain' });
-                        zip.file(filename + ".json", json);
-                    })
+                    var filename = record._source.attrs.filename ? record._source.attrs.filename : Math.random().toString(36).substring(7);
+                    if (record._source.attrs.filename) {
+                        await downloadPcap(record._source.attrs.filename).then(function (data) {
+                            filename = filename ? filename.substring(0, filename.length - 5) : "";
+                            filename = filename ? filename.substring(filename.lastIndexOf("/") + 1) : Math.random().toString(36).substring(7);
+                            if (typeof data !== 'string') {
+                                var blob = new Blob([data], { type: "pcap" });
+                                zip.file(filename, blob);
+                            }
+                        })
+                    }
 
                     //download sd
-
                     if (record._source.attrs.filename) {
                         var sd = await downloadSD(record._source.attrs.filename);
                         if (sd && !sd.includes("Error")) {
                             zip.file(filename + ".html", sd);
                         }
                     }
+
+                    var json = new Blob([JSON.stringify(record)], { type: 'text/plain' });
+                    zip.file(filename + ".json", json);
 
                 }
                 zip.generateAsync({ type: "blob" })
@@ -581,10 +590,10 @@ export default class listChart extends Component {
 
                                                     //attrs.to or attrs.from, use keyword 
                                                     : cell === "from" || cell === "to" ?
-                                                        <p key={cell} field={"attrs." + cell+".keyword"} value={row._source.attrs[cell]}>
+                                                        <p key={cell} field={"attrs." + cell + ".keyword"} value={row._source.attrs[cell]}>
                                                             <span className="spanTab">{cell}: </span>
-                                                            <img onClick={this.filter} field={"attrs." + cell+".keyword"} value={row._source.attrs[cell]} title="filter" className="icon" alt="filterIcon" src={filter} />
-                                                            <img field={"attrs." + cell+".keyword"} value={row._source.attrs[cell]} onClick={this.unfilter} className="icon" alt="unfilterIcon" title="unfilter" src={unfilter} />
+                                                            <img onClick={this.filter} field={"attrs." + cell + ".keyword"} value={row._source.attrs[cell]} title="filter" className="icon" alt="filterIcon" src={filter} />
+                                                            <img field={"attrs." + cell + ".keyword"} value={row._source.attrs[cell]} onClick={this.unfilter} className="icon" alt="unfilterIcon" title="unfilter" src={unfilter} />
                                                             <span className="spanTab">{row._source.attrs[cell]}</span>
                                                         </p>
                                                         :
@@ -616,7 +625,7 @@ export default class listChart extends Component {
                                         cell === "reg_expire" || cell === "ua_expire" ?
                                             <p value={row._source.attrs[cell]}>
                                                 <span className="spanTab">{cell}: </span>
-                                                <span className="tab">{new Date(row._source.attrs[cell] * 1000).toLocaleString()}</span>
+                                                <span className="tab">{parseTimestamp(new Date(row._source.attrs[cell] * 1000))}</span>
                                             </p>
                                             :
 
@@ -629,7 +638,7 @@ export default class listChart extends Component {
                             <span />
                     )}
 
-                    { row._source.geoip ?
+                    {row._source.geoip ?
                         Object.keys(row._source.geoip).sort().map(cell =>
                             isDisplay("geoip." + cell) ?
                                 cell === "country_name" ?
@@ -649,7 +658,7 @@ export default class listChart extends Component {
                                 : <span />
                         ) : <span />}
 
-                    { this.props.name === "exceeded" || this.props.name === "system" || this.props.name === "network" || this.props.name === "realm" ?
+                    {this.props.name === "exceeded" || this.props.name === "system" || this.props.name === "network" || this.props.name === "realm" ?
                         Object.keys(row._source).sort().map(cell =>
                             isDisplay(cell) ?
                                 <p value={row._source[cell]}>
@@ -708,7 +717,7 @@ export default class listChart extends Component {
             selected: this.state.selected,
             onSelect: this.handleOnSelect,
             onSelectAll: this.handleOnSelectAll
-        }
+        };
 
         const columnsList = this.state.columns;
         var CustomToggleList = ({
@@ -748,7 +757,7 @@ export default class listChart extends Component {
                                     this.setState({ columns: columns });
                                 }
                                 }>
-                                { column.text}
+                                {column.text}
                             </button>
 
                         ))
@@ -791,27 +800,24 @@ export default class listChart extends Component {
         };
 
         const options = {
-            pageButtonRenderer
+            pageButtonRenderer,
+            sizePerPage: this.state.count
         };
-        return (
-            <div key={"table" + this.props.name}>
 
+        return (
+            <div key={"table" + this.props.name} className="chart">
                 {columnsList &&
                     <ToolkitProvider
                         keyField="_id"
-                        data={
-                            this.state.data
-                        }
+                        data={Array.isArray(this.state.data) ? this.state.data : []}
                         columnToggle
-                        columns={
-                            this.state.columns
-                        }
+                        columns={this.state.columns}
                         noDataIndication={() => <NoDataIndication />}>
 
                         {
                             props => (
                                 <div key={"tablechart"}>
-                                    <h3 className="alignLeft title inline" >{this.props.id}</h3>
+                                    <h3 className="alignLeft title inline" style={{ "float": "inherit" }} >{this.props.id}</h3>
                                     {this.props.id !== "LAST LOGIN EVENTS" && <img className="icon" alt="tagIcon" src={tagIcon} title="add tag" onClick={() => this.openPopupTag()} />}
 
                                     {this.props.id !== "LAST LOGIN EVENTS" && <div id="popupTag" className="popupTag" style={{ "display": "none" }}>
@@ -833,7 +839,7 @@ export default class listChart extends Component {
                                         }
                                         bordered={false}
                                         bootstrap4
-                                        selectRow={selectRowProp}
+                                        selectRow={this.props.checkbox === false ? undefined : selectRowProp}
                                         hover
                                         printable
                                         expandRow={this.props.id !== "LAST LOGIN EVENTS" ?
@@ -849,8 +855,6 @@ export default class listChart extends Component {
                             )
                         }
                     </ToolkitProvider>
-
-
                 }
             </div>
         );

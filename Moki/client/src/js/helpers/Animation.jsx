@@ -32,14 +32,16 @@ class Animation extends Component {
             count: -1,
             icon: playIcon,
             dataAll: "",
-            animation: ""
+            animation: "",
+            dataI: []
         }
         store.subscribe(() => this.hideAnimation());
     }
 
     componentWillReceiveProps(nextProps) {
         if (window.location.pathname === "/web") {
-            if (nextProps.dataAll !== this.state.dataAll) {
+            if (nextProps.dataAll !== this.state.dataAll && (nextProps.dataAll.length > 0 && nextProps.dataAll[0].length > 0)) {
+
                 this.setState({ dataAll: nextProps.dataAll });
             }
         }
@@ -150,14 +152,15 @@ class Animation extends Component {
                     if (data && data[i] && data[i].data) {
                         thiss.setState({
                             animationTime: data[i].time,
-                            count: i
+                            count: i,
+                            dataI: data[i].data
                         })
                         thiss.props.setData(data[i].data);
                     }
                     else {
                         console.info("Animation: finish, ending");
                         clearInterval(animation);
-                        thiss.props.setData(thiss.state.dataAll);
+                        thiss.props.setData(thiss.state.dataAll, false);
                         thiss.setState({
                             data: [],
                             animationTime: "",
@@ -190,8 +193,10 @@ class Animation extends Component {
     }
 
     pause() {
+        console.info("animation pause");
         clearInterval(this.state.animation);
         this.setState({ icon: playIcon });
+        if(typeof(this.props.setAnimation) === 'function') { this.props.setAnimation(false);}
     }
 
     //load selected timerange by animation
@@ -235,7 +240,7 @@ class Animation extends Component {
         var display = this.props.display === "none" ? "none" : "block";
         var interval = (store.getState().timerange[1] - store.getState().timerange[0]) / 30000;
         interval = interval / 60 > 1 ? Math.round(interval / 60) + "min" : interval + "s";
-        return (<div style={{ "display": display }}>
+        return (<div style={{ "display": display, "paddingTop": "10px" }}>
             <span onClick={this.loadData} id={this.props.name}>
                 <img style={{ "marginLeft": "10px", "marginRight": "0px" }} className="iconRefresh" alt="playIcon" src={this.state.icon} title="play" />
             </span>
@@ -245,7 +250,7 @@ class Animation extends Component {
             }
             { this.state.animationTime ? <span className="slidecontainer">
                 <input type="range" min="0" max={this.state.data.length - 1} onInput={this.changeSliderInput} value={this.state.count} className="slider" id="animationRange">
-                </input>{new Date(this.state.animationTime).toLocaleString() + " + " + interval}</span> : ""
+                </input><span style={{"color": "grey"}}>{new Date(this.state.animationTime).toLocaleString() + " + " + interval}</span></span> : ""
             }
         </div>
         );

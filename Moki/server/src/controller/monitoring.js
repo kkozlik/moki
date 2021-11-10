@@ -1,227 +1,222 @@
 // monitoring.js hold the home endpoint
+const exec = require('child_process').exec;
+const http = require('http');
 const {
-    getFiltersConcat,
-    getTypesConcat,
-    getQueries
+  getFiltersConcat,
+  getQueries
 } = require('../utils/metrics');
-
-const {
-    connectToES
-} = require('../modules/elastic');
-
+const { connectToES } = require('../modules/elastic');
 let {
-    getTimestampBucket,
-    timestamp_gte,
-    timestamp_lte
+  timestamp_gte,
+  timestamp_lte
 } = require('../utils/ts');
 const { getJWTsipUserFilter } = require('../modules/jwt');
+const two_agg_query_limit = require('../../js/template_queries/two_agg_query_limit');
 
-var exec = require('child_process').exec;
-var http = require('http');
-var two_agg_query_limit = require('../../js/template_queries/two_agg_query_limit.js');
-var domainFilter = "*";
+let domainFilter = "*"; 
+const supress = "nofield";
 
 class monitoringController {
 
-    /**
-     * @swagger
-     * /api/monitoring/charts:
-     *   post:
-     *     description: Get monitoring charts
-     *     tags: [Monitoring]
-     *     produces:
-     *       - application/json
-     *     parameters:
-     *       - name: pretty
-     *         description: Return a pretty json
-     *         in: query
-     *         required: false
-     *         type: bool
-     *       - name: form
-     *         description: monitoring form
-     *         in: body
-     *         type: object
-     *         required:
-     *          - filters
-     *          - types
-     *          - timerange_gte
-     *          - timerange_lte
-     *         properties:
-     *          filters:
-     *            description: epmty array
-     *            type: array
-     *            example: []
-     *          types:
-     *            description: empty array
-     *            type: array
-     *            example: []
-     *          timerange_gte:
-     *            description: empty string
-     *            type: string
-     *            example:
-     *              timerange_gte: ""
-     *          timerange_lte:
-     *            description: empty string
-     *            type: string
-     *            example:
-     *              timerange_lte: ""
-     *     responses:
-     *       200:
-     *         description: return monitoring data
-     *         content:
-     *           application/json:
-     *              schema: 
-     *              type: array
-     *              example:
-     *                 [_nodes: {clustername: elasticsearch, nodes: [] }, {logstash: active, elasticsearch: active}, {_shards: {indices: {}, _shards: {}, _all: {}}}]
-     *       400:
-     *         description: elasticsearch error
-     *         content:
-     *           application/json:
-     *             schema:
-     *               $ref: '#/definitions/ChartResponseError'
-     */
+  /**
+   * @swagger
+   * /api/monitoring/charts:
+   *   post:
+   *     description: Get monitoring charts
+   *     tags: [Monitoring]
+   *     produces:
+   *       - application/json
+   *     parameters:
+   *       - name: pretty
+   *         description: Return a pretty json
+   *         in: query
+   *         required: false
+   *         type: bool
+   *       - name: form
+   *         description: monitoring form
+   *         in: body
+   *         type: object
+   *         required:
+   *          - filters
+   *          - types
+   *          - timerange_gte
+   *          - timerange_lte
+   *         properties:
+   *          filters:
+   *            description: epmty array
+   *            type: array
+   *            example: []
+   *          types:
+   *            description: empty array
+   *            type: array
+   *            example: []
+   *          timerange_gte:
+   *            description: empty string
+   *            type: string
+   *            example:
+   *              timerange_gte: ""
+   *          timerange_lte:
+   *            description: empty string
+   *            type: string
+   *            example:
+   *              timerange_lte: ""
+   *     responses:
+   *       200:
+   *         description: return monitoring data
+   *         content:
+   *           application/json:
+   *              schema: 
+   *              type: array
+   *              example:
+   *                 [_nodes: {clustername: elasticsearch, nodes: [] }, {logstash: active, elasticsearch: active}, {_shards: {indices: {}, _shards: {}, _all: {}}}]
+   *       400:
+   *         description: elasticsearch error
+   *         content:
+   *           application/json:
+   *             schema:
+   *               $ref: '#/definitions/ChartResponseError'
+   */
 
-    static getCharts(req, res, next) {
-        async function search() {
-            const client = connectToES();
+  static getCharts(req, res, next) {
+    async function search() {
+      const client = connectToES();
 
-            var logstash = "";
-            //get systemctl status logstash
-            exec("systemctl is-active  logstash", function (error, stdout, stderr) {
-                if (!error) {
-                    logstash = stdout;
-                } else {
-                    logstash = error;
-                }
-            })
-
-            var elasticsearch = "";
-            //get systemctl status elasticsearch
-            exec("systemctl is-active elasticsearch", function (error, stdout, stderr) {
-                if (!error) {
-                    elasticsearch = stdout;
-                } else {
-                    elasticsearch = error;
-                }
-            })
-
-            var data = [];
-            var node;
-            var indices;
-
-            try {
-                node = await client.nodes.stats();
-                indices = await client.indices.stats();
-            } catch (error) {
-                //send at least status
-                data.push({});
-                data.push({
-                    logstash: logstash,
-                    elasticsearch: elasticsearch
-                });
-                data.push({});
-                res.send(data);
-            }
-
-            data.push(node);
-            data.push({
-                logstash: logstash,
-                elasticsearch: elasticsearch
-            });
-            data.push(indices);
-            client.close();
-            return res.json(data);
+      let logstash = "";
+      //get systemctl status logstash
+      exec("systemctl is-active  logstash", function (error, stdout) {
+        if (!error) {
+          logstash = stdout;
+        } else {
+          logstash = error;
         }
+      });
 
-        return search().catch(e => {
-            return next(e);
+      let elasticsearch = "";
+      //get systemctl status elasticsearch
+      exec("systemctl is-active elasticsearch", function (error, stdout) {
+        if (!error) {
+          elasticsearch = stdout;
+        } else {
+          elasticsearch = error;
+        }
+      });
+
+      const data = [];
+      let node;
+      let indices;
+
+      try {
+        node = await client.nodes.stats();
+        indices = await client.indices.stats();
+      } catch (error) {
+        //send at least status
+        data.push({});
+        data.push({
+          logstash: logstash,
+          elasticsearch: elasticsearch
         });
+        data.push({});
+        res.send(data);
+      }
+
+      data.push(node);
+      data.push({
+        logstash: logstash,
+        elasticsearch: elasticsearch
+      });
+      data.push(indices);
+      client.close();
+      return res.json(data);
     }
 
-    /**
- * @swagger
- * /api/monitoring/events:
- *   post:
- *     description: Get events statistics
- *     tags: [Monitoring]
- *     produces:
- *       - application/json
- *     parameters:
- *       - name: pretty
- *         description: Return a pretty json
- *         in: query
- *         required: false
- *         type: bool
- *       - name: form
- *         description: monitoring form
- *         in: body
- *         type: object
- *         required:
- *          - filters
- *          - types
- *          - timerange_gte
- *          - timerange_lte
- *         properties:
- *          filters:
- *            description: epmty array
- *            type: array
- *            example: []
- *          types:
- *            description: empty array
- *            type: array
- *            example: []
- *          timerange_gte:
- *            description: empty string
- *            type: string
- *            example:
- *              timerange_gte: ""
- *          timerange_lte:
- *            description: empty string
- *            type: string
- *            example:
- *              timerange_lte: ""
- *     responses:
- *       200:
- *         description: return events data
- *         content:
- *           application/json:
- *              schema: 
- *              type: array
- *              example:
- *                 [ephemeral_id: "2eed7083-47c1-49bb-a3c1-7e232f275cde", events: {in: 11508789, filtered: 11508789, out: 11508789, duration_in_millis: 64411180}, host: "monitor", http_address: "127.0.0.1:9600", id: "0815399c-42a2-4bc5-bbea-0c0e2b0a6e6a", name: "monitor", pipeline: {workers: 1, batch_size: 125, batch_delay: 50}, snapshot: false, status: "green", version: "7.7.1"]
- *       400:
- *         description: elasticsearch error
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/definitions/ChartResponseError'
- */
-    static getEvents(req, res, next) {
-        async function search() {
-            http.get('http://localhost:9600/_node/stats/events', (resp) => {
-                let data = '';
+    return search().catch(e => {
+      return next(e);
+    });
+  }
 
-                // A chunk of data has been recieved.
-                resp.on('data', (chunk) => {
-                    data += chunk;
-                });
+  /**
+* @swagger
+* /api/monitoring/events:
+*   post:
+*     description: Get events statistics
+*     tags: [Monitoring]
+*     produces:
+*       - application/json
+*     parameters:
+*       - name: pretty
+*         description: Return a pretty json
+*         in: query
+*         required: false
+*         type: bool
+*       - name: form
+*         description: monitoring form
+*         in: body
+*         type: object
+*         required:
+*          - filters
+*          - types
+*          - timerange_gte
+*          - timerange_lte
+*         properties:
+*          filters:
+*            description: epmty array
+*            type: array
+*            example: []
+*          types:
+*            description: empty array
+*            type: array
+*            example: []
+*          timerange_gte:
+*            description: empty string
+*            type: string
+*            example:
+*              timerange_gte: ""
+*          timerange_lte:
+*            description: empty string
+*            type: string
+*            example:
+*              timerange_lte: ""
+*     responses:
+*       200:
+*         description: return events data
+*         content:
+*           application/json:
+*              schema: 
+*              type: array
+*              example:
+*                 [ephemeral_id: "2eed7083-47c1-49bb-a3c1-7e232f275cde", events: {in: 11508789, filtered: 11508789, out: 11508789, duration_in_millis: 64411180}, host: "monitor", http_address: "127.0.0.1:9600", id: "0815399c-42a2-4bc5-bbea-0c0e2b0a6e6a", name: "monitor", pipeline: {workers: 1, batch_size: 125, batch_delay: 50}, snapshot: false, status: "green", version: "7.7.1"]
+*       400:
+*         description: elasticsearch error
+*         content:
+*           application/json:
+*             schema:
+*               $ref: '#/definitions/ChartResponseError'
+*/
+  static getEvents(req, res, next) {
+    async function search() {
+      http.get('http://localhost:9600/_node/stats/events', (resp) => {
+        let data = '';
 
-                // The whole response has been received. Print out the result.
-                resp.on('end', () => {
-                    return res.json(JSON.parse(data));
-                });
-            }).on("error", function () { return next("Problem with getting stats from ES.") });
-        }
-
-        return search().catch(e => {
-            return next(e);
+        // A chunk of data has been recieved.
+        resp.on('data', (chunk) => {
+          data += chunk;
         });
 
-
+        // The whole response has been received. Print out the result.
+        resp.on('end', () => {
+          return res.json(JSON.parse(data));
+        });
+      }).on("error", function () { return next("Problem with getting stats from ES."); });
     }
 
-    /**
+    return search().catch(e => {
+      return next(e);
+    });
+
+
+  }
+
+  /**
 * @swagger
 * /api/monitoring/sbc:
 *   post:
@@ -279,50 +274,42 @@ class monitoringController {
 *             schema:
 *               $ref: '#/definitions/ChartResponseError'
 */
-    static getSbc(req, res, next) {
-        async function search() {
-            const client = connectToES();
+  static getSbc(req, res, next) {
+    async function search() {
+      const client = connectToES();
+      const filters = getFiltersConcat(req.body.filters);
 
-            const filters = getFiltersConcat(req.body.filters);
-            const types = getTypesConcat(req.body.types);
+      if (req.body.timerange_lte) {
+        timestamp_lte = Math.round(req.body.timerange_lte);
+      }
 
-            if (req.body.timerange_lte) {
-                timestamp_lte = Math.round(req.body.timerange_lte);
-            }
+      if (req.body.timerange_gte) {
+        timestamp_gte = Math.round(req.body.timerange_gte);
+      }
 
-            if (req.body.timerange_gte) {
-                timestamp_gte = Math.round(req.body.timerange_gte);
-            }
+      //check if domain fiter should be use
+      const isDomainFilter = await getJWTsipUserFilter(req);
+      if (isDomainFilter.domain) {
+        domainFilter = isDomainFilter.domain;
+      }
 
-            var timebucket = getTimestampBucket(timestamp_gte, timestamp_lte);
+      //SBC ACTIVITY TYPES
+      const sbcTypes = two_agg_query_limit.getTemplate("attrs.sbc", "terms", "attrs.type", getQueries(filters, "*", timestamp_gte, timestamp_lte, "*", "*", domainFilter), supress);
 
-            //check if domain fiter should be use
-            var isDomainFilter = await getJWTsipUserFilter(req);
-            if (isDomainFilter.domain) {
-                domainFilter = isDomainFilter.domain;
-            }
+      const response = await client.search({
+        index: 'logstash*',
+        "ignore_unavailable": true,
+        "preference": 1542895076143,
+        body: sbcTypes
 
-            //SBC ACTIVITY TYPES
-            const sbcTypes = two_agg_query_limit.getTemplate("attrs.sbc", "terms", "attrs.type", getQueries(filters, "*", timestamp_gte, timestamp_lte, "*", "*", domainFilter), supress);
-
-            const response = await client.search({
-                index: 'logstash*',
-                "ignore_unavailable": true,
-                "preference": 1542895076143,
-                body: sbcTypes
-
-            });
-            client.close();
-            return res.json(response);
-        }
-
-        return search().catch(e => {
-            return next(e);
-        });
-
-
+      });
+      client.close();
+      return res.json(response);
     }
-
+    return search().catch(e => {
+      return next(e);
+    });
+  }
 }
 
 module.exports = monitoringController;

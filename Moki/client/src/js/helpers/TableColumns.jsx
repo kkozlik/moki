@@ -15,6 +15,9 @@ import { exportJSON } from "./export";
 import { getPcap } from './getPcap';
 import { exclude } from './exclude';
 import storePersistent from "../store/indexPersistent";
+import { parseTimestamp } from "../helpers/parseTimestamp";
+import SimpleSequenceDiagram from "../charts/simpleSequenceDiagram";
+import {Types} from '@moki-client/gui';
 
 /*
 create new filter based on html tag with field with attribute as name 
@@ -26,7 +29,7 @@ export const doFilter = (event) => {
 create raw new filter without changing it's value
 */
 export const doFilterRaw = (event) => {
-    createFilter( event.currentTarget.getAttribute('value'));
+    createFilter(event.currentTarget.getAttribute('value'));
 }
 
 /*
@@ -69,7 +72,8 @@ export const syntaxHighlight = (json) => {
         } else if (/null/.test(match)) {
             cls = 'null';
         }
-        return '<span class="' + cls + '">' + match + '</span>';
+
+        return '<span class="rowSplit ' + cls + '">' + match + '</span>';
     });
 }
 
@@ -91,7 +95,6 @@ export function tableColumns(dashboard, tags) {
         editorRenderer: (editorProps, value, row, column, rowIndex, columnIndex) => (
             <TagRanger tags={tags} row={row} />
         ),
-
         formatter: (cell, obj) => {
             var ob = obj._source;
             return <span className="filterToggleActive"><span className="filterToggle">
@@ -118,7 +121,7 @@ export function tableColumns(dashboard, tags) {
                 headerStyle: { width: '170px' },
                 formatter: (cell, obj) => {
                     var ob = obj._source;
-                    return new Date(ob['@timestamp']).toLocaleString();
+                    return parseTimestamp(new Date(ob['@timestamp']));
                 }
 
             }, {
@@ -136,7 +139,7 @@ export function tableColumns(dashboard, tags) {
                     </span>
                 }
             }, {
-                dataField: '_source.attrs.from.keyword',
+                dataField: '_source.attrs.from',
                 text: 'FROM',
                 sort: true,
                 editable: false,
@@ -147,7 +150,7 @@ export function tableColumns(dashboard, tags) {
                     </span>
                 }
             }, {
-                dataField: '_source.attrs.to.keyword',
+                dataField: '_source.attrs.to',
                 text: 'TO',
                 sort: true,
                 editable: false,
@@ -212,16 +215,28 @@ export function tableColumns(dashboard, tags) {
 
                         {ob.attrs.filenameDownload && <a href={"/sequenceDiagram/" + ob.attrs.filenameDownload} target="_blank" rel="noopener noreferrer"><img className="icon" alt="viewIcon" src={viewIcon} title="view PCAP" /></a>
                         }
-
+                        {ob.dbg && ob.dbg.msg_trace && <Popup trigger={<img className="icon" alt="viewIcon" src={viewIcon} title="diagram" />} modal>
+                            {close => (
+                                <div className="Advanced">
+                                    <button className="close" onClick={close}>
+                                        &times;
+                                    </button>
+                                    <div className="contentAdvanced" style={{ "padding": "0px" }}>
+                                        <SimpleSequenceDiagram data={ob} />
+                                    </div>
+                                </div>
+                            )}
+                        </Popup>
+                        }
                         {<Popup trigger={<img className="icon" alt="detailsIcon" src={detailsIcon} title="details" />} modal>
                             {close => (
                                 <div className="Advanced">
                                     <button className="link close export" onClick={() => exportJSON(ob)}>
                                         Export json
-                            </button>
+                                    </button>
                                     <button className="close" onClick={close}>
                                         &times;
-                            </button>
+                                    </button>
                                     <div className="contentAdvanced">
                                         <pre> <div dangerouslySetInnerHTML={{ __html: syntaxHighlight(ob) }} /></pre>
 
@@ -241,7 +256,7 @@ export function tableColumns(dashboard, tags) {
             headerStyle: { width: '170px' },
             formatter: (cell, obj) => {
                 var ob = obj._source;
-                return new Date(ob['@timestamp']).toLocaleString();
+                return parseTimestamp(new Date(ob['@timestamp']));
             }
 
         },
@@ -318,7 +333,7 @@ export function tableColumns(dashboard, tags) {
             headerStyle: { width: '170px' },
             formatter: (cell, obj) => {
                 var ob = obj._source;
-                return new Date(ob['@timestamp']).toLocaleString();
+                return parseTimestamp(new Date(ob['@timestamp']));
             }
 
         }, {
@@ -333,7 +348,7 @@ export function tableColumns(dashboard, tags) {
                 </span>
             }
         }, {
-            dataField: '_source.attrs.from.keyword',
+            dataField: '_source.attrs.from',
             text: 'FROM',
             sort: true,
             editable: false,
@@ -344,7 +359,7 @@ export function tableColumns(dashboard, tags) {
                 </span>
             }
         }, {
-            dataField: '_source.attrs.to.keyword',
+            dataField: '_source.attrs.to',
             text: 'TO',
             sort: true,
             editable: false,
@@ -415,10 +430,10 @@ export function tableColumns(dashboard, tags) {
                             <div className="Advanced">
                                 <button className="link close export" onClick={() => exportJSON(ob)}>
                                     Export json
-                            </button>
+                                </button>
                                 <button className="close" onClick={close}>
                                     &times;
-                            </button>
+                                </button>
                                 <div className="contentAdvanced">
                                     <pre> <div dangerouslySetInnerHTML={{ __html: syntaxHighlight(ob) }} /></pre>
 
@@ -437,7 +452,7 @@ export function tableColumns(dashboard, tags) {
             headerStyle: { width: '170px' },
             formatter: (cell, obj) => {
                 var ob = obj._source;
-                return new Date(ob['@timestamp']).toLocaleString();
+                return parseTimestamp(new Date(ob['@timestamp']));
             }
 
         }, {
@@ -452,7 +467,7 @@ export function tableColumns(dashboard, tags) {
                 </span>
             }
         }, {
-            dataField: '_source.attrs.from.keyword',
+            dataField: '_source.attrs.from',
             editable: false,
             sort: true,
             text: 'FROM',
@@ -463,7 +478,7 @@ export function tableColumns(dashboard, tags) {
                 </span>
             }
         }, {
-            dataField: '_source.attrs.to.keyword',
+            dataField: '_source.attrs.to',
             editable: false,
             sort: true,
             text: 'TO',
@@ -534,10 +549,10 @@ export function tableColumns(dashboard, tags) {
                             <div className="Advanced">
                                 <button className="link close export" onClick={() => exportJSON(ob)}>
                                     Export json
-                            </button>
+                                </button>
                                 <button className="close" onClick={close}>
                                     &times;
-                            </button>
+                                </button>
                                 <div className="contentAdvanced">
                                     <pre> <div dangerouslySetInnerHTML={{ __html: syntaxHighlight(ob) }} /></pre>
 
@@ -559,7 +574,7 @@ export function tableColumns(dashboard, tags) {
                 headerStyle: { width: '170px' },
                 formatter: (cell, obj) => {
                     var ob = obj._source;
-                    return new Date(ob['@timestamp']).toLocaleString();
+                    return parseTimestamp(new Date(ob['@timestamp']));
                 }
 
             }, {
@@ -576,7 +591,7 @@ export function tableColumns(dashboard, tags) {
                 }
 
             }, {
-                dataField: '_source.attrs.from.keyword',
+                dataField: '_source.attrs.from',
                 text: 'FROM',
                 editable: false,
                 sort: true,
@@ -587,7 +602,7 @@ export function tableColumns(dashboard, tags) {
                     </span>
                 }
             }, {
-                dataField: '_source.attrs.to.keyword',
+                dataField: '_source.attrs.to',
                 text: 'TO',
                 editable: false,
                 sort: true,
@@ -654,10 +669,10 @@ export function tableColumns(dashboard, tags) {
                                 <div className="Advanced">
                                     <button className="link  close export" onClick={() => exportJSON(ob)}>
                                         Export json
-                            </button>
+                                    </button>
                                     <button className="close" onClick={close}>
                                         &times;
-                            </button>
+                                    </button>
                                     <div className="contentAdvanced">
                                         <pre> <div dangerouslySetInnerHTML={{ __html: syntaxHighlight(ob) }} /></pre>
 
@@ -678,7 +693,7 @@ export function tableColumns(dashboard, tags) {
             headerStyle: { width: '170px' },
             formatter: (cell, obj) => {
                 var ob = obj._source;
-                return new Date(ob['@timestamp']).toLocaleString();
+                return parseTimestamp(new Date(ob['@timestamp']));
             }
 
         }, {
@@ -698,7 +713,7 @@ export function tableColumns(dashboard, tags) {
             sort: true,
             text: 'REASON'
         }, {
-            dataField: '_source.attrs.from.keyword',
+            dataField: '_source.attrs.from',
             editable: false,
             sort: true,
             text: 'FROM',
@@ -709,7 +724,7 @@ export function tableColumns(dashboard, tags) {
                 </span>
             }
         }, {
-            dataField: '_source.attrs.to.keyword',
+            dataField: '_source.attrs.to',
             editable: false,
             sort: true,
             text: 'TO',
@@ -767,10 +782,10 @@ export function tableColumns(dashboard, tags) {
                             <div className="Advanced">
                                 <button className="link close export" onClick={() => exportJSON(ob)}>
                                     Export json
-                            </button>
+                                </button>
                                 <button className="close" onClick={close}>
                                     &times;
-                            </button>
+                                </button>
                                 <div className="contentAdvanced">
                                     <pre> <div dangerouslySetInnerHTML={{ __html: syntaxHighlight(ob) }} /></pre>
 
@@ -792,7 +807,7 @@ export function tableColumns(dashboard, tags) {
                 headerStyle: { width: '170px' },
                 formatter: (cell, obj) => {
                     var ob = obj._source;
-                    return new Date(ob['@timestamp']).toLocaleString();
+                    return parseTimestamp(new Date(ob['@timestamp']));
                 }
 
             }, {
@@ -805,18 +820,25 @@ export function tableColumns(dashboard, tags) {
                     var value = "";
                     var notvalue = "";
                     for (var i = 0; i < ob.exceeded.length; i++) {
-                        if(i === 0 ){
-                            value = "exceeded: "+ob.exceeded[i];
-                            notvalue  = "NOT (exceeded: "+ob.exceeded[i];
+                        if (i === 0) {
+                            value = "exceeded: " + ob.exceeded[i];
+                            notvalue = "NOT (exceeded: " + ob.exceeded[i];
                         }
                         else {
-                            value = value + " AND exceeded:"+ob.exceeded[i];
-                            notvalue = notvalue + " AND exceeded:"+ob.exceeded[i];
+                            value = value + " AND exceeded:" + ob.exceeded[i];
+                            notvalue = notvalue + " AND exceeded:" + ob.exceeded[i];
                         }
                     }
                     notvalue = notvalue + ")";
+
+                    var exceededName = ob.exceeded ? ob.exceeded.toString() : "";
+                     
+                   if(Types[exceededName]){
+                        exceededName = Types[exceededName];
+                   }
+                    
                     return <span className="filterToggleActive"><span className="filterToggle">
-                        <img onClick={doFilterRaw} field="exceeded" value={value} className="icon" alt="filterIcon" src={filterIcon} /><img field="exceeded" value={notvalue} onClick={doFilterRaw} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span >   {ob.exceeded ? ob.exceeded.toString() : ""}
+                        <img onClick={doFilterRaw} field="exceeded" value={value} className="icon" alt="filterIcon" src={filterIcon} /><img field="exceeded" value={notvalue} onClick={doFilterRaw} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span >   {exceededName}
                     </span>
                 }
             }, {
@@ -827,7 +849,7 @@ export function tableColumns(dashboard, tags) {
                 text: 'REASON',
 
             }, {
-                dataField: '_source.attrs.from.keyword',
+                dataField: '_source.attrs.from',
                 text: 'FROM',
                 sort: true,
                 editable: false,
@@ -855,23 +877,26 @@ export function tableColumns(dashboard, tags) {
                 sort: true,
                 editable: false,
                 formatter: (cell, obj) => {
+
                     var ob = obj._source;
-                    var value = "";
-                    var notvalue = "";
-                    for (var i = 0; i < ob["exceeded-by"].length; i++) {
-                        if(i === 0 ){
-                            value = "exceeded-by: "+ob["exceeded-by"][i];
-                            notvalue  = "NOT (exceeded-by: "+ob["exceeded-by"][i];
+                    if (ob["exceeded-by"]) {
+                        var value = "";
+                        var notvalue = "";
+                        for (var i = 0; i < ob["exceeded-by"].length; i++) {
+                            if (i === 0) {
+                                value = "exceeded-by: " + ob["exceeded-by"][i];
+                                notvalue = "NOT (exceeded-by: " + ob["exceeded-by"][i];
+                            }
+                            else {
+                                value = value + " AND exceeded-by:" + ob["exceeded-by"][i];
+                                notvalue = notvalue + " AND exceeded-by:" + ob["exceeded-by"][i];
+                            }
                         }
-                        else {
-                            value = value + " AND exceeded-by:"+ob["exceeded-by"][i];
-                            notvalue = notvalue + " AND exceeded-by:"+ob["exceeded-by"][i];
-                        }
+                        notvalue = notvalue + ")";
+                        return <span className="filterToggleActive"><span className="filterToggle">
+                            <img onClick={doFilterRaw} field="exceeded-by" value={value} className="icon" alt="filterIcon" src={filterIcon} /><img field="exceeded-by" value={notvalue} onClick={doFilterRaw} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span > {ob['exceeded-by'] ? ob['exceeded-by'].toString() : ""}
+                        </span>
                     }
-                    notvalue = notvalue + ")";
-                    return <span className="filterToggleActive"><span className="filterToggle">
-                        <img onClick={doFilterRaw} field="exceeded-by" value={value} className="icon" alt="filterIcon" src={filterIcon} /><img field="exceeded-by" value={notvalue} onClick={doFilterRaw} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span > {ob['exceeded-by'] ? ob['exceeded-by'].toString() : ""}
-                    </span>
                 }
             },
             tag,
@@ -898,10 +923,10 @@ export function tableColumns(dashboard, tags) {
                                 <div className="Advanced">
                                     <button className="link  close export" onClick={() => exportJSON(ob)}>
                                         Export json
-                            </button>
+                                    </button>
                                     <button className="close" onClick={close}>
                                         &times;
-                            </button>
+                                    </button>
                                     <div className="contentAdvanced">
                                         <pre> <div dangerouslySetInnerHTML={{ __html: syntaxHighlight(ob) }} /></pre>
 
@@ -910,7 +935,7 @@ export function tableColumns(dashboard, tags) {
                             )}
                         </Popup>
                         }
-                        {(ob["exceeded-by"].includes("URI") || ob["exceeded-by"].includes("IP")) && <span id={"spanExclude" + ob["id"]}>
+                        {(ob["exceeded-by"] && (ob["exceeded-by"].includes("URI") || ob["exceeded-by"].includes("IP"))) && <span id={"spanExclude" + ob["id"]}>
                             <img className="icon" alt="excludeIcon" src={excludeIcon} title="exclude" onClick={() => openExclude(ob)} />
                             <div id={"popupExclude" + ob["id"]} className="popupTag" style={{ "display": "none", "marginLeft": "-30%", "marginTop": "2%" }}>
                                 <input type="text" id={"input" + ob["id"]} name="name" className="form-control" onKeyUp={(event) => onEnterKeyExclude(event, ob)} placeholder="comment" style={{ "display": "inline-table", "height": "30px" }} />
@@ -930,7 +955,7 @@ export function tableColumns(dashboard, tags) {
             headerStyle: { width: '170px' },
             formatter: (cell, obj) => {
                 var ob = obj._source;
-                return new Date(ob['@timestamp']).toLocaleString();
+                return parseTimestamp(new Date(ob['@timestamp']));
             }
 
         }, {
@@ -945,7 +970,7 @@ export function tableColumns(dashboard, tags) {
                 </span>
             }
         }, {
-            dataField: '_source.attrs.from.keyword',
+            dataField: '_source.attrs.from',
             text: 'FROM',
             sort: true,
             editable: false,
@@ -954,9 +979,9 @@ export function tableColumns(dashboard, tags) {
                 return <span className="filterToggleActive"><span className="filterToggle">
                     <img onClick={doFilter} field="attrs.from.keyword" value={ob.attrs.from} className="icon" alt="filterIcon" src={filterIcon} /><img field="attrs.from.keyword" value={ob.attrs.from} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span >{ob.attrs.from}
                 </span>
-            }
+            },
         }, {
-            dataField: '_source.attrs.to.keyword',
+            dataField: '_source.attrs.to',
             text: 'TO',
             sort: true,
             editable: false,
@@ -1016,17 +1041,29 @@ export function tableColumns(dashboard, tags) {
                     }
                     <button className="noFormatButton" onClick={() => downloadAll(ob)} file={ob.attrs.filenameDownload} data={obj}>  <img className="icon" alt="downloadIcon" src={downloadIcon} title="download all" /></button>
 
-                    {ob.attrs.filenameDownload && <a href={"/sequenceDiagram/" + ob.attrs.filenameDownload} target="_blank" rel="noopener noreferrer"><img className="icon" alt="viewIcon" src={viewIcon} title="view PCAP" /></a>
+                    {ob.attrs.filenameDownload && <a href={"/sequenceDiagram/" + ob.attrs.filenameDownload} target="_blank" rel="noopener noreferrer"><img className="icon" alt="viewIcon" src={viewIcon} title="view PCAP" /></a>}
+                    {ob.dbg && ob.dbg.msg_trace && <Popup trigger={<img className="icon" alt="viewIcon" src={viewIcon} title="diagram" />} modal>
+                        {close => (
+                            <div className="Advanced">
+                                <button className="close" onClick={close}>
+                                    &times;
+                                </button>
+                                <div className="contentAdvanced" style={{ "padding": "0px" }}>
+                                    <SimpleSequenceDiagram data={ob} />
+                                </div>
+                            </div>
+                        )}
+                    </Popup>
                     }
                     {<Popup trigger={<img className="icon" alt="detailsIcon" src={detailsIcon} title="details" />} modal>
                         {close => (
                             <div className="Advanced">
                                 <button className="link  close export" onClick={() => exportJSON(ob)}>
                                     Export json
-                            </button>
+                                </button>
                                 <button className="close" onClick={close}>
                                     &times;
-                            </button>
+                                </button>
                                 <div className="contentAdvanced">
                                     <pre> <div dangerouslySetInnerHTML={{ __html: syntaxHighlight(ob) }} /></pre>
 
@@ -1047,7 +1084,7 @@ export function tableColumns(dashboard, tags) {
             headerStyle: { width: '170px' },
             formatter: (cell, obj) => {
                 var ob = obj._source;
-                return new Date(ob['@timestamp']).toLocaleString();
+                return parseTimestamp(new Date(ob['@timestamp']));
             }
 
         }, {
@@ -1104,10 +1141,10 @@ export function tableColumns(dashboard, tags) {
                             <div className="Advanced">
                                 <button className="link close export" onClick={() => exportJSON(ob)}>
                                     Export json
-                            </button>
+                                </button>
                                 <button className="close" onClick={close}>
                                     &times;
-                            </button>
+                                </button>
                                 <div className="contentAdvanced">
                                     <pre> <div dangerouslySetInnerHTML={{ __html: syntaxHighlight(ob) }} /></pre>
 
@@ -1128,7 +1165,7 @@ export function tableColumns(dashboard, tags) {
             headerStyle: { width: '170px' },
             formatter: (cell, obj) => {
                 var ob = obj._source;
-                return new Date(ob['@timestamp']).toLocaleString();
+                return parseTimestamp(new Date(ob['@timestamp']));
             }
 
         }, {
@@ -1143,7 +1180,7 @@ export function tableColumns(dashboard, tags) {
                 </span>
             }
         }, {
-            dataField: '_source.attrs.from.keyword',
+            dataField: '_source.attrs.from',
             text: 'FROM',
             editable: false,
             sort: true,
@@ -1154,7 +1191,7 @@ export function tableColumns(dashboard, tags) {
                 </span>
             }
         }, {
-            dataField: '_source.attrs.to.keyword',
+            dataField: '_source.attrs.to',
             text: 'TO',
             editable: false,
             sort: true,
@@ -1214,15 +1251,28 @@ export function tableColumns(dashboard, tags) {
                     {ob.attrs.filenameDownload && <a href={"/sequenceDiagram/" + ob.attrs.filenameDownload} target="_blank" rel="noopener noreferrer"><img className="icon" alt="viewIcon" src={viewIcon} title="view PCAP" /></a>
                     }
 
+                    {ob.dbg && ob.dbg.msg_trace && <Popup trigger={<img className="icon" alt="viewIcon" src={viewIcon} title="diagram" />} modal>
+                        {close => (
+                            <div className="Advanced">
+                                <button className="close" onClick={close}>
+                                    &times;
+                                </button>
+                                <div className="contentAdvanced" style={{ "padding": "0px" }}>
+                                    <SimpleSequenceDiagram data={ob} />
+                                </div>
+                            </div>
+                        )}
+                    </Popup>
+                    }
                     {<Popup trigger={<img className="icon" alt="detailsIcon" src={detailsIcon} title="details" />} modal>
                         {close => (
                             <div className="Advanced">
                                 <button className="link close export" onClick={() => exportJSON(ob)}>
                                     Export json
-                            </button>
+                                </button>
                                 <button className="close" onClick={close}>
                                     &times;
-                            </button>
+                                </button>
                                 <div className="contentAdvanced">
                                     <pre> <div dangerouslySetInnerHTML={{ __html: syntaxHighlight(ob) }} /></pre>
 
@@ -1243,7 +1293,7 @@ export function tableColumns(dashboard, tags) {
             headerStyle: { width: '170px' },
             formatter: (cell, obj) => {
                 var ob = obj._source;
-                return new Date(ob['@timestamp']).toLocaleString();
+                return parseTimestamp(new Date(ob['@timestamp']));
             }
 
         }, {
@@ -1258,7 +1308,7 @@ export function tableColumns(dashboard, tags) {
                 </span>
             }
         }, {
-            dataField: '_source.attrs.from.keyword',
+            dataField: '_source.attrs.from',
             text: 'FROM',
             sort: true,
             editable: false,
@@ -1269,7 +1319,7 @@ export function tableColumns(dashboard, tags) {
                 </span>
             }
         }, {
-            dataField: '_source.attrs.to.keyword',
+            dataField: '_source.attrs.to',
             text: 'TO',
             sort: true,
             editable: false,
@@ -1303,9 +1353,11 @@ export function tableColumns(dashboard, tags) {
             editable: false,
             formatter: (cell, obj) => {
                 var ob = obj._source;
-                return <span className="filterToggleActive"><span className="filterToggle">
-                    <img onClick={doFilter} field="geoip.country_name" value={ob.geoip.country_name} className="icon" alt="filterIcon" src={filterIcon} /><img field="geoip.country_name" value={ob.geoip.country_name} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span > {ob.geoip.country_name}
-                </span>
+                if (ob.geoip && ob.geoip.country_name) {
+                    return <span className="filterToggleActive"><span className="filterToggle">
+                        <img onClick={doFilter} field="geoip.country_name" value={ob.geoip.country_name} className="icon" alt="filterIcon" src={filterIcon} /><img field="geoip.country_name" value={ob.geoip.country_name} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span > {ob.geoip.country_name}
+                    </span>
+                }
             }
         }, {
             dataField: '_source.attrs.tags',
@@ -1336,10 +1388,10 @@ export function tableColumns(dashboard, tags) {
                             <div className="Advanced">
                                 <button className="link close export" onClick={() => exportJSON(ob)}>
                                     Export json
-                            </button>
+                                </button>
                                 <button className="close" onClick={close}>
                                     &times;
-                            </button>
+                                </button>
                                 <div className="contentAdvanced">
                                     <pre> <div dangerouslySetInnerHTML={{ __html: syntaxHighlight(ob) }} /></pre>
 
@@ -1361,7 +1413,7 @@ export function tableColumns(dashboard, tags) {
 
             formatter: (cell, obj) => {
                 var ob = obj._source;
-                return new Date(ob['@timestamp']).toLocaleString();
+                return parseTimestamp(new Date(ob['@timestamp']));
             },
         }, {
             dataField: '_source.attrs.type',
@@ -1420,10 +1472,10 @@ export function tableColumns(dashboard, tags) {
                             <div className="Advanced">
                                 <button className="link close export" onClick={() => exportJSON(ob)}>
                                     Export json
-                            </button>
+                                </button>
                                 <button className="close" onClick={close}>
                                     &times;
-                            </button>
+                                </button>
                                 <div className="contentAdvanced">
                                     <pre> <div dangerouslySetInnerHTML={{ __html: syntaxHighlight(ob) }} /></pre>
 
@@ -1444,7 +1496,7 @@ export function tableColumns(dashboard, tags) {
             headerStyle: { width: '170px' },
             formatter: (cell, obj) => {
                 var ob = obj._source;
-                return new Date(ob['@timestamp']).toLocaleString();
+                return parseTimestamp(new Date(ob['@timestamp']));
             }
 
         }, {
@@ -1502,10 +1554,10 @@ export function tableColumns(dashboard, tags) {
                             <div className="Advanced">
                                 <button className="link close export" onClick={() => exportJSON(ob)}>
                                     Export json
-                            </button>
+                                </button>
                                 <button className="close" onClick={close}>
                                     &times;
-                            </button>
+                                </button>
                                 <div className="contentAdvanced">
                                     <pre> <div dangerouslySetInnerHTML={{ __html: syntaxHighlight(ob) }} /></pre>
 
@@ -1527,7 +1579,7 @@ export function tableColumns(dashboard, tags) {
             headerStyle: { width: '170px' },
             formatter: (cell, obj) => {
                 var ob = obj._source;
-                return new Date(ob['@timestamp']).toLocaleString();
+                return parseTimestamp(new Date(ob['@timestamp']));
             }
 
         }, {
@@ -1625,10 +1677,10 @@ export function tableColumns(dashboard, tags) {
                             <div className="Advanced">
                                 <button className="link close export" onClick={() => exportJSON(ob)}>
                                     Export json
-                            </button>
+                                </button>
                                 <button className="close" onClick={close}>
                                     &times;
-                            </button>
+                                </button>
                                 <div className="contentAdvanced">
                                     <pre> <div dangerouslySetInnerHTML={{ __html: syntaxHighlight(ob) }} /></pre>
 
@@ -1649,7 +1701,7 @@ export function tableColumns(dashboard, tags) {
             headerStyle: { width: '170px' },
             formatter: (cell, obj) => {
                 var ob = obj._source;
-                return new Date(parseInt(ob['ts-start'])).toLocaleString();
+                return parseTimestamp(new Date(parseInt(ob['ts-start'])));
             }
         }, {
             dataField: '_source.tls-cn',
@@ -1687,10 +1739,10 @@ export function tableColumns(dashboard, tags) {
                             <div className="Advanced">
                                 <button className="link close export" onClick={() => exportJSON(ob)}>
                                     Export json
-                            </button>
+                                </button>
                                 <button className="close" onClick={close}>
                                     &times;
-                            </button>
+                                </button>
                                 <div className="contentAdvanced">
                                     <pre> <div dangerouslySetInnerHTML={{ __html: syntaxHighlight(ob) }} /></pre>
 
@@ -1711,7 +1763,7 @@ export function tableColumns(dashboard, tags) {
             headerStyle: { width: '170px' },
             formatter: (cell, obj) => {
                 var ob = obj._source;
-                return new Date(ob['@timestamp']).toLocaleString();
+                return parseTimestamp(new Date(ob['@timestamp']));
             }
 
         }, {
@@ -1722,7 +1774,6 @@ export function tableColumns(dashboard, tags) {
             formatter: (cell, obj) => {
                 var ob = obj._source;
                 if (ob.attrs && ob.attrs.type) {
-
                     return <span className="filterToggleActive"><span className="filterToggle">
                         <img onClick={doFilter} field="attrs.type" value={ob.attrs.type} className="icon" alt="filterIcon" src={filterIcon} /><img field="attrs.type" value={ob.attrs.type} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span >{ob.attrs.type}
                     </span>
@@ -1807,10 +1858,10 @@ export function tableColumns(dashboard, tags) {
                             <div className="Advanced">
                                 <button className="link close export" onClick={() => exportJSON(ob)}>
                                     Export json
-                            </button>
+                                </button>
                                 <button className="close" onClick={close}>
                                     &times;
-                            </button>
+                                </button>
                                 <div className="contentAdvanced">
                                     <pre> <div dangerouslySetInnerHTML={{ __html: syntaxHighlight(ob) }} /></pre>
 

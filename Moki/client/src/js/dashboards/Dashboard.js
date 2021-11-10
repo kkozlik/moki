@@ -7,9 +7,7 @@ import {
 
 import store from "../store/index";
 import storePersistent from "../store/indexPersistent";
-import {
-  elasticsearchConnection
-} from '@moki-client/gui';
+import { elasticsearchConnection } from '@moki-client/gui';
 
 class Dashboard extends Component {
 
@@ -51,7 +49,7 @@ class Dashboard extends Component {
     }
   }
 
-  processESData(data) {
+  async processESData(data) {
     if ((!data) || (!data.responses)) {
       return;
     }
@@ -62,29 +60,30 @@ class Dashboard extends Component {
       // apply all the functors to the i'th response
       for (let j = 0; j < functors.length; j++) {
         this.transientState[functors[j].result] =
-          functors[j].func(data.responses[i]);
+          await functors[j].func(data.responses[i]);
       }
     }
   }
 
   async loadData() {
-    this.getLayout();
-    this.setState({ isLoading: true });
+    try {
+      this.getLayout();
+      this.setState({ isLoading: true });
+      var data = await elasticsearchConnection(this.state.dashboardName);
 
-    var data = await elasticsearchConnection(this.state.dashboardName);
-
-    if (typeof data === "string" && data.includes("ERROR:")) {
-
-      this.props.showError(data);
+      if (typeof data === "string") {
+        this.props.showError(data);
+        this.setState({ isLoading: false });
+        return;
+      } else if (data) {
+        await this.processESData(data);
+        this.setState(this.transientState);
+        this.setState({ isLoading: false });
+        console.info(new Date() + " MOKI CALLS: finished parsíng data");
+      }
+    } catch (e) {
+      this.props.showError("Monitor server is not running.");
       this.setState({ isLoading: false });
-      return;
-
-    } else if (data) {
-      this.processESData(data);
-      this.setState(this.transientState);
-      this.setState({ isLoading: false });
-      console.info(new Date() + " MOKI CALLS: finished parsíng data");
-
     }
   }
 }

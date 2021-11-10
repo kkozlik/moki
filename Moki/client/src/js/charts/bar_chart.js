@@ -2,8 +2,8 @@ import React, {
     Component
 } from 'react';
 import * as d3 from "d3";
-import ColorType from '../helpers/style/ColorType';
-import Colors from '../helpers/style/Colors';
+import {ColorType} from '@moki-client/gui';
+import {Colors} from '@moki-client/gui';
 import emptyIcon from "../../styles/icons/empty_small.png";
 import Animation from '../helpers/Animation';
 
@@ -142,7 +142,17 @@ export default class barChart extends Component {
             });
         }
 
-        svg.append('g')
+
+
+        if (data === undefined || data.length === 0 || isEmpty) {
+            svg.append('svg:image')
+                .attr("xlink:href", emptyIcon)
+                .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')')
+
+        }
+        else {
+
+            svg.append('g')
             .attr('class', 'x axis')
             .attr('transform', `translate(0, ${height})`)
             .call(xAxis)
@@ -164,15 +174,6 @@ export default class barChart extends Component {
             .attr('dy', '.71em')
             .style('text-anchor', 'end')
             .text('Count');
-
-
-        if (data === undefined || data.length === 0 || isEmpty) {
-            svg.append('svg:image')
-                .attr("xlink:href", emptyIcon)
-                .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')')
-
-        }
-        else {
 
             // gridlines in y axis function
             function make_y_gridlines() {
@@ -260,7 +261,7 @@ export default class barChart extends Component {
     }
 
     render() {
-        return (<div id="barChart" ><h3 className="alignLeft title">{this.props.name}</h3>
+        return (<div id="barChart" className="chart"><h3 className="alignLeft title">{this.props.name}</h3>
             {this.props.name === "QoS HISTOGRAM" && <Animation name={this.props.name} type={this.props.type} setData={this.setData} dataAll={this.state.data} />}</div>)
     }
 }

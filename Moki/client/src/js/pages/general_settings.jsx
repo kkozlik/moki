@@ -15,6 +15,8 @@ class Settings extends Component {
         super(props);
         this.load = this.load.bind(this);
         this.save = this.save.bind(this);
+        this.check = this.check.bind(this);
+        this.generate = this.generate.bind(this);
         this.state = {
             data: [],
             wait: false,
@@ -68,19 +70,55 @@ class Settings extends Component {
 
     }
 
-    validate(attribute, value) {
-        if (attribute === "tlc_cert_verify_level") {
-            if (value === "0" || value === "1" || value === "2" || value === "3" || value === "4") {
-                return true;
-            }
-            return "Error: Peer certificate verification level must be 0-4";
-        }
+    validate(attribute, value, restriction) {
+        if (restriction) {
+            restriction = JSON.parse(restriction);
 
-        if (attribute === "gui_port" || attribute === "events_cleanup_days" || attribute === "events_cleanup_percentage" || attribute === "pcap_cleanup_minutes" || attribute === "recordings_cleanup_minutes") {
-            if (isNumber(value)) {
-                return true;
+            if (restriction.max) {
+                if (value > restriction.max) return "Error: " + attribute + " must be lower than " + restriction.max;
             }
-            return "Error: " + attribute + " must be integer.";
+
+            if (restriction.min) {
+                if (value < restriction.min) return "Error: " + attribute + " must be higher than " + restriction.min;
+            }
+
+            if (restriction.type === "ip") {
+                if (value.length === 0) {
+                    return true;
+                }
+                var checkValue = value.split(' ');
+                var i = checkValue.map(x => isIP(x));
+                if (i.includes(false)) {
+                    return "Error: " + attribute + " must have format IP or subnet format.";
+                }
+            }
+
+            if (restriction.type === "email") {
+                if (value.length === 0) {
+                    return true;
+                }
+
+                if (isEmail(value)) {
+                    return true;
+                }
+                return "Error: " + attribute + " must have email format.";
+            }
+
+            if (restriction.type === "number") {
+                if (isNumber(value)) {
+                    return true;
+                }
+                return "Error: " + attribute + " must be integer.";
+            }
+
+            if (restriction.type && restriction.type.enum) {
+                if (restriction.type.enum.includes(value)) {
+                    return true;
+                }
+                return "Error: value must be one of " + restriction.type.enum.join('-');
+            }
+
+            return true;
         }
 
         if (attribute === "logstash_heap_mem" || attribute === "elasticsearch_heap_mem" || attribute === "logstash_queue_size") {
@@ -90,7 +128,6 @@ class Settings extends Component {
             return "Error: " + attribute + " must have format integer and m or g suffix.";
         }
 
-
         if (attribute === "slowlog_query_warn" || attribute === "slowlog_query_info" || attribute === "slowlog_fetch_warn" || attribute === "slowlog_fetch_info" || attribute === "slowlog_indexing_info" || attribute === "slowlog_indexing_warn" || attribute === "refresh_interval_logstash" || attribute === "refresh_interval_collectd" || attribute === "refresh_interval_exceeded") {
             if (value.slice(-1) === "s" && isNumber(value.slice(0, value.length - 1)) && value.slice(0, value.length - 1) % 1 === 0) {
                 return true;
@@ -98,41 +135,21 @@ class Settings extends Component {
             return "Error: " + attribute + " must have format integer and s suffix.";
         }
 
-        if (attribute === "slowlog_search_level" || attribute === "slowlog_indexing_level") {
-            if (value === "warn" || value === "info") {
-                return true;
-            }
-            return "Error: " + attribute + " must have format info or warn.";
-        }
-
-        if (attribute === "fw_src_gui" || attribute === "fw_src_ssh" || attribute === "fw_src_events") {
-
-
-            if (value.length === 0) {
-                return true;
-            }
-            if (value.indexOf("/") !== -1) {
-                value = value.substring(0, value.indexOf("/"));
-            }
-            if (isIP(value)) {
-                return true;
-            }
-            return "Error: " + attribute + " must have format IP or subnet format.";
-        }
-
-        if (attribute === "bl_email_to" || attribute === "bl_email_from" || attribute === "email_reports") {
-            if (value.length === 0) {
-                return true;
-            }
-
-            if (isEmail(value)) {
-                return true;
-            }
-            return "Error: " + attribute + " must have email format.";
-        }
-
         return true;
+    }
 
+    check(attribute, value, restriction) {
+        var error = this.validate(attribute, value, restriction);
+        if (error !== true) {
+            this.setState({
+                [attribute]: error
+            })
+        }
+        else {
+            this.setState({
+                [attribute]: ""
+            })
+        }
     }
 
 
@@ -143,10 +160,8 @@ class Settings extends Component {
             var result = [];
             for (var i = 0; i < jsonData.length; i++) {
                 var data = document.getElementById(jsonData[i].attribute);
-
                 if (data.type === "checkbox") {
                     jsonData[i].value = data.checked;
-
                 }
                 else if (jsonData[i].attribute === "jwtAdmins" && !Array.isArray(jsonData[i].value)) {
                     jsonData[i].value = jsonData[i].value.split(",");
@@ -155,7 +170,7 @@ class Settings extends Component {
                     jsonData[i].value = data.value;
                 }
 
-                var validateResult = this.validate(jsonData[i].attribute, jsonData[i].value)
+                var validateResult = this.validate(jsonData[i].attribute, jsonData[i].value, JSON.stringify(jsonData[i].restriction))
                 if (validateResult !== true) {
                     alert(validateResult);
                     return;
@@ -165,18 +180,18 @@ class Settings extends Component {
                     value: jsonData[i].value
                 });
 
-
             };
             this.setState({
                 wait: true
             });
             var thiss = this;
+
+
             await fetch("api/save", {
                 method: "POST",
                 body: JSON.stringify({
                     "app": "m_config",
                     "attrs": result
-
                 }),
                 credentials: 'include',
                 headers: {
@@ -191,13 +206,16 @@ class Settings extends Component {
                     console.error(response.statusText);
                 }
                 return response.json();
-
             }).then(function (responseData) {
-                //alert(responseData.msg);
+                if (responseData.msg) {
+                    alert(responseData.msg);
+                }
+
             }).catch(function (error) {
                 console.error(error);
                 alert("Problem with saving data. " + error);
             });
+            
         }
     }
 
@@ -208,67 +226,132 @@ class Settings extends Component {
         var alarms = [];
         if (data.length !== 0) {
             // Outer loop to create parent
-            for (var i = 0; i < data.length; i++) {
-                alarms.push( <div key = {
-                        data[i].attribute + "key"
-                    }
-                    className = "tab "> <span className = "form-inline row justify-content-start paddingBottom"> <label className = "col-7" > {
-                        data[i].label
-                    } </label>
-                     {data[i].type === "boolean" ? 
-                     data[i].value ? <input className="text-left form-check-input" type="checkbox" defaultChecked="true"  id={data[i].attribute} /> :
-                    <input className="text-left form-check-input" type="checkbox"   id={data[i].attribute} />
-                    :  <input className="text-left form-control form-check-input" type={data[i].type } defaultValue={data[i].value} id={data[i].attribute} />
-                    }
-                    </span></div> );
+            for(var i = 0; i < data.length; i++) {
+                 //special case: time format
+                 if (data[i].attribute === "dateFormat") {
+                    alarms.push(
+                        <div key={data[i].attribute + "key"} className="tab ">
+                            <span className="form-inline row justify-content-start paddingBottom">
+                                <span className="col-6" >
+                                    <label> {data[i].label} </label>
+                                    {data[i].details ? <div className="smallText">{data[i].details}</div> : ""}
+                                </span>
+                                {<select className="text-left form-control form-check-input" defaultValue={data[i].value} id={data[i].attribute} restriction={JSON.stringify(data[i].restriction)} label={data[i].attribute} onChange={(e) => { this.check(e.target.getAttribute("label"), e.target.value, e.target.getAttribute("restriction")) }} >
+                                         <option value={"DD/MM/YYYY"} key={"20/12/2020"}>20/12/2020</option>
+                                         <option value={"MM/DD/YYYY"} key={"12/20/2020"}>12/20/2020</option> 
+                                         <option value={"YYYY-MM-DD"} key={"2020-20-12"}>2020-20-12</option> 
+                                         <option value={"DD-MMM-YYYY"} key={"20-Dec-2020"}>20-Dec-2020</option> 
+                                         <option value={"DD MMM, YYYY"} key={"20 Dec, 2020"}>20 Dec, 2020</option>
+                                         <option value={"MMM DD, YYYY"} key={"Dec 20, 2020"}>Dec 20, 2020</option>
+                                </select>} 
+                                </span></div>);
+                }
+                 //special case:  date format
+                else  if (data[i].attribute === "timeFormat") {
+                    alarms.push(
+                        <div key={data[i].attribute + "key"} className="tab ">
+                            <span className="form-inline row justify-content-start paddingBottom">
+                                <span className="col-6" >
+                                    <label> {data[i].label} </label>
+                                    {data[i].details ? <div className="smallText">{data[i].details}</div> : ""}
+                                </span>
+                                {<select className="text-left form-control form-check-input" defaultValue={data[i].value} id={data[i].attribute} restriction={JSON.stringify(data[i].restriction)} label={data[i].attribute} onChange={(e) => { this.check(e.target.getAttribute("label"), e.target.value, e.target.getAttribute("restriction")) }} >
+                                         <option value={"hh:mm:ss A"} key={"9:40 AM"}>7:40:20 AM</option>
+                                         <option value={"HH:mm:ss"} key={"9:40:20"}>19:40:20</option> 
+                                </select>} 
+                            </span></div>);
+                }
+                //special case: number restriction
+                else if (data[i].restriction && (data[i].restriction.min || data[i].restriction.max)) {
+                    alarms.push(
+                        <div key={data[i].attribute + "key"} className="tab ">
+                            <span className="form-inline row justify-content-start paddingBottom">
+                                <span className="col-6" >
+                                    <label> {data[i].label} </label>
+                                    {data[i].details ? <div className="smallText">{data[i].details}</div> : ""}
+                                </span>
+                                {<input className="text-left form-control form-check-input" type="number" min={data[i].restriction.min} max={data[i].restriction.max ? data[i].restriction.max : ""} defaultValue={data[i].value} id={data[i].attribute} restriction={JSON.stringify(data[i].restriction)} label={data[i].attribute} onChange={(e) => { this.check(e.target.getAttribute("label"), e.target.value, e.target.getAttribute("restriction")) }} />}
+                                {this.state[data[i].attribute] ? <span className="col-3 errorStay" >{this.state[data[i].attribute]}</span> : ""}
+                            </span></div>);
+                }
+                //special case: select input for enum type
+                else if (data[i].restriction && data[i].restriction.type && data[i].restriction.type.enum) {
+                    alarms.push(
+                        <div key={data[i].attribute + "key"} className="tab ">
+                            <span className="form-inline row justify-content-start paddingBottom">
+                                <span className="col-6" >
+                                    <label> {data[i].label} </label>
+                                    {data[i].details ? <div className="smallText">{data[i].details}</div> : ""}
+                                </span>
+                                {<select className="text-left form-control form-check-input" defaultValue={data[i].value} id={data[i].attribute} restriction={JSON.stringify(data[i].restriction)} label={data[i].attribute} onChange={(e) => { this.check(e.target.getAttribute("label"), e.target.value, e.target.getAttribute("restriction")) }} >
+                                    {data[i].restriction.type.enum.map((e, i) => {
+                                        return (  <option value={e} key={e}>{e}</option> )
+                                    })}
+                                </select>
+                                }
+
+                                {this.state[data[i].attribute] ? <span className="col-3 errorStay" >{this.state[data[i].attribute]}</span> : ""}
+                            </span></div>);
+
+                }
+                else {
+                    alarms.push(
+                        <div key={data[i].attribute + "key"} className="tab ">
+                            <span className="form-inline row justify-content-start paddingBottom">
+                                <span className="col-6" >
+                                    <label> {data[i].label} </label>
+                                    {data[i].details ? <div className="smallText">{data[i].details}</div> : ""}
+                                </span>
+                                {data[i].type === "boolean" ? data[i].value ? <input className="text-left form-check-input" type="checkbox" defaultChecked="true" id={data[i].attribute} /> :
+                                    <input className="text-left form-check-input" type="checkbox" id={data[i].attribute} />
+                                    : <input className="text-left form-control form-check-input" type={data[i].type} defaultValue={data[i].value} id={data[i].attribute} label={data[i].attribute} restriction={JSON.stringify(data[i].restriction)} onChange={(e) => { this.check(e.target.getAttribute("label"), e.target.value, e.target.getAttribute("restriction")) }} />
+                                }
+                                {this.state[data[i].attribute] ? <span className="col-3 errorStay" >{this.state[data[i].attribute]}</span> : ""}
+
+                            </span></div>);
+                }
             }
         }
         return alarms
     }
 
     generateTags() {
-            var data = this.state.tags;
+        var data = this.state.tags;
 
-            var tags = [];
-            if (data.length !== 0) {
-                for (var i = 0; i < data.length; i++) {
-                    tags.push( <div key = {
-                            data[i].key
-                        }
-                        className = "tab" > <span className = "form-inline row justify-content-start paddingBottom" >
-                        <img className = "icon"
-                        alt = "deleteIcon"
-                        src = {
-                            deleteIcon
-                        }
-                        title = "delete tag"
-                        onClick = {
-                            this.deleteTag.bind(this)
-                        }
-                        id = {
-                            data[i].key
-                        }
-                        /> <label className = "col-4" > {
+        var tags = [];
+        if (data.length !== 0) {
+            for (var i = 0; i < data.length; i++) {
+                tags.push(<div key={data[i].key} className="tab">
+                    <span className="form-inline row justify-content-start paddingBottom" >
+                        <img className="icon"
+                            alt="deleteIcon"
+                            src={deleteIcon}
+                            title="delete tag"
+                            onClick={this.deleteTag.bind(this)}
+                            id={data[i].key}
+                        />
+                        <label className="col-4" > {
                             data[i].key + " (" + data[i].doc_count + ")"
-                        } </label> </span> </div> );      
-                    }
-                } else {
-                    tags.push( < div className = "tab" key="notags"> No tags. Create them directly in event's table.</div> );  
-
-                    }
-                    return tags
+                        } </label>
+                    </span>
+                </div>);
+            }
+        } else {
+            tags.push(< div className="tab" key="notags"> No tags. Create them directly in event's table.</div>);
+        }
+        return tags
     }
 
     async deleteTag(e) {
         var tag = e.currentTarget.id;
-        var data = await elasticsearchConnection("/api/tag/delete", {id: "", index: "", tags: tag});
+        var data = await elasticsearchConnection("/api/tag/delete", { id: "", index: "", tags: tag });
         if (data.deleted >= 0) {
-               var tags = this.state.tags;         
-               for (var i = 0; i < tags.length; i++) {
+            var tags = this.state.tags;
+            for (var i = 0; i < tags.length; i++) {
                 if (tags[i].key === tag) {
                     tags.splice(i, 1);
                 }
-               }
+            }
             //this.props.getTags();
             this.setState({
                 tags: tags
@@ -280,79 +363,64 @@ class Settings extends Component {
     }
 
 
-        render() {
+    render() {
 
-            var data = this.state.data;
-            var General = [];
-            var Slowlog = [];
-            var LE = [];
-            var Firewall = [];
-            var Events = [];
+        var data = this.state.data;
+        var General = [];
+        var Slowlog = [];
+        var LE = [];
+        var Firewall = [];
+        var Events = [];
+        var Auth = [];
 
-            //separate type
-            for (var i = 0; i < data.length; i++) {
-                if (data[i].category === "General") {
-                    General.push(data[i]);
-                } else if (data[i].category === "Slowlog") {
-                    Slowlog.push(data[i]);
-                } else if (data[i].category === "Logstash and elasticsearch") {
-                    LE.push(data[i]);
-                } else if (data[i].category === "Firewall") {
-                    Firewall.push(data[i]);
-                } else if (data[i].category === "Events") {
-                    Events.push(data[i]);
-                }
+        //separate type
+        for (var i = 0; i < data.length; i++) {
+            if (data[i].category === "General") {
+                General.push(data[i]);
+            } else if (data[i].category === "Slowlog") {
+                Slowlog.push(data[i]);
+            } else if (data[i].category === "Logstash and elasticsearch") {
+                LE.push(data[i]);
+            } else if (data[i].category === "Firewall") {
+                Firewall.push(data[i]);
+            } else if (data[i].category === "Events") {
+                Events.push(data[i]);
             }
-
-            var Generaldata = this.generate(General);
-            var Slowlogdata = this.generate(Slowlog);
-            var LEdata = this.generate(LE);
-            var Firewalldata = this.generate(Firewall);
-            var Eventsdata = this.generate(Events);
-            var Tagdata = this.generateTags();
-
-
-            return ( <div className = "container-fluid" > {
-                    this.state.wait && < SavingScreen />
-                } <p className = "settingsH" > General </p> {
-                    Generaldata
-                }
-
-                <p className = "settingsH" > Firewall </p> {
-                    Firewalldata
-                }
-
-                <p className = "settingsH" > Events </p> {
-                    Eventsdata
-                } <p className = "settingsH" > Elasticsearch and logstash </p> {
-                    LEdata
-                } <p className = "settingsH" > Slowlog </p> {
-                    Slowlogdata
-                } <p className = "settingsH" > Tags </p> {
-                    Tagdata
-                }
-
-
-                <div className = "btn-group rightButton" >
-                <button type = "button"
-                className = "btn btn-primary "
-                onClick = {
-                    this.save
-                }
-                style = {
-                    {
-                        "marginRight": "5px"
-                    }
-                } > Save </button> <button type = "button"
-                className = "btn btn-secondary"
-                onClick = {
-                    () => this.load("api/defaults")
-                } > Reset </button> </div >
-
-                </div>
-            )
+            else if (data[i].category === "Authentication") {
+                Auth.push(data[i]);
+            }
         }
 
+        var Generaldata = this.generate(General);
+        var Slowlogdata = this.generate(Slowlog);
+        var LEdata = this.generate(LE);
+        var Firewalldata = this.generate(Firewall);
+        var Eventsdata = this.generate(Events);
+        var Authdata = this.generate(Auth);
+        var Tagdata = this.generateTags();
+
+
+        return (<div className="container-fluid" > {this.state.wait && < SavingScreen />}
+            <div className="chart"><p className="settingsH" > General </p> {Generaldata} </div>
+            <div className="chart"> <p className="settingsH" > Firewall </p> {Firewalldata}</div>
+            <div className="chart"><p className="settingsH" > Authentication </p> {Authdata}</div>
+            <div className="chart"><p className="settingsH" > Events </p> {Eventsdata} </div>
+            <div className="chart"><p className="settingsH" > Elasticsearch and logstash </p> {LEdata} </div>
+            <div className="chart"><p className="settingsH" > Slowlog </p> {Slowlogdata} </div>
+            <div className="chart"><p className="settingsH" > Tags </p> {Tagdata}</div>
+            <div className="btn-group rightButton" >
+                <button type="button"
+                    className="btn btn-primary "
+                    onClick={this.save}
+                    style={{ "marginRight": "5px" }} > Save </button>
+                <button type="button"
+                    className="btn btn-secondary"
+                    onClick={() => this.load("api/defaults")} > Reset </button>
+            </div >
+        </div>
+        )
     }
 
-    export default Settings;
+}
+
+export default Settings;

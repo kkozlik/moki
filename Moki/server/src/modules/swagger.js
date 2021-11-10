@@ -10,16 +10,16 @@ const options = {
       version: '1.1.0',
       contact: {
         name: 'Jana Němcová',
-        email: 'jana.nemcova@frafos.com',
-      },
+        email: 'jana.nemcova@frafos.com'
+      }
     },
     servers: [{
-      url: 'http://localhost:3000/',
-    }],
+      url: 'http://localhost:3000/'
+    }]
   },
   apis: [
-    './src/controller/*.js',
-  ],
+    './src/controller/*.js'
+  ]
 };
 
 const specs = swaggerJSDoc(options);

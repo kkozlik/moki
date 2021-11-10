@@ -1,11 +1,7 @@
 // jwt.js hold the json web token implementation
-const fs = require('fs');
-const {
-  isRequireJWT
-} = require('../modules/config');
+const { isRequireJWT } = require('./config');
 
 const hfName = 'x-amzn-oidc-data';
-
 
 //get domain id
 function parseBase64(token) {
@@ -29,7 +25,6 @@ function parseBase64(token) {
  * for user mode return filter for attrs.from, attrs.to, attrs.r-uri  and also domain filter
  */
 async function getJWTsipUserFilter(req) {
-
   // localhost query -- open up
   /* if (req.connection.remoteAddress === '127.0.0.1') {
        console.log("ACCESS getJWTsipUserFilter: permitted for localhost source");
@@ -44,7 +39,7 @@ async function getJWTsipUserFilter(req) {
     return "*";
   }
   // check config if JWT required
-  var isAccept;
+  let isAccept;
   try {
     isAccept = await isRequireJWT();
   } catch (e) {
@@ -73,7 +68,7 @@ async function getJWTsipUserFilter(req) {
   }
 
   // JWT required -- parse it and validate it
-  var parsedHeader;
+  let parsedHeader;
   try {
     parsedHeader = parseBase64(req.headers[hfName]);
   } catch (e) {
@@ -82,9 +77,9 @@ async function getJWTsipUserFilter(req) {
   }
   console.log("parsed Header: ", JSON.stringify(parsedHeader));
   const sip = parsedHeader['custom:sip'];
-  const jwtbit = parsedHeader['custom:adminlevel'];
+  let jwtbit = parsedHeader['custom:adminlevel'];
   const domainID = parsedHeader['custom:domainid'];
-  const subId = parsedHeader['sub'];
+  const subId = parsedHeader.sub;
 
   // subscriber id and admin level must be always set
   if (subId === undefined) {
@@ -95,8 +90,10 @@ async function getJWTsipUserFilter(req) {
     console.log("ACCESS getJWTsipUserFilter: no admin-level defined ");
     throw new Error("ACCESS: no  admin-level defined");
   }
+
+  jwtbit = parseInt(jwtbit);
   // Root SuperAdmin Level
-  if (jwtbit == 0) {
+  if (jwtbit === 0) {
     console.log(`ACCESS: JWT admin level 0, NO FILTERS for user ${subId}`);
     return { "domain": "*" };
   }
@@ -106,12 +103,12 @@ async function getJWTsipUserFilter(req) {
     throw new Error("ACCESS: no  domain defined");
   }
   // Site-Admin level
-  if (jwtbit == 1) {
+  if (jwtbit === 1) {
     console.log(`ACCESS: USER LEVEL 1, Domain Filter Applied: ${domainID} for user ${subId}`);
     return { "domain": domainID };
   }
   // End-User level
-  if (jwtbit == 2) {
+  if (jwtbit === 2) {
     if (sip === undefined) {
       console.log(`ACCESS getJWTsipUserFilter: no SIP URI for an end-user: ${subId}`);
       throw new Error("ACCESS: no SIP URI for an end-user");
@@ -130,7 +127,6 @@ async function getJWTsipUserFilter(req) {
   // no well-known admin-level found exit with error
   console.log(`ACCESS getJWTsipUserFilter: unexpected admin level ${jwtbit} for user ${subId}`);
   throw new Error(`ACCESS: unexepcted admin level: ${jwtbit}`);
-
 }
 
 
@@ -138,10 +134,9 @@ async function getJWTsipUserFilter(req) {
 return if encrypt checksum filter should be used
 */
 function getEncryptChecksumFilter(req) {
-  var parsedHeader;
+  let parsedHeader;
   try {
     parsedHeader = parseBase64(req.headers[hfName]);
-
   } catch (e) {
     console.log("ACCESS getJWTsipUserFilter: JWT parsing failed");
     //no header, nginx auth or whatever
@@ -150,14 +145,14 @@ function getEncryptChecksumFilter(req) {
 
   const jwtbit = parsedHeader['custom:adminlevel'];
   //admin, no encrypt checksum filter
-  if (jwtbit == 0) { return { encryptChecksum: "*" } }
+  if (jwtbit === 0) { return { encryptChecksum: "*" }; }
 
   //no encrypt checksum passed from client
-  if (!req.body.encryptChecksum) { return { encryptChecksum: "*" } }
+  if (!req.body.encryptChecksum) { return { encryptChecksum: "*" }; }
 
   //no password was used for decryption, show only unecrypted events -> plain state
   //user or site admin, use filter
-  return { encryptChecksum: req.body.encryptChecksum }
+  return { encryptChecksum: req.body.encryptChecksum };
 }
 
 module.exports = {

@@ -37,7 +37,7 @@ class Network extends Component {
 
     render() {
         return (
-            <div className="container-fluid">
+            <div className="container-fluid" style={{"paddingRight": "0"}}>
                 <FilterBar />
                 <TypeBar />
                 <NetworkCharts showError={this.showError} hostnames={this.state.hostnames} />

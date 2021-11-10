@@ -7,16 +7,18 @@ import NavBar from './js/bars/NavigationBar';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import TimerangeBar from './js/bars/SetTimerangeBar';
 import { getLayoutSettings } from './js/helpers/getLayout';
+import { getSettings } from './js/helpers/getSettings';
 import FilterBar from './js/bars/FilterBar';
 import Restricted from './js/dashboards/Restricted/Restricted';
 import Sequence from './js/pages/sequenceDiagram';
 import store from "./js/store/index";
 import storePersistent from "./js/store/indexPersistent";
-import { setUser, setWidthChart, setLayout } from "./js/actions/index";
+import { setUser, setWidthChart, setLayout, setSettings } from "./js/actions/index";
 import { Redirect } from 'react-router';
 import { paths } from "./js/controllers/paths.jsx";
 import { getProfile } from '@moki-client/gui';
 import DecryptPasswordPopup from '@moki-client/gui/src/menu/decryptPasswordPopup';
+import Notificationbar from './js/bars/Notificationbar';
 
 //General class - check user level, profile from ES, monitor_layout before loading monitor
 //return router with dashboards and bars
@@ -25,7 +27,7 @@ class App extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            error: "",
+            error: [],
             redirect: false,
             isLoading: true,
             aws: false,
@@ -41,9 +43,11 @@ class App extends Component {
             dashboardsUser: [],
             dashboardsSettings: [],
             logo: "",
-            user: {}
+            user: {},
+            resizeId: ""
         }
         this.showError = this.showError.bind(this);
+        this.deleteAllErrors = this.deleteAllErrors.bind(this);
         this.redirect = this.redirect.bind(this);
         this.getHostnames = this.getHostnames.bind(this);
         this.getSipUser();
@@ -52,8 +56,12 @@ class App extends Component {
     componentDidMount() {
         //check if needed to display an error
         this.showError(this.state.error);
+        var thiss = this;
         //resize window function
-        window.addEventListener('resize', this.windowResize);
+        window.addEventListener('resize', function () {
+            if (thiss.state.resizeId) clearTimeout(thiss.state.resizeId);
+            thiss.setState({ resizeId: setTimeout(thiss.windowResize, 500) });
+        });
 
     }
 
@@ -79,9 +87,36 @@ class App extends Component {
                 }
             });
             monitorVersion = await response.json();
-            monitorVersion = monitorVersion.version;
+            monitorVersion = monitorVersion.error ? "" : monitorVersion.version;
+
         } catch (error) {
             console.error(error);
+        }
+
+        var res = await getProfile(this.state.user);
+
+        if (res !== "ok") {
+            //this.showError(JSON.stringify(res));
+        }
+
+        //check if logstash is running
+        const response = await fetch("/api/status", {
+            method: "GET",
+            timeout: 10000,
+            credentials: 'include',
+            headers: {
+                "Content-Type": "application/json",
+                "Access-Control-Allow-Credentials": "include"
+            }
+        });
+
+        const json = await response.json();
+        if (!response.ok) {
+            //this.showError(JSON.stringify(json.error));
+            return;
+        }
+        if (json.logstash.code) {
+            this.showError("Logstash is not running.");
         }
 
         //store layout
@@ -89,6 +124,14 @@ class App extends Component {
         storePersistent.dispatch(setLayout(jsonData));
         console.info(jsonData);
         console.info("Storing layout");
+
+        //get settings if exists
+        var aws = this.state.user.aws;
+        if (aws !== true) {
+            var jsonSettings = await getSettings();
+            storePersistent.dispatch(setSettings(jsonSettings));
+        }
+
         //get dashboard list
         var dashboards = Object.keys(jsonData.dashboards);
         if ((this.state.aws && !this.state.admin) || !this.state.aws) {
@@ -102,7 +145,17 @@ class App extends Component {
         var dashboardsSettings = Object.keys(jsonData.settingsDashboards);
         if ((this.state.aws && !this.state.admin) || !this.state.aws) {
             dashboardsSettings = dashboardsSettings.filter(dashboard => jsonData.settingsDashboards[dashboard]);
+
+            //remove users from settings
+            dashboardsSettings = dashboardsSettings.filter(dashboard => dashboard !== "users");
         }
+
+        //for admin level aws remove WBlist
+        if (this.state.aws && this.state.admin) {
+            dashboardsSettings = dashboardsSettings.filter(dashboard => dashboard !== "wblist");
+            dashboardsSettings = dashboardsSettings.filter(dashboard => dashboard !== "config");
+        }
+
         this.setState({
             dashboardsSettings: dashboardsSettings
         });
@@ -122,28 +175,34 @@ class App extends Component {
         });
 
         //set favicon
-        this.setState({ logo: "data:;base64," + await this.getLogo(jsonData.logo) });
-        document.getElementById("favicon").href = "data:;base64," + await this.getLogo(jsonData.favicon);
+        this.setState({ logo: "data:;base64," + await this.getLogo(jsonData.logo) },
+            async () => {
+                document.getElementById("favicon").href = "data:;base64," + await this.getLogo(jsonData.favicon);
 
-        //set main color
-        document.body.style.setProperty('--main', jsonData.color);
+                //set main and secondary color
+                document.body.style.setProperty('--main', jsonData.color);
+                document.body.style.setProperty('--second', jsonData.colorSecondary);
 
-        //set monitor name
-        /*  var monitorName = this.getUserSetting("monitor-name");
-          if (monitorName.status !== 200) {
-              */
-        this.setState({
-            monitorName: jsonData.name + " " + monitorVersion
-        });
+                this.setState({
+                    monitorName: jsonData.name + " " + monitorVersion,
+                    isLoading: false
+                });
+            });
+    }
 
-        this.setState({
-            isLoading: false
-        })
-
-        var res = await getProfile(this.state.user);
-        if (res !== "ok") {
-            this.showError(JSON.stringify(res));
+    /**
+* set error state -> past it to child and display it
+* @param {string}  error 
+* */
+    showError(error) {
+        console.log(error);
+        if (error.length > 0) {
+            this.setState({ error: [...this.state.error, error] });
         }
+    }
+
+    deleteAllErrors() {
+        this.setState({ error: [] });
     }
 
     /**
@@ -223,7 +282,7 @@ class App extends Component {
 
                 const json = await response.json();
                 if (!response.ok) {
-                    this.showError(JSON.stringify(json.error));
+                    //this.showError(JSON.stringify(json.error));
                     return;
                 }
                 var hostnames = [];
@@ -381,28 +440,6 @@ class App extends Component {
         }
     }
 
-    /**
-* dislay an error in error bar in GUI for 10 sec
-* @param {string}  error an error to display
-* @return {} stores in state 
-* */
-    showError(error) {
-        if (error !== "" && document.getElementsByClassName("errorBar").length > 0) {
-            document.getElementsByClassName("errorBar")[0].style.visibility = "visible";
-            this.setState({
-                error: error
-            })
-
-            setTimeout(function () {
-                this.setState({
-                    error: ""
-                });
-                document.getElementsByClassName("errorBar")[0].style.visibility = "hidden";
-            }.bind(this), 10000); // wait 10 seconds, then reset to false
-        }
-
-    }
-
     redirect() {
         if (this.state.redirect === "false") {
             this.setState({
@@ -423,10 +460,12 @@ class App extends Component {
 
         //loading screen span
         var loadingScreen = <span>
-            <div className="errorBar" > {JSON.stringify(this.state.error)} </div>
+            <Notificationbar className="errorBarLoading" error={this.state.error} deleteAllErrors={this.deleteAllErrors}></Notificationbar>
             <div style={{ "marginTop": (window.innerHeight / 2) - 50 }} className="row align-items-center justify-content-center">
-                <div className="loader" />
-                {this.state.logo && <img src={this.state.logo} alt="logo" style={{ "marginLeft": 10 }} />}
+                <div class="loaderr">
+                    <div class="bar"></div>
+                </div>
+                {this.state.logo && <div><img src={this.state.logo} alt="logo" style={{ "marginLeft": "30%", "width": "50%" }} /></div>}
             </div>
         </span>
 
@@ -441,6 +480,8 @@ class App extends Component {
         var sipUserSwitch;
         const aws = this.state.aws;
         var url = window.location.pathname;
+        var style = aws ? "" : { "paddingBottom": "7px", "paddingLeft": "7px" };
+
         //show just diagram
         if (this.state.dashboards.length > 0) {
             if ((aws === false || this.state.admin || this.state.siteAdmin) && url.includes("sequenceDiagram")) {
@@ -455,23 +496,23 @@ class App extends Component {
                 //ADMIN ROLE: show everything
             } else if (aws === false || this.state.admin || this.state.siteAdmin) {
                 console.info("Router: admin mode");
+
                 //admin context
                 sipUserSwitch = <div className="row" id="body-row" >
                     <NavBar redirect={this.redirect} toggle={this.toggle} aws={this.state.aws} dashboardsUser={this.state.dashboardsUser} dashboards={this.state.dashboards} dashboardsSettings={this.state.dashboardsSettings} />
-                    <div id="context" className={"margin250"}>
-                        <div className="row" >
-                            <div className="errorBar" > {this.state.error} </div>
-                        </div>
-                        <div className="row justify-content-between" >
-                            <span id="user" className="tab top" >
-                                {aws === true && <DecryptPasswordPopup />}
-                                {sipUser}
-                                {aws === true && (!this.state.admin && !this.state.siteAdmin) && <a href="/logout" > Log out </a>}
-                            </span>
+                    <div className="row justify-content-between header" style={{ "marginRight": 0, "marginLeft": 0 }} >
+                        <span id="user" className="top" style={{ style }}>
+                            {aws === true && <DecryptPasswordPopup />}
+                            {sipUser}
+                            {aws === true && (!this.state.admin && !this.state.siteAdmin) && <a href="/logout" > Log out </a>}
+                        </span>
 
-                            <TimerangeBar showError={this.showError} />
-                        </div>
-                        <div className="row" >
+                        <TimerangeBar />
+                    </div>
+
+                    <div id="context" className={"margin250"}>
+                        <Notificationbar className="errorBar" error={this.state.error} deleteAllErrors={this.deleteAllErrors}></Notificationbar>
+                        <div className="row">
                             <Switch >
                                 {paths(this.state.dashboards, this.state.tags, this.state.hostnames, this.state.dstRealms, this.state.srcRealms, this.showError)}
                                 {paths(this.state.dashboardsSettings, this.state.tags, this.state.hostnames, this.state.dstRealms, this.state.srcRealms, this.showError)}
@@ -481,9 +522,8 @@ class App extends Component {
                                 <Redirect to={dashboards.includes("home") ? "/home" : "/" + dashboards[0]} />
                             </Switch>
                         </div>
-                        <span style={{ "float": "right" }}>
-                            <div id="monitorName" className="top monitorName"> {this.state.monitorName.toUpperCase()} </div>
-                            <img src={this.state.logo} alt="logo" style={{ "height": "15px", "float": "right" }} />
+                        <span className="footer" style={{ "float": "right" }}>
+                            <img src={this.state.logo} alt="logo" id="footerlogo" />
                         </span>
                     </div>
                 </div>;
@@ -495,17 +535,15 @@ class App extends Component {
                 sipUserSwitch = <div className="row"
                     id="body-row">
                     <div className="col" >
-                        <div className="row" >
-                            <div className="errorBar" > {this.state.error} </div>
-                        </div>
-                        <div className="d-flex justify-content-between" >
-                            <span id="user" className="tab top">
+                        <div className="d-flex justify-content-between header" >
+                            <span id="user" className="top">
                                 {aws === true && <DecryptPasswordPopup />}
                                 {sipUser}
                                 {aws === true && !this.state.admin && <a href="/logout"> Log out </a>}</span>
                             <TimerangeBar showError={this.showError} />
                         </div>
                         <FilterBar redirect={this.state.redirect} />
+                        <Notificationbar className="errorBarLoading" error={this.state.error} deleteAllErrors={this.deleteAllErrors}></Notificationbar>
                         <div>
                             <Switch >
                                 <Route exact path='/index' render={() => < Restricted name="restricted" showError={this.showError} tags={this.state.tags} />} />
@@ -516,9 +554,8 @@ class App extends Component {
                                 <Route path='/sequenceDiagram/' render={() => <Sequence />} />
                                 <Redirect to="/" />
                             </Switch>
-                            <span style={{ "float": "right" }}>
-                                <div id="monitorName" className="top monitorName"> {this.state.monitorName.toUpperCase()} </div>
-                                <img src={this.state.logo} alt="logo" style={{ "height": "15px", "float": "right" }} />
+                            <span className="footer" style={{ "float": "right" }}>
+                                <img src={this.state.logo} alt="logo" id="footerlogo"  />
                             </span>
                         </div>
                     </div>
@@ -530,7 +567,7 @@ class App extends Component {
                 <span id="decryptpopupplaceholder"></span>
                 {(this.state.isLoading) ? loadingScreen :
                     <Router>
-                        <div className="container-fluid"> {sipUserSwitch}
+                        <div className="container-fluid" style={{ "backgroundColor": "white" }}> {sipUserSwitch}
                         </div>
                     </Router>
                 }

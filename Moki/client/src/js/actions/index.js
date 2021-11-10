@@ -43,3 +43,7 @@ export function setLayout(payload) {
   return { type: "SET_LAYOUT", payload }
 };
 
+export function setSettings(payload){
+  return { type: "SET_SETTINGS", payload }
+};
+

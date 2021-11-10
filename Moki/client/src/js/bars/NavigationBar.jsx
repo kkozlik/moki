@@ -38,7 +38,7 @@ class navBar extends Component {
     componentDidMount() {
         window.addEventListener('scroll', this.handleScroll);
         var navBar = document.getElementById("sidebar-container");
-        if(navBar.clientHeight < window.innerHeight){
+        if (navBar.clientHeight < window.innerHeight) {
             navBar.style.position = "fixed";
             navBar.style.top = "0";
             navBar.style.bottom = "auto";
@@ -57,6 +57,11 @@ class navBar extends Component {
                 navBar.style.position = "fixed";
                 navBar.style.bottom = "0";
                 navBar.style.top = "auto";
+            }
+            else if (window.pageYOffset > 300) {
+                navBar.style.position = "sticky";
+                navBar.style.bottom = "auto";
+                navBar.style.top = "0";
             }
             else {
                 navBar.style.position = "sticky";
@@ -116,8 +121,7 @@ class navBar extends Component {
         }
         //aws case, just redirect
         else {
-            window.localStorage.removeItem("HMAC_SHA_256_KEY");
-            window.localStorage.removeItem("IPCIPHER_MAP_KEY");
+            window.localStorage.clear();
             window.location.href = "/logout";
         }
     }
@@ -129,20 +133,18 @@ class navBar extends Component {
         var navbarSettings = renderNavBar(dashboardsSettings);
         var navbarUser = renderNavBar(this.state.dashboardsUser);
         return (
-            <div id="sidebar-container" className="sidebar-expanded d-none d-md-block sticky-top">
+            <div id="sidebar-container" className="sidebar-expanded d-none d-md-block">
                 <ul className="list-group">
-                    <li className="list-group-myitem sidebar-separator-title d-flex align-items-center menu-collapsed">
+                    <li className="list-group-myitem sidebar-separator-title d-flex align-items-center menu-collapsed" style={{ "height": "38px" }}>
                         <small className="menu-collapsed">DASHBOARDS</small>
                     </li>
                     {navbar}
-                    { navbarSettings.length > 0 && <li className="list-group-myitem sidebar-separator-title d-flex align-items-center menu-collapsed">
-
-                        <small className="menu-collapsed">SETTINGS</small>
+                    {navbarSettings.length > 0 && <li className="list-group-myitem sidebar-separator-title d-flex align-items-center menu-collapsed">
                     </li>}
                     {navbarSettings}
 
                     <li className="list-group-myitem sidebar-separator-title d-flex align-items-center menu-collapsed">
-                        <small className="menu-collapsed">USER</small>
+                       
                     </li>
 
                     {navbarUser}
@@ -152,7 +154,7 @@ class navBar extends Component {
                             <span className="menu-collapsed menuText">Log out</span>
                         </div>
                     </Link>
-                    <button  onClick={this.togglebar} data-toggle="sidebar-colapse" className="noFormatButton bg-dark list-group-collaps list-group-item-action d-flex align-items-center" >
+                    <button onClick={this.togglebar} data-toggle="sidebar-colapse" className="noFormatButton bg-dark list-group-collaps list-group-item-action d-flex align-items-center" >
                         <div className="d-flex w-100 justify-content-start align-items-center">
                             <img className="marginRight" src={collapseIcon} alt="collapse" />
                             <span id="collapse-text" className="menu-collapsed">Collapse</span>

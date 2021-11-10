@@ -1,27 +1,14 @@
-import React, {
-    Component
-} from 'react';
+import React, { Component } from 'react';
 import * as d3 from "d3";
-import {
-    timestampBucket
-} from '../bars/TimestampBucket.js';
+import { timestampBucket } from '../bars/TimestampBucket.js';
 import store from "../store/index";
-import {
-    setTimerange
-} from "../actions/index";
-import {
-    createFilter
-} from '@moki-client/gui';
+import { setTimerange } from "../actions/index";
+import { createFilter} from '@moki-client/gui';
 import emptyIcon from "../../styles/icons/empty_small.png";
-import {
-    getTimeBucket, getTimeBucketInt
-} from "../helpers/getTimeBucket";
-import {
-    ColorsRedGreen
-} from "../helpers/style/ColorsRedGreen";
-import {
-    ColorsGreen
-} from "../helpers/style/ColorsGreen";
+import { getTimeBucket, getTimeBucketInt} from "../helpers/getTimeBucket";
+import {ColorsRedGreen} from "@moki-client/gui";
+import { ColorsGreen} from "@moki-client/gui";
+import {parseTimestamp} from "../helpers/parseTimestamp";
 
 export default class timedateHeatmap extends Component {
     constructor(props) {
@@ -104,25 +91,10 @@ export default class timedateHeatmap extends Component {
 
         if (data === undefined || data.length === 0) {
             rootsvg.attr("height", 100);
-            rootsvg.append("line")
-                .attr("x1", 0)
-                .attr("y1", 10)
-                .attr("x2", width)
-                .attr("y2", 10)
-                .attr("stroke-width", 0.4)
-                .attr("stroke", "#808080");
 
             rootsvg.append('svg:image')
                 .attr("xlink:href", emptyIcon)
                 .attr('transform', 'translate(' + width / 2 + ',25)')
-
-            rootsvg.append("line")
-                .attr("x1", 0)
-                .attr("y1", 90)
-                .attr("x2", width)
-                .attr("y2", 90)
-                .attr("stroke-width", 0.4)
-                .attr("stroke", "#808080");
 
         } else {
             var y_elements = d3.set(data.map(function (item) {
@@ -184,7 +156,7 @@ export default class timedateHeatmap extends Component {
                 var extent = d3.event.selection;
                 var timestamp_gte = Math.round(xScale.invert(extent[0]));
                 var timestamp_lte = Math.round(xScale.invert(extent[1]));
-                var timestamp_readiable = new Date(Math.trunc(timestamp_gte)).toLocaleString() + " - " + new Date(Math.trunc(timestamp_lte)).toLocaleString()
+                var timestamp_readiable = parseTimestamp(new Date(Math.trunc(timestamp_gte))) + " - " + parseTimestamp(new Date(Math.trunc(timestamp_lte)))
                 store.dispatch(setTimerange([timestamp_gte, timestamp_lte, timestamp_readiable]));
 
             }
@@ -291,7 +263,7 @@ export default class timedateHeatmap extends Component {
                         if (d.value === 5) value = "Partially Available";
                     }
 
-                    tooltip.select("div").html("<strong>" + d.attr2.charAt(0).toUpperCase() + d.attr2.slice(1) + ": </strong>" + value + units + "<br/><strong>Time: </strong>" + new Date(d.attr1).toLocaleString()+ " + "+getTimeBucket());
+                    tooltip.select("div").html("<strong>" + d.attr2.charAt(0).toUpperCase() + d.attr2.slice(1) + ": </strong>" + value + units + "<br/><strong>Time: </strong>" + parseTimestamp(new Date(d.attr1))+ " + "+getTimeBucket());
 
 
                   /*  if (d3.mouse(d3.event.target)[0] > window.innerWidth - 600) {
@@ -364,7 +336,7 @@ export default class timedateHeatmap extends Component {
         var bucket = getTimeBucket();
         return (<div id={
             this.props.id
-        }> <h3 className="alignLeft title"> {
+        }  className="chart"> <h3 className="alignLeft title"> {
             this.props.name
         } <span className="smallText"> (interval: {bucket})</span></h3>
         </div>)

@@ -10,7 +10,7 @@ import DonutChart from '../../charts/donut_chart.js';
 import ListChart from '../../charts/list_chart.js';
 import store from "../../store/index";
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
-import { parseListData, parseIp, parseAggCities, parseBucketData, parseStackedbarTimeData } from '@moki-client/es-response-parser';
+import { parseListData, parseList, parseIp, parseAggCities, parseBucketData, parseStackedbarTimeData } from '@moki-client/es-response-parser';
 
 
 class SecurityCharts extends Dashboard {
@@ -46,7 +46,7 @@ class SecurityCharts extends Dashboard {
                 [{ result: 'subnets', func: parseListData }],
 
                 //EVENTS BY COUNTRY
-                [{ result: 'eventsByCountry', func: parseListData }],
+                [{ result: 'eventsByCountry', func: parseList }],
 
                 //SECURITY TYPES EVENTS
                 [{ result: 'typesCount', func: parseBucketData }],
@@ -55,6 +55,7 @@ class SecurityCharts extends Dashboard {
                 [{ result: 'geoipHashMap', func: parseAggCities }],
             ]
         };
+
     }
 
     //render GUI
@@ -73,7 +74,7 @@ class SecurityCharts extends Dashboard {
                     }
                 />  </div>}
             {this.state.charts["SECURITY GEO EVENTS"] && <div className="row no-gutters" >
-                <div className="col" >
+                <div className="col-auto" >
                     <Geoipchart data={this.state.geoipMap}
                         dataNotShown={this.state.geoipHashMap}
                         type={"geoip"}
@@ -82,7 +83,7 @@ class SecurityCharts extends Dashboard {
                         width={store.getState().width - 300}
                     /> </div> </div>}
             <div className="row no-gutters" >
-                {this.state.charts["TYPES"] && <div className="col" >
+                {this.state.charts["TYPES"] && <div className="col-auto" style={{"marginRight": "5px"}}>
                     <DonutChart data={this.state.typesCount}
                         units={"count"}
                         name={"TYPES"}
@@ -92,7 +93,7 @@ class SecurityCharts extends Dashboard {
                         height={200}
                         field="attrs.type" />
                 </div>}
-                {this.state.charts["EVENTS BY IP ADDR"] && <div className="col" >
+                {this.state.charts["EVENTS BY IP ADDR"] && <div className="col-auto" >
                     <ListChart data={
                         this.state.eventsByIP
                     }
@@ -104,7 +105,7 @@ class SecurityCharts extends Dashboard {
                         }
                         type="list"
                     />  </div>}
-                {this.state.charts["TOP SUBNETS"] && <div className="col" >
+                {this.state.charts["TOP SUBNETS"] && <div className="col-auto" >
                     <ListChart data={
                         this.state.subnets
                     }
@@ -116,7 +117,7 @@ class SecurityCharts extends Dashboard {
                             "attrs.sourceSubnets"
                         }
                     />  </div>}
-                {this.state.charts["EVENTS BY COUNTRY"] && <div className="col" >
+                {this.state.charts["EVENTS BY COUNTRY"] && <div className="col-auto" >
                     <ListChart data={
                         this.state.eventsByCountry
                     }

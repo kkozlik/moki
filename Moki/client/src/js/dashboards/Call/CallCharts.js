@@ -12,7 +12,7 @@ import ListChart from '../../charts/list_chart.js';
 import ValueChart from '../../charts/value_chart.js';
 import store from "../../store/index";
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
-import { parseListData, parseStackedbarTimeData, parseBucketData, parseSunburstData, parseQueryStringData, parseAggData, parseAggSumBucketData } from '@moki-client/es-response-parser';
+import { parseListData, parseList, parseStackedbarTimeData, parseBucketData, parseSunburstData, parseQueryStringData, parseAggData, parseAggSumBucketData } from '@moki-client/es-response-parser';
 
 
 
@@ -66,7 +66,7 @@ class CallCharts extends Dashboard {
                 //ANSWER-SEIZURE RATIO 8
                 [{ result: 'answerSeizureRatio', func: parseAggSumBucketData }],
                 //CALLING COUNTRIES 9
-                [{ result: 'callingCountries', func: parseListData }],
+                [{ result: 'callingCountries', func: parseList }],
                 //SUM DURATION OVER TIME 10
                 [{ result: 'sumDurationOverTime', func: parseBucketData }],
                 //MAX DURATION 11
@@ -132,43 +132,43 @@ class CallCharts extends Dashboard {
                 { this.state.isLoading && <LoadingScreenCharts />}
 
                 <div className="row no-gutters">
-                    {this.state.charts["ATTEMPTs"] && <div className="col">
+                    {this.state.charts["ATTEMPTs"] && <div className="col-auto">
                         <ValueChart data={
                             this.state.sumCallAttempt
                         } name={"ATTEMPTs"} />
                     </div>
                     }
-                    {this.state.charts["ENDs"] && <div className="col">
+                    {this.state.charts["ENDs"] && <div className="col-auto">
                         <ValueChart data={
                             this.state.sumCallEnd
                         } name={"ENDs"} />
                     </div>}
-                    {this.state.charts["STARTs"] && <div className="col">
+                    {this.state.charts["STARTs"] && <div className="col-auto">
                         <ValueChart data={
                             this.state.sumCallStart
                         } name={"STARTs"} />
                     </div>}
-                    {this.state.charts["ASR (%)"] && <div className="col">
+                    {this.state.charts["ASR (%)"] && <div className="col-auto">
                         <ValueChart data={
                             this.state.answerSeizureRatio
                         } name={"ASR (%)"} />
                     </div>}
-                    {this.state.charts["MAX DURATION"] && <div className="col">
+                    {this.state.charts["MAX DURATION"] && <div className="col-auto">
                         <ValueChart data={
                             this.state.maxDuration
                         } name={"MAX DURATION"} />
                     </div>}
-                    {this.state.charts["AVG DURATION"] && <div className="col">
+                    {this.state.charts["AVG DURATION"] && <div className="col-auto">
                         <ValueChart data={
                             this.state.avgDuration
                         } name={"AVG DURATION"} />
                     </div>}
-                    {this.state.charts["SUM DURATION"] && <div className="col">
+                    {this.state.charts["SUM DURATION"] && <div className="col-auto">
                         <ValueChart data={
                             this.state.durationSum
                         } name={"SUM DURATION"} />
                     </div>}
-                    {this.state.charts["AVG MoS"] && <div className="col">
+                    {this.state.charts["AVG MoS"] && <div className="col-auto">
                         <ValueChart data={
                             this.state.avgMoS
                         } name={"AVG MoS"} />
@@ -192,38 +192,35 @@ class CallCharts extends Dashboard {
                         name={"ASR OVER TIME"} width={store.getState().width - 300} units={"%"} />
                 </div>}
                 <div className="row no-gutters" >
-                    {this.state.charts["CALL SUCCESS RATIO"] && <div className="col">
+                    {this.state.charts["CALL SUCCESS RATIO"] && <div className="col-auto" style={{"marginRight": "5px"}}>
                         <SunburstChart data={
                             this.state.callSuccessRatio
-                        } name={"CALL SUCCESS RATIO"} width={((store.getState().width - 300) / 2) + 200} ends={this.state.sumCallEnd} units={"count"} />
+                        } name={"CALL SUCCESS RATIO"} width={((store.getState().width - 300) / 2)} ends={this.state.sumCallEnd} units={"count"} />
                     </div>}
-                    {this.state.charts["CALL TERMINATED"] && <div className="col">
+                    {this.state.charts["SIP-CODE COUNT"] && <div className="col-auto">
+                        <ListChart data={
+                            this.state.sipcodeCount
+                        } name={"SIP-CODE COUNT"} field={"attrs.sip-code"} />
+                    </div>}
+                    {this.state.charts["CALL TERMINATED"] && <div className="col-auto" style={{"marginRight": "5px"}}>
                         <DonutChart data={
                             this.state.callTerminated
                         } name={"CALL TERMINATED"} id="callTerminated" width={(store.getState().width - 300) / 2} height={170} field={"attrs.originator"} legendSize={120} units={"count"} />
                     </div>}
-                </div>
-
-                <div className="row no-gutters" >
-                    {this.state.charts["CALLING COUNTRIES"] && <div className="col">
+                    {this.state.charts["CALLING COUNTRIES"] && <div className="col-auto">
                         <ListChart data={
                             this.state.callingCountries
                         } name={"CALLING COUNTRIES"} field={"geoip.country_code2"} />
                     </div>}
-                    {this.state.charts["CALLED COUNTRIES"] && <div className="col">
+                    {this.state.charts["CALLED COUNTRIES"] && <div className="col-auto">
                         <ListChart data={
                             this.state.calledCountries
                         } name={"CALLED COUNTRIES"} field={"attrs.dst_cc"} />
                     </div>}
-                    {this.state.charts["DURATION GROUP"] && <div className="col">
+                    {this.state.charts["DURATION GROUP"] && <div className="col-auto">
                         <ListChart data={
                             this.state.durationGroup
                         } name={"DURATION GROUP"} field={"attrs.durationGroup"} />
-                    </div>}
-                    {this.state.charts["SIP-CODE COUNT"] && <div className="col">
-                        <ListChart data={
-                            this.state.sipcodeCount
-                        } name={"SIP-CODE COUNT"} field={"attrs.sip-code"} />
                     </div>}
                 </div>
             </div>

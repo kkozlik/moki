@@ -11,17 +11,21 @@ import React, {
 } from 'react';
 import * as d3 from "d3";
 import {
+    createFilter
+} from '@moki-client/gui';
+import {
     timestampBucket
 } from '../bars/TimestampBucket.js';
 import store from "../store/index";
 import {
     setTimerange
 } from "../actions/index";
-import Colors from '../helpers/style/Colors';
+import {Colors} from '@moki-client/gui';
 import emptyIcon from "../../styles/icons/empty_small.png";
 import {
     getTimeBucketInt, getTimeBucket
 } from "../helpers/getTimeBucket";
+import { parseTimestamp } from "../helpers/parseTimestamp";
 
 export default class MultipleLineChart extends Component {
     constructor(props) {
@@ -48,6 +52,26 @@ export default class MultipleLineChart extends Component {
 
 
     draw(data, id, width, ticks, hostnames) {
+        var field = this.props.field ? this.props.field : "attrs.hostname"; 
+        //make div values if necessary
+        if (window.location.pathname === "/stats") {
+            var divData = [];
+            for (var k = 0; k < data.length; k++) {
+                divData.push({
+                    name: data[k].name,
+                    values: []
+                })
+                for (var l = 0; l < data[k].values.length-1; l++) {
+                    divData[k].values.push({
+                            date: data[k].values[l].date,
+                            value: data[k].values[l + 1].value - data[k].values[l].value
+                        });
+                }
+            }
+            data = divData;
+        }
+
+
         //FOR UPDATE: remove chart if it's already there
         var chart = document.getElementById(id + "SVG");
         if (chart) {
@@ -105,6 +129,15 @@ export default class MultipleLineChart extends Component {
             .range([0, width])
             .domain([minTime, maxTime]);
 
+        //if idle, do minus 100 for all values
+        if (id.includes("Idle")) {
+            for (var i = 0; i < data.length; i++) {
+                for (var j = 0; j < data[i].values.length; j++) {
+                    data[i].values[j].value = 100 - data[i].values[j].value;
+                }
+            }
+        }
+
         //max value    
         var max = 0;
         for (var i = 0; i < data.length; i++) {
@@ -142,21 +175,6 @@ export default class MultipleLineChart extends Component {
                 .ticks(5)
         }
 
-
-        svg.append("g")
-            .attr("class", "x axis")
-            .attr("transform", `translate(0, ${height})`)
-            .call(xAxis);
-
-        svg.append("g")
-            .attr("class", "y axis")
-            .call(yAxis)
-            .append('text')
-            .attr("y", 15)
-            .attr("transform", "rotate(-90)")
-            .attr("fill", "#000");
-
-
         svg.attr("transform", "translate(" + margin.left + "," + margin.right + ")");
 
         if (data.length === 0 || (data[0].values.length === 0 && data[1].values.length === 0)) {
@@ -165,7 +183,18 @@ export default class MultipleLineChart extends Component {
                 .attr('transform', 'translate(' + (width / 3 + 20) + ',' + height / 4 + ')')
 
         } else {
+            svg.append("g")
+                .attr("class", "x axis")
+                .attr("transform", `translate(0, ${height})`)
+                .call(xAxis);
 
+            svg.append("g")
+                .attr("class", "y axis")
+                .call(yAxis)
+                .append('text')
+                .attr("y", 15)
+                .attr("transform", "rotate(-90)")
+                .attr("fill", "#000");
 
 
             svg.append("g")
@@ -182,8 +211,8 @@ export default class MultipleLineChart extends Component {
                 var extent = d3.event.selection;
                 var timestamp_gte = xScale.invert(extent[0]);
                 var timestamp_lte = xScale.invert(extent[1]);
-                var timestamp = timestamp_gte + " - " + timestamp_lte;
-                store.dispatch(setTimerange([timestamp_gte, timestamp_lte, timestamp]));
+                var timestamp_readiable = parseTimestamp(new Date(Math.trunc(timestamp_gte))) + " - " + parseTimestamp(new Date(Math.trunc(timestamp_lte)));
+                store.dispatch(setTimerange([timestamp_gte, timestamp_lte, timestamp_readiable]));
 
             }
 
@@ -196,7 +225,6 @@ export default class MultipleLineChart extends Component {
                     .tickSize(-width)
                     .tickFormat("")
                 )
-
 
             /* Add line into SVG */
             var line = d3.line()
@@ -214,7 +242,7 @@ export default class MultipleLineChart extends Component {
                 .append('path')
                 .attr('class', 'line')
                 .attr('d', d => d.values ? line(d.values) : 0)
-                .style('stroke', (d, i) => hostnames[d.name] ? hostnames[d.name] : color(i))
+                .style('stroke', (d, i) => hostnames && hostnames[d.name] ? hostnames[d.name] : color(i))
                 .style('opacity', lineOpacity)
                 .on("mouseover", function (d) {
                     d3.selectAll('.line')
@@ -246,7 +274,7 @@ export default class MultipleLineChart extends Component {
             lines.selectAll("circle-group" + id)
                 .data(data).enter()
                 .append("g")
-                .style("fill", (d, i) => hostnames[d.name] ? hostnames[d.name] : color(i))
+                .style("fill", (d, i) => hostnames && hostnames[d.name] ? hostnames[d.name] : color(i))
                 .selectAll("circle" + id)
                 .data(d => d.values).enter()
                 .append("g")
@@ -254,14 +282,14 @@ export default class MultipleLineChart extends Component {
                 .style("cursor", "pointer")
                 .on("mouseover", function (d) {
                     tooltip.style("visibility", "visible");
-                    tooltip.select("div").html("<strong>Time: </strong>" + parseDate(d.date) + " + "+getTimeBucket()+"<strong><br/>Value: </strong>" + d3.format(',')(d.value) + "<br/> ");
+                    tooltip.select("div").html("<strong>Time: </strong>" + parseTimestamp(d.date) + " + " + getTimeBucket() + "<strong><br/>Value: </strong>" + d3.format(',')(d.value) + "<br/> ");
                 })
                 .on("mouseout", function (d) {
                     tooltip.style("visibility", "hidden")
                 })
                 .on("mousemove", function (d) {
                     tooltip
-                        .style("left", (d3.event.layerX -100) + "px")
+                        .style("left", (d3.event.layerX - 100) + "px")
                         .style("top", (d3.event.layerY - 70) + "px");
 
                 })
@@ -331,8 +359,11 @@ export default class MultipleLineChart extends Component {
                 })
                 .style('fill', function (d, i) {
                     if (i < 7) {
-                        return hostnames[d.name] ? hostnames[d.name] : color(i);
+                        return hostnames && hostnames[d.name] ? hostnames[d.name] : color(i);
                     }
+                })
+                .on("click", el => {
+                    createFilter(field + ":\"" + el.name + "\"");
                 });
 
             legend.append('text')
@@ -346,6 +377,9 @@ export default class MultipleLineChart extends Component {
                     if (i < 7) {
                         return d.name;
                     }
+                })
+                .on("click", el => {
+                    createFilter(field + ":\"" + el.name + "\"");
                 });
 
 
@@ -356,8 +390,8 @@ export default class MultipleLineChart extends Component {
         var bucket = getTimeBucket();
         return (<div id={
             this.props.id
-        }>
-            <h3 className="alignLeft title" > {
+        } className="chart">
+            <h3 className="alignLeft title" style={{ "float": "inherit" }}> {
                 this.props.name
             } <span className="smallText"> (interval: {bucket})</span></h3></div>)
     }

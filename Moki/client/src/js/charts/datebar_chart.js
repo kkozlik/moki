@@ -9,14 +9,15 @@ import store from "../store/index";
 import {
     setTimerange
 } from "../actions/index";
-import Colors from '../helpers/style/Colors';
-import emptyIcon from "../../styles/icons/empty.png";
+import {Colors} from '@moki-client/gui';
+import emptyIcon from "../../styles/icons/empty_small.png";
 import {
     getTimeBucket, getTimeBucketInt
 } from "../helpers/getTimeBucket";
 import {
     durationFormat
 } from "../helpers/durationFormat";
+import {parseTimestamp} from "../helpers/parseTimestamp";
 
 export default class datebarChart extends Component {
     constructor(props) {
@@ -111,7 +112,17 @@ export default class datebarChart extends Component {
             .attr('id', id + 'SVG')
             .append('g');
 
-        svg.append('g')
+
+        svg.attr('transform', `translate(${margin.left}, ${margin.top})`);
+
+        if (data.length === 0) {
+            svg.append('svg:image')
+                .attr("xlink:href", emptyIcon)
+                .attr('transform', 'translate(' + (width - 60) / 2 + ',' + height / 2 + ')')
+
+        } else {
+
+            svg.append('g')
             .attr('class', 'x axis')
             .attr('transform', `translate(0, ${height})`)
             .call(xAxis);
@@ -125,16 +136,6 @@ export default class datebarChart extends Component {
             .attr('dy', '.71em')
             .style('text-anchor', 'end')
             .text('Count');
-
-        svg.attr('transform', `translate(${margin.left}, ${margin.top})`);
-
-        if (data.length === 0) {
-            svg.append('svg:image')
-                .attr("xlink:href", emptyIcon)
-                .attr('transform', 'translate(' + (width - 60) / 2 + ',' + height / 2 + ')')
-
-        } else {
-
 
             svg.append("g")
                 .attr("class", "brush")
@@ -152,7 +153,7 @@ export default class datebarChart extends Component {
                 var extent = d3.event.selection;
                 var timestamp_gte = xScale.invert(extent[0]);
                 var timestamp_lte = xScale.invert(extent[1]);
-                var timestamp_readiable = new Date(Math.trunc(timestamp_gte)).toLocaleString() + " - " + new Date(Math.trunc(timestamp_lte)).toLocaleString()
+                var timestamp_readiable = parseTimestamp(new Date(Math.trunc(timestamp_gte))) + " - " + parseTimestamp(new Date(Math.trunc(timestamp_lte)))
                 store.dispatch(setTimerange([timestamp_gte, timestamp_lte, timestamp_readiable]));
 
 
@@ -217,7 +218,7 @@ export default class datebarChart extends Component {
                     if (name.includes("DURATION")) {
                         value = durationFormat(d.agg.value);
                     }
-                    tooltip.select("div").html("<strong>Value:</strong> " + value + units + "</br><strong>Time: </strong>" + parseDate(timestamp)+ " + "+getTimeBucket());
+                    tooltip.select("div").html("<strong>Value:</strong> " + value + units + "</br><strong>Time: </strong>" + parseTimestamp(timestamp)+ " + "+getTimeBucket());
                 })
                 .on('mouseout', () => //tooltip.transition().style('opacity', 0));
                     tooltip.style("visibility", "hidden"))
@@ -264,7 +265,7 @@ export default class datebarChart extends Component {
         var bucket = getTimeBucket();
         return (<div id={
             this.props.id
-        } > <h3 className="alignLeft title" > {
+        }  className="chart"> <h3 className="alignLeft title" > {
             this.props.name
         } <span className="smallText"> (interval: {bucket})</span></h3></div >)
     }

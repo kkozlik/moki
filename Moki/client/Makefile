@@ -1,5 +1,10 @@
 NAME			= moki-client
-RPM_NAME	= $(NAME)
+ifeq ($(TYPE), dev)
+	RPM_NAME	= $(NAME)-dev
+else
+	RPM_NAME	= $(NAME)
+endif 
+
 RELEASE		= dev
 
 RELEASE			?= $(shell sed -n 's/^ *Version: *//p' $(NAME).spec 2> /dev/null || echo "alpha")
@@ -61,7 +66,7 @@ stop:
 ## rpmtar: Build the rpm tar ball
 rpmtar:
 	RPM_VERSION=`cat $(RPM_NAME).spec|grep -e "^Version:"|awk '{print $$2}'`; \
-  RPM_RELEASE=`cat $(RPM_NAME).spec|grep -e "^Release:"|awk '{print $$2}'`; \
+  	RPM_RELEASE=`cat $(RPM_NAME).spec|grep -e "^Release:"|awk '{print $$2}'`; \
   	echo "RPM_VERSION=$${RPM_VERSION}"; \
   	echo "RPM_RELEASE=$${RPM_VERSION}"; \
   	tar -C .. \
@@ -78,16 +83,62 @@ rpmtar:
   	--exclude=*.bz2 \
   	--exclude=*.tar \
   	--exclude=*~ \
+  	--exclude=node_modules \
   	-cf - $(notdir $(CURDIR)) | \
   	(mkdir -p tmp/_tar1; mkdir -p tmp/_tar2 ; \
   	cd tmp/_tar1; tar -xf - ) && \
   	mv tmp/_tar1/$(notdir $(CURDIR)) \
   	tmp/_tar2/"$(RPM_NAME)-$${RPM_VERSION}" && \
   	(cd tmp/_tar2 && tar -zcf ../../"$(RPM_NAME)-$${RPM_VERSION}-$${RPM_RELEASE}".tar.gz "$(RPM_NAME)-$${RPM_VERSION}" ) ; \
-  	rm -rf tmp
+  	rm -rf tmp; \
+  	mkdir -p ~/rpmbuild/SOURCES ; \
+  	cp "$(RPM_NAME)-$${RPM_VERSION}-$${RPM_RELEASE}".tar.gz ~/rpmbuild/SOURCES
+
+.PHONY: rpm
+## rpm: Build the rpm package
+rpm: rpmtar
+	rpmbuild --clean -bb $(RPM_NAME).spec
+
+.PHONY: clean
+## clean: remove the tarball and rpm package artifacts
+clean:
+	RPM_VERSION=`cat $(RPM_NAME).spec|grep -e "^Version:"|awk '{print $$2}'`; \
+  	RPM_RELEASE=`cat $(RPM_NAME).spec|grep -e "^Release:"|awk '{print $$2}'`; \
+  	rm -f ~/rpmbuild/SOURCES/$(RPM_NAME)-$${RPM_VERSION}-$${RPM_RELEASE}.tar.gz ; \
+  	rm -f ~/rpmbuild/RPMS/x86_64/$(RPM_NAME)-$${RPM_VERSION}-$${RPM_RELEASE}.x86_64.rpm;
 
 .PHONY:		help
 ## help: Prints this help message
 help:
 	@echo "Usage: \n"
 	@sed -n 's/^##//p' ${MAKEFILE_LIST} | column -t -s ':' |  sed -e 's/^/ /'
+
+
+.PHONY:	build_mon
+build_mon:
+	# build moki react front
+	NODE_ENV=production npm install --production
+	npm install
+	# use _either_ of the following statements for building an optimized js app.
+	# - if source maps for js code is needed in the production build (i.e. do NOT set GENERATE_SOURCEMAP env variable).
+	#   however, beware that in this case all `console.*` statements from source code are still present in the `*.js.map` files and can
+	#   be inspected easily by anyone having access to the GUI:
+	#
+	# NODE_ENV=production npm run build
+	#
+	# - removes all the console log statements; does not produce js source map:
+	#
+	GENERATE_SOURCEMAP=false NODE_ENV=production npm run build
+	rm -rf node_modules
+
+.PHONY:	install_mon
+install_mon: build_mon
+	# install moki
+	install -d $(DESTDIR)/usr/share/Moki/
+	cp -r build $(DESTDIR)/usr/share/Moki/
+	# install nginx configuration file
+	install -d $(DESTDIR)/etc/nginx/conf.d
+	#install -m 0644 nginx/monitor-prod.conf %{buildroot}/etc/nginx/conf.d/monitor.conf
+	# dump flag file
+	#mkdir -p %{buildroot}/etc/abc-monitor
+	#touch %{buildroot}/etc/abc-monitor/debug.flag

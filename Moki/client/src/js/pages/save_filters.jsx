@@ -9,6 +9,14 @@ class SaveFilters extends Component {
     constructor(props) {
         super(props);
         this.save = this.save.bind(this);
+        this.state = {
+            filters: []
+        }
+    }
+
+    async componentDidMount(){
+        var filters = await getFilters();
+        this.setState({filters: filters});
     }
 
     uid() {
@@ -22,7 +30,7 @@ class SaveFilters extends Component {
         } else {
             var dashboardName = document.getElementById("filterTitle").getAttribute("dashboard");
             document.getElementsByClassName("close")[0].click();
-            var filters = getFilters();
+            var filters = await getFilters();
             var isSetTimerange = document.getElementById("time").checked;
 
             var data = [];
@@ -82,16 +90,16 @@ class SaveFilters extends Component {
     }
 
     render() {
-        var filters = getFilters();
+        var filters = this.state.filters;
         var dashboard = window.location.pathname;
         return (
             <span>
-                <p className="modalText" > <b>Title: </b><input type="text" id="filterTitle" style={{ "width": "400px" }} dashboard={dashboard} /></p>
-                <p>include timerange?  <input type="checkbox" id="time" /></p>
+                <p className="modalText" > <b>Name: </b><input type="text" id="filterTitle" style={{ "width": "400px" }} dashboard={dashboard} /></p>
+                <p><b>Timerange:</b><input type="checkbox" id="time" style={{"verticalAlign": "middle", "marginLeft": "5px"}}/> </p>
                 <div className="modalText" >
                     <b>Active filters:</b>
                     {filters.length === 0 && <p className="tab" >No active filters</p>}
-                    {filters.map((item) => <p className="tab" key={item.id}>{item.title}</p>)}
+                    {filters.length > 0 && filters.map((item) => <p className="tab" key={item.id}>{item.title}</p>)}
                 </div>
                 <button type="button"
                     className="btn btn-primary filterButtonClose"

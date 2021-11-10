@@ -50,8 +50,8 @@ else {
     
     return (
 
-        <div className="listChartMonitoring">
-         <h3 className="alignLeft title">{this.props.name}</h3>
+        <div className="listChartMonitoring chart">
+         <h3 className="alignLeft title" style={{"float": "inherit"}}>{this.props.name}</h3>
             <table>
                 <tbody>
                     {rows}

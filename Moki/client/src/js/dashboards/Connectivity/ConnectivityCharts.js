@@ -8,7 +8,7 @@ import TopologyChart from '../../charts/topology_chart.js';
 import Heatmap from '../../charts/heatmap_chart.js';
 import store from "../../store/index";
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
-import {parseHeatmapData, parseDateHeatmap, parseTopologyData} from '@moki-client/es-response-parser';
+import {parseHeatmapDataDecrypt, parseDateHeatmapDecrypt, parseTopologyDataDecrypt} from '@moki-client/es-response-parser';
 
 class ConnectivityCharts extends Dashboard {
 
@@ -27,19 +27,19 @@ class ConnectivityCharts extends Dashboard {
     this.callBacks = {
       functors: [
         //FROM TO 
-        [{result: 'fromTo', func: parseTopologyData}],
+        [{result: 'fromTo', func: parseTopologyDataDecrypt}],
 
         //CONNECTION FAILURE RATIO 
-        [{result: 'failure', func: parseHeatmapData}],
+        [{result: 'failure', func: parseHeatmapDataDecrypt}],
 
         //NUMBER OF CALL-ATTEMPS 
-        [{result: 'callAtempts', func: parseDateHeatmap}],
+        [{result: 'callAtempts', func: parseDateHeatmapDecrypt}],
 
         //DURATION 
-        [{result: 'duration', func: parseHeatmapData}],
+        [{result: 'duration', func: parseHeatmapDataDecrypt}],
 
         //NUMBER OF CALL-ENDS 
-        [{result: 'callEnds', func: parseDateHeatmap}]
+        [{result: 'callEnds', func: parseDateHeatmapDecrypt}]
       ]
     };
   }
@@ -57,7 +57,7 @@ class ConnectivityCharts extends Dashboard {
                             "FROM TO"
                         }
                         width={
-                            (store.getState().width - 300) / 2
+                            (store.getState().width - 300)
                         }
                         height={
                             300

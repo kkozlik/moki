@@ -5,7 +5,7 @@ import * as d3 from "d3";
 import {
     createFilter
 } from '@moki-client/gui';
-import Colors from '../helpers/style/ColorsNoGreen';
+import {Colors} from '@moki-client/gui';
 import emptyIcon from "../../styles/icons/empty_small.png";
 
 export default class sunburst extends Component {
@@ -48,7 +48,7 @@ export default class sunburst extends Component {
             chart.remove();
         }
         var width = 180;
-        var height = 170;
+        var height = 220;
         var svgWidth = widthSvg;
         var legendRectSize = 15;
         var legendSpacing = 2;
@@ -62,25 +62,9 @@ export default class sunburst extends Component {
                 .attr('height', height)
                 .attr('id', 'sunburstChartSVG');
 
-            g.append("line")
-                .attr("x1", 0)
-                .attr("y1", 10)
-                .attr("x2", svgWidth)
-                .attr("y2", 10)
-                .attr("stroke-width", 0.4)
-                .attr("stroke", "#808080");
-
             g.append('svg:image')
                 .attr("xlink:href", emptyIcon)
                 .attr('transform', 'translate(' + svgWidth / 2 + ',30)');
-
-            g.append("line")
-                .attr("x1", 0)
-                .attr("y1", 90)
-                .attr("x2", svgWidth)
-                .attr("y2", 90)
-                .attr("stroke-width", 0.4)
-                .attr("stroke", "#808080");
 
         } else {
             //get number of parent nodes
@@ -97,8 +81,7 @@ export default class sunburst extends Component {
             for (var o = 0; o < data.children.length; o++) {
                 nodesCount = nodesCount + data.children[o].children.length;
             }
-            var animationSpeed = 1200 / nodesCount;
-
+            var animationSpeed = 600 / nodesCount;
 
             // Create primary <g> element
             g = d3.select('#sunburstChart')
@@ -106,8 +89,9 @@ export default class sunburst extends Component {
                 .attr('id', 'sunburstChartSVG')
                 .attr('width', svgWidth)
                 .attr('height', height)
+                .attr('style', "padding-top: 20px, padding-left: 10px")
                 .append('g')
-                .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')');
+                .attr('transform', 'translate(' + width / 2 + ',' + height/ 2 + ')');
 
             // Data strucure
             var partition = d3.partition()
@@ -400,8 +384,8 @@ export default class sunburst extends Component {
     }
 
     render() {
-        return (<div id="sunburstChart" > < h3 className="alignLeft title" > {
+        return (<div id="sunburstChart"  className="chart chartMinHeight"> <h3 className="alignLeft title" style={{"float": "inherit"}} > {
             this.props.name
-        } </h3></div>)
+        }</h3></div>)
     }
 }

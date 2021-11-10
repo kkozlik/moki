@@ -9,6 +9,7 @@ import {
 } from 'react-router-dom';
 
 import './styles/style.css';
+import '@moki-client/gui/src/style/style.css';
 import App from './App';
 
 // import * as serviceWorker from './serviceWorker';

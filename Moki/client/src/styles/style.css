@@ -1,5 +1,6 @@
 :root {
     --main: #808080;
+    --second: #808080;
 }
 
 .tooltipCharts {
@@ -11,6 +12,25 @@
     padding: 10px;
     z-index: 9999999999;
     min-width: fit-content;
+}
+
+.rowSplit {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    hyphens: auto;
+    white-space: normal; 
+}
+
+.chart {
+    background-color: #fff;
+    border-radius: .25rem;
+    margin-top: 10px;
+    margin-right: 5px;
+    width: 100%;
+}
+
+.chartMinHeight {
+    min-height: 293px;
 }
 
 
@@ -144,9 +164,10 @@
 }
 
 .margin70 {
-    margin-left: 70px;
+    margin-left: 60px;
     /* max-width: 1400px;*/
 }
+
 
 
 /* popup window */
@@ -154,8 +175,8 @@
 .contentAdvanced {
     padding: 20px;
     height: fit-content;
-    width: fit-content;
     overflow: hidden;
+    max-width: 900px;
 }
 
 .iconsStoredFilter {
@@ -188,21 +209,48 @@
     color: white;
 }
 
+#customSwitch::before  {
+    border-radius: 3px !important;
+    background-color: var(--second) !important;
+    border-color: var(--second) !important;
+}
+
+.custom-control-label::before {
+    border-radius: 3px !important;
+    color: var(--second) !important;
+}
+
+.custom-control-input {
+    border-radius: 3px !important;
+    background-color: var(--second) !important;
+}
+
+.custom-switch .custom-control-label::after {
+    top: calc(2px);
+}
+
+.custom-control-label::before {
+    top: 0;
+}
+
 #context {
     float: right;
     position: absolute;
-    padding-right: 20px;
+    background-color: white;
+    width: -webkit-fill-available;
     /* width: intrinsic;           /* Safari/WebKit uses a non-standard name */
     width: -moz-available;
     /* Firefox/Gecko */
-    width: -webkit-fill-available;
-    /* Chrome */
+    height: -webkit-fill-available;
+    height: -moz-available;
 }
 
 label {
     justify-content: flex-start !important;
     margin-bottom: 0px !important;
     font: 14px Arial;
+    vertical-align: -webkit-baseline-middle;
+    color: black;
 }
 
 .activeDashboard {
@@ -239,11 +287,16 @@ body {
     box-sizing: content-box;
     min-width: fit-content;
     color: black !important;
+    background-color: white;
 }
 
 .col {
     padding-left: 0px !important;
-    max-width: max-content !important;
+    margin-right: 10px;
+    flex-grow: 1;
+}
+.col-10 {
+    margin-right: 0.6rem;
 }
 
 .col-xl-10 {
@@ -305,6 +358,26 @@ p {
 
 #valueChart {
     min-width: 180px;
+    padding-bottom: 5px;
+    padding-right: 10px;
+    width: fit-content;
+}
+
+#sunburstChart {
+    padding-bottom: 20px;
+}
+
+.header {
+    margin-left: 0px;
+    width: 100%;
+    color: white;
+    padding-top: 0;
+    background-color:  var(--main);
+    box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+    align-items: flex-end;
+    z-index: 9999;
+    position: fixed;
+    min-height: 38px;
 }
 
 h5 {
@@ -337,7 +410,7 @@ h5 {
 }
 
 .green {
-    color: #caa547;
+    color: var(--second);
 }
 
 .btn-small {
@@ -409,9 +482,9 @@ h5 {
 }
 
 #tooltipshare {
-    border-width: 1px;
+    border-width: 0;
     border-style: ridge;
-    background-color: white;
+    background-color: grey;
     padding: 5px;
     position: absolute;
     top: 28px;
@@ -420,9 +493,9 @@ h5 {
 }
 
 #downloadAllTooltip {
-    border-width: 1px;
+    border-width: 0;
     border-style: ridge;
-    background-color: white;
+    background-color: cadetblue;
     padding: 5px;
     position: absolute;
     z-index: 1000000;
@@ -431,11 +504,31 @@ h5 {
 .errorBar {
     background-color: orangered;
     padding-left: 30px;
-    width: 100%;
-    visibility: hidden;
+    width: 87%;
     margin-left: 15px;
-    font-weight: 800;
-    z-index: 9999999999;
+    font-size: medium;
+    padding: 4px;
+    margin-top: 38px;
+    position: fixed;
+    z-index: 9999999;
+}
+
+.errorBarLoading{
+    background-color: orangered;
+    padding-left: 30px;
+    width: 100%;
+    margin-left: 15px;
+    font-size: medium;
+    padding: 4px;
+    position: fixed;
+    z-index: 9999999;
+}
+
+.closeButton {
+    line-height: 20px;
+    background-color: transparent;
+    border: 0;
+    
 }
 
 h6 {
@@ -503,6 +596,8 @@ select {
     height: 30px !important;
     padding: 0 !important;
     margin: 0 !important;
+    -webkit-appearance: none;
+  -moz-appearance: none;
 }
 
 
@@ -553,21 +648,21 @@ text {
 }
 
 #filterBar {
+    margin-top: 0.3rem;
     margin-left: 10px;
 }
 
+
 .filterToggleActive:hover .filterToggle {
     display: inline-table;
-    position: absolute;
-    background-color: rgba(236, 236, 236, 0.9);
+    position: initial;
     cursor: pointer;
     opacity: 1;
 }
 
 .filterToggleActiveWhite:hover .filterToggle {
-    display: inline-table;
-    position: absolute;
-    background-color: white;
+    display: contents;
+    position: initial;
     cursor: pointer;
     opacity: 1;
 }
@@ -623,9 +718,19 @@ text {
     color: indigo;
 }
 
+tr:hover {
+    background-color: #ececec;
+}
+
+tr:hover td {
+    background-color: transparent; /* or #000 */
+}
+
 .tableChart {
     width: max-content;
     min-width: 300px;
+    padding-right: 15px;
+    padding-bottom: 1px;
 }
 
 .biggerFont {
@@ -639,11 +744,18 @@ text {
     min-width: 100px;
 }
 
+.middleButton {
+    margin-left: 50% !important;
+    margin-top: 10px;
+    min-width: 100px;
+}
+
 .filtertd {
     cursor: pointer;
-    padding-right: 100px;
+    width: max-content;
     padding-bottom: 5px;
     padding-top: 5px;
+    padding-right: 5px;
 }
 
 .tabletd {
@@ -658,6 +770,10 @@ text {
     text-overflow: ellipsis;
 }
 
+.table{
+    width: 90%;
+}
+
 table {
     margin-left: 20px;
     margin-bottom: 20px;
@@ -665,7 +781,9 @@ table {
 }
 
 th {
-    padding: 5px;
+    padding-top: 5px;
+    padding-right: 5px;
+    padding-bottom: 5px;
 }
 
 td {
@@ -713,7 +831,7 @@ input[type=text] {
 .exportCheckbox {
     height: 13px !important;
     width: 17px;
-    margin-bottom: 7px;
+    margin-bottom: -7px !important;
 }
 
 .tab {
@@ -729,7 +847,6 @@ input[type=text] {
 
 .top {
     /*text-transform: uppercase;*/
-    margin-top: 10px;
     margin-bottom: 0px !important;
 }
 
@@ -737,6 +854,13 @@ input[type=text] {
     width: 300px !important;
     padding: .2rem !important;
     height: 30px;
+}
+
+.form-check-input {
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: .25rem;
 }
 
 .paddingBottom {
@@ -793,7 +917,13 @@ input[type=text] {
     max-width: none !important;
 }
 
+.footer {
+    padding-right: 10px;
+    margin-top: 10px;
+}
+
 .navbar {
+    padding: 0 1.5rem 0 0.6rem;
     margin-top: 2px;
     width: 100%;
 }
@@ -830,6 +960,9 @@ input[type=text] {
     color: white;
 }
 
+a.nav-item  {
+    color: grey;
+}
 
 /* Submenu item*/
 
@@ -847,7 +980,6 @@ input[type=text] {
 
 .sidebar-separator-title {
     background-color: #333;
-    height: 35px;
 }
 
 .sidebar-separator {
@@ -883,7 +1015,7 @@ input[type=text] {
 }
 
 .list-group-myitem {
-    background-color: var(--main);
+    background-color: var(--second);
     padding: .5rem 0 0 1rem;
     border: 0px;
 }
@@ -898,6 +1030,11 @@ input[type=text] {
     margin-right: 15px;
 }
 
+.right {
+    float: right;
+    margin-right: 5px;
+}
+
 
 /*------------------------filter bar-----------------------------*/
 
@@ -905,10 +1042,10 @@ input[type=text] {
     background-color: #56747F;
     border-width: 0px;
     color: white;
-    margin-left: 10px;
     border-radius: 4px;
     min-width: 150px;
     min-height: 30px;
+    margin-bottom: 2px;
 }
 
 .filter:hover .buttonHover {
@@ -917,7 +1054,7 @@ input[type=text] {
 }
 
 .filter:hover {
-    color: darkcyan;
+    color: transparent !important;
 }
 
 
@@ -971,6 +1108,7 @@ input[type=text] {
 .noDataList {
     margin-left: 3em;
     padding: 1em;
+    padding-top: 120px;
 }
 
 .tabletd:hover .filterIcons {
@@ -981,12 +1119,24 @@ input[type=text] {
 .buttonHover {
     display: none;
     margin-top: -18px;
-    padding: 2px;
 }
 
 button {
     color: #2c2c2c;
 }
+
+#dropdownMenuButton:hover {
+    color: white !important;
+  }
+
+#dropdownMenuExportButton:hover {
+    color: white !important;
+  }
+
+
+.filter:hover{
+    color: transparent !important;
+  }
 
 .iconReload {
     margin: 0px !important;
@@ -998,7 +1148,7 @@ button {
 }
 
 .iconMain {
-    background: var(--main);
+    background: var(--second);
     border-radius: .25rem;
     transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
 }
@@ -1052,6 +1202,10 @@ button {
     font-size: 1.2rem !important;
 }
 
+.filterBody {
+    margin-right: 5px;
+}
+
 .Advance {
     overflow-y: scroll;
     height: 80vh;
@@ -1085,6 +1239,11 @@ pre {
     margin: 5px;
 }
 
+.preStyle {
+    font-family: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+    font-size: 1em;
+}
+
 .string {
     color: var(--main);
 }
@@ -1107,6 +1266,7 @@ pre {
 
 #user {
     font-size: 1rem;
+    padding-bottom: 2px;
 }
 
 
@@ -1125,9 +1285,8 @@ pre {
 }
 
 .typeBar {
-    margin-top: 5px;
     margin-bottom: 5px;
-    margin-left: 25px;
+    margin-left: 20px;
 }
 
 .column {
@@ -1182,7 +1341,7 @@ input {
     width: 85%;
     overflow-y: hidden;
     z-index: 9999999;
-    margin-left: 20px;
+    margin-top: 35px;
     position: absolute;
     background-color: white;
 }
@@ -1200,20 +1359,18 @@ input {
 }
 
 #searchBar {
-    margin-top: 10px;
+    margin-top: 6px;
     height: 30px;
-    margin-left: 20px;
-    padding: 0;
+    margin-right: 5px;
     display: table-cell;
     font-size: 1rem;
     line-height: 1.5;
     color: #495057;
-    width: 94%;
     background-color: #fff;
     background-clip: padding-box;
     border: 1px solid #ced4da;
     border-radius: .25rem;
-    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+    margin-right: 10px;
 }
 
 @media (max-width: 1365px) {
@@ -1224,8 +1381,7 @@ input {
 
 .FilterSearchBar {
     width: 100%;
-    margin-left: 20px;
-    margin-top: -10px;
+    margin-left: 30px;
 }
 
 .bottomMargin {
@@ -1245,6 +1401,7 @@ input {
     line-height: 1.42857143;
     margin-bottom: 0px;
     margin-top: 10px;
+    float: left;
 }
 
 .list {
@@ -1320,10 +1477,10 @@ thead th {
     width: 80px;
 }
 
-th,
-td {
+/*
+th, td {
     border-bottom: 1px solid #ddd;
-}
+}*/
 
 small {
     font: 10px sans-serif;
@@ -1333,11 +1490,13 @@ small {
 /*------------------------time picker--------------------------*/
 
 .btn {
-    background-color: white;
+    background-color:  var(--main);
     margin-right: 5px;
     margin-left: 5px;
     border-radius: .25rem !important;
+    color: white;
 }
+
 
 #timeMenu {
     width: 450px;
@@ -1597,4 +1756,35 @@ td.rdtYear:hover {
 
 .rdtTime td {
     cursor: default;
+}
+
+
+@keyframes loader-animation {
+    0% {
+        width: 0%;
+    }
+    49% {
+        width: 100%;
+        left: 0%
+    }
+    50% {
+        left: 100%;
+    }
+    100% {
+        left: 0%;
+        width: 40%
+    }
+}
+.loaderr {
+    height: 2px;
+    width: 20%;
+}
+.loaderr .bar {
+    position: relative;
+    height: 1px;
+    background-color: var(--main);
+    animation-name: loader-animation;
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in-out;
 }

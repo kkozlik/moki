@@ -15,7 +15,7 @@ class Filter extends Component {
         super(props);
         this.state = {
             enable: this.props.state === "disable" ? "false" : "true",
-            color: this.props.state === "disable" ? 'gray' : '#58a959',
+            color: this.props.state === "disable" ? 'gray' : 'var(--second)',
             icon: this.props.state === "disable" ? enableIcon : disableIcon,
             pinIcon: unpinIcon,
             negationIcon: unpinIcon,
@@ -83,7 +83,7 @@ class Filter extends Component {
         } else {
             this.setState({
                 enable: 'true',
-                color: '#58a959',
+                color: 'var(--second)',
                 icon: disableIcon
             });
 
@@ -113,21 +113,21 @@ class Filter extends Component {
 
     render() {
         var user = storePersistent.getState().user.jwt ? storePersistent.getState().user.jwt : 0;
-        return (<span>
+        return (<span className="filterBody">
             <span id={"edit" + this.props.id} className="editFilter">
                 <p className="modalText" style={{ "float": "left", "marginLeft": "10px" }}><input type="text" id={"filtervalue" + this.props.id} editid={this.props.id} defaultValue={this.props.title} size={this.props.title.length} onKeyPress={this.keyPress} style={{ "width": "auto" }} /></p>
                 <button type="button"
                     className="btn-primary filterButtonClose btn-small"
                     filter={this.props.title}
                     onClick={this.editFilter}
-                    style={{ "display": "inline-block", "minHeight": "35px" }}
+                    style={{ "display": "inline-block", "minHeight": "30px" }}
                     editid={this.props.id}> OK
                 </button>
                 <button type="button"
                     className="btn-secondary filterButtonClose btn-small"
                     onClick={this.closeFilterPopup}
                     editid={this.props.id}
-                    style={{ "display": "inline-block", "minHeight": "35px" }} > X
+                    style={{ "display": "inline-block", "minHeight": "30px" }} > X
                   </button>
             </span>
             <button style={{ backgroundColor: this.state.color }}

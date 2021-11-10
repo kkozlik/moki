@@ -1,9 +1,45 @@
 {
   "extends": "airbnb",
   "settings": {
-			"react": {
-				"version": "999.999.999"
-			},
+    "react": {
+      "version": "999.999.999"
+    },
     "class-methods-use-this": "disable"
+  },
+  "rules": {
+    "camelcase": "off",
+    "quotes": "off",
+    "linebreak-style": "off",
+    "vars-on-top": "off",
+    "spaced-comment": "off",
+    "no-plusplus": "off",
+    "quote-props": "off",
+    "prefer-template": "off",
+    "no-trailing-spaces": "off",
+    "no-multiple-empty-lines": "off",
+    "max-len": "off",
+    "arrow-parens": "off",
+    "prefer-arrow-callback": "off",
+    "no-console": "off",
+    "func-names": "off",
+    "no-shadow": "off",
+    "no-param-reassign": "off",
+    "object-shorthand": "off",
+    "padded-blocks": "off",
+    "object-curly-newline": "off",
+    "dot-notation": "off",
+    "comma-dangle": "off",
+    "arrow-body-style": "off",
+    "object-curly-spacing": "off",
+    "no-else-return": "off",
+    "brace-style": "off",
+    "prefer-destructuring": "off",
+    "block-spacing": "off",
+    "no-underscore-dangle": "off",
+    "no-lonely-if": "off",
+    "no-loop-func": "off",
+    "operator-assignment": "off",
+    "no-eval": "off",
+    "no-await-in-loop": "off"
   }
 }

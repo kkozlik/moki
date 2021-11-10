@@ -9,7 +9,7 @@ import ListChart from '../../charts/list_chart.js';
 import DonutChart from '../../charts/donut_chart.js';
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import ValueChart from '../../charts/value_chart.js';
-import { parseListData, parseIp, parseListDataCardinality, parseBucketData, parseAggDistinct } from '@moki-client/es-response-parser';
+import { parseListData, parseIp, parseListDataCardinality, parseBucketData, parseAggDistinct, parseUri, parseListDataCardinalityDecrypt } from '@moki-client/es-response-parser';
 
 
 class MicroanalysisCharts extends Dashboard {
@@ -44,6 +44,7 @@ class MicroanalysisCharts extends Dashboard {
             charts: [],
             distinctIP: [],
             topNodes: [],
+            versions: [],
             isLoading: true
         }
         this.callBacks = {
@@ -71,34 +72,35 @@ class MicroanalysisCharts extends Dashboard {
                 [{ result: 'sourceIP', func: parseIp }],
 
                 //TOP 10 FROM 7
-                [{ result: 'top10from', func: parseListData }],
+                [{ result: 'top10from', func: parseUri }],
 
                 //CALLER DOMAIN 8
-                [{ result: 'callerDomain', func: parseListData }],
+                //[{ result: 'callerDomain', func: parseListData }],
+                [{ result: 'callerDomain', func: parseUri}],
 
                 //TOP 10 TO 9
-                [{ result: 'top10to', func: parseListData }],
+                [{ result: 'top10to', func: parseUri }],
 
                 //DOMAIN STATS 10
-                [{ result: 'distinctDestinations', func: parseListDataCardinality }],
+                [{ result: 'distinctDestinations', func: parseListDataCardinalityDecrypt }],
 
                 //TOP CALL ATTEMPTS 11
-                [{ result: 'topCallAttempts', func: parseListData }],
+                [{ result: 'topCallAttempts', func: parseUri }],
 
                 //TOP CALL ENDS 12
-                [{ result: 'topCallEnds', func: parseListData }],
+                [{ result: 'topCallEnds', func: parseUri }],
 
                 //DESTINATION BY R-URI 13
-                [{ result: 'destination', func: parseListData }],
+                [{ result: 'destination', func: parseUri }],
 
                 //SUM DURATION 14
-                [{ result: 'sumDuration', func: parseListDataCardinality }],
+                [{ result: 'sumDuration', func: parseListDataCardinalityDecrypt }],
 
                 //TOP DURATION 15
-                [{ result: 'topDuration', func: parseListDataCardinality }],
+                [{ result: 'topDuration', func: parseListDataCardinalityDecrypt }],
 
                 //TOP DURATION < 5 sec 16
-                [{ result: 'topDuration5', func: parseListData }],
+                [{ result: 'topDuration5', func: parseUri }],
 
                 //TOP SBCs 17
                 [{ result: 'topSBC', func: parseListData }],
@@ -116,7 +118,10 @@ class MicroanalysisCharts extends Dashboard {
                 [{ result: 'distinctIP', func: parseAggDistinct }],
 
                 //TOP NODES
-                [{ result: 'topNodes', func: parseListData }]
+                [{ result: 'topNodes', func: parseListData }],
+
+                 //SIP VERSIONS 
+                 [{ result: 'versions', func: parseBucketData }]
             ]
         }
     }
@@ -128,12 +133,12 @@ class MicroanalysisCharts extends Dashboard {
         }
 
             <div className="row no-gutters" >
-                {this.state.charts["DISTINCT IP"] && <div className="col">
+                {this.state.charts["DISTINCT IP"] && <div className="col-auto">
                     <ValueChart
                         data={this.state.distinctIP}
                         name={"DISTINCT IP"} />
                 </div>}
-                {this.state.charts["TYPES"] && <div className="col" >
+                {this.state.charts["TYPES"] && <div className="col-auto" style={{"marginRight": "5px"}} >
                     <DonutChart
                         data={this.state.typesCount}
                         units={"count"}
@@ -144,111 +149,122 @@ class MicroanalysisCharts extends Dashboard {
                         height={200}
                         field="attrs.type" />
                 </div>}
-                {this.state.charts["FROM UA"] && <div className="col" >
+                {this.state.charts["FROM UA"] && <div className="col-auto" >
                     <ListChart data={this.state.fromUA}
                         name={"FROM UA"}
                         field={"attrs.from-ua"}
                     />   </div>}
             </div>
             <div className="row no-gutters" >
-                {this.state.charts["SIP METHOD"] && <div className="col" >
+                {this.state.charts["SIP METHOD"] && <div className="col-auto" >
                     <ListChart data={this.state.sipMethod}
                         name={"SIP METHOD"}
                         field={"attrs.method"}
                     />  </div>}
-                {this.state.charts["SIP CODE"] && <div className="col">
+                {this.state.charts["SIP CODE"] && <div className="col-auto">
                     <ListChart data={this.state.sipCode}
                         name={"SIP CODE"}
                         field={"attrs.sip-code"}
                     />  </div >}
-                {this.state.charts["TOP SUBNETS /24"] && <div className="col">
+                {this.state.charts["TOP SUBNETS /24"] && <div className="col-auto">
                     <ListChart data={this.state.topSubnets}
                         name={"TOP SUBNETS /24"}
                         field={"attrs.sourceSubnets"}
                     />  </div>}
-                {this.state.charts["r-URI"] && <div className="col" >
+                {this.state.charts["VERSIONS"] && <div className="col-auto" style={{"marginRight": "5px"}} >
+                    <DonutChart
+                        data={this.state.versions}
+                        units={"count"}
+                        name={"SIPCMBEAT VERSIONS"}
+                        id="versions"
+                        width={500}
+                        legendSize={50}
+                        height={200}
+                        field="agent.version" />
+                </div>}
+                {this.state.charts["r-URI"] && <div className="col-auto" >
                     <ListChart data={this.state.prefixStripped}
-                        name={"r-URI"}
+                        name={"r-URI - short"}
                         field={"attrs.r-uri-shorted"}
                     />  </div>}
-                {this.state.charts["SOURCE IP ADDRESS"] && <div className="col" >
+                {this.state.charts["SOURCE IP ADDRESS"] && <div className="col-auto" >
                     <ListChart data={this.state.sourceIP}
                         name={"SOURCE IP ADDRESS"}
                         field={"attrs.source"}
                     />  </div>}
-                {this.state.charts["SRC CA"] && <div className="col" >
+                {this.state.charts["SRC CA"] && <div className="col-auto" >
                     <ListChart data={this.state.srcCA}
                         name={"SRC CA"}
                         field={"attrs.src_ca_name"}
                     />  </div>}
-                {this.state.charts["DST CA"] && <div className="col" >
+                {this.state.charts["DST CA"] && <div className="col-auto" >
                     <ListChart data={this.state.dstCA}
                         name={"DST CA"}
                         field={"attrs.dst_ca_name"}
                     />  </div>}
-                {this.state.charts["ORIGINATOR"] && <div className="col" >
+                {this.state.charts["ORIGINATOR"] && <div className="col-auto" >
                     <ListChart data={this.state.originator}
                         name={"ORIGINATOR"}
                         field={"attrs.originator"}
                     />  </div>}
-                {this.state.charts["TOP 10 FROM"] && <div className="col" >
+                {this.state.charts["TOP 10 FROM"] && <div className="col-auto" >
                     <ListChart data={this.state.top10from}
                         name={"TOP 10 FROM"}
                         field={"attrs.from.keyword"}
                     />  </div>}
-                {this.state.charts["CALLER DOMAIN"] && <div className="col" >
+                {this.state.charts["CALLER DOMAIN"] && <div className="col-auto" >
                     <ListChart data={this.state.callerDomain}
                         name={"CALLER DOMAIN"}
                         field={"attrs.from-domain"}
                     />  </div>}
-                {this.state.charts["TOP 10 TO"] && <div className="col" >
+                {this.state.charts["TOP 10 TO"] && <div className="col-auto" >
                     <ListChart data={this.state.top10to}
                         name={"TOP 10 TO"}
                         field={"attrs.to.keyword"}
                     />  </div>}
-                {this.state.charts["DISTINCT DESTINATIONS"] && <div className="col" >
+                {this.state.charts["DISTINCT DESTINATIONS"] && <div className="col-auto" >
                     <ListChart data={this.state.distinctDestinations}
                         name={"DISTINCT DESTINATIONS"}
                         field={"attrs.from.keyword"}
                     />  </div>}
 
-                {this.state.charts["TOP CALL ATTEMPTS"] && <div className="col" >
+                {this.state.charts["TOP CALL ATTEMPTS"] && <div className="col-auto" >
                     <ListChart data={this.state.topCallAttempts}
                         name={"TOP CALL ATTEMPTS"}
                         field={"attrs.from.keyword"}
                     />  </div>}
-                {this.state.charts["TOP CALL ENDS"] && <div className="col">
+                {this.state.charts["TOP CALL ENDS"] && <div className="col-auto">
                     <ListChart data={this.state.topCallEnds}
                         name={"TOP CALL ENDS"}
                         field={"attrs.from-keyword"}
                     />  </div>}
-                {this.state.charts["DESTINATION BY R-URI"] && <div className="col" >
+                {this.state.charts["DESTINATION BY R-URI"] && <div className="col-auto" >
                     <ListChart data={this.state.destination}
                         name={"DESTINATION BY R-URI"}
                         field={"attrs.r-uri.keyword"}
                     />  </div>}
 
-                {this.state.charts["SUM DURATION"] && <div className="col" >
+                {this.state.charts["SUM DURATION"] && <div className="col-auto" >
                     <ListChart data={this.state.sumDuration}
                         name={"SUM DURATION"}
                         field={"attrs.from.keyword"}
                     />  </div>}
-                {this.state.charts["TOP DURATION"] && <div className="col" >
+                {this.state.charts["TOP DURATION"] && <div className="col-auto" >
                     <ListChart data={this.state.topDuration}
                         name={"TOP DURATION"}
                         field={"attrs.from.keyword"}
                     />  </div >}
-                {this.state.charts["TOP DURATION < 5 sec"] && <div className="col" >
+                {this.state.charts["TOP DURATION < 5 sec"] && <div className="col-auto" >
                     <ListChart data={this.state.topDuration5}
                         name={"TOP DURATION < 5 sec"}
                         field={"attrs.from.keyword"}
                     />  </div >}
-                {this.state.charts["TOP SBCs LIST"] && <div className="col" >
+                {this.state.charts["TOP SBCs LIST"] && <div className="col-auto" >
                     <ListChart data={this.state.topSBC}
                         name={"TOP SBCs LIST"}
                         field={"attrs.sbc"}
                     />  </div>}
-                {this.state.charts["TOP NODEs LIST"] && <div className="col" >
+                {this.state.charts["TOP NODEs LIST"] && <div className="col-auto" >
                     <ListChart data={this.state.topNodes}
                         name={"TOP HOSTs LIST"}
                         field={"agent.hostname"}

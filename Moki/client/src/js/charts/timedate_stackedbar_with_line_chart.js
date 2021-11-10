@@ -3,13 +3,13 @@ import React, {
 } from 'react';
 import * as d3 from "d3";
 
-import ColorType from '../helpers/style/ColorType';
-import Colors from '../helpers/style/Colors';
+import ColorType from '@moki-client/gui';
+import Colors from '@moki-client/gui';
 import { timestampBucket } from '../bars/TimestampBucket.js';
 import store from "../store/index";
 import { setTimerange } from "../actions/index";
 import { createFilter } from '@moki-client/gui';
-import emptyIcon from "../../styles/icons/empty.png";
+import emptyIcon from "../../styles/icons/empty_small.png";
 
 /*
 format:
@@ -386,6 +386,6 @@ export default class StackedChart extends Component {
     }
 
     render() {
-        return (<div id={this.props.id}> <h3 className="alignLeft title">{this.props.name}</h3></div>)
+        return (<div id={this.props.id}  className="chart"> <h3 className="alignLeft title">{this.props.name}</h3></div>)
     }
 }

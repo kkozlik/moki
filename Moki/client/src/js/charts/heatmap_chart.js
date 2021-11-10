@@ -7,10 +7,10 @@ import {
 } from '@moki-client/gui';
 import {
     ColorsRedGreen
-} from "../helpers/style/ColorsRedGreen";
+} from "@moki-client/gui";
 import {
     ColorsGreen
-} from "../helpers/style/ColorsGreen";
+} from "@moki-client/gui";
 import {
     durationFormat
 } from "../helpers/durationFormat";
@@ -59,13 +59,13 @@ export default class heatmap extends Component {
         }
 
         //compute max label length to get bottom margin
-        var marginBottom = 100;
+        var marginBottom = 50;
         var marginLeft = 100;
         if (data && data.length > 0) {
             var maxTextWidth = d3.max(data.map(n => n.attr1.length));
-            marginBottom = maxTextWidth > 50 ? 150 : (maxTextWidth * 7) + 10;
             maxTextWidth = d3.max(data.map(n => n.attr2.length));
-            marginLeft = maxTextWidth > 50 ? 150 : maxTextWidth > 15 ? maxTextWidth * 8 : maxTextWidth * 13;
+            marginBottom = maxTextWidth > 23 ? 150 : maxTextWidth > 15 ? maxTextWidth * 8 : maxTextWidth * 13;
+            marginLeft = maxTextWidth > 23 ? 150 : maxTextWidth > 15 ? maxTextWidth * 8 : maxTextWidth * 13;
         }
 
         var margin = {
@@ -85,14 +85,7 @@ export default class heatmap extends Component {
 
         const buckets = 10;
         var colorScale = this.state.colorScale;
-        //store global color scale (for animation)
-        if (colorScale === "") {
-            colorScale = d3.scaleQuantile()
-                .domain([0, buckets - 1, d3.max(data, (d) => d.value)])
-                .range(colorOneShade);
-            this.setState({ colorScale: colorScale });
-        }
-        var height = 350;
+        var height = 250;
         var widthSum = passWidth;
         var rootsvg = d3.select('#' + id)
             .append("svg")
@@ -101,30 +94,22 @@ export default class heatmap extends Component {
             //  .attr("style", "margin-bottom: 30px;")
             .attr("height", height + margin.top + margin.bottom);
 
-        if (data.length === 0) {
+        if (!data || data.length === 0) {
             rootsvg.attr("height", 100);
-
-            rootsvg.append("line")
-                .attr("x1", 0)
-                .attr("y1", 10)
-                .attr("x2", widthSum)
-                .attr("y2", 10)
-                .attr("stroke-width", 0.4)
-                .attr("stroke", "#808080");
 
             rootsvg.append('svg:image')
                 .attr("xlink:href", emptyIcon)
                 .attr('transform', 'translate(' + (widthSum / 2) + ',25)')
 
-            rootsvg.append("line")
-                .attr("x1", 0)
-                .attr("y1", 90)
-                .attr("x2", widthSum)
-                .attr("y2", 90)
-                .attr("stroke-width", 0.4)
-                .attr("stroke", "#808080");
-
         } else {
+
+            //store global color scale (for animation)
+            if (colorScale === "") {
+                colorScale = d3.scaleQuantile()
+                    .domain([0, buckets - 1, d3.max(data, (d) => d.value)])
+                    .range(colorOneShade);
+                this.setState({ colorScale: colorScale });
+            }
 
             var x_elements = d3.set(data.map(function (item) {
                 return item.attr1;
@@ -218,7 +203,7 @@ export default class heatmap extends Component {
                 .on("mouseover", function (d) {
                     d3.select(this).style("stroke", "orange");
                     tooltip.style("visibility", "visible")
-                        .style('left', `${d3.event.layerX }px`)
+                        .style('left', `${d3.event.layerX}px`)
                         .style('top', `${(d3.event.layerY - 50)}px`);
 
                     if (d3.mouse(d3.event.target)[0] > window.innerWidth - 600) {
@@ -348,7 +333,7 @@ export default class heatmap extends Component {
     render() {
         return (<div id={
             this.props.id
-        } > <h3 className="alignLeft title" > {
+        } className="chart"> <h3 className="alignLeft title" > {
             this.props.name
         } </h3>
             {window.location.pathname !== "/connectivity" && <Animation name={this.props.name} type={this.props.type} setData={this.setData} dataAll={this.state.data} />}

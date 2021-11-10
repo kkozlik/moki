@@ -8,7 +8,7 @@ ES search query
 async function searchES(indexName, queries, res) {
   return new Promise(function (resolve, reject) {
     const client = connectToES(res);
-    var search = client.search(condition = {
+    client.search({
       index: indexName,
       type: '_doc',
       body: {
@@ -19,18 +19,17 @@ async function searchES(indexName, queries, res) {
           }
         }
       }
-    }, (error, response, status) => {
+    }, (error, response) => {
       if (error) {
         console.log(error);
         client.close();
         reject(error);
-      }
-      else {
+      } else {
         client.close();
         resolve(response);
       }
     });
-  })
+  });
 }
 
 /*
@@ -46,28 +45,26 @@ async function newIndexES(indexName, mapping, res) {
       body: {
         mappings: mapping
       }
-    }, function (err, resp, respcode) {
+    }, function (err) {
       if (err) {
         client.close();
         reject(err);
-      }
-      else {
+      } else {
         client.close();
         resolve("ok");
       }
-
     });
-  })
+  });
 }
 
 /*
 ES exists index
 */
 async function existsIndexES(indexName, res) {
-  return new Promise(function (resolve, reject) {
+  return new Promise(function (resolve) {
     const client = connectToES(res);
     resolve(client.indices.exists({ index: indexName }));
-  })
+  });
 }
 
 /*
@@ -83,7 +80,7 @@ async function insertES(indexName, event, res) {
       body: {
         event
       }
-    }, function (err, resp, status) {
+    }, function (err) {
       if (err) {
         client.close();
         reject(err);
@@ -91,50 +88,55 @@ async function insertES(indexName, event, res) {
         client.close();
         resolve("ok");
       }
-    })
-  })
+    });
+  });
 }
 
 /*
 ES update query
 */
 async function updateES(indexName, queries, script, params, res) {
+  console.log("queries");
+  console.log(queries);
   return new Promise(function (resolve, reject) {
     const client = connectToES(res);
+
+    console.log("{index: " + indexName + ",type: '_doc', refresh: true, body: {query: { bool: { must:" + JSON.stringify(queries) + "} },'script': { 'source': " + JSON.stringify(script) + ",'lang': 'painless','params': " + JSON.stringify(params) + "}}");
+
     client.updateByQuery({
       index: indexName,
       type: '_doc',
       refresh: true,
+      conflicts: 'proceed',
       body: {
         query: {
           bool: {
             must: queries
           }
         },
-        "script": {
-          "source": script,
-          "lang": "painless",
-          "params": params
+        script: {
+          source: script,
+          lang: "painless",
+          params: params
         }
       }
-    }, (error, response, status) => {
+    }, (error, response) => {
       if (error) {
         console.log(error);
         client.close();
         reject(error);
-      }
-      else {
+      } else {
         client.close();
         resolve(response);
       }
     });
-  })
+  });
 }
 
 /*
 ES delete  query
 */
-async function deleteES(indexName, queries,  res) {
+async function deleteES(indexName, queries, res) {
   return new Promise(function (resolve, reject) {
     const client = connectToES(res);
     client.deleteByQuery({
@@ -142,18 +144,17 @@ async function deleteES(indexName, queries,  res) {
       type: '_doc',
       refresh: true,
       body: queries
-    }, (error, response, status) => {
+    }, (error, response) => {
       if (error) {
         console.log(error);
         client.close();
         reject(error);
-      }
-      else {
+      } else {
         client.close();
         resolve(response);
       }
     });
-  })
+  });
 }
 
 module.exports = {

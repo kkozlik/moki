@@ -21,33 +21,15 @@ export default class GaugeChart extends Component {
          var height = 70;
          var svg = d3.select('#' + id).append("svg");
          if (data === 0) {
-            svg.attr('width', width)
-                .attr('height', 70)
+            svg.attr('width', 250)
+                .attr('height', 250)
                 .attr('id', id + 'SVG');
-
-            svg.append("line")
-                .attr("x1", 0)
-                .attr("y1", 10)
-                .attr("x2", width)
-                .attr("y2", 10)
-                .attr("stroke-width", 0.4)
-                .attr("stroke", "#808080");
 
             svg.append('svg:image')
                 .attr("xlink:href", emptyIcon)
-                .attr('transform', 'translate(' + width / 2 + ',30)');
+                .attr('transform', 'translate(' + 0 + ','+250/2+')');
 
-            svg.append("line")
-                .attr("x1", 0)
-                .attr("y1", 90)
-                .attr("x2", width)
-                .attr("y2", 90)
-                .attr("stroke-width", 0.4)
-                .attr("stroke", "#808080");
-
-        } else {
-        
-       
+        } else {  
 
         svg.attr('width', width)
             .attr('height', height)
@@ -99,12 +81,11 @@ export default class GaugeChart extends Component {
     }
 
     render() {
-        return ( < div id = {
+        return ( <div id = {
                 this.props.id
-            } >
-            <
-            h3 className = "alignLeft title" > {
+            }  className="chart chartMinHeight">
+            <h3 className = "alignLeft title" > {
                 this.props.name
-            } < /h3></div > )
+            } </h3></div> )
     }
 }

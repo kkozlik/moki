@@ -10,7 +10,7 @@ import ListChart from '../../charts/list_chart.js';
 import ValueChart from '../../charts/value_chart.js';
 import store from "../../store/index";
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
-import { parseListData, parseIp, parseStackedbarTimeData, parseBucketData, parseQueryStringData } from '@moki-client/es-response-parser';
+import { parseListData, parseIp, parseStackedbarTimeData, parseBucketData, parseQueryStringData, parseUri } from '@moki-client/es-response-parser';
 
 class ExceededCharts extends Dashboard {
 
@@ -41,7 +41,7 @@ class ExceededCharts extends Dashboard {
                 [{ result: 'exceededType', func: parseBucketData }],
 
                 //TOP OFFENDERS
-                [{ result: 'topOffenders', func: parseListData }],
+                [{ result: 'topOffenders', func: parseUri }],
 
                 //EVENTS BY IP ADDR 
                 [{ result: 'ipAddress', func: parseIp }],
@@ -57,21 +57,21 @@ class ExceededCharts extends Dashboard {
         return (<div> {
             this.state.isLoading && < LoadingScreenCharts />
         } <div className="row no-gutters" >
-                {this.state.charts["EVENTS OVER TIME"] && <div className="col" >
+                {this.state.charts["EVENTS OVER TIME"] && <div className="col-auto" style={{"marginRight": "5px"}}>
                     <TimedateStackedChart id="eventsOverTime"
                         data={this.state.eventCallsTimeline}
                         units={"count"}
                         name={"EVENTS OVER TIME"}
                         keys={"exceeded"}
-                        width={store.getState().width - 300}
+                        width={store.getState().width - 400}
                     />  </div>
                 }
-                {this.state.charts["INCIDENTS COUNT"] && <div className="col">
+                {this.state.charts["INCIDENTS COUNT"] && <div className="col-auto">
                     <ValueChart data={this.state.exceededCount}
                         name={"INCIDENTS COUNT"}
                         biggerFont={"biggerFont"}
                     />  </div>}
-                {this.state.charts["EXCEEDED TYPE"] && <div className="col" >
+                {this.state.charts["EXCEEDED TYPE"] && <div className="col-auto" style={{"marginRight": "5px"}}>
                     <DonutChart data={this.state.exceededType}
                         units={"count"}
                         name={"EXCEEDED TYPE"}
@@ -81,19 +81,17 @@ class ExceededCharts extends Dashboard {
                         legendSize={50}
                         field="exceeded" />
                 </div>}
-            </div>
-            <div className="row no-gutters" >
-                {this.state.charts["TOP OFFENDERS"] && <div className="col" >
+                {this.state.charts["TOP OFFENDERS"] && <div className="col-auto" >
                     <ListChart data={this.state.topOffenders}
                         name={"TOP OFFENDERS"}
                         field={"attrs.from.keyword"}
                     />  </div>}
-                {this.state.charts["TOP SUBNETS /24 EXCEEDED"] && <div className="col">
+                {this.state.charts["TOP SUBNETS /24 EXCEEDED"] && <div className="col-auto">
                     <ListChart data={this.state.subnets}
                         name={"TOP SUBNETS /24 EXCEEDED"}
                         field={"attrs.sourceSubnets"}
                     />  </div>}
-                {this.state.charts["EXCEEDED EVENTS BY IP ADDR"] && <div className="col" >
+                {this.state.charts["EXCEEDED EVENTS BY IP ADDR"] && <div className="col-auto" >
                     <ListChart data={this.state.ipAddress}
                         name={"EXCEEDED EVENTS BY IP ADDR"}
                         field={"attrs.source"}

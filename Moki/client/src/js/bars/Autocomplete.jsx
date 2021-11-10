@@ -215,6 +215,7 @@ class Autocomplete extends Component {
                 id="searchBar"
                 placeholder="FILTER: attribute:value"
                 autoComplete="new-password"
+                style={{"width" : window.location.pathname === "/connectivityCA" ? "70%" : "94%"}}
             />
             {suggestionsListComponent}
         </Fragment>

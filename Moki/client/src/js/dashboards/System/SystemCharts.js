@@ -108,7 +108,7 @@ class SystemCharts extends Dashboard {
                             "LOAD-SHORTTERM"
                         }
                         width={
-                            (store.getState().width - 250) / 3
+                            (store.getState().width - 350) / 3
                         }
 
                         hostnames={this.state.hostnames}
@@ -129,7 +129,7 @@ class SystemCharts extends Dashboard {
                             }
                             hostnames={this.state.hostnames}
                             width={
-                                (store.getState().width - 250) / 3
+                                (store.getState().width - 350) / 3
                             }
                             ticks={
                                 3
@@ -147,7 +147,7 @@ class SystemCharts extends Dashboard {
                                 }
                                 hostnames={this.state.hostnames}
                                 width={
-                                    (store.getState().width - 250) / 3
+                                    (store.getState().width - 350) / 3
                                 }
                                 ticks={
                                     3
@@ -165,7 +165,7 @@ class SystemCharts extends Dashboard {
                                         "MEMORY-FREE"
                                     }
                                     width={
-                                        (store.getState().width - 250) / 3
+                                        (store.getState().width - 350) / 3
                                     }
                                     ticks={
                                         3
@@ -185,7 +185,7 @@ class SystemCharts extends Dashboard {
                                             "MEMORY-USED"
                                         }
                                         width={
-                                            (store.getState().width - 250) / 3
+                                            (store.getState().width - 350) / 3
                                         }
                                         ticks={
                                             3
@@ -205,7 +205,7 @@ class SystemCharts extends Dashboard {
                                                 "MEMORY-CACHED"
                                             }
                                             width={
-                                                (store.getState().width - 250) / 3
+                                                (store.getState().width - 350) / 3
                                             }
                                             ticks={
                                                 3
@@ -225,7 +225,7 @@ class SystemCharts extends Dashboard {
                                                     "MEMORY-BUFFERED"
                                                 }
                                                 width={
-                                                    (store.getState().width - 250) / 3
+                                                    (store.getState().width - 350) / 3
                                                 }
                                                 ticks={
                                                     3
@@ -245,7 +245,7 @@ class SystemCharts extends Dashboard {
                                                     }
                                                     hostnames={this.state.hostnames}
                                                     width={
-                                                        (store.getState().width - 250) / 3
+                                                        (store.getState().width - 350) / 3
                                                     }
                                                     ticks={
                                                         3
@@ -265,7 +265,7 @@ class SystemCharts extends Dashboard {
                                                         }
                                                         hostnames={this.state.hostnames}
                                                         width={
-                                                            (store.getState().width - 250) / 3
+                                                            (store.getState().width - 350) / 3
                                                         }
                                                         ticks={
                                                             3
@@ -285,7 +285,7 @@ class SystemCharts extends Dashboard {
                                                                 "CPU-USER"
                                                             }
                                                             width={
-                                                                (store.getState().width - 250) / 3
+                                                                (store.getState().width - 350) / 3
                                                             }
                                                             ticks={
                                                                 3
@@ -305,7 +305,7 @@ class SystemCharts extends Dashboard {
                                                                     "CPU-SYSTEM"
                                                                 }
                                                                 width={
-                                                                    (store.getState().width - 250) / 3
+                                                                    (store.getState().width - 350) / 3
                                                                 }
                                                                 ticks={
                                                                     3
@@ -323,7 +323,7 @@ class SystemCharts extends Dashboard {
                                                                         "CPU-IDLE"
                                                                     }
                                                                     width={
-                                                                        (store.getState().width - 250) / 3
+                                                                        (store.getState().width - 350) / 3
                                                                     }
                                                                     ticks={
                                                                         3
