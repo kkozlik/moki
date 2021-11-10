@@ -45,15 +45,15 @@ export default class FirstLoginPopup extends Component {
 
     render() {
         return (
-            <div className="overlayPopupDecrypt" id="decryptPopupEl" style={{ "visibility": "visible" }}>
-                <div id="decryptPopup" style={{"maxWidth": "550px"}}>
+            <div className="popupOverlay" style={{ "visibility": "visible" }}>
+                <div id="popupsmall" style={{ "maxWidth": "550px" }}>
                     <h3 style={{ "marginBottom": "15px" }}>It seems to be your first time to log in. Please create a new user:</h3>
                     <div className="form-group row">
-                        <label  class="col-sm-3 col-form-label" style={{"color": "grey"}}>Name </label>
+                        <label class="col-sm-3 col-form-label" style={{ "color": "grey" }}>Name </label>
                         <input type="text" id="name" required class="form-control" placeholder="username"></input>
                     </div>
                     <div className="form-group row">
-                        <label  class="col-sm-3 col-form-label" style={{"color": "grey"}}>Password </label>
+                        <label class="col-sm-3 col-form-label" style={{ "color": "grey" }}>Password </label>
                         <input type="password" id="password" class="form-control" placeholder="password"></input>
                     </div>
                     {this.state.error ? <p className="error">{this.state.error}</p> : ""}
