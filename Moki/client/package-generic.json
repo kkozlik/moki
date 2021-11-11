@@ -14,6 +14,7 @@
   "dependencies": {
     "@moki-client/es-response-parser": "git+https://git@github.com/intuitivelabs/es-response-parser.git#master",
     "@moki-client/gui": "git+https://git@github.com/intuitivelabs/moki-gui.git#master",
+    "@moki-client/react-bootstrap-table-next": "git+https://git@github.com/intuitivelabs/react-bootstrap-table2-1.git#master",
     "bootstrap": "^4.6.0",
     "classnames": "^2.2.6",
     "d3": "^5.7.0",
@@ -29,7 +30,6 @@
     "popper.js": "^1.14.6",
     "react": "^16.14.0",
     "react-bootstrap": "^1.4.3",
-    "react-bootstrap-table-next": "^2.0.1",
     "react-bootstrap-table2-editor": "^1.4.0",
     "react-bootstrap-table2-paginator": "^2.0.1",
     "react-bootstrap-table2-toolkit": "^1.1.2",
