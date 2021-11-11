@@ -33,6 +33,15 @@
     max-width: fit-content;
 }
 
+
+.expand-cell-header{
+    width: 18px;
+}
+
+.selection-cell-header{
+    width: 35px;
+}
+
 .tooltipCharts {
     background: white;
     opacity: 0.9;
