@@ -26,6 +26,7 @@ import {
     getTimeBucketInt, getTimeBucket
 } from "../helpers/getTimeBucket";
 import { parseTimestamp } from "../helpers/parseTimestamp";
+const CUMULATIVE_SUM = ["CALL STARTS BY HOST", "TX BYTES BY HOST", "RX PACKET BY HOST", "TX PACKET BY HOST", "RX BYTES BY INTERFACE", "TX BYTES BY INTERFACE", "RX PACKETS BY INTERFACE", "TX PACKETS BY INTERFACE"];
 
 export default class MultipleLineChart extends Component {
     constructor(props) {
@@ -53,8 +54,9 @@ export default class MultipleLineChart extends Component {
 
     draw(data, id, width, ticks, hostnames) {
         var field = this.props.field ? this.props.field : "attrs.hostname"; 
+
         //make div values if necessary
-        if (window.location.pathname === "/stats") {
+        if (window.location.pathname === "/stats" || CUMULATIVE_SUM.includes(this.props.name)) {
             var divData = [];
             for (var k = 0; k < data.length; k++) {
                 divData.push({
@@ -62,15 +64,22 @@ export default class MultipleLineChart extends Component {
                     values: []
                 })
                 for (var l = 0; l < data[k].values.length-1; l++) {
-                    divData[k].values.push({
+                    if(data[k].values[l + 1].value === null || data[k].values[l].value === null){
+                        divData[k].values.push({
+                            date: data[k].values[l].date,
+                            value: null
+                        });
+                    }
+                    else {
+                        divData[k].values.push({
                             date: data[k].values[l].date,
                             value: data[k].values[l + 1].value - data[k].values[l].value
                         });
+                    }
                 }
             }
             data = divData;
         }
-
 
         //FOR UPDATE: remove chart if it's already there
         var chart = document.getElementById(id + "SVG");
@@ -177,7 +186,7 @@ export default class MultipleLineChart extends Component {
 
         svg.attr("transform", "translate(" + margin.left + "," + margin.right + ")");
 
-        if (data.length === 0 || (data[0].values.length === 0 && data[1].values.length === 0)) {
+        if (data.length === 0) {
             svg.append('svg:image')
                 .attr("xlink:href", emptyIcon)
                 .attr('transform', 'translate(' + (width / 3 + 20) + ',' + height / 4 + ')')
