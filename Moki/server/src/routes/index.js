@@ -20,7 +20,9 @@ module.exports = () => {
   const router = express.Router();
 
   router
-    .get('/user/sip', AdminController.getSipUser);
+    .get('/user/sip', AdminController.getSipUser)
+    .get('/user/check', AdminController.noNginxUser)
+    .post('/user/create', AdminController.createUser);
 
   router
     .post('/calls/charts', CallsController.getCharts)

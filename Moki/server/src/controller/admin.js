@@ -1,6 +1,8 @@
 const elasticsearch = require('elasticsearch');
 const { parseBase64 } = require('../modules/jwt');
 const { isRequireJWT } = require('../modules/config');
+const { exec } = require("child_process");
+const fs = require('fs');
 
 let oldJti = "";
 const hfName = 'x-amzn-oidc-data';
@@ -231,6 +233,51 @@ class AdminController {
         domain: "default",
         "tls-cn": "default"
       };
+    }
+  }
+
+  /*
+create new user with password in htpasswd
+*/
+  static async createUser(req, res) {
+    exec("sudo htpasswd -b -c /etc/nginx/htpasswd " + req.body.name + " " + req.body.password, (error, stdout, stderr) => {
+      if (error) {
+        console.error(`Can't create new user in nginx : ${error.message}`);
+        return res.json({ "error": error.message });
+      }
+
+      console.log(`New nginx user created: ${stdout}`);
+      return res.json({ "msg": "User created" });
+    });
+  }
+
+  /*
+  Check if htpasswd file exists or if it's empty. Return true in that case (= no user)
+  */
+  static noNginxUser(req, res) {
+    try {
+      // Check if file exist
+      fs.exists('/etc/nginx/htpasswd', function (file) {
+        if (file) {
+          //read file
+          fs.readFile('/etc/nginx/htpasswd', 'utf8', function (err, data) {
+            if (err) {
+              res.json({ "msg": true });
+            }
+            if (data.length === 0) {
+              res.json({ "msg": true });
+            }
+            else {
+              res.json({ "msg": false });
+            }
+          });
+        }
+        else {
+          res.json({ "msg": true });
+        }
+      });
+    } catch (err) {
+      return res.json({ "error": err });
     }
   }
 }

@@ -3,6 +3,36 @@
     --second: #808080;
 }
 
+/* popup */
+
+.popupOverlay {
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background-color: rgb(220, 220, 220, 0.3);
+    z-index: 100000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+#popupsmall {
+    background-color: white;
+    position: fixed;
+    margin-left: 20%;
+    margin-right: 20%;
+    margin-top: 0;
+    padding: 40px;
+    border: 1px solid #ced4da;
+    border-radius: .25rem;
+    max-width: fit-content;
+}
+
 .tooltipCharts {
     background: white;
     opacity: 0.9;
@@ -772,6 +802,7 @@ tr:hover td {
 
 .table{
     width: 90%;
+    table-layout: fixed;
 }
 
 table {
@@ -804,6 +835,10 @@ input[type=checkbox] {
     height: 20px;
     width: 17px;
     margin-bottom: 7px;
+}
+
+input[type="checkbox"].selection-input-4 {
+    margin-bottom: -3px;
 }
 
 #timeMenu input {

@@ -4,6 +4,7 @@ import 'jquery/src/jquery';
 import React, { Component } from 'react';
 import './App.css';
 import NavBar from './js/bars/NavigationBar';
+import FirstLoginPopup from './js/helpers/firstLoginPopup';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import TimerangeBar from './js/bars/SetTimerangeBar';
 import { getLayoutSettings } from './js/helpers/getLayout';
@@ -29,6 +30,7 @@ class App extends Component {
         this.state = {
             error: [],
             redirect: false,
+            firstTimeLogin: false,
             isLoading: true,
             aws: false,
             monitorName: "",
@@ -47,6 +49,7 @@ class App extends Component {
             resizeId: ""
         }
         this.showError = this.showError.bind(this);
+        this.setFirstTimeLogin = this.setFirstTimeLogin.bind(this);
         this.deleteAllErrors = this.deleteAllErrors.bind(this);
         this.redirect = this.redirect.bind(this);
         this.getHostnames = this.getHostnames.bind(this);
@@ -130,6 +133,25 @@ class App extends Component {
         if (aws !== true) {
             var jsonSettings = await getSettings();
             storePersistent.dispatch(setSettings(jsonSettings));
+
+            //check if first time login
+            const response = await fetch("/api/user/check", {
+                method: "GET",
+                timeout: 10000,
+                credentials: 'include',
+                headers: {
+                    "Content-Type": "application/json",
+                    "Access-Control-Allow-Credentials": "include"
+                }
+            });
+    
+            const json = await response.json();
+            if (!response.ok) {
+                return;
+            }
+            if (json.msg && json.msg  === true) {
+                this.setState({firstTimeLogin: true});
+            }
         }
 
         //get dashboard list
@@ -203,6 +225,13 @@ class App extends Component {
 
     deleteAllErrors() {
         this.setState({ error: [] });
+    }
+
+    //change value if first time login
+    setFirstTimeLogin(value){
+        this.setState({
+            firstTimeLogin: value
+        })
     }
 
     /**
@@ -565,7 +594,8 @@ class App extends Component {
         return (
             <span>
                 <span id="decryptpopupplaceholder"></span>
-                {(this.state.isLoading) ? loadingScreen :
+                {this.state.firstTimeLogin ? <FirstLoginPopup  setFirstTimeLogin={this.setFirstTimeLogin}/> :                
+                (this.state.isLoading) ? loadingScreen :
                     <Router>
                         <div className="container-fluid" style={{ "backgroundColor": "white" }}> {sipUserSwitch}
                         </div>
