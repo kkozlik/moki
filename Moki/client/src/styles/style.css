@@ -772,6 +772,7 @@ tr:hover td {
 
 .table{
     width: 90%;
+    table-layout: fixed;
 }
 
 table {
@@ -804,6 +805,10 @@ input[type=checkbox] {
     height: 20px;
     width: 17px;
     margin-bottom: 7px;
+}
+
+input[type="checkbox"].selection-input-4 {
+    margin-bottom: -3px;
 }
 
 #timeMenu input {

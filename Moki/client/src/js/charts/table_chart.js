@@ -164,7 +164,7 @@ export default class listChart extends Component {
                     });
 
                     div.addEventListener('mouseover', function (e) {
-                        e.target.style.borderRight = '2px solid #30427f';
+                        e.target.style.borderRight = '4px solid #30427f';
                     })
 
                     div.addEventListener('mouseout', function (e) {
@@ -174,11 +174,10 @@ export default class listChart extends Component {
                         if (curCol) {
                             var diffX = e.pageX - pageX;
 
-                            if (nxtCol && (nxtColWidth - (diffX)) > 50)
+                            if (nxtCol)
                                 nxtCol.style.width = (nxtColWidth - (diffX)) + 'px';
 
-                            if ((curColWidth + diffX) > 50)
-                                curCol.style.width = (curColWidth + diffX) + 'px';
+                            curCol.style.width = (curColWidth + diffX) + 'px';
                         }
                     });
 
@@ -193,15 +192,15 @@ export default class listChart extends Component {
                             if (columns && columns[dashboard] && columns[dashboard][column]) {
                                 columns[dashboard][column] = width;
                             }
-                            else if (columns  && columns[dashboard]) {
-                                columns[dashboard][column] = {"width": width};
+                            else if (columns && columns[dashboard]) {
+                                columns[dashboard][column] = { "width": width };
                             }
                             else {
-                                if(columns === null){
-                                    columns= {};
+                                if (columns === null) {
+                                    columns = {};
                                 }
                                 //columns = { [dashboard]: { [column]: width } });
-                                columns[dashboard] = { [column]: {"width": width} };
+                                columns[dashboard] = { [column]: { "width": width } };
                             }
                             window.localStorage.setItem("columns", JSON.stringify(columns));
 
@@ -217,7 +216,7 @@ export default class listChart extends Component {
                     div.className = "resize";
                     div.style.top = 0;
                     div.style.right = 0;
-                    div.style.width = '30px';
+                    div.style.width = '50px';
                     div.style.position = 'absolute';
                     div.style.cursor = 'col-resize';
                     div.style.userSelect = 'none';
