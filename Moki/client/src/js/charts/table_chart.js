@@ -492,6 +492,14 @@ export default class listChart extends Component {
             </p>
         }
 
+        //special case: if filename contains "downloadWav" (only for recording) - make a wav link
+        if (cell === "downloadWav") {
+            return <p value={value}> <span className="spanTab">{cell}: </span>
+                <span className="tab">
+                    <a href={value} ><img className="icon" alt="wavIcon" title="download WAV" src={downloadIcon} /></a>
+                </span></p>
+        }
+
         //searchable fields with attrs
         if (getSearchableAttributes().includes("attrs." + cell)) {
             return <p key={cell} field={"attrs." + cell} value={value}>
@@ -514,10 +522,33 @@ export default class listChart extends Component {
         var result = [];
         var categorySort = [];
         for (var i = 0; i < keys.length; i++) {
-            if (displayedAttrs.includes("attrs." + keys[i])) {
-                var category = getCategory("attrs." + keys[i]);
-                if (!categorySort[category]) categorySort[category] = [];
-                categorySort[category].push(this.renderExpandRow(keys[i], row[keys[i]]));
+            if (keys[i] === "attrs") {
+                var attrs = Object.keys(row[keys[i]]);
+                for (var j = 0; j < attrs.length; j++) {
+                    if (displayedAttrs.includes("attrs." + attrs[j])) {
+                        var category = getCategory("attrs." + attrs[j]);
+                        if (!categorySort[category]) categorySort[category] = [];
+                        categorySort[category].push(this.renderExpandRow(attrs[j], row[keys[i]][attrs[j]]));
+                    }
+                }
+            }
+            else if (keys[i] === "geoip") {
+                var attrs = Object.keys(row[keys[i]]);
+                for (var j = 0; j < attrs.length; j++) {
+                    if (displayedAttrs.includes("geoip." + attrs[j])) {
+                        var category = getCategory("geoip." + attrs[j]);
+                        if (!categorySort[category]) categorySort[category] = [];
+                        categorySort[category].push(this.renderExpandRow(attrs[j], row[keys[i]][attrs[j]]));
+                    }
+                }
+
+            }
+            else {
+                if (displayedAttrs.includes(keys[i])) {
+                    var category = getCategory(keys[i]);
+                    if (!categorySort[category]) categorySort[category] = [];
+                    categorySort[category].push(this.renderExpandRow(keys[i], row[keys[i]]));
+                }
             }
         }
 
@@ -643,20 +674,6 @@ export default class listChart extends Component {
 
         }
 
-
-
-        function isDisplay(field) {
-            var display = getDisplayedAttributes();
-            for (var j = 0; j < display.length; j++) {
-                if (display[j] === field) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-
-
         //this.isAdmin() || isDisplay("attrs."+cell) ?   
         //what render if user click on row
         const expandRow = {
@@ -664,50 +681,7 @@ export default class listChart extends Component {
             },
             renderer: row => (
                 <div className="tab">
-                    {this.renderExpand(row._source.attrs)}
-
-                    {row._source.geoip ?
-                        Object.keys(row._source.geoip).sort().map(cell =>
-                            isDisplay("geoip." + cell) ?
-                                cell === "country_name" ?
-                                    <p key={cell} field={"geoip." + cell} value={row._source.geoip[cell]}>
-                                        <span className="spanTab">{cell}: </span>
-                                        <img onClick={this.filter} field={"geoip." + cell} value={row._source.geoip[cell]} title="filter" className="icon" alt="filterIcon" src={filter} />
-                                        <img field={"geoip." + cell} value={row._source.geoip[cell]} onClick={this.unfilter} className="icon" alt="unfilterIcon" title="unfilter" src={unfilter} />
-                                        <span className="spanTab">{row._source.geoip[cell]}</span>
-
-                                    </p>
-                                    :
-
-                                    <p value={row._source.geoip[cell]}>
-                                        <span className="spanTab">{cell}: </span>
-                                        <span className="tab">{row._source.geoip[cell]}</span>
-                                    </p>
-                                : <span />
-                        ) : <span />}
-
-                    {this.props.name === "exceeded" || this.props.name === "system" || this.props.name === "network" || this.props.name === "realm" ?
-                        Object.keys(row._source).sort().map(cell =>
-                            isDisplay(cell) ?
-                                <p value={row._source[cell]}>
-                                    <span className="spanTab">{cell}: </span>
-                                    <span className="tab">{row._source[cell].toString()}</span>
-                                </p>
-                                : <span />
-                        ) : <span />}
-
-                    { //special case: if filename contains "downloadWav" (only for recording) - make a wav link
-                        Object.keys(row._source).sort().map(cell =>
-                            cell === "downloadWav" ?
-                                <p value={row._source[cell]}> <span className="spanTab">{cell}: </span>
-                                    <span className="tab">
-                                        <a href={row._source[cell]} ><img className="icon" alt="wavIcon" title="download WAV" src={downloadIcon} /></a>
-
-                                    </span></p>
-                                : <span />
-                        )}
-
-
+                    {this.renderExpand(row._source)}
                 </div>
             ),
             expandByColumnOnly: true,
@@ -740,7 +714,7 @@ export default class listChart extends Component {
 
         const selectRowProp = {
             mode: 'checkbox',
-            clickToSelect: true,
+            clickToSelect: false,
             clickToEdit: true,
             selected: this.state.selected,
             onSelect: this.handleOnSelect,

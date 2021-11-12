@@ -3,6 +3,10 @@
     --second: #808080;
 }
 
+.reset-expansion-style{
+    background-color: white !important;
+}
+
 /* popup */
 
 .popupOverlay {
@@ -815,7 +819,7 @@ tr:hover td {
 }
 
 .table{
-    width: 90%;
+    width: 97%;
     table-layout: fixed;
 }
 
