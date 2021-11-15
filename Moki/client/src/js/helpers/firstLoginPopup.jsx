@@ -13,9 +13,9 @@ export default class FirstLoginPopup extends Component {
         this.setState({ "error": "" });
 
         var password = document.getElementById("password").value;
-        //password length > 3
-        if (password.length < 3) {
-            this.setState({ "error": "Password must at least 3 characters." });
+        //password length > 8
+        if (password.length < 8) {
+            this.setState({ "error": "Password must have at least 8 characters." });
         }
         else {
 

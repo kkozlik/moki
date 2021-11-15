@@ -247,7 +247,7 @@ create new user with password in htpasswd
       }
 
       //restart nginx
-      exec("abc-monitor-activate-config", (error, stdout, stderr) => {
+      exec("sudo abc-monitor-activate-config", (error, stdout, stderr) => {
 
         if (error) {
           console.error(`Can't create new user in nginx : ${error.message}`);
