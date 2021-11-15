@@ -246,8 +246,18 @@ create new user with password in htpasswd
         return res.json({ "error": error.message });
       }
 
-      console.log(`New nginx user created: ${stdout}`);
-      return res.json({ "msg": "User created" });
+      //restart nginx
+      exec("abc-monitor-activate-config", (error, stdout, stderr) => {
+
+        if (error) {
+          console.error(`Can't create new user in nginx : ${error.message}`);
+          return res.json({ "error": error.message });
+        }
+
+        console.log(`New nginx user created`);
+        return res.json({ "msg": "User created" });
+      })
+
     });
   }
 
