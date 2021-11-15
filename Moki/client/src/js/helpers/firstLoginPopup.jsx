@@ -11,34 +11,43 @@ export default class FirstLoginPopup extends Component {
 
     async createUser() {
         this.setState({ "error": "" });
-        try {
-            var response = await fetch("/api/user/create", {
-                method: "POST",
-                credentials: 'include',
-                body:
-                    JSON.stringify({
-                        name: document.getElementById("name").value,
-                        password: document.getElementById("password").value
-                    }),
-                headers: {
-                    "Content-Type": "application/json",
-                    "Access-Control-Allow-Credentials": "include"
-                }
-            })
 
-            if (response.status !== 200) {
-                return response.status
-            }
-            var res = await response.json();
-            if (res.error) {
-                this.setState({ "error": res.error });
-            }
-            else {
-                this.props.setFirstTimeLogin(false);
-            }
+        var password = document.getElementById("password").value;
+        //password length > 3
+        if (password.length < 3) {
+            this.setState({ "error": "Password must at least 3 characters." });
         }
-        catch (error) {
-            this.setState({ "error": error });
+        else {
+
+            try {
+                var response = await fetch("/api/user/create", {
+                    method: "POST",
+                    credentials: 'include',
+                    body:
+                        JSON.stringify({
+                            name: document.getElementById("name").value,
+                            password: password
+                        }),
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Access-Control-Allow-Credentials": "include"
+                    }
+                })
+
+                if (response.status !== 200) {
+                    return response.status
+                }
+                var res = await response.json();
+                if (res.error) {
+                    this.setState({ "error": res.error });
+                }
+                else {
+                    this.props.setFirstTimeLogin(false);
+                }
+            }
+            catch (error) {
+                this.setState({ "error": error });
+            }
         }
     }
 
