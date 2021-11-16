@@ -46,7 +46,9 @@ export default class FirstLoginPopup extends Component {
                     this.setState({ "error": res.error });
                 }
                 else {
-                    this.props.setFirstTimeLogin(false);
+                    setTimeout(function () {
+                        this.props.setFirstTimeLogin(false);
+                    }, 5000);
                 }
                 document.getElementById("createR").style.display = "block";
                 document.getElementById("create").style.display = "none";
