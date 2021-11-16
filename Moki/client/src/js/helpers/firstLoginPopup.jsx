@@ -11,6 +11,8 @@ export default class FirstLoginPopup extends Component {
 
     async createUser() {
         this.setState({ "error": "" });
+        document.getElementById("createR").style.display = "none";
+        document.getElementById("create").style.display = "block";
 
         var password = document.getElementById("password").value;
         //password length > 8
@@ -35,7 +37,9 @@ export default class FirstLoginPopup extends Component {
                 })
 
                 if (response.status !== 200) {
-                    return response.status
+                    document.getElementById("createR").style.display = "block";
+                    document.getElementById("create").style.display = "none";
+                    this.setState({ "error": "Problem to create user." });
                 }
                 var res = await response.json();
                 if (res.error) {
@@ -44,10 +48,17 @@ export default class FirstLoginPopup extends Component {
                 else {
                     this.props.setFirstTimeLogin(false);
                 }
+                document.getElementById("createR").style.display = "block";
+                document.getElementById("create").style.display = "none";
             }
             catch (error) {
                 this.setState({ "error": error });
+                document.getElementById("createR").style.display = "block";
+                document.getElementById("create").style.display = "none";
             }
+
+            document.getElementById("createR").style.display = "block";
+            document.getElementById("create").style.display = "none";
         }
     }
 
@@ -67,7 +78,7 @@ export default class FirstLoginPopup extends Component {
                     </div>
                     {this.state.error ? <p className="error">{this.state.error}</p> : ""}
                     <div style={{ "textAlign": "end" }}>
-                        <button onClick={this.createUser} className="btn btn-primary">Create</button>
+                        <button onClick={this.createUser} style={{ "marginRight": "5px" }} className="btn btn-primary"><i class="fa fa-circle-o-notch fa-spin" id="create" style={{ "display": "none" }}></i> <span id="createR">Create</span> </button>
                     </div>
                 </div>
             </div>
