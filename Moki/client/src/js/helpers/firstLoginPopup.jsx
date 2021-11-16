@@ -41,26 +41,23 @@ export default class FirstLoginPopup extends Component {
                     document.getElementById("create").style.display = "none";
                     this.setState({ "error": "Problem to create user." });
                 }
+                
                 var res = await response.json();
                 if (res.error) {
                     this.setState({ "error": res.error });
                 }
                 else {
+                    var thiss = this;
                     setTimeout(function () {
-                        this.props.setFirstTimeLogin(false);
+                        thiss.props.setFirstTimeLogin(false);
                     }, 5000);
                 }
-                document.getElementById("createR").style.display = "block";
-                document.getElementById("create").style.display = "none";
             }
             catch (error) {
                 this.setState({ "error": error });
                 document.getElementById("createR").style.display = "block";
                 document.getElementById("create").style.display = "none";
             }
-
-            document.getElementById("createR").style.display = "block";
-            document.getElementById("create").style.display = "none";
         }
     }
 
@@ -71,16 +68,16 @@ export default class FirstLoginPopup extends Component {
                 <div id="popupsmall" style={{ "maxWidth": "550px" }}>
                     <h3 style={{ "marginBottom": "15px" }}>It seems to be your first time to log in. Please create a new user:</h3>
                     <div className="form-group row">
-                        <label class="col-sm-3 col-form-label" style={{ "color": "grey" }}>Name </label>
-                        <input type="text" id="name" required class="form-control" placeholder="username"></input>
+                        <label className="col-sm-3 col-form-label" style={{ "color": "grey" }}>Name </label>
+                        <input type="text" id="name" required className="form-control" placeholder="username"></input>
                     </div>
                     <div className="form-group row">
-                        <label class="col-sm-3 col-form-label" style={{ "color": "grey" }}>Password </label>
-                        <input type="password" id="password" class="form-control" placeholder="password"></input>
+                        <label className="col-sm-3 col-form-label" style={{ "color": "grey" }}>Password </label>
+                        <input type="password" id="password" required className="form-control" placeholder="password"></input>
                     </div>
                     {this.state.error ? <p className="error">{this.state.error}</p> : ""}
                     <div style={{ "textAlign": "end" }}>
-                        <button onClick={this.createUser} style={{ "marginRight": "5px" }} className="btn btn-primary"><i class="fa fa-circle-o-notch fa-spin" id="create" style={{ "display": "none" }}></i> <span id="createR">Create</span> </button>
+                        <button onClick={this.createUser} style={{ "marginRight": "5px" }} className="btn btn-primary"><i className="fa fa-circle-o-notch fa-spin" id="create" style={{ "display": "none" }}></i> <span id="createR">Create</span> </button>
                     </div>
                 </div>
             </div>
