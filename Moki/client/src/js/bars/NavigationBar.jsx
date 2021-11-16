@@ -105,16 +105,9 @@ class navBar extends Component {
     logout() {
         if (!this.props.aws) {
             try {
-                fetch("/", {
-                    credentials: 'include',
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": "Basic nouser",
-                        "Access-Control-Allow-Credentials": "include"
-                    }
-                });
-                window.location.reload();
+                var http = new XMLHttpRequest();
+                http.open("get", window.location, false, "basic", "nouser");
+                http.send("");
             }
             catch (error) {
             }
