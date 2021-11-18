@@ -333,8 +333,8 @@ class timerangeBar extends Component {
 
     //move half of timerange value back
     moveTimerangeForward(event) {
-        var timestamp_gte = store.getState().timerange[0] - (store.getState().timerange[1] - store.getState().timerange[0]);
-        var timestamp_lte = store.getState().timerange[1];
+        var timestamp_gte = store.getState().timerange[0] - (store.getState().timerange[1] - store.getState().timerange[0])/2;
+        var timestamp_lte = store.getState().timerange[1] - (store.getState().timerange[1] - store.getState().timerange[0])/2;
         var timestamp_readiable = parseTimestamp(new Date(timestamp_gte)) + " - " + parseTimestamp(new Date(timestamp_lte));
 
         this.setState({
@@ -346,8 +346,8 @@ class timerangeBar extends Component {
     }
 
     moveTimerangeBack(event) {
-        var timestamp_gte = store.getState().timerange[0];
-        var timestamp_lte = store.getState().timerange[1] + (store.getState().timerange[1] - store.getState().timerange[0]);
+        var timestamp_gte = store.getState().timerange[0] + (store.getState().timerange[1] - store.getState().timerange[0])/2;
+        var timestamp_lte = store.getState().timerange[1] + (store.getState().timerange[1] - store.getState().timerange[0])/2;
 
         var timestamp_readiable = parseTimestamp(new Date(timestamp_gte)) + " - " + parseTimestamp(new Date(timestamp_lte));
 
