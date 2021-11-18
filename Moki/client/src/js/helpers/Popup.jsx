@@ -1,16 +1,51 @@
-import React, {
-    Component
-} from 'react';
-import store from "../store/index";
+import React, {Component} from 'react';
 
-class Popup extends Component{   
-    render(){
-        return(
-               <div className="row align-items-center justify-content-center overlay" style={{left: store.getState().width === 1200 ? "245px" : "75px"}}>
-                    {this.props.data}
-                </div>        
-        )
-        }
+class Popup extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            visible: "hidden",
+            text: "",
+            error: ""
+        };
+        window.mainPopup = this;
+        this.setPopup = this.setPopup.bind(this);
+        this.storno = this.storno.bind(this);
+        this.error = this.error.bind(this);
     }
     
+
+    setPopup(visibility, text) {
+        this.setState({
+            visible: visibility,
+            text, text
+        })
+    }
+
+    storno() {
+        this.setState({
+            visible: "hidden",
+            text: ""
+        })
+    }
+
+    error(error) {
+        this.setState({
+            error: error
+        })
+    }
+
+
+    render() {
+        return (
+            <div style={{ "visibility": this.state.visible, "left": 0 }} className="row align-items-center justify-content-center overlay">
+                <div id="popupsmall" style={{ "maxWidth": "550px" }}>
+                    {this.state.text}
+                    {this.state.error ? <p className="error" style={{"marginTop": "10px"}}>{this.state.error}</p> : ""}
+                </div>
+            </div>
+        )
+    }
+}
+
 export default Popup;

@@ -18,6 +18,7 @@ import { setUser, setWidthChart, setLayout, setSettings } from "./js/actions/ind
 import { Redirect } from 'react-router';
 import { paths } from "./js/controllers/paths.jsx";
 import { getProfile } from '@moki-client/gui';
+import  Popup from "./js/helpers/Popup";
 import DecryptPasswordPopup from '@moki-client/gui/src/menu/decryptPasswordPopup';
 import Notificationbar from './js/bars/Notificationbar';
 import { parseTimestamp } from "./js/helpers/parseTimestamp";
@@ -645,12 +646,14 @@ class App extends Component {
         return (
             <span>
                 <span id="decryptpopupplaceholder"></span>
-                {this.state.firstTimeLogin ? <FirstLoginPopup setFirstTimeLogin={this.setFirstTimeLogin} /> :
-                    (this.state.isLoading) ? loadingScreen :
-                        <Router>
-                            <div className="container-fluid" style={{ "backgroundColor": "white" }}> {sipUserSwitch}
-                            </div>
-                        </Router>
+                <Popup></Popup>  
+
+                {this.state.firstTimeLogin ? <FirstLoginPopup  setFirstTimeLogin={this.setFirstTimeLogin}/> :                
+                (this.state.isLoading) ? loadingScreen :
+                    <Router>
+                        <div className="container-fluid" style={{ "backgroundColor": "white" }}> {sipUserSwitch}
+                        </div>
+                    </Router>
                 }
             </span>
         );
