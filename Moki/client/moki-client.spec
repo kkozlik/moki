@@ -27,7 +27,7 @@ moki-client aka react application
 %build
 # build moki react front
 NODE_ENV=production npm install --production
-npm install
+# npm install
 
 # use _either_ of the following statements for building an optimized js app.
 
@@ -41,7 +41,7 @@ npm install
 #
 GENERATE_SOURCEMAP=false NODE_ENV=production npm run build
 
-rm -rf node_modules
+# rm -rf node_modules
 
 %install
 # install moki
