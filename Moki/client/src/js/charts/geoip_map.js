@@ -446,7 +446,12 @@ export default class geoIpMap extends Component {
                     }
                 })
                 .on("click", el => {
-                    createFilter("geoip.city_name:" + el.key);
+                    if(storePersistent.getState().user.aws && storePersistent.getState().profile[0] && storePersistent.getState().profile[0].userprefs && storePersistent.getState().profile[0].userprefs.mode === "encrypt"){
+                        createFilter("geoip.src.city_id:" + el.id);
+                    }
+                    else {
+                        createFilter("geoip.city_name:" + el.key);
+                    }
 
                     //bug fix: if you click but not move out
                     tooltip.style("visibility", "hidden")
