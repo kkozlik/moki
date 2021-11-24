@@ -4,6 +4,7 @@ const fs = require('fs');
 const { exec } = require('child_process');
 const ejs = require('ejs');
 const path = require('path');
+const paramsExec =  {maxBuffer: 1024 * 500};
 
 /**
  * @swagger
@@ -192,7 +193,7 @@ class DiagramController {
       if (!error) {
         process = ["cfanal -time-sort-destinations -ignore-ser-dns-wd -ignore-dns-ptr -sip-timestamp -sip-message-details -silent -print-cf - ", concatFile].join(' ');
 
-        exec(process, function (error, stdout) {
+        exec(process, paramsExec, function (error, stdout) {
           if (error) {
             console.error("Problem with receiving file. " + error);
             respond.status(400).send({
@@ -221,7 +222,7 @@ class DiagramController {
 
           process = ["cfanal -time-sort-destinations -ignore-ser-dns-wd -ignore-dns-ptr -sip-timestamp -sip-message-details -silent -print-cf - -r ", file].join(' ');
 
-          exec(process, function (error, stdout) {
+          exec(process,  paramsExec, function (error, stdout) {
             if (error) {
               console.error("Problem with receiving file. " + error);
               respond.status(400).send({
@@ -289,7 +290,7 @@ class DiagramController {
       }
       process = ["cfanal -time-sort-destinations -ignore-ser-dns-wd -ignore-dns-ptr -sip-timestamp -sip-message-details -silent -print-cf - ", concatFile].join(' ');
 
-      exec(process, function (error, stdout) {
+      exec(process,  paramsExec, function (error, stdout) {
         //replace breaks
         stdout = stdout.replace(/(\r\n|\n|\r)/gm, "");
         //replace double quotes with single ones
@@ -328,7 +329,7 @@ class DiagramController {
           }
           process = ["cfanal -time-sort-destinations -ignore-ser-dns-wd -ignore-dns-ptr -sip-timestamp -sip-message-details -silent -print-cf - -r ", file].join(' ');
 
-          exec(process, function (error, stdout) {
+          exec(process,  paramsExec, function (error, stdout) {
             if (error) {
               console.error("Problem with receiving file. " + error);
               respond.status(400).send({
