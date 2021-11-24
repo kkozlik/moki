@@ -840,7 +840,7 @@ export default class listChart extends Component {
                             props => (
                                 <div key={"tablechart"}>
                                     <h3 className="alignLeft title inline" style={{ "float": "inherit" }} >{this.props.id}</h3>
-                                    {this.props.id !== "LAST LOGIN EVENTS" && <img className="icon" alt="tagIcon" src={tagIcon} title="add tag" onClick={() => this.openPopupTag()} />}
+                                    {this.props.id !== "LAST LOGIN EVENTS" && <img className="icon" alt="tagIcon" src={tagIcon} title="add tag to selected" onClick={() => this.openPopupTag()} />}
 
                                     {this.props.id !== "LAST LOGIN EVENTS" && <div id="popupTag" className="popupTag" style={{ "display": "none" }}>
                                         <input type="text" id="tag" name="name" className="form-control" onKeyUp={(event) => this.onEnterKey(event)} style={{ "display": "inline-table", "height": "30px" }} />
@@ -851,7 +851,7 @@ export default class listChart extends Component {
                                         <img className="icon" alt="downloadIcon" src={downloadPcapIcon} onClick={() => getPcaps()} title="download merge PCAP" />
                                     </span>
                                     }
-                                    {this.props.id !== "LAST LOGIN EVENTS" && <button className="noFormatButton" onClick={() => downloadAllCheck()} >  <img className="icon" alt="downloadIcon" src={downloadIcon} title="download check" /><span id="downloadAllTooltip" style={{ "display": "none" }}>Downloading a lot of data, it can take a while.</span></button>}
+                                    {this.props.id !== "LAST LOGIN EVENTS" && <button className="noFormatButton" onClick={() => downloadAllCheck()} >  <img className="icon" alt="downloadIcon" src={downloadIcon} title="download selected" /><span id="downloadAllTooltip" style={{ "display": "none" }}>Downloading a lot of data, it can take a while.</span></button>}
 
                                     <span className="smallText"> (total: {this.props.total.toLocaleString()})</span>
                                     <CustomToggleList {...props.columnToggleProps} />
