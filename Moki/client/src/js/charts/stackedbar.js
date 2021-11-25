@@ -3,8 +3,8 @@ import React, {
 } from 'react';
 import * as d3 from "d3";
 import storePersistent from "../store/indexPersistent";
-import {ColorType} from '@moki-client/gui';
-import {Colors} from '@moki-client/gui';
+import { ColorType } from '@moki-client/gui';
+import { Colors } from '@moki-client/gui';
 import {
     createFilter
 } from '@moki-client/gui';
@@ -89,7 +89,7 @@ export default class StackedChart extends Component {
         });
 
 
-      
+
 
         rootsvg.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -99,10 +99,10 @@ export default class StackedChart extends Component {
                 .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')')
 
         } else {
-            
+
             rootsvg.append("g")
-            .attr("class", "y axis")
-            .attr("transform", "translate(" + margin.left + ",0)").call(yAxis);
+                .attr("class", "y axis")
+                .attr("transform", "translate(" + margin.left + ",0)").call(yAxis);
 
             function wrap(text, width) {
                 //split by /
@@ -229,12 +229,25 @@ export default class StackedChart extends Component {
                     return x.bandwidth();
                 })
                 .attr("y", function (d) {
-                    return yScale(d[1]);
+                    var height = yScale(d[0]) - yScale(d[1]);
+                    if (height) {                       
+                       if (height < 1.5) {
+                            return yScale(d[1])-1;
+                        }
+                        return yScale(d[1]);
+
+                    }
+                    else {
+                        return 0;
+                    }
                 })
                 .attr("height", function (d) {
                     var height = yScale(d[0]) - yScale(d[1]);
                     if (height) {
-                        return height
+                        if (height < 1.5) {
+                            return 2;
+                        }
+                        return height;
                     }
                     else {
                         return 0;
@@ -304,7 +317,7 @@ export default class StackedChart extends Component {
             curtain.transition()
                 .duration(1200)
                 .ease(d3.easeLinear)
-                .attr('x', -2 * (width+500));
+                .attr('x', -2 * (width + 500));
 
             /*
                         // add the X gridlines
@@ -339,7 +352,7 @@ export default class StackedChart extends Component {
     render() {
         return (<div id={
             this.props.id
-        }  className="chart chartMinHeight"> <h3 className="alignLeft title" > {
+        } className="chart chartMinHeight"> <h3 className="alignLeft title" > {
             this.props.name
         } </h3></div >)
     }
