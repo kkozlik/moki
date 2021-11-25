@@ -516,6 +516,10 @@ h5 {
     display: none;
 }
 
+button.export{
+    width: fit-content;
+}
+
 .inline {
     display: -webkit-inline-box;
 }
