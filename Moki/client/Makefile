@@ -106,6 +106,7 @@ clean:
   	RPM_RELEASE=`cat $(RPM_NAME).spec|grep -e "^Release:"|awk '{print $$2}'`; \
   	rm -f ~/rpmbuild/SOURCES/$(RPM_NAME)-$${RPM_VERSION}-$${RPM_RELEASE}.tar.gz ; \
   	rm -f ~/rpmbuild/RPMS/x86_64/$(RPM_NAME)-$${RPM_VERSION}-$${RPM_RELEASE}.x86_64.rpm;
+	rm -f tmp
 
 .PHONY:		help
 ## help: Prints this help message
