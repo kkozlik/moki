@@ -1,10 +1,12 @@
 %global	moki_user	mokic
 %global moki_group	mokic
+# turn off all the brp* processing; it is NOT need for js projects
+%define __os_install_post %{nil}
 
 Name:		  moki-client-dev
 Version:  10.1.0
-#Release:  1%{?dist}
-Release:	1.amzn2
+#Release:	1
+Release:	1
 Summary:	GUI part of moki (dev)
 
 Group:		Applications/Internet
