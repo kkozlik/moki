@@ -57,10 +57,11 @@ class Dashboard extends Component {
     for (let i = 0; (i < data.responses.length) && (i < this.callBacks.functors.length); i++) {
       // functors for i'th response
       functors = this.callBacks.functors[i];
+      let attrs = this.callBacks.attrs[i];
       // apply all the functors to the i'th response
       for (let j = 0; j < functors.length; j++) {
         this.transientState[functors[j].result] =
-          await functors[j].func(data.responses[i]);
+          await functors[j].func(data.responses[i], attrs);
       }
     }
   }
