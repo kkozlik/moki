@@ -53,6 +53,8 @@ class Dashboard extends Component {
     if ((!data) || (!data.responses)) {
       return;
     }
+    const profile = storePersistent.getState().profile;
+
     var functors = [];
     for (let i = 0; (i < data.responses.length) && (i < this.callBacks.functors.length); i++) {
       // functors for i'th response
@@ -61,7 +63,7 @@ class Dashboard extends Component {
       // apply all the functors to the i'th response
       for (let j = 0; j < functors.length; j++) {
         this.transientState[functors[j].result] =
-          await functors[j].func(data.responses[i], attrs);
+          await functors[j].func(data.responses[i], profile, attrs);
       }
     }
   }
