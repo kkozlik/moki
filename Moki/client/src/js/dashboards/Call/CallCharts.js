@@ -12,7 +12,7 @@ import ListChart from '../../charts/list_chart.js';
 import ValueChart from '../../charts/value_chart.js';
 import store from "../../store/index";
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
-import { parseListData, parseList, parseStackedbarTimeData, parseBucketData, parseSunburstData, parseQueryStringData, parseAggData, parseAggSumBucketData } from '@moki-client/es-response-parser';
+import { parseListData, parseStackedbarTimeData, parseBucketData, parseSunburstData, parseQueryStringData, parseAggData, parseAggSumBucketData } from '@moki-client/es-response-parser';
 
 
 
@@ -48,41 +48,41 @@ class CallCharts extends Dashboard {
         this.callBacks = {
             functors: [
                 //CALL TERMINATED 0
-                [{ result: 'callTerminated', func: parseBucketData }],
+                [{ result: 'callTerminated', func: parseBucketData, attrs:["attrs.originator"] }],
                 //CALL SUCCESS RATIO 1
-                [{ result: 'callSuccessRatio', func: parseSunburstData }],
+                [{ result: 'callSuccessRatio', func: parseSunburstData, attrs:["attrs.sip-code"] }],
                 //SUM CALL-ATTEMPT 2
-                [{ result: 'sumCallAttempt', func: parseQueryStringData }],
+                [{ result: 'sumCallAttempt', func: parseQueryStringData, attrs:["attrs.type"]}],
                 //SUM CALL-END 3
-                [{ result: 'sumCallEnd', func: parseQueryStringData }],
+                [{ result: 'sumCallEnd', func: parseQueryStringData, attrs:["attrs.type"] }],
                 //SUM CALL-START 4
-                [{ result: 'sumCallStart', func: parseQueryStringData }],
+                [{ result: 'sumCallStart', func: parseQueryStringData, attrs:["attrs.type"] }],
                 //DURATION SUM 5
-                [{ result: 'durationSum', func: parseAggData }],
+                [{ result: 'durationSum', func: parseAggData, attrs:["attrs.duration"] }],
                 //NOT USED 6
                 [],
                 //AVG MoS 7
-                [{ result: 'avgMoS', func: parseAggData }],
+                [{ result: 'avgMoS', func: parseAggData, attrs:["attrs.rtp-MOScqex-avg"] }],
                 //ANSWER-SEIZURE RATIO 8
-                [{ result: 'answerSeizureRatio', func: parseAggSumBucketData }],
+                [{ result: 'answerSeizureRatio', func: parseAggSumBucketData}],
                 //CALLING COUNTRIES 9
-                [{ result: 'callingCountries', func: parseList, attrs: ["geoip.src.city_code"] }],
+                [{ result: 'callingCountries', func: parseListData, attrs: ["geoip.src.city_code"] }],
                 //SUM DURATION OVER TIME 10
-                [{ result: 'sumDurationOverTime', func: parseBucketData }],
+                [{ result: 'sumDurationOverTime', func: parseBucketData, attrs:["attrs.duration"] }],
                 //MAX DURATION 11
-                [{ result: 'maxDuration', func: parseAggData }],
+                [{ result: 'maxDuration', func: parseAggData, attrs:["attrs.duration"] }],
                 //NOT USED 12
                 [],
                 //AVG DURATION 13
-                [{ result: 'avgDuration', func: parseAggData }],
+                [{ result: 'avgDuration', func: parseAggData, attrs:["attrs.duration"] }],
                 //DURATION GROUP 14
-                [{ result: 'durationGroup', func: parseListData }],
+                [{ result: 'durationGroup', func: parseListData, attrs:["attrs.durationGroup"] }],
                 //SIP-CODE COUNT 15
-                [{ result: 'sipcodeCount', func: parseListData }],
+                [{ result: 'sipcodeCount', func: parseListData,  attrs:["attrs.sip-code"] }],
                 //CALLED COUNTRIES 16
-                [{ result: 'calledCountries', func: parseListData }],
+                [{ result: 'calledCountries', func: parseListData,  attrs:["attrs.attrs.tst_cc"] }],
                 //EVENT CALLS TIMELINE 17
-                [{ result: 'eventCallsTimeline', func: parseStackedbarTimeData }],
+                [{ result: 'eventCallsTimeline', func: parseStackedbarTimeData, attrs:["attrs.type"] }],
                 //ASR OVER TIME 18
                 [{ result: 'asrDurationOverTime', func: parseBucketData }]
             ]

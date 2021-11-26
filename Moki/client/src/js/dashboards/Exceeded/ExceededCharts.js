@@ -32,22 +32,22 @@ class ExceededCharts extends Dashboard {
         this.callBacks = {
             functors: [
                 //EVENT CALLS TIMELINE
-                [{ result: 'eventCallsTimeline', func: parseStackedbarTimeData }],
+                [{ result: 'eventCallsTimeline', func: parseStackedbarTimeData, attrs:["exceeded"] }],
 
                 //EXCEEDED COUNT
                 [{ result: 'exceededCount', func: parseQueryStringData }],
 
                 //EXCEEDED TYPE
-                [{ result: 'exceededType', func: parseBucketData }],
+                [{ result: 'exceededType', func: parseBucketData, attrs:["exceeded"]  }],
 
                 //TOP OFFENDERS
-                [{ result: 'topOffenders', func: parseUri }],
+                [{ result: 'topOffenders', func: parseUri, attrs:["attrs.from"]  }],
 
                 //EVENTS BY IP ADDR 
-                [{ result: 'ipAddress', func: parseIp }],
+                [{ result: 'ipAddress', func: parseIp, attrs:["attrs.source"]   }],
 
                 //TOP SUBNETS /24 EXCEEDED
-                [{ result: 'subnets', func: parseListData }]
+                [{ result: 'subnets', func: parseListData, attrs:["attrs.sourceSubnets"]  }]
             ]
         };
     }
