@@ -66,7 +66,7 @@ class CallCharts extends Dashboard {
                 //ANSWER-SEIZURE RATIO 8
                 [{ result: 'answerSeizureRatio', func: parseAggSumBucketData }],
                 //CALLING COUNTRIES 9
-                [{ result: 'callingCountries', func: parseList }],
+                [{ result: 'callingCountries', func: parseList, attrs: ["geoip.src.city_code"] }],
                 //SUM DURATION OVER TIME 10
                 [{ result: 'sumDurationOverTime', func: parseBucketData }],
                 //MAX DURATION 11
