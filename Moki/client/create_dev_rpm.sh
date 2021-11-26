@@ -14,7 +14,7 @@ RPM_SRC_DIR="/var/lib/jenkins/rpmbuild/RPMS/x86_64"
 # repository type - dev for this automatic build
 RPM_VERSION=`cat $SPEC|grep -e "^Version:"|awk '{print $2}'`
 # repo location
-if [[ "$branch" == "master" ]] ; then 
+if [ "$branch" = "master" ] ; then 
 	RPM_REPO_DIR="$HOME/repointernal/rpm/dev/$RPMARCH"
 else
 	RPM_REPO_DIR="$HOME/repointernal/rpm/branch/$branch/$RPMARCH"
