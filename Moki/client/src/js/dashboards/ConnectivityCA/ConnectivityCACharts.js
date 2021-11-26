@@ -39,10 +39,10 @@ class ConnectivityCACharts extends Dashboard {
     this.callBacks = {
       functors: [
         //FROM TO CA
-        [{result: 'fromToCA', func: parseTopologyData}],
+        [{result: 'fromToCA', func: parseTopologyData, attrs:["attrs.src_ca_id", "attrs.dst_ca_id"]}],
 
         //DURATION SUM
-        [{result: 'durationSum', func: parseAggData}],
+        [{result: 'durationSum', func: parseAggData, attrs:["attrs.duration"]}],
 
         //SUM CALL-ATTEMPT
         [{result: 'sumCallAttempt', func: parseQueryStringData}],
@@ -51,37 +51,37 @@ class ConnectivityCACharts extends Dashboard {
         [{result: 'sumCallEnd', func: parseQueryStringData}],
 
         //CONNECTION FAILURE RATIO CA
-        [{result: 'failureCA', func: parseHeatmapDataAgg}],
+        [{result: 'failureCA', func: parseHeatmapDataAgg,  attrs:["attrs.src_ca_id", "attrs.dst_ca_id"]}],
 
         //NUMBER OF CALL-ATTEMPS CA
-        [{result: 'callAtemptsCA', func: parseDateHeatmap}],
+        [{result: 'callAtemptsCA', func: parseDateHeatmap,  attrs:["attrs.src_ca_id", "attrs.dst_ca_id"]}],
 
         //NUMBER OF CALL-ENDA CA
-        [{result: 'callEndsCA', func: parseDateHeatmap}],
+        [{result: 'callEndsCA', func: parseDateHeatmap,  attrs:["attrs.src_ca_id", "attrs.dst_ca_id"]}],
 
         //ERROR CODE ANALYSIS
-        [{result: 'codeAnalysis', func: parseHeatmapData}],
+        [{result: 'codeAnalysis', func: parseHeatmapData,  attrs:["attrs.sip-code", "attrs.src_ca_id"]}],
 
         //CA RATIO HISTORY
-        [{result: 'ratioHistory', func: parseDateHeatmapAgg}],
+        [{result: 'ratioHistory', func: parseDateHeatmapAgg,  attrs:[ "attrs.dst_ca_id"]}],
 
         //CA AVAILABILITY
         [{result: 'caAvailability', func: parseHeatmapDataAgg1}],
 
         //DURATION CA
-        [{result: 'durationCA', func: parseHeatmapDataAgg3}],
+        [{result: 'durationCA', func: parseHeatmapDataAgg3,  attrs:["attrs.src_ca_id", "attrs.dst_ca_id"]}],
 
         //DESTINATIONS CAs STATISTICS
-        [{result: 'statsCA', func: parseMultipleData}],
+        [{result: 'statsCA', func: parseMultipleData,  attrs:["attrs.dst_ca_id", "attrs.duration"]}],
 
         //SOURCE CAs STATISTICS
-        [{result: 'sourceStatsCA', func: parseMultipleData}],
+        [{result: 'sourceStatsCA', func: parseMultipleData,  attrs:["attrs.src_ca_id", "attrs.duration"]}],
 
         //NUMBER OF CALL-START CA
         [{result: 'sumCallStart', func: parseQueryStringData}],
 
         //AVG MoS
-        [{result: 'avgMoS', func: parseDateHeatmapAgg}]
+        [{result: 'avgMoS', func: parseDateHeatmapAgg, attrs:["attrs.dst_ca_id", "attrs.rtp-MOScqex-avg"]}]
       ]
     };
   }

@@ -51,77 +51,77 @@ class MicroanalysisCharts extends Dashboard {
             functors: [
                 //parse data
                 //TYPES 0
-                [{ result: 'typesCount', func: parseBucketData }],
+                [{ result: 'typesCount', func: parseBucketData, attrs:["attrs.type"] }],
 
                 //FROM UA 1
-                [{ result: 'fromUA', func: parseListData }],
+                [{ result: 'fromUA', func: parseListData, attrs:["attrs.from-ua"] }],
 
                 //SIP METHOD 2
-                [{ result: 'sipMethod', func: parseListData }],
+                [{ result: 'sipMethod', func: parseListData, attrs:["attrs.method"] }],
 
                 //SIP CODE 3
-                [{ result: 'sipCode', func: parseListData }],
+                [{ result: 'sipCode', func: parseListData, attrs:["attrs.sip-code"] }],
 
                 //TOP SUBNETS 4
-                [{ result: 'topSubnets', func: parseListData }],
+                [{ result: 'topSubnets', func: parseListData, attrs:["attrs.sourceSubnets"] }],
 
                 //r-URI PREFIX STRIPPED 5
-                [{ result: 'prefixStripped', func: parseListData }],
+                [{ result: 'prefixStripped', func: parseListData, attrs:["attrs.r-uri-shorted"] }],
 
                 //SOURCE IP ADDRESS 6
-                [{ result: 'sourceIP', func: parseIp }],
+                [{ result: 'sourceIP', func: parseIp, attrs:["attrs.source"] }],
 
                 //TOP 10 FROM 7
-                [{ result: 'top10from', func: parseUri }],
+                [{ result: 'top10from', func: parseUri, attrs:["attrs.from"] }],
 
                 //CALLER DOMAIN 8
                 //[{ result: 'callerDomain', func: parseListData }],
-                [{ result: 'callerDomain', func: parseUri}],
+                [{ result: 'callerDomain', func: parseUri, attrs:["attrs.from-domain"]}],
 
                 //TOP 10 TO 9
-                [{ result: 'top10to', func: parseUri }],
+                [{ result: 'top10to', func: parseUri, attrs:["attrs.to"] }],
 
                 //DOMAIN STATS 10
-                [{ result: 'distinctDestinations', func: parseListDataCardinalityDecrypt }],
+                [{ result: 'distinctDestinations', func: parseListDataCardinalityDecrypt, attrs:["attrs.from-domain"] }],
 
                 //TOP CALL ATTEMPTS 11
-                [{ result: 'topCallAttempts', func: parseUri }],
+                [{ result: 'topCallAttempts', func: parseUri, attrs:["attrs.from"] }],
 
                 //TOP CALL ENDS 12
-                [{ result: 'topCallEnds', func: parseUri }],
+                [{ result: 'topCallEnds', func: parseUri, attrs:["attrs.from"] }],
 
                 //DESTINATION BY R-URI 13
-                [{ result: 'destination', func: parseUri }],
+                [{ result: 'destination', func: parseUri, attrs:["attrs.r-uri"] }],
 
                 //SUM DURATION 14
-                [{ result: 'sumDuration', func: parseListDataCardinalityDecrypt }],
+                [{ result: 'sumDuration', func: parseListDataCardinalityDecrypt, attrs:["attrs.from", "attrs.duration"] }],
 
                 //TOP DURATION 15
-                [{ result: 'topDuration', func: parseListDataCardinalityDecrypt }],
+                [{ result: 'topDuration', func: parseListDataCardinalityDecrypt, attrs:["attrs.from", "attrs.duration"] }],
 
                 //TOP DURATION < 5 sec 16
-                [{ result: 'topDuration5', func: parseUri }],
+                [{ result: 'topDuration5', func: parseUri, attrs:["attrs.from", "attrs.duration"] }],
 
                 //TOP SBCs 17
-                [{ result: 'topSBC', func: parseListData }],
+                [{ result: 'topSBC', func: parseListData, attrs:["attrs.sbc"] }],
 
                 //SRC CA 18
-                [{ result: 'srcCA', func: parseListData }],
+                [{ result: 'srcCA', func: parseListData, attrs:["attrs.src_ca_id"] }],
 
                 //DST CA 19
-                [{ result: 'dstCA', func: parseListData }],
+                [{ result: 'dstCA', func: parseListData, attrs:["attrs.drc_ca_id"] }],
 
                 //ORIGINATOR 20
-                [{ result: 'originator', func: parseListData }],
+                [{ result: 'originator', func: parseListData, attrs:["attrs.originator"] }],
 
                 //DISTINCT IP
-                [{ result: 'distinctIP', func: parseAggDistinct }],
+                [{ result: 'distinctIP', func: parseAggDistinct, attrs:["attrs.source"] }],
 
                 //TOP NODES
-                [{ result: 'topNodes', func: parseListData }],
+                [{ result: 'topNodes', func: parseListData, attrs:["agent.hostname"] }],
 
                  //SIP VERSIONS 
-                 [{ result: 'versions', func: parseBucketData }]
+                 [{ result: 'versions', func: parseBucketData, attrs:["agent.version"] }]
             ]
         }
     }
