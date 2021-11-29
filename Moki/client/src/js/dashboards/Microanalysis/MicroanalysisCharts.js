@@ -9,7 +9,7 @@ import ListChart from '../../charts/list_chart.js';
 import DonutChart from '../../charts/donut_chart.js';
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import ValueChart from '../../charts/value_chart.js';
-import { parseListData, parseIp, parseListDataCardinality, parseBucketData, parseAggDistinct, parseUri, parseListDataCardinalityDecrypt } from '@moki-client/es-response-parser';
+import { parseListData, parseBucketData, parseAggDistinct, parseListDataCardinalityDecrypt } from '@moki-client/es-response-parser';
 
 
 class MicroanalysisCharts extends Dashboard {
@@ -69,29 +69,29 @@ class MicroanalysisCharts extends Dashboard {
                 [{ result: 'prefixStripped', func: parseListData, attrs:["attrs.r-uri-shorted"] }],
 
                 //SOURCE IP ADDRESS 6
-                [{ result: 'sourceIP', func: parseIp, attrs:["attrs.source"] }],
+                [{ result: 'sourceIP', func: parseListData, attrs:["attrs.source"] }],
 
                 //TOP 10 FROM 7
-                [{ result: 'top10from', func: parseUri, attrs:["attrs.from"] }],
+                [{ result: 'top10from', func: parseListData, attrs:["attrs.from"] }],
 
                 //CALLER DOMAIN 8
                 //[{ result: 'callerDomain', func: parseListData }],
-                [{ result: 'callerDomain', func: parseUri, attrs:["attrs.from-domain"]}],
+                [{ result: 'callerDomain', func: parseListData, attrs:["attrs.from-domain"]}],
 
                 //TOP 10 TO 9
-                [{ result: 'top10to', func: parseUri, attrs:["attrs.to"] }],
+                [{ result: 'top10to', func: parseListData, attrs:["attrs.to"] }],
 
                 //DOMAIN STATS 10
                 [{ result: 'distinctDestinations', func: parseListDataCardinalityDecrypt, attrs:["attrs.from-domain"] }],
 
                 //TOP CALL ATTEMPTS 11
-                [{ result: 'topCallAttempts', func: parseUri, attrs:["attrs.from"] }],
+                [{ result: 'topCallAttempts', func: parseListData, attrs:["attrs.from"] }],
 
                 //TOP CALL ENDS 12
-                [{ result: 'topCallEnds', func: parseUri, attrs:["attrs.from"] }],
+                [{ result: 'topCallEnds', func: parseListData, attrs:["attrs.from"] }],
 
                 //DESTINATION BY R-URI 13
-                [{ result: 'destination', func: parseUri, attrs:["attrs.r-uri"] }],
+                [{ result: 'destination', func: parseListData, attrs:["attrs.r-uri"] }],
 
                 //SUM DURATION 14
                 [{ result: 'sumDuration', func: parseListDataCardinalityDecrypt, attrs:["attrs.from", "attrs.duration"] }],
@@ -100,7 +100,7 @@ class MicroanalysisCharts extends Dashboard {
                 [{ result: 'topDuration', func: parseListDataCardinalityDecrypt, attrs:["attrs.from", "attrs.duration"] }],
 
                 //TOP DURATION < 5 sec 16
-                [{ result: 'topDuration5', func: parseUri, attrs:["attrs.from", "attrs.duration"] }],
+                [{ result: 'topDuration5', func: parseListData, attrs:["attrs.from", "attrs.duration"] }],
 
                 //TOP SBCs 17
                 [{ result: 'topSBC', func: parseListData, attrs:["attrs.sbc"] }],

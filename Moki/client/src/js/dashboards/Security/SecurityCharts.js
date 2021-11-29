@@ -10,7 +10,7 @@ import DonutChart from '../../charts/donut_chart.js';
 import ListChart from '../../charts/list_chart.js';
 import store from "../../store/index";
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
-import { parseListData, parseList, parseIp, parseAggCities, parseBucketData, parseStackedbarTimeData } from '@moki-client/es-response-parser';
+import { parseListData, parseAggCities, parseBucketData, parseStackedbarTimeData } from '@moki-client/es-response-parser';
 
 
 class SecurityCharts extends Dashboard {
@@ -40,13 +40,13 @@ class SecurityCharts extends Dashboard {
                 [{ result: 'eventRegsTimeline', func: parseStackedbarTimeData }],
 
                 //EVENTS BY IP ADDR
-                [{ result: 'eventsByIP', func: parseIp }],
+                [{ result: 'eventsByIP', func: parseListData }],
 
                 //TOP SUBNETS /24
                 [{ result: 'subnets', func: parseListData }],
 
                 //EVENTS BY COUNTRY
-                [{ result: 'eventsByCountry', func: parseList }],
+                [{ result: 'eventsByCountry', func: parseListData }],
 
                 //SECURITY TYPES EVENTS
                 [{ result: 'typesCount', func: parseBucketData }],
