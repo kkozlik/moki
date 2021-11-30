@@ -12,6 +12,7 @@ import MultipleAreaChart from '../../charts/multipleArea_chart';
 import store from "../../store/index";
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import { elasticsearchConnection } from '@moki-client/gui';
+import storePersistent from "../../store/indexPersistent";
 import {parseQueryStringData, parseDateHeatmap, parseAggData, parseAggSumBucketData, parseMultipleLineDataShareAxis, parseMultipleLineDataShareAxisWithoutAgg, parseAggQueryWithoutScriptValue, parseAggQuerySumValue } from '@moki-client/es-response-parser';
 
 class HomeCharts extends Component {
@@ -70,6 +71,7 @@ class HomeCharts extends Component {
             return;
 
         } else if (data) {
+            const profile = storePersistent.getState().profile;
             //parse data
             //SUM CALL-END
             var sumCallEnd = parseQueryStringData(data.responses[0]);
@@ -87,7 +89,7 @@ class HomeCharts extends Component {
             var avgDuration = parseAggData(data.responses[5]);
 
             // DATE HEATMAP
-            var typeDateHeatmap = await parseDateHeatmap(data.responses[6]);
+            var typeDateHeatmap = await parseDateHeatmap(data.responses[6], profile, ["attrs.type"]);
 
             //PARALLEL CALLS
             var parallelCalls = parseMultipleLineDataShareAxis("Calls", data.responses[7], "Calls-1d", data.responses[8]);
