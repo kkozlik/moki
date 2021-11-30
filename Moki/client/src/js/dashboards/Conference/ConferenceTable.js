@@ -8,8 +8,7 @@ import store from "../../store/index";
 import {
     elasticsearchConnection
 } from '@moki-client/gui';
-
-import {parseTableHits} from '@moki-client/es-response-parser';
+import {parseTable} from '../../dashboard/Dashboard';
 
 class ConferenceTable extends Component {
 
@@ -42,7 +41,7 @@ class ConferenceTable extends Component {
 
             return;
         } else if (calls) {
-            var data = parseTableHits(calls.hits.hits);
+            var data = parseTable(calls.hits.hits);
             var total = calls.hits.total.value;
             this.setState({
                 calls: data,

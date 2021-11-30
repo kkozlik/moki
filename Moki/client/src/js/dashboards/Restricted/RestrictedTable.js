@@ -8,8 +8,7 @@ import store from "../../store/index";
 import {
     elasticsearchConnection
 } from '@moki-client/gui';
-
-import {parseTableHits} from '@moki-client/es-response-parser';
+import {parseTable} from '../../dashboard/Dashboard';
 
 class RestrictedTable extends Component {
 
@@ -44,7 +43,7 @@ class RestrictedTable extends Component {
             return;
         } else if (calls) {
 
-            var data = await parseTableHits(calls.hits.hits);
+            var data = await parseTable(calls.hits.hits);
             var total = calls.hits.total.value;
             this.setState({
                 calls: data,

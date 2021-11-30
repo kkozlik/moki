@@ -5,10 +5,8 @@ import React, {
 
 import TableChart from '../../charts/table_chart.js';
 import store from "../../store/index";
-import {
-    elasticsearchConnection
-} from '@moki-client/gui';
-import {parseTableHits} from '@moki-client/es-response-parser';
+import {  elasticsearchConnection} from '@moki-client/gui';
+import {parseTable} from '../../dashboard/Dashboard';
 
 class CallsTable extends Component {
 
@@ -43,7 +41,7 @@ componentWillUnmount() {
 
             return;
         } else if(calls) {
-            var data = await parseTableHits(calls.hits.hits);
+            var data = await parseTable(calls.hits.hits);
             var total = calls.hits.total.value;
             this.setState({
                 calls: data,
