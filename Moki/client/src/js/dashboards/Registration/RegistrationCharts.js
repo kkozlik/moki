@@ -12,6 +12,7 @@ import Geoipchart from '../../charts/geoip_map.js';
 import DonutChart from '../../charts/donut_chart.js';
 import ListChart from '../../charts/list_chart.js';
 import store from "../../store/index";
+import storePersistent from "../../store/indexPersistent";
 import {
     elasticsearchConnection
 } from '@moki-client/gui';
@@ -71,6 +72,7 @@ class RegistrationCharts extends Component {
             //parse data
             //DISTRIBUTION GEOIP MAP
             var geoipMap = [];
+            const profile = storePersistent.getState().profile;
 
             if (data.responses[0].aggregations && data.responses[0].aggregations.cities && data.responses[0].aggregations.cities.buckets) {
                 geoipMap = data.responses[0].aggregations.cities.buckets;
@@ -83,7 +85,7 @@ class RegistrationCharts extends Component {
             var userAgents = parseBucketData(data.responses[2]);
 
             //TOP REG. EXPIRED
-            var topRegExpired = await parseListData(data.responses[3]);
+            var topRegExpired = await parseListData(data.responses[3], profile, ["attrs.from"]);
 
             //TRANSPORT PROTOCOL
             var transportProtocol = parseBucketData(data.responses[4]);
