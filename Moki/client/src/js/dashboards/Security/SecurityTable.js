@@ -8,7 +8,7 @@ import store from "../../store/index";
 import {
     elasticsearchConnection
 } from '@moki-client/gui';
-import {parseTable} from '../../dashboard/Dashboard';
+import {parseTable} from '../../dashboards/Dashboard';
 
 class SecurityTable extends Component {
 
