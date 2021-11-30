@@ -8,6 +8,7 @@ import {
 import store from "../store/index";
 import storePersistent from "../store/indexPersistent";
 import { elasticsearchConnection } from '@moki-client/gui';
+import { parseTableHits } from '@moki-client/es-response-parser';
 
 class Dashboard extends Component {
 
