@@ -9,7 +9,7 @@ import ListChart from '../../charts/list_chart.js';
 import DonutChart from '../../charts/donut_chart.js';
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import ValueChart from '../../charts/value_chart.js';
-import { parseListData, parseBucketData, parseAggDistinct, parseListDataCardinalityDecrypt } from '@moki-client/es-response-parser';
+import { parseListData, parseBucketData, parseAggDistinct, parseListDataCardinality} from '@moki-client/es-response-parser';
 
 
 class MicroanalysisCharts extends Dashboard {
@@ -82,7 +82,7 @@ class MicroanalysisCharts extends Dashboard {
                 [{ result: 'top10to', func: parseListData, attrs:["attrs.to"] }],
 
                 //DOMAIN STATS 10
-                [{ result: 'distinctDestinations', func: parseListDataCardinalityDecrypt, attrs:["attrs.from-domain"] }],
+                [{ result: 'distinctDestinations', func: parseListDataCardinality, attrs:["attrs.from-domain"] }],
 
                 //TOP CALL ATTEMPTS 11
                 [{ result: 'topCallAttempts', func: parseListData, attrs:["attrs.from"] }],
@@ -94,10 +94,10 @@ class MicroanalysisCharts extends Dashboard {
                 [{ result: 'destination', func: parseListData, attrs:["attrs.r-uri"] }],
 
                 //SUM DURATION 14
-                [{ result: 'sumDuration', func: parseListDataCardinalityDecrypt, attrs:["attrs.from", "attrs.duration"] }],
+                [{ result: 'sumDuration', func: parseListDataCardinality, attrs:["attrs.from", "attrs.duration"] }],
 
                 //TOP DURATION 15
-                [{ result: 'topDuration', func: parseListDataCardinalityDecrypt, attrs:["attrs.from", "attrs.duration"] }],
+                [{ result: 'topDuration', func: parseListDataCardinality, attrs:["attrs.from", "attrs.duration"] }],
 
                 //TOP DURATION < 5 sec 16
                 [{ result: 'topDuration5', func: parseListData, attrs:["attrs.from", "attrs.duration"] }],
