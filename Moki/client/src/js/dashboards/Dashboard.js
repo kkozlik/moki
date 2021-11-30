@@ -61,8 +61,8 @@ class Dashboard extends Component {
       // apply all the functors to the i'th response
       for (let j = 0; j < functors.length; j++) {
         let attrs = [];
-        if (functors[j].attrs)  attrs = functors[j].attrs;
-        
+        if (functors[j].attrs) attrs = functors[j].attrs;
+
         this.transientState[functors[j].result] =
           await functors[j].func(data.responses[i], profile, attrs);
       }
@@ -91,5 +91,16 @@ class Dashboard extends Component {
     }
   }
 }
+
+/**
+* parse table hits with profile attrs
+* @param {hits}  array ES data
+* @return {array} format changed data
+* */
+export async function parseTable(hits) {
+  const profile = storePersistent.getState().profile;
+  return await parseTableHits(hits, profile);
+}
+
 
 export default Dashboard;
