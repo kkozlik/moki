@@ -40,6 +40,7 @@ class ProfileController {
       //"userprefs": {"ddd": "bbb", "aaa": "ccc"}  to ctx._source.event.userprefs.ddd = bbb; ctx._source.event.userprefs.aaa = ccc
       let script = "";
       for (let i = 0; i < keys.length; i++) {
+        if(keys[i] !== "anonymizableAttrs")
         script = script + " ctx._source.event.userprefs." + keys[i] + "='" + req.body.userprefs[keys[i]] + "';";
       }
 
