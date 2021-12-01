@@ -87,7 +87,7 @@ class Dashboard extends Component {
         console.info(new Date() + " MOKI CALLS: finished parsíng data");
       }
     } catch (e) {
-      this.props.showError("Monitor server is not running.");
+      this.props.showError("Error: " + e);
       this.setState({ isLoading: false });
     }
   }
@@ -99,8 +99,12 @@ class Dashboard extends Component {
 * @return {array} format changed data
 * */
 export async function parseTable(hits) {
-  const profile = storePersistent.getState().profile;
-  return await parseTableHits(hits, profile);
+  try {
+    const profile = storePersistent.getState().profile;
+    return await parseTableHits(hits, profile);
+  } catch (e) {
+    console.log("Error: " + e);
+  }
 }
 
 
