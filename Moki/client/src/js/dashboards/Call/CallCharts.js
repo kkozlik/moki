@@ -66,7 +66,7 @@ class CallCharts extends Dashboard {
                 //ANSWER-SEIZURE RATIO 8
                 [{ result: 'answerSeizureRatio', func: parseAggSumBucketData}],
                 //CALLING COUNTRIES 9
-                [{ result: 'callingCountries', func: parseListData, attrs: ["geoip.src.city_code"] }],
+                [{ result: 'callingCountries', func: parseListData, attrs: ["geoip.src.iso_code"] }],
                 //SUM DURATION OVER TIME 10
                 [{ result: 'sumDurationOverTime', func: parseBucketData, attrs:["attrs.duration"] }],
                 //MAX DURATION 11
@@ -80,7 +80,7 @@ class CallCharts extends Dashboard {
                 //SIP-CODE COUNT 15
                 [{ result: 'sipcodeCount', func: parseListData,  attrs:["attrs.sip-code"] }],
                 //CALLED COUNTRIES 16
-                [{ result: 'calledCountries', func: parseListData,  attrs:["attrs.attrs.tst_cc"] }],
+                [{ result: 'calledCountries', func: parseListData,  attrs:["attrs.tst_cc"] }],
                 //EVENT CALLS TIMELINE 17
                 [{ result: 'eventCallsTimeline', func: parseStackedbarTimeData, attrs:["attrs.type"] }],
                 //ASR OVER TIME 18

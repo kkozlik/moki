@@ -37,19 +37,19 @@ class SecurityCharts extends Dashboard {
                 [{ result: 'geoipMap', func: parseAggCities }],
 
                 //EVENT SECURITY TIMELINE
-                [{ result: 'eventRegsTimeline', func: parseStackedbarTimeData }],
+                [{ result: 'eventRegsTimeline', func: parseStackedbarTimeData, attrs: ["attrs.type"] }],
 
                 //EVENTS BY IP ADDR
-                [{ result: 'eventsByIP', func: parseListData }],
+                [{ result: 'eventsByIP', func: parseListData, attrs: ["attrs.source"] }],
 
                 //TOP SUBNETS /24
-                [{ result: 'subnets', func: parseListData }],
+                [{ result: 'subnets', func: parseListData, attrs: ["attrs.sourceSubnets"] }],
 
                 //EVENTS BY COUNTRY
-                [{ result: 'eventsByCountry', func: parseListData }],
+                [{ result: 'eventsByCountry', func: parseListData, attrs: ["geoip.src.iso_code"] }],
 
                 //SECURITY TYPES EVENTS
-                [{ result: 'typesCount', func: parseBucketData }],
+                [{ result: 'typesCount', func: parseBucketData, attrs:["attrs.type"] }],
 
                 //DISTRIBUTION HASH GEOIP MAP
                 [{ result: 'geoipHashMap', func: parseAggCities }],
