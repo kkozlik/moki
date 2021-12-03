@@ -20,7 +20,7 @@ class ProfileController {
   static storeUserSettings(req, res, next) {
     async function search() {
       const user = AdminController.getUser(req);
-      const keys = Object.keys(req.body.userprefs);
+      let keys = Object.keys(req.body.userprefs);
       const field = req.body.userprefs[Object.keys(req.body.userprefs)[0]];
       let secret = user["tls-cn"];
       let secretField = "tls-cn";
@@ -40,10 +40,19 @@ class ProfileController {
       //"userprefs": {"ddd": "bbb", "aaa": "ccc"}  to ctx._source.event.userprefs.ddd = bbb; ctx._source.event.userprefs.aaa = ccc
       let script = "";
       for (let i = 0; i < keys.length; i++) {
-        if(keys[i] !== "anonymizableAttrs")
-        script = script + " ctx._source.event.userprefs." + keys[i] + "='" + req.body.userprefs[keys[i]] + "';";
+        //check if object type, parse it 
+        if (typeof req.body.userprefs[keys[i]] === 'object') {
+          let innerKeys = Object.keys(req.body.userprefs[keys[i]]);
+          for (let j = 0; j < innerKeys.length; j++) {
+            script = script + " ctx._source.event.userprefs." + keys[i] + "['" + innerKeys[j] + "']='" + req.body.userprefs[keys[i]][innerKeys[j]] + "';";
+          }
+        }
+        else {
+          script = script + " ctx._source.event.userprefs." + keys[i] + "='" + req.body.userprefs[keys[i]] + "';";
+        }
       }
 
+      // keys.splice(keys.indexOf("anonymizableAttrs"), 1);
       //check if event with same tls-cn/domain exists, if so update it
       const update = await updateES(indexName, [
         { "query_string": { "query": "event." + [secretField] + ":" + secret } }
@@ -115,7 +124,6 @@ class ProfileController {
       const domain = user["domain"];
       let newIndex = false;
       let jsonDefaults = await getDefaults();
-
       //check if it is neccesary to create new index
       const existIndex = await existsIndexES(indexName, res);
       //if not, create new one
@@ -123,17 +131,22 @@ class ProfileController {
         //mode: encrypt, plain, anonymous
         let response = await newIndexES(indexName, {
           "properties": {
-            "tls-cn": { "type": "keyword", "index": "true" },
-            "domain": { "type": "keyword", "index": "true" },
-            "profile": { "type": "keyword", "index": "true" },
-            "userprefs": {
+            "event": {
               "properties": {
-                "monitor_name": { "type": "text", "index": "false" },
-                "timezone": { "type": "text", "index": "false" },
-                "time_format": { "type": "text", "index": "false" },
-                "date_format": { "type": "text", "index": "false" },
-                "mode": { "type": "text", "index": "false" },
-                "validation_code": { "type": "text", "index": "false" }
+                "tls-cn": { "type": "keyword", "index": "true" },
+                "domain": { "type": "keyword", "index": "true" },
+                "profile": { "type": "keyword", "index": "true" },
+                "userprefs": {
+                  "properties": {
+                    "monitor_name": { "type": "text", "index": "false" },
+                    "timezone": { "type": "text", "index": "false" },
+                    "time_format": { "type": "text", "index": "false" },
+                    "date_format": { "type": "text", "index": "false" },
+                    "mode": { "type": "text", "index": "false" },
+                    "validation_code": { "type": "text", "index": "false" },
+                    "anonymizableAttrs": { "type": "flattened" }
+                  }
+                }
               }
             }
           }
@@ -175,12 +188,22 @@ class ProfileController {
           userProfile = userProfile.hits.hits[0]._source.event;
           let keys = Object.keys(userProfileDefault.userprefs);
           for (let i = 0; i < keys.length; i++) {
-            if (!userProfile.userprefs[keys[i]]) {
-              userProfile.userprefs[keys[i]] = userProfileDefault.userprefs[keys[i]];
+            //check if object type, parse it 
+            if (typeof userProfileDefault.userprefs[keys[i]] === 'object') {
+              let innerKeys = userProfileDefault.userprefs[keys[i]];
+              for (let j = 0; j < innerKeys.length; j++) {
+                if (!userProfile.userprefs[keys[i]][innerKeys[j]]) {
+                  userProfile.userprefs[keys[i]][innerKeys[j]] = userProfileDefault.userprefs[keys[i]][innerKeys[j]];
+                }
+              }
+            }
+            else {
+              if (!userProfile.userprefs[keys[i]]) {
+                userProfile.userprefs[keys[i]] = userProfileDefault.userprefs[keys[i]];
+              }
             }
           }
         }
-
 
         let domainProfile;
         //domain is undefined for admin
