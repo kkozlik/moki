@@ -253,6 +253,10 @@ class Controller {
         }
       }
 
+      if(requests.index === "report*"){
+        types = "*";
+      }
+
       if (req.body.timerange_lte) {
         timestamp_lte = Math.round(req.body.timerange_lte);
       }
@@ -289,6 +293,7 @@ class Controller {
       console.info("SERVER search with filters: " + filters + " types: " + types + " timerange: " + timestamp_gte + "-" + timestamp_lte + " timebucket: " + timebucket + " userFilter: " + userFilter + " domainFilter: " + domainFilter + " encrypt checksum filter: " + isEncryptChecksumFilter);
       //always timerange_query
       requests.query = timerange_query.getTemplate(getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, requests.filter, domainFilter, isEncryptChecksumFilter), supress, querySize);
+      
       const response = await client.search({
         index: requests.index,
         scroll: '2m',
