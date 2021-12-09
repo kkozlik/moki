@@ -105,6 +105,7 @@ async function updateES(indexName, queries, script, params, res) {
 
     client.updateByQuery({
       index: indexName,
+      scroll: "10s",
       type: '_doc',
       refresh: true,
       conflicts: 'proceed',
