@@ -293,17 +293,17 @@ class Controller {
       console.info("SERVER search with filters: " + filters + " types: " + types + " timerange: " + timestamp_gte + "-" + timestamp_lte + " timebucket: " + timebucket + " userFilter: " + userFilter + " domainFilter: " + domainFilter + " encrypt checksum filter: " + isEncryptChecksumFilter);
       //always timerange_query
       requests.query = timerange_query.getTemplate(getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, requests.filter, domainFilter, isEncryptChecksumFilter), supress, querySize);
-      
-      const response = await client.search({
-        index: requests.index,
-        scroll: '2m',
-        "ignore_unavailable": true,
-        "preference": 1542895076143,
-        body: requests.query
+  
+      if (querySize > 500) {
+        var response = await client.search({
+          index: requests.index,
+          scroll: '20s',
+          "ignore_unavailable": true,
+          "preference": 1542895076143,
+          body: requests.query
+  
+        });
 
-      });
-
-      if (querySize !== 500) {
         const totalHits = response.hits.total.value;
         let actualHits = response.hits.hits.length;
         while (actualHits < totalHits) {
@@ -311,6 +311,18 @@ class Controller {
           actualHits = actualHits + responseScroll.hits.hits.length;
           response.hits.hits = response.hits.hits.concat(responseScroll.hits.hits);
         }
+
+        client.clearScroll({
+          "scroll_id" : response._scroll_id
+        })
+      }
+      else {
+        var response = await client.search({
+          index: requests.index,
+          "ignore_unavailable": true,
+          "preference": 1542895076143,
+          body: requests.query
+        });
       }
 
       userFilter = "*";
