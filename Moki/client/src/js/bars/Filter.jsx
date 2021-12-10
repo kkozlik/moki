@@ -113,6 +113,7 @@ class Filter extends Component {
 
     render() {
         var user = storePersistent.getState().user.jwt ? storePersistent.getState().user.jwt : 0;
+        let profile = storePersistent.getState().profile;
         return (<span className="filterBody">
             <span id={"edit" + this.props.id} className="editFilter">
                 <p className="modalText" style={{ "float": "left", "marginLeft": "10px" }}><input type="text" id={"filtervalue" + this.props.id} editid={this.props.id} defaultValue={this.props.title} size={this.props.title.length} onKeyPress={this.keyPress} style={{ "width": "auto" }} /></p>
@@ -128,13 +129,13 @@ class Filter extends Component {
                     onClick={this.closeFilterPopup}
                     editid={this.props.id}
                     style={{ "display": "inline-block", "minHeight": "30px" }} > X
-                  </button>
+                </button>
             </span>
             <button style={{ backgroundColor: this.state.color }}
                 type="button"
                 className="filter"
                 id={this.props.id} > {
-                    this.props.encrypt ? this.props.encrypt : this.props.title
+                    this.props.title
                 } <div className="buttonHover" >
                     <span className="iconNoMargin marginRight"
                         deleteid={this.props.id}
@@ -152,12 +153,12 @@ class Filter extends Component {
                         <img alt="disableIcon"
                             src={this.state.icon}
                             title={this.state.enable === "true" ? "disable" : "enable"} /> </span>
-                     <span className="iconNoMargin marginRight"
+                     {profile[0].userprefs.mode !== "anonymous" && <span className="iconNoMargin marginRight"
                         idedit={this.props.id}
                         onClick={this.showFilterPopup
                         } > <img alt="editIcon"
                             src={editIcon}
-                            title="edit" /> </span>
+                            title="edit" /> </span> }
                     <span className="iconNoMargin marginRight"
                         deleteid={this.props.id}
                         onClick={
