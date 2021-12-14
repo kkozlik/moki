@@ -144,7 +144,7 @@ class ProfileController {
                     "date_format": { "type": "text", "index": "false" },
                     "mode": { "type": "text", "index": "false" },
                     "validation_code": { "type": "text", "index": "false" },
-                    "anonymizableAttrs": { "type": "flattened" }
+                    "anonymizableAttrs": { "type": "nested", "enabled": "false" }
                   }
                 }
               }
