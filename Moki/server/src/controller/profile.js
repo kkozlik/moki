@@ -192,6 +192,7 @@ class ProfileController {
             if (typeof userProfileDefault.userprefs[keys[i]] === 'object') {
               let innerKeys =Object.keys(userProfileDefault.userprefs[keys[i]]);
               for (let j = 0; j < innerKeys.length; j++) {
+                if(!userProfile.userprefs[keys[i]]) userProfile.userprefs[keys[i]] = {};
                 if (!userProfile.userprefs[keys[i]][innerKeys[j]]) {
                   userProfile.userprefs[keys[i]][innerKeys[j]] = userProfileDefault.userprefs[keys[i]][innerKeys[j]];
                 }
