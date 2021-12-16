@@ -1,5 +1,5 @@
 {
-  "name": "moki-react",
+  "name": "@intuitive/moki",
   "version": "1.1.0",
   "description": "Moki GUI",
   "author": "Frafos, Intuitive Labs",
@@ -11,10 +11,10 @@
     }
   ],
   "homepage": "." ,
-  "publishConfig": {
-    "registry":"https://npm.pkg.github.com"
+  "repository": {
+      "type": "git",
+      "url": "git://github.com/intuitivelabs/moki.git"
   },
-  "repository": "https://github.com/intuitivelabs/moki",
   "dependencies": {
     "@moki-client/es-response-parser": "git+https://git@github.com/intuitivelabs/es-response-parser.git#master",
     "@moki-client/gui": "git+https://git@github.com/intuitivelabs/moki-gui.git#master",
