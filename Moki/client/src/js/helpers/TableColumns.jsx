@@ -757,7 +757,16 @@ export function tableColumns(dashboard, tags) {
             editable: false,
             headerStyle: { width: getColumnWidth("REASON") },
             sort: true,
-            text: 'REASON'
+            text: 'REASON',
+            formatter: (cell, obj) => {
+                var ob = obj._source;
+                if (ob.attrs.type === "parse-error") {
+                    return ob.err_info;
+                }
+                else {
+                    return ob.attrs.reason;
+                }
+            }
         }, {
             dataField: '_source.attrs.from',
             editable: false,
