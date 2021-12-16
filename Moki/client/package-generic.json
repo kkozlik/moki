@@ -11,6 +11,9 @@
     }
   ],
   "homepage": "." ,
+  "publishConfig": {
+  "registry":"https://npm.pkg.github.com"
+  },
   "dependencies": {
     "@moki-client/es-response-parser": "git+https://git@github.com/intuitivelabs/es-response-parser.git#master",
     "@moki-client/gui": "git+https://git@github.com/intuitivelabs/moki-gui.git#master",
