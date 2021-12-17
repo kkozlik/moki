@@ -1425,7 +1425,16 @@ export function tableColumns(dashboard, tags) {
             text: 'REASON',
             headerStyle: { width: getColumnWidth("REASON") },
             sort: true,
-            editable: false
+            editable: false,
+            formatter: (cell, obj) => {
+                var ob = obj._source;
+                if (ob.attrs.type === "parse-error") {
+                    return ob.err_info;
+                }
+                else {
+                    return ob.attrs.reason;
+                }
+            }
         },
         {
             dataField: '_source.geoip.country_name',
@@ -1514,7 +1523,16 @@ export function tableColumns(dashboard, tags) {
             editable: false,
             sort: true,
             headerStyle: { width: getColumnWidth("REASON") },
-            text: 'REASON'
+            text: 'REASON',
+            formatter: (cell, obj) => {
+                var ob = obj._source;
+                if (ob.attrs.type === "parse-error") {
+                    return ob.err_info;
+                }
+                else {
+                    return ob.attrs.reason;
+                }
+            }
         }, {
             dataField: '_source.attrs.source',
             editable: false,
