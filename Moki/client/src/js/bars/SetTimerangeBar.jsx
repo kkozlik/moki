@@ -17,6 +17,7 @@ import Export from "./Export";
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { parseTimestamp } from "../helpers/parseTimestamp";
+import { shareFilters } from '@moki-client/gui';
 
 class timerangeBar extends Component {
     constructor(props) {
@@ -168,39 +169,7 @@ class timerangeBar extends Component {
 
     //share - create url with filters, types and time
     share() {
-        var href = window.location.origin + window.location.pathname + "?from=" + store.getState().timerange[0] + "&to=" + store.getState().timerange[1];
-
-        var filters = store.getState().filters;
-        if (filters) {
-            for (var i = 0; i < filters.length; i++) {
-                if (filters[i].state === "enable") {
-                    href = href + "&filter=" + filters[i].title;
-                }
-            }
-
-        }
-        var types = store.getState().types;
-        if (types) {
-            for (i = 0; i < types.length; i++) {
-                if (types[i].state === "enable") {
-                    href = href + "&type=" + types[i].id;
-                }
-            }
-
-        }
-
-        //put it into clipboard
-        var dummy = document.createElement("textarea");
-        document.body.appendChild(dummy);
-        dummy.value = href;
-        dummy.select();
-        document.execCommand("copy");
-        document.body.removeChild(dummy);
-
-        document.getElementById("tooltipshare").style.display = "inline";
-        setTimeout(function () {
-            document.getElementById("tooltipshare").style.display = "none";
-        }, 1000);
+        shareFilters(store, storePersistent);
     }
 
     //show time select menu

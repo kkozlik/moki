@@ -8,8 +8,8 @@ import { getSearchableFields } from "../helpers/SearchableFields.js";
 import store from "../store/index";
 import { setFilters } from "../actions/index";
 import { createFilter } from '@moki-client/gui';
+import { decryptFilter } from '@moki-client/gui';
 import { renderFilters } from '../helpers/renderFilters';
-import { createFilterNoDispatch } from "../helpers/createFilterNoDispatch";
 import StoredFilters from "../pages/stored_filters";
 import SaveFilters from "../pages/save_filters";
 import Popup from "reactjs-popup";
@@ -36,10 +36,16 @@ class filterBar extends Component {
         this.unpinFilter = this.unpinFilter.bind(this);
         this.rerenderFilters = this.rerenderFilters.bind(this);
         this.negationFilter = this.negationFilter.bind(this);
+        this.getURIcomponent = this.getURIcomponent.bind(this);
         store.subscribe(() => this.rerenderFilters());
 
         //change filters if set in url
-        //format: filter=XXXXXXX&filter=YYYYYYYY
+        this.getURIcomponent();
+
+    }
+    //format: filter=XXXXXXX&filter=YYYYYYYY
+
+    async getURIcomponent() {
         var parameters = decodeURIComponent(window.location.search);
         var result = [];
         var filters = parameters.indexOf("filter=");
@@ -49,10 +55,10 @@ class filterBar extends Component {
             while (filters !== -1) {
                 var last = parameters.indexOf("&", filters + 7);
                 if (last === -1) {
-                    result.push(createFilterNoDispatch(parameters.substring(filters + 7), id));
+                    result.push(await createFilter(parameters.substring(filters + 7), id, false, true));
                 }
                 else {
-                    result.push(createFilterNoDispatch(parameters.substring(filters + 7, last), id));
+                    result.push(await createFilter(parameters.substring(filters + 7, last), id, false, true));
                 }
                 filters = parameters.indexOf("filter=", (filters + 1));
                 id++;
@@ -94,7 +100,7 @@ class filterBar extends Component {
             value.replace(/\s+/g, '');
             for (var i = 0; i < searchable.length; i++) {
                 if (searchable[i].substring(searchable[i].indexOf(".") + 1) === value) {
-                    return searchable[i].substring(0, searchable[i].indexOf(".")+1);
+                    return searchable[i].substring(0, searchable[i].indexOf(".") + 1);
                 }
             }
             return "attrs.";
@@ -287,7 +293,7 @@ class filterBar extends Component {
     render() {
         let filters = null;
         var url = window.location.pathname;
-        filters = renderFilters(this.deleteFilter, this.disableFilter, this.enableFilter, this.pinFilter, this.editFilter, this.negationFilter, this.unpinFilter);
+        filters = renderFilters(this.state.filters, this.deleteFilter, this.disableFilter, this.enableFilter, this.pinFilter, this.editFilter, this.negationFilter, this.unpinFilter);
         var srcRealms = (<select className="text-left form-control form-check-input filter-right" id="srcRealms" placeholder="SRC REALMS" onChange={this.specFilter}> <option value="" disabled selected>SRC REALM</option>
             {this.state.srcRealms.map((realm) => {
                 return <option value={realm.key} key={realm.key + "src"}>{realm.key}</option>

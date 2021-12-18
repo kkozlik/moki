@@ -461,7 +461,7 @@ class App extends Component {
             }
         } catch (error) {
             if (response.status === 500) {
-                this.setState({ error: "Monitor server is not running." });
+                this.setState({ error: "500: Monitor server is not running." });
             } else {
                 console.error(error);
                 this.setState({ error: "Check elasticsearch connection and restart the page." });
@@ -491,8 +491,8 @@ class App extends Component {
         var loadingScreen = <span>
             <Notificationbar className="errorBarLoading" error={this.state.error} deleteAllErrors={this.deleteAllErrors}></Notificationbar>
             <div style={{ "marginTop": (window.innerHeight / 2) - 50 }} className="row align-items-center justify-content-center">
-                <div class="loaderr">
-                    <div class="bar"></div>
+                <div className="loaderr">
+                    <div className="bar"></div>
                 </div>
                 {this.state.logo && <div><img src={this.state.logo} alt="logo" style={{ "marginLeft": "30%", "width": "50%" }} /></div>}
             </div>
