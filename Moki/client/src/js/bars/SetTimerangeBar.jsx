@@ -56,7 +56,11 @@ class timerangeBar extends Component {
             exportCSVOpen: false,
             exportJSONOpen: false
         }
-        store.dispatch(setTimerange([(Math.round(new Date().getTime() / 1000) - (6 * 3600)) * 1000, (Math.round(new Date().getTime() / 1000)) * 1000, parseTimestamp(new Date(Math.trunc(Math.round(new Date().getTime() / 1000) - (6 * 3600)) * 1000)) + " + 6 hours"]));
+
+        //no timerange set in URL parameters
+        if (!store.getState().timerange[0]) {
+            store.dispatch(setTimerange([(Math.round(new Date().getTime() / 1000) - (6 * 3600)) * 1000, (Math.round(new Date().getTime() / 1000)) * 1000, parseTimestamp(new Date(Math.trunc(Math.round(new Date().getTime() / 1000) - (6 * 3600)) * 1000)) + " + 6 hours"]));
+        }
 
         this.setTimerange = this.setTimerange.bind(this);
         this.close = this.close.bind(this);
@@ -83,29 +87,13 @@ class timerangeBar extends Component {
         this.toggleMenu = this.toggleMenu.bind(this);
         store.subscribe(() => this.rerenderTimerange());
 
-        //change timerange if set in url
-        //format: from=XXXXXXX&to=YYYYYYYY
 
-        //set refresh with time in seconds
-        //format: &refresh=60
         var parameters = window.location.search;
-
         if (parameters) {
-            var timestamp_gte = parseInt(parameters.substring(parameters.indexOf("from=") + 5, parameters.indexOf("to=")));
-            var timestamp_lte = parseInt(parameters.substring(parameters.indexOf("to=") + 3));
             var refreshTime = parameters.indexOf("refresh=") !== -1 ? parseInt(parameters.substring(parameters.indexOf("refresh=") + 8)) : 0;
-            if (timestamp_gte && timestamp_lte) {
-                var timestamp_readiable = parseTimestamp(new Date(timestamp_gte)) + " - " + parseTimestamp(new Date(timestamp_lte));
 
-                store.dispatch(setTimerange([timestamp_gte, timestamp_lte, timestamp_readiable]));
-
-                this.setState({
-                    timerange: timestamp_readiable,
-                    timestamp_gte: timestamp_gte,
-                    timestamp_lte: timestamp_lte
-                });
-            }
-
+            //set refresh with time in seconds
+            //format: &refresh=60
             if (refreshTime !== 0) {
                 function refresh() {
                     var timestamp_lteOld = store.getState().timerange[1];
@@ -302,8 +290,8 @@ class timerangeBar extends Component {
 
     //move half of timerange value back
     moveTimerangeForward(event) {
-        var timestamp_gte = store.getState().timerange[0] - (store.getState().timerange[1] - store.getState().timerange[0])/2;
-        var timestamp_lte = store.getState().timerange[1] - (store.getState().timerange[1] - store.getState().timerange[0])/2;
+        var timestamp_gte = store.getState().timerange[0] - (store.getState().timerange[1] - store.getState().timerange[0]) / 2;
+        var timestamp_lte = store.getState().timerange[1] - (store.getState().timerange[1] - store.getState().timerange[0]) / 2;
         var timestamp_readiable = parseTimestamp(new Date(timestamp_gte)) + " - " + parseTimestamp(new Date(timestamp_lte));
 
         this.setState({
@@ -315,8 +303,8 @@ class timerangeBar extends Component {
     }
 
     moveTimerangeBack(event) {
-        var timestamp_gte = store.getState().timerange[0] + (store.getState().timerange[1] - store.getState().timerange[0])/2;
-        var timestamp_lte = store.getState().timerange[1] + (store.getState().timerange[1] - store.getState().timerange[0])/2;
+        var timestamp_gte = store.getState().timerange[0] + (store.getState().timerange[1] - store.getState().timerange[0]) / 2;
+        var timestamp_lte = store.getState().timerange[1] + (store.getState().timerange[1] - store.getState().timerange[0]) / 2;
 
         var timestamp_readiable = parseTimestamp(new Date(timestamp_gte)) + " - " + parseTimestamp(new Date(timestamp_lte));
 

@@ -376,6 +376,9 @@ export default class listChart extends Component {
         if (selected.length === 0) {
             alert("You must check events to share them.");
         }
+        else if  (selected.length > 20) {
+            alert("You must check less than 20 events to share them. Otherwise use filter sharing.");
+        }
         else {
             let href = window.location.origin + window.location.pathname + "?from=" + store.getState().timerange[0] + "&to=" + store.getState().timerange[1];
             href = href +"&filter=";
@@ -393,6 +396,10 @@ export default class listChart extends Component {
             dummy.select();
             document.execCommand("copy");
             document.body.removeChild(dummy);
+            document.getElementById("tooltipshareFilters").style.display = "inline";
+            setTimeout(function () {
+              document.getElementById("tooltipshareFilters").style.display = "none";
+            }, 1000);
         }
     }
 
@@ -882,7 +889,7 @@ export default class listChart extends Component {
                                     }
                                     {this.props.id !== "LAST LOGIN EVENTS" && <button className="noFormatButton" onClick={() => downloadAllCheck()} >  <img className="icon" alt="downloadIcon" src={downloadIcon} title="download selected" /><span id="downloadAllTooltip" style={{ "display": "none" }}>Downloading a lot of data, it can take a while.</span></button>}
 
-                                    {<button className="noFormatButton" onClick={() => this.shareFilters()} >  <img className="icon" alt="shareIcon" src={shareIcon} title="share selected" /></button>}
+                                    {<button className="noFormatButton" onClick={() => this.shareFilters()} >  <img className="icon" alt="shareIcon" src={shareIcon} title="share selected" /><span id="tooltipshareFilters" style={{ "display": "none", "position": "absolute", "backgroundColor": "white" }}>Copied to clipboard</span></button>}
 
                                     <span className="smallText"> (total: {this.props.total.toLocaleString()})</span>
                                     <CustomToggleList {...props.columnToggleProps} />

@@ -20,6 +20,10 @@ import { paths } from "./js/controllers/paths.jsx";
 import { getProfile } from '@moki-client/gui';
 import DecryptPasswordPopup from '@moki-client/gui/src/menu/decryptPasswordPopup';
 import Notificationbar from './js/bars/Notificationbar';
+import { parseTimestamp } from "./js/helpers/parseTimestamp";
+import { setTimerange } from "./js/actions/index";
+import { setFilters } from "./js/actions/index";
+import { createFilter } from '@moki-client/gui';
 
 //General class - check user level, profile from ES, monitor_layout before loading monitor
 //return router with dashboards and bars
@@ -53,6 +57,7 @@ class App extends Component {
         this.deleteAllErrors = this.deleteAllErrors.bind(this);
         this.redirect = this.redirect.bind(this);
         this.getHostnames = this.getHostnames.bind(this);
+        this.checkURLFilters = this.checkURLFilters.bind(this);
         this.getSipUser();
     }
 
@@ -65,6 +70,47 @@ class App extends Component {
             if (thiss.state.resizeId) clearTimeout(thiss.state.resizeId);
             thiss.setState({ resizeId: setTimeout(thiss.windowResize, 500) });
         });
+
+    }
+    
+    //check url parameters for filters
+    async checkURLFilters(){
+        //change timerange if set in url
+        //format: from=XXXXXXX&to=YYYYYYYY
+        var parameters = decodeURIComponent(window.location.search);
+        if (parameters) {
+            var timestamp_gte = parseInt(parameters.substring(parameters.indexOf("from=") + 5, parameters.indexOf("to=")));
+            var timestamp_lte = parseInt(parameters.substring(parameters.indexOf("to=") + 3));
+            if (timestamp_gte && timestamp_lte) {
+                var timestamp_readiable = parseTimestamp(new Date(timestamp_gte)) + " - " + parseTimestamp(new Date(timestamp_lte));
+
+                store.dispatch(setTimerange([timestamp_gte, timestamp_lte, timestamp_readiable]));
+
+                this.setState({
+                    timerange: timestamp_readiable,
+                    timestamp_gte: timestamp_gte,
+                    timestamp_lte: timestamp_lte
+                });
+            }
+
+            var result = [];
+            var filters = parameters.indexOf("filter=");
+            if (parameters && filters !== -1) {
+                var id = 1;
+                while (filters !== -1) {
+                    var last = parameters.indexOf("&", filters + 7);
+                    if (last === -1) {
+                        result.push(await createFilter(parameters.substring(filters + 7), id, false, true));
+                    }
+                    else {
+                        result.push(await createFilter(parameters.substring(filters + 7, last), id, false, true));
+                    }
+                    filters = parameters.indexOf("filter=", (filters + 1));
+                    id++;
+                }
+                store.dispatch(setFilters(result));
+            }
+        }
 
     }
 
@@ -210,6 +256,8 @@ class App extends Component {
                     isLoading: false
                 });
             });
+
+            await this.checkURLFilters();
     }
 
     /**
