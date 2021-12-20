@@ -1,7 +1,7 @@
 import React, {
     Component
 } from 'react';
-import { createFilterNoDispatch } from "../helpers/createFilterNoDispatch";
+import { createFilter } from '@moki-client/gui';
 import disableIcon from "../../styles/icons/disable.png";
 import enableIcon from "../../styles/icons/enable.png";
 import store from "../store/index";
@@ -88,7 +88,7 @@ class StoredFilters extends Component {
         //filters
         if (filters.attribute[0].filters) {
             for (i = 0; i < filters.attribute[0].filters[0].length; i++) {
-                newFilters.push(createFilterNoDispatch(filters.attribute[0].filters[0][i].title, i));
+                newFilters.push(createFilter(filters.attribute[0].filters[0][i].title, i, false, false));
             }
             store.dispatch(setFilters(newFilters));
         }

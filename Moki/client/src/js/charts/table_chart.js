@@ -7,7 +7,7 @@ it is seperate request from call charts
 import React, {
     Component
 } from 'react';
-import BootstrapTable from '@moki-client/react-bootstrap-table-next'; 
+import BootstrapTable from '@moki-client/react-bootstrap-table-next';
 import cellEditFactory from 'react-bootstrap-table2-editor';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import { getSearchableFields } from "../helpers/SearchableFields.js";
@@ -19,9 +19,11 @@ import { createFilter } from '@moki-client/gui';
 import emptyIcon from "../../styles/icons/empty_small.png";
 import tagIcon from "../../styles/icons/tag.png";
 import downloadIcon from "../../styles/icons/download.png";
+import shareIcon from "../../styles/icons/share_dark.png";
 import downloadPcapIcon from "../../styles/icons/downloadPcap.png";
 import viewIcon from "../../styles/icons/view.png";
 import storePersistent from "../store/indexPersistent";
+import store from "../store/index";
 import { elasticsearchConnection } from '../helpers/elasticsearchConnection';
 import { downloadPcap } from '../helpers/download/downloadPcap';
 import { downloadSD } from '../helpers/download/downloadSD';
@@ -366,8 +368,42 @@ export default class listChart extends Component {
                 alert(result);
             }
         }
-
     }
+
+    //create filter based on checked event ids
+    async shareFilters() {
+        var selected = this.state.selected;
+        if (selected.length === 0) {
+            alert("You must check events to share them.");
+        }
+        else if  (selected.length > 20) {
+            alert("You must check less than 20 events to share them. Otherwise use filter sharing.");
+        }
+        else {
+            let href = window.location.origin + window.location.pathname + "?from=" + store.getState().timerange[0] + "&to=" + store.getState().timerange[1];
+            href = href +"&filter=";
+            for (var i = 0; i < selected.length; i++) {
+                href = href + "_id:" + selected[i];
+                if(i < selected.length-1){
+                    href = href + " OR ";
+                }
+            }
+
+            //put it into clipboard
+            let dummy = document.createElement("textarea");
+            document.body.appendChild(dummy);
+            dummy.value = href
+            dummy.select();
+            document.execCommand("copy");
+            document.body.removeChild(dummy);
+            document.getElementById("tooltipshareFilters").style.display = "inline";
+            setTimeout(function () {
+              document.getElementById("tooltipshareFilters").style.display = "none";
+            }, 1000);
+        }
+    }
+
+
     openPopupTag() {
         document.getElementById("popupTag").style.display = "inline";
         document.getElementById("tag").focus();
@@ -852,6 +888,8 @@ export default class listChart extends Component {
                                     </span>
                                     }
                                     {this.props.id !== "LAST LOGIN EVENTS" && <button className="noFormatButton" onClick={() => downloadAllCheck()} >  <img className="icon" alt="downloadIcon" src={downloadIcon} title="download selected" /><span id="downloadAllTooltip" style={{ "display": "none" }}>Downloading a lot of data, it can take a while.</span></button>}
+
+                                    {<button className="noFormatButton" onClick={() => this.shareFilters()} >  <img className="icon" alt="shareIcon" src={shareIcon} title="share selected" /><span id="tooltipshareFilters" style={{ "display": "none", "position": "absolute", "backgroundColor": "white" }}>Copied to clipboard</span></button>}
 
                                     <span className="smallText"> (total: {this.props.total.toLocaleString()})</span>
                                     <CustomToggleList {...props.columnToggleProps} />

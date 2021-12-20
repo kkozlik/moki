@@ -2,8 +2,7 @@ import store from "../store/index";
 import Filter from '../bars/Filter';
 
 
-export const renderFilters = (deleteFilter, disableFilter, enableFilter, pinFilter, editFilter, negationFilter, unpinFilter) => {
-        var filters = store.getState().filters;
+export const renderFilters = (filters, deleteFilter, disableFilter, enableFilter, pinFilter, editFilter, negationFilter, unpinFilter) => {
         return <div>
                 {filters.map((filter) => {
                         return <Filter key={filter.id} state={filter.state}

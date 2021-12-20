@@ -4,6 +4,7 @@ import excludeIcon from "../../styles/icons/exclude.png";
 import detailsIcon from "../../styles/icons/details.png";
 import TagRanger from "../bars/TagRanger";
 import filterIcon from "../../styles/icons/filter.png";
+import shareIcon from "../../styles/icons/share_dark.png";
 import unfilterIcon from "../../styles/icons/unfilter.png";
 import downloadPcapIcon from "../../styles/icons/downloadPcap.png";
 import downloadIcon from "../../styles/icons/download.png";
@@ -15,6 +16,7 @@ import { exportJSON } from "./export";
 import { getPcap } from './getPcap';
 import { exclude } from './exclude';
 import storePersistent from "../store/indexPersistent";
+import store from "../store/index";
 import { parseTimestamp } from "../helpers/parseTimestamp";
 import SimpleSequenceDiagram from "../charts/simpleSequenceDiagram";
 import { Types } from '@moki-client/gui';
@@ -75,6 +77,24 @@ export const syntaxHighlight = (json) => {
 
         return '<span class="rowSplit ' + cls + '">' + match + '</span>';
     });
+}
+
+
+const shareEvent = (id) => {
+    let href = window.location.origin + window.location.pathname + "?from=" + store.getState().timerange[0] + "&to=" + store.getState().timerange[1];
+
+    //put it into clipboard
+    let dummy = document.createElement("textarea");
+    document.body.appendChild(dummy);
+    dummy.value = href + "&filter=_id:" + id;
+    dummy.select();
+    document.execCommand("copy");
+    document.body.removeChild(dummy);
+
+    document.getElementById("tooltipshareFilter" + id).style.display = "inline";
+    setTimeout(function () {
+        document.getElementById("tooltipshareFilter" + id).style.display = "none";
+    }, 1000);
 }
 
 /*
@@ -224,7 +244,7 @@ export function tableColumns(dashboard, tags) {
                 dataField: '_source.filenameDownload',
                 text: 'ADVANCED',
                 editable: false,
-                headerStyle: { width: "150px !important"},
+                headerStyle: { width: "150px !important" },
                 formatter: (cell, obj) => {
 
                     var ob = obj._source;
@@ -266,6 +286,9 @@ export function tableColumns(dashboard, tags) {
                                 </div>
                             )}
                         </Popup>
+                        }
+                        {obj._id &&
+                            <button className="noFormatButton" onClick={() => shareEvent(obj._id)}>  <img className="icon" alt="shareIcon" src={shareIcon} title="copy event link to share" /><span id={"tooltipshareFilter" + obj._id} style={{ "display": "none", "marginTop": "8px", "position": "absolute", "backgroundColor": "white" }}>Copied to clipboard</span></button>
                         }
                     </span>
                 }
@@ -598,8 +621,13 @@ export function tableColumns(dashboard, tags) {
                         )}
                     </Popup>
                     }
+                    {
+                        obj._id &&
+                        <button className="noFormatButton" onClick={() => shareEvent(obj._id)}>  <img className="icon" alt="shareIcon" src={shareIcon} title="copy event link to share" /><span id={"tooltipshareFilter" + obj._id} style={{ "display": "none", "marginTop": "8px", "position": "absolute", "backgroundColor": "white" }}>Copied to clipboard</span></button>
+                    }
                 </span>
             }
+
         }];
 
         case 'homeLoginCalls': return [
@@ -724,8 +752,12 @@ export function tableColumns(dashboard, tags) {
                                 </div>
                             )}
                         </Popup>
-                        }
 
+                        }
+                        {
+                            obj._id &&
+                            <button className="noFormatButton" onClick={() => shareEvent(obj._id)}>  <img className="icon" alt="shareIcon" src={shareIcon} title="copy event link to share" /><span id={"tooltipshareFilter" + obj._id} style={{ "display": "none", "marginTop": "8px", "position": "absolute", "backgroundColor": "white" }}>Copied to clipboard</span></button>
+                        }
                     </span>
                 }
             }];
@@ -851,6 +883,10 @@ export function tableColumns(dashboard, tags) {
                             </div>
                         )}
                     </Popup>
+                    }
+                    {
+                        obj._id &&
+                        <button className="noFormatButton" onClick={() => shareEvent(obj._id)}>  <img className="icon" alt="shareIcon" src={shareIcon} title="copy event link to share" /><span id={"tooltipshareFilter" + obj._id} style={{ "display": "none", "marginTop": "8px", "position": "absolute", "backgroundColor": "white" }}>Copied to clipboard</span></button>
                     }
                 </span>
             }
@@ -1005,6 +1041,10 @@ export function tableColumns(dashboard, tags) {
                             </div>
                         </span>
                         }
+                        {
+                            obj._id &&
+                            <button className="noFormatButton" onClick={() => shareEvent(obj._id)}>  <img className="icon" alt="shareIcon" src={shareIcon} title="copy event link to share" /><span id={"tooltipshareFilter" + obj._id} style={{ "display": "none", "marginTop": "8px", "position": "absolute", "backgroundColor": "white" }}>Copied to clipboard</span></button>
+                        }
                     </span>
                 }
             }];
@@ -1139,6 +1179,10 @@ export function tableColumns(dashboard, tags) {
                         )}
                     </Popup>
                     }
+                    {
+                        obj._id &&
+                        <button className="noFormatButton" onClick={() => shareEvent(obj._id)}>  <img className="icon" alt="shareIcon" src={shareIcon} title="copy event link to share" /><span id={"tooltipshareFilter" + obj._id} style={{ "display": "none", "marginTop": "8px", "position": "absolute", "backgroundColor": "white" }}>Copied to clipboard</span></button>
+                    }
                 </span>
             }
         }];
@@ -1224,6 +1268,10 @@ export function tableColumns(dashboard, tags) {
                             </div>
                         )}
                     </Popup>
+                    }
+                    {
+                        obj._id &&
+                        <button className="noFormatButton" onClick={() => shareEvent(obj._id)}>  <img className="icon" alt="shareIcon" src={shareIcon} title="copy event link to share" /><span id={"tooltipshareFilter" + obj._id} style={{ "display": "none", "marginTop": "8px", "position": "absolute", "backgroundColor": "white" }}>Copied to clipboard</span></button>
                     }
                 </span>
             }
@@ -1356,6 +1404,10 @@ export function tableColumns(dashboard, tags) {
                             </div>
                         )}
                     </Popup>
+                    }
+                    {
+                        obj._id &&
+                        <button className="noFormatButton" onClick={() => shareEvent(obj._id)}>  <img className="icon" alt="shareIcon" src={shareIcon} title="copy event link to share" /><span id={"tooltipshareFilter" + obj._id} style={{ "display": "none", "marginTop": "8px", "position": "absolute", "backgroundColor": "white" }}>Copied to clipboard</span></button>
                     }
                 </span>
             }
@@ -1491,6 +1543,10 @@ export function tableColumns(dashboard, tags) {
                         )}
                     </Popup>
                     }
+                    {
+                        obj._id &&
+                        <button className="noFormatButton" onClick={() => shareEvent(obj._id)}>  <img className="icon" alt="shareIcon" src={shareIcon} title="copy event link to share" /><span id={"tooltipshareFilter" + obj._id} style={{ "display": "none", "marginTop": "8px", "position": "absolute", "backgroundColor": "white" }}>Copied to clipboard</span></button>
+                    }
                 </span>
             }
         }];
@@ -1586,6 +1642,10 @@ export function tableColumns(dashboard, tags) {
                         )}
                     </Popup>
                     }
+                    {
+                        obj._id &&
+                        <button className="noFormatButton" onClick={() => shareEvent(obj._id)}>  <img className="icon" alt="shareIcon" src={shareIcon} title="copy event link to share" /><span id={"tooltipshareFilter" + obj._id} style={{ "display": "none", "marginTop": "8px", "position": "absolute", "backgroundColor": "white" }}>Copied to clipboard</span></button>
+                    }
                 </span>
             }
         }];
@@ -1674,6 +1734,10 @@ export function tableColumns(dashboard, tags) {
                             </div>
                         )}
                     </Popup>
+                    }
+                    {
+                        obj._id &&
+                        <button className="noFormatButton" onClick={() => shareEvent(obj._id)}>  <img className="icon" alt="shareIcon" src={shareIcon} title="copy event link to share" /><span id={"tooltipshareFilter" + obj._id} style={{ "display": "none", "marginTop": "8px", "position": "absolute", "backgroundColor": "white" }}>Copied to clipboard</span></button>
                     }
                 </span>
             }
@@ -1804,6 +1868,10 @@ export function tableColumns(dashboard, tags) {
                             </div>
                         )}
                     </Popup>
+                    }
+                    {
+                        obj._id &&
+                        <button className="noFormatButton" onClick={() => shareEvent(obj._id)}>  <img className="icon" alt="shareIcon" src={shareIcon} title="copy event link to share" /><span id={"tooltipshareFilter" + obj._id} style={{ "display": "none", "marginTop": "8px", "position": "absolute", "backgroundColor": "white" }}>Copied to clipboard</span></button>
                     }
                 </span>
             }
@@ -1993,6 +2061,10 @@ export function tableColumns(dashboard, tags) {
                         )}
                     </Popup>
                     }
+                    {
+                    obj._id &&
+                    <button className="noFormatButton" onClick={() => shareEvent(obj._id)}>  <img className="icon" alt="shareIcon" src={shareIcon} title="copy event link to share" /><span id={"tooltipshareFilter" + obj._id} style={{ "display": "none", "marginTop": "8px", "position": "absolute", "backgroundColor": "white" }}>Copied to clipboard</span></button>
+                }
                 </span>
             }
         }]
