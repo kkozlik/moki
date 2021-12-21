@@ -72,9 +72,9 @@ class App extends Component {
         });
 
     }
-    
+
     //check url parameters for filters
-    async checkURLFilters(){
+    async checkURLFilters() {
         //change timerange if set in url
         //format: from=XXXXXXX&to=YYYYYYYY
         var parameters = decodeURIComponent(window.location.search);
@@ -190,13 +190,13 @@ class App extends Component {
                     "Access-Control-Allow-Credentials": "include"
                 }
             });
-    
+
             const json = await response.json();
             if (!response.ok) {
                 return;
             }
-            if (json.msg && json.msg  === true) {
-                this.setState({firstTimeLogin: true});
+            if (json.msg && json.msg === true) {
+                this.setState({ firstTimeLogin: true });
             }
         }
 
@@ -257,7 +257,7 @@ class App extends Component {
                 });
             });
 
-            await this.checkURLFilters();
+        await this.checkURLFilters();
     }
 
     /**
@@ -276,7 +276,7 @@ class App extends Component {
     }
 
     //change value if first time login
-    setFirstTimeLogin(value){
+    setFirstTimeLogin(value) {
         this.setState({
             firstTimeLogin: value
         })
@@ -557,8 +557,11 @@ class App extends Component {
         var sipUserSwitch;
         const aws = this.state.aws;
         var url = window.location.pathname;
-        var style = aws ? "" : { "paddingBottom": "7px", "paddingLeft": "7px" };
+        var style = aws || sipUser.jwt !== 0 ? "" : { "paddingBottom": "7px", "paddingLeft": "7px" };
 
+        if (storePersistent.getState().user) {
+            style = storePersistent.getState().user.jwt === 0 ? { "paddingBottom": "7px", "paddingLeft": "7px" } : style;
+        }
         //show just diagram
         if (this.state.dashboards.length > 0) {
             if ((aws === false || this.state.admin || this.state.siteAdmin) && url.includes("sequenceDiagram")) {
@@ -632,7 +635,7 @@ class App extends Component {
                                 <Redirect to="/" />
                             </Switch>
                             <span className="footer" style={{ "float": "right" }}>
-                                <img src={this.state.logo} alt="logo" id="footerlogo"  />
+                                <img src={this.state.logo} alt="logo" id="footerlogo" />
                             </span>
                         </div>
                     </div>
@@ -642,12 +645,12 @@ class App extends Component {
         return (
             <span>
                 <span id="decryptpopupplaceholder"></span>
-                {this.state.firstTimeLogin ? <FirstLoginPopup  setFirstTimeLogin={this.setFirstTimeLogin}/> :                
-                (this.state.isLoading) ? loadingScreen :
-                    <Router>
-                        <div className="container-fluid" style={{ "backgroundColor": "white" }}> {sipUserSwitch}
-                        </div>
-                    </Router>
+                {this.state.firstTimeLogin ? <FirstLoginPopup setFirstTimeLogin={this.setFirstTimeLogin} /> :
+                    (this.state.isLoading) ? loadingScreen :
+                        <Router>
+                            <div className="container-fluid" style={{ "backgroundColor": "white" }}> {sipUserSwitch}
+                            </div>
+                        </Router>
                 }
             </span>
         );
