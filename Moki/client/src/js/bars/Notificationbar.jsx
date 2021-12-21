@@ -46,7 +46,7 @@ class Notificationbar extends Component {
             return (
                 <div className="row" >
                     <div className={this.props.className} >  {this.state.notifications.map((notification, i) => {
-                        return <div key={i}><button className="closeButton" onClick={() => this.remove(notification)}>&times;</button> {"Error: " + notification}
+                        return <div key={i}><button className="closeButton" onClick={() => this.remove(notification)}>&times;</button> {notification}
                         </div>
                     })}</div>
                 </div>)
