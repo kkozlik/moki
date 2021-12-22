@@ -205,7 +205,7 @@ class Autocomplete extends Component {
             }
         }
 
-        barWidth = "94%";
+        let barWidth = "94%";
         if (window.location.pathname === "/connectivityCA") barWidth = "70%";
         if (window.location.pathname === "/conference") barWidth = "84%";
         return (<Fragment>
