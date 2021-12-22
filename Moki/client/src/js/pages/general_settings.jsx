@@ -208,7 +208,7 @@ class Settings extends Component {
                 return response.json();
             }).then(function (responseData) {
                 if (responseData.msg) {
-                    alert(responseData.msg);
+                    alert(JSON.stringify(responseData.msg));
                 }
 
             }).catch(function (error) {
