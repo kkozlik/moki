@@ -114,6 +114,8 @@ class Filter extends Component {
     render() {
         let user = storePersistent.getState().user.jwt ? storePersistent.getState().user.jwt : 0;
         let profile = storePersistent.getState().profile;
+        console.log("------------------------------");
+        console.log(profile);
         return (<span className="filterBody">
             <span id={"edit" + this.props.id} className="editFilter">
                 <p className="modalText" style={{ "float": "left", "marginLeft": "10px" }}><input type="text" id={"filtervalue" + this.props.id} editid={this.props.id} defaultValue={this.props.title} size={this.props.title.length} onKeyPress={this.keyPress} style={{ "width": "auto" }} /></p>

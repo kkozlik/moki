@@ -205,6 +205,9 @@ class Autocomplete extends Component {
             }
         }
 
+        barWidth = "94%";
+        if (window.location.pathname === "/connectivityCA") barWidth = "70%";
+        if (window.location.pathname === "/conference") barWidth = "84%";
         return (<Fragment>
             <input
                 type="text"
@@ -215,7 +218,7 @@ class Autocomplete extends Component {
                 id="searchBar"
                 placeholder="FILTER: attribute:value"
                 autoComplete="new-password"
-                style={{"width" : window.location.pathname === "/connectivityCA" ? "70%" : "94%"}}
+                style={{"width" : barWidth}}
             />
             {suggestionsListComponent}
         </Fragment>
