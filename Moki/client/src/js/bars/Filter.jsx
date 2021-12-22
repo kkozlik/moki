@@ -112,7 +112,7 @@ class Filter extends Component {
     }
 
     render() {
-        var user = storePersistent.getState().user.jwt ? storePersistent.getState().user.jwt : 0;
+        let user = storePersistent.getState().user.jwt ? storePersistent.getState().user.jwt : 0;
         let profile = storePersistent.getState().profile;
         return (<span className="filterBody">
             <span id={"edit" + this.props.id} className="editFilter">
@@ -153,7 +153,7 @@ class Filter extends Component {
                         <img alt="disableIcon"
                             src={this.state.icon}
                             title={this.state.enable === "true" ? "disable" : "enable"} /> </span>
-                     {profile[0].userprefs.mode !== "anonymous" && <span className="iconNoMargin marginRight"
+                     {profile[0] && profile[0].userprefs && profile[0].userprefs.mode !== "anonymous" && <span className="iconNoMargin marginRight"
                         idedit={this.props.id}
                         onClick={this.showFilterPopup
                         } > <img alt="editIcon"
