@@ -5,8 +5,8 @@
 
 Name:		  moki-client-dev
 Version:  10.1.0
-#Release:	1
-Release:	1
+#Release:  1%{?dist}
+Release:	1.amzn2
 Summary:	GUI part of moki (dev)
 
 Group:		Applications/Internet
