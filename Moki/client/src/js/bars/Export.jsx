@@ -130,7 +130,7 @@ class Export extends Component {
                 var jsonObject = JSON.stringify(result);
                 result = this.convertToCSV(jsonObject);
                 element.download = "data.csv";
-                if(storePersistent.getState().profile[0].userprefs.mode === "encrypt"){
+                if(storePersistent.getState().profile && storePersistent.getState().profile[0] && storePersistent.getState().profile[0].userprefs.mode === "encrypt"){
                     element.download = "data_decrypted.csv"
                 }
                 file = new Blob([result], { type: 'text/plain' });
@@ -138,7 +138,7 @@ class Export extends Component {
             else {
                 //JSON
                 element.download = "data.json";
-                if(storePersistent.getState().profile[0].userprefs.mode === "encrypt"){
+                if(storePersistent.getState().profile && storePersistent.getState().profile[0] &&  storePersistent.getState().profile[0].userprefs.mode === "encrypt"){
                     element.download = "data_decrypted.json"
                 }
                 file = new Blob([JSON.stringify(result)], { type: 'text/plain' });
