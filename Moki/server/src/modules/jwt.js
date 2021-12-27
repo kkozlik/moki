@@ -151,6 +151,7 @@ function getEncryptChecksumFilter(req) {
     //no encrypt checksum passed from client
 
   else  if (!req.body.encryptChecksum) { return { encryptChecksum: "*" }; }
+  else if (req.body.encryptChecksum === "anonymous") { return { encryptChecksum: "anonymous" }; }
 
   //no password was used for decryption, show only unecrypted events -> plain state
   //user or site admin, use filter

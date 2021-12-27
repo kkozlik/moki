@@ -1,21 +1,38 @@
 var getTemplate = function (negationField, queries, supress) {
-    if (negationField != "*") {
-        var template = {
+    let template = {
+        "size": 0,
+        "track_total_hits": true,
+        "query": {
+            "bool": {
+                "must": queries,
+                "must_not": {
+                    "match": {
+                        "encrypt": negationField
+                    }
+                }
+            }
+        }
+    };
+
+    //anonymous mode - count only plain text
+    if (negationField === "anonymous") {
+        queries.push({
+            "match": {
+                "encrypt": "plain"
+            }
+        })
+        template = {
             "size": 0,
             "track_total_hits": true,
             "query": {
                 "bool": {
-                    "must": queries,
-                    "must_not": {
-                        "match": {
-                            "encrypt": negationField
-                        }
-                    }
+                    "must": queries
                 }
             }
         };
-    } else {
-        var template = {
+    }
+    else if (negationField === "*") {
+        template = {
             "size": 0,
             "track_total_hits": true,
             "query": {
@@ -26,7 +43,6 @@ var getTemplate = function (negationField, queries, supress) {
         };
     }
 
-    console.log(JSON.stringify(template));
     return template;
 }
 

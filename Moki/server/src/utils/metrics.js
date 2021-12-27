@@ -96,11 +96,22 @@ function getTypesConcat(value, type = "attrs.type") {
 function getQueries(filter, types, timestamp_gte, timestamp_lte, userFilter, chartFilter, domain, isEncryptChecksumFilter, exists) {
   const queries = [];
   if (isEncryptChecksumFilter !== "*") {
-    queries.push({
-      "match": {
-        "encrypt": isEncryptChecksumFilter
-      }
-    });
+    //anonymous mode,  see everything encrypted
+    if (isEncryptChecksumFilter === "anonymous") {
+      queries.push({
+        "query_string": {
+          "query": "NOT encrypt: plain"
+        }
+      });
+
+    }
+    else {
+      queries.push({
+        "match": {
+          "encrypt": isEncryptChecksumFilter
+        }
+      });
+    }
   }
 
   if (domain !== "*") {
