@@ -132,14 +132,14 @@ class MonitoringCharts extends Component {
                 avgResponseTime = data[0].nodes[node].adaptive_selection[node].avg_response_time_ns / 1000;
             }
 
-            //use disc space
-            if (data[0].nodes[node].fs.least_usage_estimate && data[0].nodes[node].fs.least_usage_estimate.used_disk_percent) {
-                var usedDiskSpace = data[0].nodes[node].fs.least_usage_estimate.used_disk_percent;
+            //used disk space
+            if (data[0].nodes[node].fs.total.total_in_bytes && data[0].nodes[node].fs.total.available_in_bytes) {
+                var usedDiskSpace = ((data[0].nodes[node].fs.total.total_in_bytes - data[0].nodes[node].fs.total.available_in_bytes) / data[0].nodes[node].fs.total.total_in_bytes) * 100;
             }
 
             // available disk space
-            if (data[0].nodes[node].fs.least_usage_estimate && data[0].nodes[node].fs.least_usage_estimate.available_in_bytes) {
-                var availableDiskSpace = data[0].nodes[node].fs.least_usage_estimate.available_in_bytes / 1000000;
+            if (data[0].nodes[node].fs.total.available_in_bytes) {
+                var availableDiskSpace = data[0].nodes[node].fs.total.available_in_bytes / 1000000;
             }
 
             // heap used
@@ -211,46 +211,34 @@ class MonitoringCharts extends Component {
         }
 
             <h4> CPU </h4> <div className="row no-gutters bottomMargin" >
-            <div className="col-auto" style={{"marginRight" : "5px"}}>
-                <GaugeChart data={
-                    this.state.cpu
-                }
-                    name={
-                        "CPU USAGE (%)"
-                    }
-                    id={
-                        "used_cpu"
-                    }
-                    width={
-                        300
-                    }
-                />
+                <div className="col-auto" style={{ "marginRight": "5px" }}>
+                    <GaugeChart data={  this.state.cpu }
+                        name={"CPU USAGE (%)"}
+                        id={"used_cpu"}
+                        width={300}
+                    />
                 </div>
                 <div className="col-auto">
-                <ValueChart data={
-                    this.state.loadAverage1m
-                }
-                    name={
-                        "1-MIN LOAD AVG"
+                    <ValueChart data={this.state.loadAverage1m}
+                        name={"1-MIN LOAD AVG"}
+                    />
+                </div>
+                <div className="col-auto">
+                    <ValueChart data={
+                        this.state.loadAverage5m
                     }
-                />
-</div>
-<div className="col-auto">
-                <ValueChart data={
-                    this.state.loadAverage5m
-                }
-                    name={
-                        "5-MIN LOAD AVG"
+                        name={
+                            "5-MIN LOAD AVG"
+                        }
+                    />
+                </div> <div className="col-auto">
+                    <ValueChart data={
+                        this.state.loadAverage15m
                     }
-                />
-</div> <div className="col-auto">
-                <ValueChart data={
-                    this.state.loadAverage15m
-                }
-                    name={
-                        "15-MIN LOAD AVG"
-                    }
-                /> 
+                        name={
+                            "15-MIN LOAD AVG"
+                        }
+                    />
                 </div></div>
             <h4> MEMORY </h4> <div className="row no-gutters bottomMargin" > <div className="col-auto">
                 <ValueChart data={
@@ -260,18 +248,18 @@ class MonitoringCharts extends Component {
                         "TOTAL MEMORY (MB)"
                     }
                 />
- </div>
+            </div>
             </div> <h4> DISK(Linux only) </h4> <div className="row no-gutters bottomMargin" >
-            <div className="col-auto">
-                <MultiListChart data={
-                    this.state.disk
-                }
-                    name={
-                        "DISK STATS"
+                <div className="col-auto">
+                    <MultiListChart data={
+                        this.state.disk
                     }
-                />  </div>
+                        name={
+                            "DISK STATS"
+                        }
+                    />  </div>
 
-</div>
+            </div>
             <div className="row no-gutters bottomMargin" >
                 <span> <h4 style={
                     {
@@ -287,9 +275,9 @@ class MonitoringCharts extends Component {
                     /></h4>
 
 
-<div className="col">  <GaugeChart data={
-                            this.state.heapUsedPercent
-                        }
+                    <div className="col">  <GaugeChart data={
+                        this.state.heapUsedPercent
+                    }
                         name={
                             "HEAP USED (%)"
                         }
