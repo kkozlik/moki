@@ -40,8 +40,7 @@ class Animation extends Component {
 
     componentWillReceiveProps(nextProps) {
         if (window.location.pathname === "/web") {
-            if (nextProps.dataAll !== this.state.dataAll && (nextProps.dataAll.length > 0 && nextProps.dataAll[0].length > 0)) {
-
+            if (nextProps.dataAll !== this.state.dataAll && (this.state.dataAll === "" || this.state.dataAll === 0 || this.state.dataAll === undefined || this.state.dataAll.length === 0)) {
                 this.setState({ dataAll: nextProps.dataAll });
             }
         }
@@ -79,6 +78,7 @@ class Animation extends Component {
             //replace space for underscore and lower case
             var name = this.props.name.replace(/ /g, "_").toLowerCase();
             var dashboard = window.location.pathname.substring(1);
+
             //check of path name end with "/", if so remove it
             if (dashboard.substring(dashboard.length - 1) === "/") {
                 dashboard = dashboard.substring(0, dashboard.length - 1);

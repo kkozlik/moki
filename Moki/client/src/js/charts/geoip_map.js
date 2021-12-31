@@ -48,11 +48,13 @@ export default class geoIpMap extends Component {
     }
 
     setData(data, animation = true) {
-        this.setState({
-            data: data,
-            animation: animation
-        });
-        this.draw(data, this.props.width, this.props.units, this.props.name);
+        if (data) {
+            this.setState({
+                data: data,
+                animation: animation
+            });
+            this.draw(data, this.props.width, this.props.units, this.props.name);
+        }
     }
 
     setAnimation(animation) {
@@ -446,7 +448,7 @@ export default class geoIpMap extends Component {
                     }
                 })
                 .on("click", el => {
-                    if(storePersistent.getState().user.aws && storePersistent.getState().profile[0] && storePersistent.getState().profile[0].userprefs && storePersistent.getState().profile[0].userprefs.mode === "encrypt"){
+                    if (storePersistent.getState().user.aws && storePersistent.getState().profile[0] && storePersistent.getState().profile[0].userprefs && storePersistent.getState().profile[0].userprefs.mode === "encrypt") {
                         createFilter("geoip.src.city_id:" + el.id);
                     }
                     else {
@@ -553,6 +555,6 @@ export default class geoIpMap extends Component {
         return (<div id="geoIpMap" className="chart"> <h3 className="alignLeft title" > {
             this.props.name
         } </h3>
-            {window.location.pathname !== "/web" && <Animation display={this.props.displayAnimation} setAnimation={this.setAnimation} name={this.props.name} type={this.props.type} setData={this.setData} dataAll={this.state.data} autoplay={this.props.autoplay} />}</div >)
+            <Animation display={this.props.displayAnimation} setAnimation={this.setAnimation} name={this.props.name} type={this.props.type} setData={this.setData} dataAll={this.state.data} autoplay={this.props.autoplay} /></div >)
     }
 }
