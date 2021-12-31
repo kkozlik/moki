@@ -36,8 +36,10 @@ export default class StackedChart extends Component {
 
     componentDidUpdate(prevProps, prevState) {
         if (prevProps !== this.props) {
+            //var isFirst = this.state.data && this.state.data.length === 0 ? true : false;
+            var isFirst = true;
+
             this.setState({ data: this.props.data });
-            var isFirst = this.state.data && this.state.data.length === 0 ? true : false;
             this.draw(this.props.data, this.props.id, this.props.width, this.props.name, this.props.units, isFirst);
         }
     }
