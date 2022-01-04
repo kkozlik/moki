@@ -399,9 +399,8 @@ p {
     font-weight: 350;
 }
 
-#valueChart {
+.valueChart {
     min-width: 180px;
-    max-height: 90px;
     padding-bottom: 5px;
     padding-right: 10px;
     width: fit-content;
