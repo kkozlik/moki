@@ -65,12 +65,12 @@ class Controller {
           types = getTypesConcat(types);
         }
       }
-      const oldtypes = types;
 
       //disable types for network dashboard
       if (req.url.includes("network")) {
         types = "*";
       }
+      const oldtypes = types;
 
       var isEncryptChecksumFilterOld = isEncryptChecksumFilter;
       for (let i = 0; i < requests.length; i++) {
@@ -257,6 +257,10 @@ class Controller {
         types = "*";
       }
 
+      if (req.url.includes("network")) {
+        types = "*";
+      }
+      
       if (req.body.timerange_lte) {
         timestamp_lte = Math.round(req.body.timerange_lte);
       }
