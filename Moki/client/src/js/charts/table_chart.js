@@ -366,15 +366,15 @@ export default class listChart extends Component {
         if (selected.length === 0) {
             alert("You must check events to share them.");
         }
-        else if  (selected.length > 20) {
+        else if (selected.length > 20) {
             alert("You must check less than 20 events to share them. Otherwise use filter sharing.");
         }
         else {
             let href = window.location.origin + window.location.pathname + "?from=" + store.getState().timerange[0] + "&to=" + store.getState().timerange[1];
-            href = href +"&filter=";
+            href = href + "&filter=";
             for (var i = 0; i < selected.length; i++) {
                 href = href + "_id:" + selected[i];
-                if(i < selected.length-1){
+                if (i < selected.length - 1) {
                     href = href + " OR ";
                 }
             }
@@ -388,7 +388,7 @@ export default class listChart extends Component {
             document.body.removeChild(dummy);
             document.getElementById("tooltipshareFilters").style.display = "inline";
             setTimeout(function () {
-              document.getElementById("tooltipshareFilters").style.display = "none";
+                document.getElementById("tooltipshareFilters").style.display = "none";
             }, 1000);
         }
     }
@@ -521,29 +521,38 @@ export default class listChart extends Component {
         var categorySort = [];
         for (var i = 0; i < keys.length; i++) {
             if (keys[i] === "attrs") {
-                var attrs = Object.keys(row[keys[i]]);
-                for (var j = 0; j < attrs.length; j++) {
+                let attrs = Object.keys(row[keys[i]]);
+                for (let j = 0; j < attrs.length; j++) {
                     if (displayedAttrs.includes("attrs." + attrs[j])) {
-                        var category = getCategory("attrs." + attrs[j]);
+                        let category = getCategory("attrs." + attrs[j]);
                         if (!categorySort[category]) categorySort[category] = [];
                         categorySort[category].push(this.renderExpandRow(attrs[j], row[keys[i]][attrs[j]]));
                     }
                 }
             }
             else if (keys[i] === "geoip") {
-                var attrs = Object.keys(row[keys[i]]);
-                for (var j = 0; j < attrs.length; j++) {
+                let attrs = Object.keys(row[keys[i]]);
+                for (let j = 0; j < attrs.length; j++) {
                     if (displayedAttrs.includes("geoip." + attrs[j])) {
-                        var category = getCategory("geoip." + attrs[j]);
+                        let category = getCategory("geoip." + attrs[j]);
                         if (!categorySort[category]) categorySort[category] = [];
                         categorySort[category].push(this.renderExpandRow(attrs[j], row[keys[i]][attrs[j]]));
                     }
                 }
 
             }
+            //custom variable in var.* - render all and everything is searchable
+            else if (keys[i] === "var") {
+                var variable = Object.keys(row[keys[i]]);
+                for (let j = 0; j < variable.length; j++) {
+                    let category = "VAR";
+                    if (!categorySort[category]) categorySort[category] = [];
+                    categorySort[category].push(this.renderExpandRow(variable[j], row[keys[i]][variable[j]]));
+                }
+            }
             else {
                 if (displayedAttrs.includes(keys[i])) {
-                    var category = getCategory(keys[i]);
+                    let category = getCategory(keys[i]);
                     if (!categorySort[category]) categorySort[category] = [];
                     categorySort[category].push(this.renderExpandRow(keys[i], row[keys[i]]));
                 }
