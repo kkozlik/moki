@@ -16,6 +16,9 @@ import ToolkitProvider from 'react-bootstrap-table2-toolkit';
 import filter from "../../styles/icons/filter.png";
 import unfilter from "../../styles/icons/unfilter.png";
 import { createFilter } from '@moki-client/gui';
+import { getCategory } from '@moki-client/gui';
+import { getSearchableAttributes } from '@moki-client/gui';
+import { getDisplayedAttributes } from '@moki-client/gui';
 import emptyIcon from "../../styles/icons/empty_small.png";
 import tagIcon from "../../styles/icons/tag.png";
 import downloadIcon from "../../styles/icons/download.png";
@@ -243,17 +246,6 @@ export default class listChart extends Component {
         }
     }
 
-    //define searchable field from SearchableFields.js
-    isSearchable(field) {
-        var searchable = getSearchableFields();
-        for (var j = 0; j < searchable.length; j++) {
-            if ("attrs." + searchable[j] === field) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     //insert columns iinto table
     async componentDidMount() {
         //store already exclude alarms list
@@ -451,6 +443,127 @@ export default class listChart extends Component {
         }
     }
 
+    renderExpandRow(cell, value) {
+        //if  attrs.rtp-MOScqex-avg: [* TO 3] red
+        //attrs.rtp-MOScqex-min : [* TO 2] red
+        //attrs.rtp-lossmax: [25 TO *]  red
+        //attrs.rtp-lossavg: [15 TO *] red
+        //attrs.rtp-direction:'oneway'  red
+        if ((cell === "rtp-MOScqex-avg" && value < 3) || (cell === "rtp-MOScqex-min" && value < 2) || (cell === "rtp-lossmax" && value > 25) || (cell === "rtp-lossavg" && value > 15) || (cell === "rtp-direction" && value === "oneway")) {
+            return <p value={value}>
+                <span className="spanTab">{cell}:</span>
+                <span className="red">{value}</span>
+            </p>
+        }
+
+        //attrs.to or attrs.from, use keyword
+        if (cell === "from" || cell === "to") {
+            return <p key={cell} field={"attrs." + cell + ".keyword"} value={value}>
+                <span className="spanTab">{cell}: </span>
+                <img onClick={this.filter} field={"attrs." + cell + ".keyword"} value={value} title="filter" className="icon" alt="filterIcon" src={filter} />
+                <img field={"attrs." + cell + ".keyword"} value={value} onClick={this.unfilter} className="icon" alt="unfilterIcon" title="unfilter" src={unfilter} />
+                <span className="spanTab">{value}</span>
+            </p>
+        }
+
+        //if filename make a link
+        if (cell === "filename") {
+            return <p value={value}> <span className="spanTab">{cell}: </span>
+                <span className="tab">
+                    <button className="noFormatButton" onClick={getPcap} file={value}>
+                        <img className="icon" alt="downloadIcon" src={downloadPcapIcon} title="download PCAP" />
+                    </button>
+                    <a href={"/sequenceDiagram/" + value} target="_blank" rel="noopener noreferrer"><img className="icon" alt="viewIcon" src={viewIcon} title="view PCAP" /></a></span></p>
+        }
+
+        //if audio_file make download icon (only for call-end)
+        if (cell === "audio_file") {
+            return <p value={value}> <span className="spanTab">{cell}: </span>
+                <span className="tab">
+                    <a href={value} ><img className="icon" alt="wavIcon" title="download WAV" src={downloadIcon} /></a>
+                </span></p>
+        }
+
+        //if  reg_expire make human-readable format
+        if (cell === "reg_expire" || cell === "ua_expire") {
+            return <p value={value}>
+                <span className="spanTab">{cell}: </span>
+                <span className="tab">{parseTimestamp(new Date(value * 1000))}</span>
+            </p>
+        }
+
+        //special case: if filename contains "downloadWav" (only for recording) - make a wav link
+        if (cell === "downloadWav") {
+            return <p value={value}> <span className="spanTab">{cell}: </span>
+                <span className="tab">
+                    <a href={value} ><img className="icon" alt="wavIcon" title="download WAV" src={downloadIcon} /></a>
+                </span></p>
+        }
+
+        //searchable fields with attrs
+        if (getSearchableAttributes().includes("attrs." + cell)) {
+            return <p key={cell} field={"attrs." + cell} value={value}>
+                <span className="spanTab">{cell}: </span>
+                <img onClick={this.filter} field={"attrs." + cell} value={value} title="filter" className="icon" alt="filterIcon" src={filter} />
+                <img field={"attrs." + cell} value={value} onClick={this.unfilter} className="icon" alt="unfilterIcon" title="unfilter" src={unfilter} />
+                <span className="spanTab">{value}</span>
+            </p>
+        }
+
+        return <p value={value} key={value}>
+            <span className="spanTab">{cell}: </span>
+            <span className="tab">{value}</span>
+        </p>
+    }
+
+    renderExpand(row) {
+        var keys = Object.keys(row);
+        var displayedAttrs = getDisplayedAttributes();
+        var result = [];
+        var categorySort = [];
+        for (var i = 0; i < keys.length; i++) {
+            if (keys[i] === "attrs") {
+                var attrs = Object.keys(row[keys[i]]);
+                for (var j = 0; j < attrs.length; j++) {
+                    if (displayedAttrs.includes("attrs." + attrs[j])) {
+                        var category = getCategory("attrs." + attrs[j]);
+                        if (!categorySort[category]) categorySort[category] = [];
+                        categorySort[category].push(this.renderExpandRow(attrs[j], row[keys[i]][attrs[j]]));
+                    }
+                }
+            }
+            else if (keys[i] === "geoip") {
+                var attrs = Object.keys(row[keys[i]]);
+                for (var j = 0; j < attrs.length; j++) {
+                    if (displayedAttrs.includes("geoip." + attrs[j])) {
+                        var category = getCategory("geoip." + attrs[j]);
+                        if (!categorySort[category]) categorySort[category] = [];
+                        categorySort[category].push(this.renderExpandRow(attrs[j], row[keys[i]][attrs[j]]));
+                    }
+                }
+
+            }
+            else {
+                if (displayedAttrs.includes(keys[i])) {
+                    var category = getCategory(keys[i]);
+                    if (!categorySort[category]) categorySort[category] = [];
+                    categorySort[category].push(this.renderExpandRow(keys[i], row[keys[i]]));
+                }
+            }
+        }
+
+        var categories = Object.keys(categorySort);
+        //create div for each category
+        for (i = 0; i < categories.length; i++) {
+            result.push(
+                <div key={categories[i]}><h3>{categories[i].toUpperCase()}</h3>
+                    {categorySort[categories[i]]}
+                </div>
+            )
+        }
+        return result;
+    }
+
     render() {
         var thiss = this;
         //download merge pcaps
@@ -561,19 +674,6 @@ export default class listChart extends Component {
 
         }
 
-
-
-        function isDisplay(field) {
-            var display = getDisplayFields();
-            for (var j = 0; j < display.length; j++) {
-                if (display[j] === field) {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-
         //this.isAdmin() || isDisplay("attrs."+cell) ?   
         //what render if user click on row
         const expandRow = {
@@ -581,163 +681,7 @@ export default class listChart extends Component {
             },
             renderer: row => (
                 <div className="tab">
-                    {Object.keys(row._source.attrs).sort().map(cell =>
-                        isDisplay("attrs." + cell) ?
-                            this.isSearchable("attrs." + cell) ?
-                                //if  attrs.rtp-MOScqex-avg: [* TO 3] red
-                                cell === "rtp-MOScqex-avg" ?
-                                    row._source.attrs[cell] < 3 ?
-                                        <p value={row._source.attrs[cell]}>
-                                            <span className="spanTab">{cell}:</span>
-                                            <span className="red">{row._source.attrs[cell]}</span>
-                                        </p>
-                                        :
-                                        <p value={row._source.attrs[cell]}>
-                                            <span className="spanTab">{cell}: </span>
-                                            <span className="tab">{row._source.attrs[cell]}</span>
-                                        </p>
-                                    //attrs.rtp-MOScqex-min : [* TO 2] red
-                                    : cell === "rtp-MOScqex-min" ?
-                                        row._source.attrs[cell] < 2 ?
-                                            <p value={row._source.attrs[cell]}>
-                                                <span className="spanTab">{cell}: </span>
-                                                <span className="red tab">{row._source.attrs[cell]}</span>
-                                            </p>
-                                            :
-                                            <p value={row._source.attrs[cell]}>
-                                                <span className="spanTab">{cell}: </span>
-                                                <span className="tab">{row._source.attrs[cell]}</span>
-                                            </p>
-                                        //attrs.rtp-lossmax: [25 TO *]  red
-                                        : cell === "rtp-lossmax" ?
-                                            row._source.attrs[cell] > 25 ?
-                                                <p value={row._source.attrs[cell]}>
-                                                    <span className="spanTab">{cell}: </span>
-                                                    <span className="red tab">{row._source.attrs[cell]}</span>
-                                                </p>
-                                                :
-                                                <p value={row._source.attrs[cell]}>
-                                                    <span className="spanTab">{cell}: </span>
-                                                    <span className="tab">{row._source.attrs[cell]}</span>
-                                                </p>
-                                            //attrs.rtp-lossavg: [15 TO *] red
-                                            : cell === "rtp-lossavg" ?
-                                                row._source.attrs[cell] > 15 ?
-                                                    <p value={row._source.attrs[cell]}>
-                                                        <span className="spanTab">{cell}: </span>
-                                                        <span className="red tab">{row._source.attrs[cell]}</span>
-                                                    </p>
-                                                    :
-                                                    <p value={row._source.attrs[cell]}>
-                                                        <span className="spanTab">{cell}: </span>
-                                                        <span className="tab">{row._source.attrs[cell]}</span>
-                                                    </p>
-
-                                                //attrs.rtp-direction:'oneway'  red
-                                                : cell === "rtp-direction" ?
-                                                    row._source.attrs[cell] === "oneway" ?
-                                                        <p value={row._source.attrs[cell]}>
-                                                            <span className="spanTab">{cell}: </span>
-                                                            <span className="red tab">{row._source.attrs[cell]}</span>
-                                                        </p>
-                                                        :
-                                                        <p value={row._source.attrs[cell]}>
-                                                            <span className="spanTab">{cell}: </span>
-                                                            <span className="tab">{row._source.attrs[cell]}</span>
-                                                        </p>
-
-                                                    //attrs.to or attrs.from, use keyword 
-                                                    : cell === "from" || cell === "to" ?
-                                                        <p key={cell} field={"attrs." + cell + ".keyword"} value={row._source.attrs[cell]}>
-                                                            <span className="spanTab">{cell}: </span>
-                                                            <img onClick={this.filter} field={"attrs." + cell + ".keyword"} value={row._source.attrs[cell]} title="filter" className="icon" alt="filterIcon" src={filter} />
-                                                            <img field={"attrs." + cell + ".keyword"} value={row._source.attrs[cell]} onClick={this.unfilter} className="icon" alt="unfilterIcon" title="unfilter" src={unfilter} />
-                                                            <span className="spanTab">{row._source.attrs[cell]}</span>
-                                                        </p>
-                                                        :
-                                                        <p key={cell} field={"attrs." + cell} value={row._source.attrs[cell]}>
-                                                            <span className="spanTab">{cell}: </span>
-                                                            <img onClick={this.filter} field={"attrs." + cell} value={row._source.attrs[cell]} title="filter" className="icon" alt="filterIcon" src={filter} />
-                                                            <img field={"attrs." + cell} value={row._source.attrs[cell]} onClick={this.unfilter} className="icon" alt="unfilterIcon" title="unfilter" src={unfilter} />
-                                                            <span className="spanTab">{row._source.attrs[cell]}</span>
-                                                        </p>
-                                :
-                                //if filename make a link
-                                cell === "filename" ?
-                                    <p value={row._source.attrs[cell]}> <span className="spanTab">{cell}: </span>
-                                        <span className="tab">
-                                            <button className="noFormatButton" onClick={getPcap} file={row._source.attrs[cell]}>  <img className="icon" alt="downloadIcon" src={downloadPcapIcon} title="download PCAP" /></button>
-
-                                            <a href={"/sequenceDiagram/" + row._source.attrs[cell]} target="_blank" rel="noopener noreferrer"><img className="icon" alt="viewIcon" src={viewIcon} title="view PCAP" /></a></span></p>
-
-                                    :
-                                    //if audio_file make download icon (only for call-end)
-                                    cell === "audio_file" ?
-                                        <p value={row._source.attrs[cell]}> <span className="spanTab">{cell}: </span>
-                                            <span className="tab">
-                                                <a href={row._source.attrs[cell]} ><img className="icon" alt="wavIcon" title="download WAV" src={downloadIcon} /></a>
-                                            </span></p>
-                                        :
-
-                                        //if  reg_expire make human-readable format
-                                        cell === "reg_expire" || cell === "ua_expire" ?
-                                            <p value={row._source.attrs[cell]}>
-                                                <span className="spanTab">{cell}: </span>
-                                                <span className="tab">{parseTimestamp(new Date(row._source.attrs[cell] * 1000))}</span>
-                                            </p>
-                                            :
-
-                                            //not searchable fields with attrs
-                                            <p value={row._source.attrs[cell]}>
-                                                <span className="spanTab">{cell}: </span>
-                                                <span className="tab">{row._source.attrs[cell]}</span>
-                                            </p>
-                            :
-                            <span />
-                    )}
-
-                    {row._source.geoip ?
-                        Object.keys(row._source.geoip).sort().map(cell =>
-                            isDisplay("geoip." + cell) ?
-                                cell === "country_name" ?
-                                    <p key={cell} field={"geoip." + cell} value={row._source.geoip[cell]}>
-                                        <span className="spanTab">{cell}: </span>
-                                        <img onClick={this.filter} field={"geoip." + cell} value={row._source.geoip[cell]} title="filter" className="icon" alt="filterIcon" src={filter} />
-                                        <img field={"geoip." + cell} value={row._source.geoip[cell]} onClick={this.unfilter} className="icon" alt="unfilterIcon" title="unfilter" src={unfilter} />
-                                        <span className="spanTab">{row._source.geoip[cell]}</span>
-
-                                    </p>
-                                    :
-
-                                    <p value={row._source.geoip[cell]}>
-                                        <span className="spanTab">{cell}: </span>
-                                        <span className="tab">{row._source.geoip[cell]}</span>
-                                    </p>
-                                : <span />
-                        ) : <span />}
-
-                    {this.props.name === "exceeded" || this.props.name === "system" || this.props.name === "network" || this.props.name === "realm" ?
-                        Object.keys(row._source).sort().map(cell =>
-                            isDisplay(cell) ?
-                                <p value={row._source[cell]}>
-                                    <span className="spanTab">{cell}: </span>
-                                    <span className="tab">{row._source[cell].toString()}</span>
-                                </p>
-                                : <span />
-                        ) : <span />}
-
-                    { //special case: if filename contains "downloadWav" (only for recording) - make a wav link
-                        Object.keys(row._source).sort().map(cell =>
-                            cell === "downloadWav" ?
-                                <p value={row._source[cell]}> <span className="spanTab">{cell}: </span>
-                                    <span className="tab">
-                                        <a href={row._source[cell]} ><img className="icon" alt="wavIcon" title="download WAV" src={downloadIcon} /></a>
-
-                                    </span></p>
-                                : <span />
-                        )}
-
-
+                    {this.renderExpand(row._source)}
                 </div>
             ),
             expandByColumnOnly: true,
@@ -770,7 +714,7 @@ export default class listChart extends Component {
 
         const selectRowProp = {
             mode: 'checkbox',
-            clickToSelect: true,
+            clickToSelect: false,
             clickToEdit: true,
             selected: this.state.selected,
             onSelect: this.handleOnSelect,
@@ -861,6 +805,8 @@ export default class listChart extends Component {
             pageButtonRenderer,
             sizePerPage: this.state.count
         };
+
+        getSearchableAttributes();
 
         return (
             <div key={"table" + this.props.name} className="chart">
