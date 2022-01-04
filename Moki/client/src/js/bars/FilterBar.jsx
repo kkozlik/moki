@@ -4,7 +4,7 @@ import React, {
 
 import { Navbar } from 'react-bootstrap';
 import Autocomplete from "./Autocomplete";
-import { getSearchableFields } from "../helpers/SearchableFields.js";
+import { getSearchableAttributes } from '@moki-client/gui';
 import store from "../store/index";
 import { setFilters } from "../actions/index";
 import { createFilter } from '@moki-client/gui';
@@ -66,7 +66,7 @@ class filterBar extends Component {
     //check if attribute prefix is correct
     addAttrs(value) {
         if (value.indexOf(".") === -1) {
-            var searchable = getSearchableFields();
+            var searchable = getSearchableAttributes();
             value = value.substring(0, value.indexOf(":"));
             //remove spaces
             value.replace(/\s+/g, '');
@@ -284,7 +284,7 @@ class filterBar extends Component {
                         <Navbar variant="light">
                             <div className="row" style={{ "width": "100%", "display": "inline-flex" }}>
                                 <Autocomplete
-                                    suggestions={getSearchableFields()} enter={this.state.filterbar} tags={this.props.tags} />
+                                    suggestions={getSearchableAttributes()} enter={this.state.filterbar} tags={this.props.tags} />
                                 <div className="row" style={{ "marginLeft": "5px", "marginTop": "6px", "display": "table-cell", "width": "1px", "verticalAlign": "bottom" }}>
                                     <div className="row" style={{ "width": "max-content" }}>
                                         {url === "/conference" && <input className="text-left form-control form-check-input filter-right" type="text" id="filterRoom" placeholder="CONF ID" onKeyUp={this.specFilter} />}

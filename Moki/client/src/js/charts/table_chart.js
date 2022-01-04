@@ -10,8 +10,6 @@ import React, {
 import BootstrapTable from '@moki-client/react-bootstrap-table-next';
 import cellEditFactory from 'react-bootstrap-table2-editor';
 import paginationFactory from 'react-bootstrap-table2-paginator';
-import { getSearchableFields } from "../helpers/SearchableFields.js";
-import { getDisplayFields } from "../helpers/DisplayFields.js";
 import ToolkitProvider from 'react-bootstrap-table2-toolkit';
 import filter from "../../styles/icons/filter.png";
 import unfilter from "../../styles/icons/unfilter.png";
@@ -27,7 +25,7 @@ import downloadPcapIcon from "../../styles/icons/downloadPcap.png";
 import viewIcon from "../../styles/icons/view.png";
 import storePersistent from "../store/indexPersistent";
 import store from "../store/index";
-import { elasticsearchConnection } from '../helpers/elasticsearchConnection';
+import { elasticsearchConnection } from '@moki-client/gui';
 import { downloadPcap } from '../helpers/download/downloadPcap';
 import { downloadSD } from '../helpers/download/downloadSD';
 import { tableColumns } from '../helpers/TableColumns';
