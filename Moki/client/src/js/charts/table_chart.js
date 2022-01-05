@@ -441,7 +441,7 @@ export default class listChart extends Component {
         }
     }
 
-    renderExpandRow(cell, value) {
+    renderExpandRow(cell, value, isSearchable = false) {
         //if  attrs.rtp-MOScqex-avg: [* TO 3] red
         //attrs.rtp-MOScqex-min : [* TO 2] red
         //attrs.rtp-lossmax: [25 TO *]  red
@@ -508,6 +508,16 @@ export default class listChart extends Component {
             </p>
         }
 
+        //var*
+        if (isSearchable) {
+            return <p key={cell} field={"var." + cell} value={value}>
+                <span className="spanTab">{cell}: </span>
+                <img onClick={this.filter} field={"var." + cell} value={value} title="filter" className="icon" alt="filterIcon" src={filter} />
+                <img field={"var." + cell} value={value} onClick={this.unfilter} className="icon" alt="unfilterIcon" title="unfilter" src={unfilter} />
+                <span className="spanTab">{value}</span>
+            </p>
+        }
+
         return <p value={value} key={value}>
             <span className="spanTab">{cell}: </span>
             <span className="tab">{value}</span>
@@ -547,7 +557,7 @@ export default class listChart extends Component {
                 for (let j = 0; j < variable.length; j++) {
                     let category = "VAR";
                     if (!categorySort[category]) categorySort[category] = [];
-                    categorySort[category].push(this.renderExpandRow(variable[j], row[keys[i]][variable[j]]));
+                    categorySort[category].push(this.renderExpandRow(variable[j], row[keys[i]][variable[j]], true));
                 }
             }
             else {
