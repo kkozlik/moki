@@ -6,7 +6,9 @@ import isNumber from '../helpers/isNumber';
 import isIP from '../helpers/isIP';
 import isEmail from '../helpers/isEmail';
 import deleteIcon from "../../styles/icons/delete_grey.png";
-import { elasticsearchConnection} from  '@moki-client/gui';
+import { elasticsearchConnection } from '@moki-client/gui';
+import storePersistent from "../store/indexPersistent";
+
 
 class Settings extends Component {
     constructor(props) {
@@ -203,6 +205,18 @@ class Settings extends Component {
                 if (!response.ok) {
                     console.error(response.statusText);
                 }
+                else {
+                    //store new settings in storage
+                    result.forEach(res => {
+                        jsonData.forEach(data => {
+                            if (data.attributes === res.attribute) {
+                                data.value = res.value;
+                            }
+                        })
+                    });
+                    let settings = storePersistent.getState().settings;
+                    settings[0] = { app: "m_config", attrs: jsonData };
+                }
                 return response.json();
             }).then(function (responseData) {
                 if (responseData.msg) {
@@ -213,7 +227,7 @@ class Settings extends Component {
                 console.error(error);
                 alert("Problem with saving data. " + error);
             });
-            
+
         }
     }
 
@@ -224,9 +238,9 @@ class Settings extends Component {
         var alarms = [];
         if (data.length !== 0) {
             // Outer loop to create parent
-            for(var i = 0; i < data.length; i++) {
-                 //special case: time format
-                 if (data[i].attribute === "dateFormat") {
+            for (var i = 0; i < data.length; i++) {
+                //special case: time format
+                if (data[i].attribute === "dateFormat") {
                     alarms.push(
                         <div key={data[i].attribute + "key"} className="tab ">
                             <span className="form-inline row justify-content-start paddingBottom">
@@ -235,17 +249,17 @@ class Settings extends Component {
                                     {data[i].details ? <div className="smallText">{data[i].details}</div> : ""}
                                 </span>
                                 {<select className="text-left form-control form-check-input" defaultValue={data[i].value} id={data[i].attribute} restriction={JSON.stringify(data[i].restriction)} label={data[i].attribute} onChange={(e) => { this.check(e.target.getAttribute("label"), e.target.value, e.target.getAttribute("restriction")) }} >
-                                         <option value={"DD/MM/YYYY"} key={"20/12/2020"}>20/12/2020</option>
-                                         <option value={"MM/DD/YYYY"} key={"12/20/2020"}>12/20/2020</option> 
-                                         <option value={"YYYY-MM-DD"} key={"2020-20-12"}>2020-20-12</option> 
-                                         <option value={"DD-MMM-YYYY"} key={"20-Dec-2020"}>20-Dec-2020</option> 
-                                         <option value={"DD MMM, YYYY"} key={"20 Dec, 2020"}>20 Dec, 2020</option>
-                                         <option value={"MMM DD, YYYY"} key={"Dec 20, 2020"}>Dec 20, 2020</option>
-                                </select>} 
-                                </span></div>);
+                                    <option value={"DD/MM/YYYY"} key={"20/12/2020"}>20/12/2020</option>
+                                    <option value={"MM/DD/YYYY"} key={"12/20/2020"}>12/20/2020</option>
+                                    <option value={"YYYY-MM-DD"} key={"2020-20-12"}>2020-20-12</option>
+                                    <option value={"DD-MMM-YYYY"} key={"20-Dec-2020"}>20-Dec-2020</option>
+                                    <option value={"DD MMM, YYYY"} key={"20 Dec, 2020"}>20 Dec, 2020</option>
+                                    <option value={"MMM DD, YYYY"} key={"Dec 20, 2020"}>Dec 20, 2020</option>
+                                </select>}
+                            </span></div>);
                 }
-                 //special case:  date format
-                else  if (data[i].attribute === "timeFormat") {
+                //special case:  date format
+                else if (data[i].attribute === "timeFormat") {
                     alarms.push(
                         <div key={data[i].attribute + "key"} className="tab ">
                             <span className="form-inline row justify-content-start paddingBottom">
@@ -254,9 +268,9 @@ class Settings extends Component {
                                     {data[i].details ? <div className="smallText">{data[i].details}</div> : ""}
                                 </span>
                                 {<select className="text-left form-control form-check-input" defaultValue={data[i].value} id={data[i].attribute} restriction={JSON.stringify(data[i].restriction)} label={data[i].attribute} onChange={(e) => { this.check(e.target.getAttribute("label"), e.target.value, e.target.getAttribute("restriction")) }} >
-                                         <option value={"hh:mm:ss A"} key={"9:40 AM"}>7:40:20 AM</option>
-                                         <option value={"HH:mm:ss"} key={"9:40:20"}>19:40:20</option> 
-                                </select>} 
+                                    <option value={"hh:mm:ss A"} key={"9:40 AM"}>7:40:20 AM</option>
+                                    <option value={"HH:mm:ss"} key={"9:40:20"}>19:40:20</option>
+                                </select>}
                             </span></div>);
                 }
                 //special case: number restriction
@@ -283,7 +297,7 @@ class Settings extends Component {
                                 </span>
                                 {<select className="text-left form-control form-check-input" defaultValue={data[i].value} id={data[i].attribute} restriction={JSON.stringify(data[i].restriction)} label={data[i].attribute} onChange={(e) => { this.check(e.target.getAttribute("label"), e.target.value, e.target.getAttribute("restriction")) }} >
                                     {data[i].restriction.type.enum.map((e, i) => {
-                                        return (  <option value={e} key={e}>{e}</option> )
+                                        return (<option value={e} key={e}>{e}</option>)
                                     })}
                                 </select>
                                 }
