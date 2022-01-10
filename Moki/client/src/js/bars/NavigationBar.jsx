@@ -197,11 +197,11 @@ class navBar extends Component {
         var navbarSettings = renderNavBar(dashboardsSettings);
 
         //remove logout and changePassword, it's not dashboard, just link
-        var userDash = [this.state.dashboardsUser];
-        userDash.splice(userDash.indexOf("logout"), 1);
-        userDash.splice(userDash.indexOf("changePassword"), 1);
+        var userDash = this.state.dashboardsUser;
+        if(userDash.indexOf("Logout") !== -1) userDash.splice(userDash.indexOf("Logout"), 1);
+        if(userDash.indexOf("changePassword") !== -1) userDash.splice(userDash.indexOf("changePassword"), 1);
         var navbarUser = renderNavBar(userDash);
-
+ 
         return (
             <div id="sidebar-container" className="sidebar-expanded d-none d-md-block">
                 <ul className="list-group">
