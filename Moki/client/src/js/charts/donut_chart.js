@@ -86,7 +86,7 @@ export default class StackedChart extends Component {
                 var hmac = profile[0] ? profile[0].userprefs.validation_code : "";
                 var mode = profile[0] ? profile[0].userprefs.mode : "";
                 
-                if (((mode === "encrypt" || mode === "anonymous") && nmb === hmac) || (nmb === "plain" && mode === "plain")) {
+                if ((mode === "anonymous" && nmb !== "plain") || (nmb === "plain" && mode === "plain") || (mode === "encrypt" && nmb === hmac)) {
                     return "green";
                 }
                 else {
