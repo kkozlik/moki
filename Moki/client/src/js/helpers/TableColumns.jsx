@@ -335,7 +335,7 @@ function getColumn(column_name, tags, tag) {
                     headerStyle: { width: '170px' },
                     formatter: (cell, obj) => {
                         var ob = obj._source[column_name.source];
-                        if(parseTimestamp(ob) instanceof Date && isFinite(parseTimestamp(ob))){
+                        if(parseTimestamp(ob) !== "Invalid date" ){
                             return parseTimestamp(ob)
                         }
                         else {
