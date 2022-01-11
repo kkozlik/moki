@@ -3,6 +3,10 @@
     --second: #808080;
 }
 
+a {
+    color: var(--second);
+}
+
 .reset-expansion-style{
     background-color: white !important;
 }
