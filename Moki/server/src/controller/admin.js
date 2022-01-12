@@ -176,10 +176,16 @@ class AdminController {
       console.log(`ACCESS getJWTsipUserFilter: no domain defined for user ${subId}`);
       return res.json({ redirect: "nodomainID" });
     }
-    // Site-Admin level
+    // Site-Admin level or site-owner level
     if (jwtbit === 1) {
-      console.log(`ACCESS: USER LEVEL 1, Domain Filter Applied: ${domainID} for user ${subId}`);
-      return res.json({ user: `SITE ADMIN`, aws: true, email: email, domainID: domainID, jwt: jwtbit, "tls-cn": subId });
+      if (domainID === subId) {
+        console.log(`ACCESS: USER LEVEL 1 - site owner, Domain Filter Applied: ${domainID} for user ${subId}`);
+        return res.json({ user: `SITE OWNER`, aws: true, email: email, domainID: domainID, jwt: jwtbit, "tls-cn": subId });
+      }
+      else {
+        console.log(`ACCESS: USER LEVEL 1, Domain Filter Applied: ${domainID} for user ${subId}`);
+        return res.json({ user: `SITE ADMIN`, aws: true, email: email, domainID: domainID, jwt: jwtbit, "tls-cn": subId });
+      }
     }
     // End-User level
     if (jwtbit === 2) {
