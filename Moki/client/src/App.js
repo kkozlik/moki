@@ -481,12 +481,13 @@ class App extends Component {
                     })
 
                     //set admin
-                    if (sip.user === "ADMIN" && sip.user !== "SITE ADMIN") {
+                    if (sip.jwt === 0) {
                         this.setState({
                             admin: true
                         })
                     }
-                    if (sip.user === "SITE ADMIN" || sip.user === "DEFAULT") {
+
+                    if (sip.jwt === 1 || sip.user === "DEFAULT") {
                         this.setState({
                             siteAdmin: true
                         })
