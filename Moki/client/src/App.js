@@ -205,7 +205,8 @@ class App extends Component {
         var dashboards = Object.keys(jsonData.dashboards);
         if ((this.state.aws && !this.state.admin) || !this.state.aws) {
             dashboards = dashboards.filter(dashboard => jsonData.dashboards[dashboard]);
-        }
+        } 
+
         this.setState({
             dashboards: dashboards
         });
@@ -578,6 +579,10 @@ class App extends Component {
                 //ADMIN ROLE: show everything
             } else if (aws === false || this.state.admin || this.state.siteAdmin) {
                 console.info("Router: admin mode");
+                var dashboardAlter = [...this.state.dashboards];
+                if (this.state.aws) {
+                    dashboardAlter.push("tenant");
+                }
 
                 //admin context
                 sipUserSwitch = <div className="row" id="body-row" >
@@ -596,7 +601,7 @@ class App extends Component {
                         <Notificationbar className="errorBar" error={this.state.error} deleteAllErrors={this.deleteAllErrors}></Notificationbar>
                         <div className="row">
                             <Switch >
-                                {paths(this.state.dashboards, this.state.tags, this.state.hostnames, this.state.dstRealms, this.state.srcRealms, this.showError)}
+                                {paths(dashboardAlter, this.state.tags, this.state.hostnames, this.state.dstRealms, this.state.srcRealms, this.showError)}
                                 {paths(this.state.dashboardsSettings, this.state.tags, this.state.hostnames, this.state.dstRealms, this.state.srcRealms, this.showError)}
                                 {paths(this.state.dashboardsUser, this.state.tags, this.state.hostnames, this.state.dstRealms, this.state.srcRealms, this.showError)}
                                 {aws && <Route path="/logout" />}
