@@ -3,6 +3,7 @@ const { parseBase64 } = require('../modules/jwt');
 const { isRequireJWT } = require('../modules/config');
 const { exec } = require("child_process");
 const fs = require('fs');
+const { cfg } = require('../modules/config');
 
 let oldJti = "";
 const hfName = 'x-amzn-oidc-data';
@@ -246,7 +247,7 @@ class AdminController {
 create new user with password in htpasswd
 */
   static async createUser(req, res) {
-    exec("sudo htpasswd -b -c /etc/nginx/htpasswd " + req.body.name + " " + req.body.password, (error, stdout, stderr) => {
+    exec("sudo htpasswd -b -c "+cfg.htpasswd+ " " + req.body.name + " " + req.body.password, (error, stdout, stderr) => {
       if (error) {
         console.error(`Can't create new user in nginx : ${error.message}`);
         return res.json({ "error": error.message });
@@ -272,10 +273,10 @@ create new user with password in htpasswd
   static noNginxUser(req, res) {
     try {
       // Check if file exist
-      fs.exists('/etc/nginx/htpasswd', function (file) {
+      fs.exists(cfg.htpasswd, function (file) {
         if (file) {
           //read file
-          fs.readFile('/etc/nginx/htpasswd', 'utf8', function (err, data) {
+          fs.readFile(cfg.htpasswd, 'utf8', function (err, data) {
             if (err) {
               res.json({ "msg": true });
             }
