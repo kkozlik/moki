@@ -8,6 +8,7 @@ import shareIcon from "../../styles/icons/share_dark.png";
 import unfilterIcon from "../../styles/icons/unfilter.png";
 import downloadPcapIcon from "../../styles/icons/downloadPcap.png";
 import downloadIcon from "../../styles/icons/download.png";
+import alertProfileIcon from "../../styles/icons/alertProfile.png";
 import viewIcon from "../../styles/icons/view.png";
 import { createFilter } from "@moki-client/gui"
 import { formatDuration } from "./getDurationFormat";
@@ -19,6 +20,7 @@ import storePersistent from "../store/indexPersistent";
 import store from "../store/index";
 import { parseTimestamp } from "../helpers/parseTimestamp";
 import SimpleSequenceDiagram from "../charts/simpleSequenceDiagram";
+import AlertProfile from "../helpers/alertProfile";
 import { getSearchableAttributes } from '@moki-client/gui';
 import { Types } from '@moki-client/gui';
 
@@ -268,8 +270,7 @@ function getColumn(column_name, tags, tag) {
                     {(ob.attrs.filenameDownload && column_name.icons.includes("downloadAll")) &&
                         <button className="noFormatButton" onClick={() => downloadAll(ob)} file={ob.attrs.filenameDownload} data={obj}>  <img className="icon" alt="downloadIcon" src={downloadIcon} title="download all" /></button>
                     }
-                    {(ob.attrs.filenameDownload && column_name.icons.includes("diagram")) && <a href={"/sequenceDiagram/" + ob.attrs.filenameDownload} target="_blank" rel="noopener noreferrer"><img className="icon" alt="viewIcon" src={viewIcon} title="view PCAP" /></a>
-                    }
+                    {(ob.attrs.filenameDownload && column_name.icons.includes("diagram") && storePersistent.getState().user.aws === false) && <a href={"/sequenceDiagram/" + ob.attrs.filenameDownload} target="_blank" rel="noopener noreferrer"><img className="icon" alt="viewIcon" src={viewIcon} title="view PCAP" /></a>}
                     {(ob.dbg && ob.dbg.msg_trace && column_name.icons.includes("diagram")) && <Popup trigger={<img className="icon" alt="viewIcon" src={viewIcon} title="diagram" />} modal>
                         {close => (
                             <div className="Advanced">
@@ -278,6 +279,16 @@ function getColumn(column_name, tags, tag) {
                                 </button>
                                 <div className="contentAdvanced" style={{ "padding": "0px" }}>
                                     <SimpleSequenceDiagram data={ob} />
+                                </div>
+                            </div>
+                        )}
+                    </Popup>
+                    }
+                     {(storePersistent.getState().user.aws === true) && <Popup trigger={<img className="icon" alt="alertProfileIcon" src={alertProfileIcon} title="alert profile" />} modal>
+                        {close => (
+                            <div className="Advanced">
+                                <div className="contentAdvanced" style={{ "padding": "0px" }}>
+                                    <AlertProfile data={ob} />
                                 </div>
                             </div>
                         )}
