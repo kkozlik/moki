@@ -1,25 +1,9 @@
 // config.js
-const dotenv = require('dotenv');
 const fs = require('fs');
 const path = require('path');
 const appDir = path.dirname(require.main.filename);
+const c = require('@moki-server/server/modules/config');
 
-dotenv.config();
-
-const c = {
-  // redisAddr: process.env.REDIS_ADDR || '127.0.0.1',
-  // redisPort: process.env.REDIS_PORT || '6379',
-  port: process.env.PORT || 5000,
-  addr: process.env.ADDR || '127.0.0.1',
-  nodeEnv: process.env.NODE_ENV || 'production',
-  monitorVersion: '4.7',
-  userFilter: '*',
-  fileDefaults: '/etc/abc-monitor/defaults.json',
-  fileMonitor: '/etc/abc-monitor/monitor.json',
-  fileGUILayout: '/etc/abc-monitor/monitor-layout.json',
-  rootDir: appDir,
-  es: process.env.ES || 'localhost:9200',
-};
 
 if (c.nodeEnv === 'test') {
   c.port = 5001;
