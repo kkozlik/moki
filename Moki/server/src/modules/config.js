@@ -1,11 +1,8 @@
 // config.js
-const dotenv = require('dotenv');
 const fs = require('fs');
 const path = require('path');
 const appDir = path.dirname(require.main.filename);
 const c = require('@moki-server/server/modules/config');
-
-dotenv.config();
 
 
 if (c.nodeEnv === 'test') {
