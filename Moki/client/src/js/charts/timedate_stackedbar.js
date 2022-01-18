@@ -33,17 +33,17 @@ export default class StackedChart extends Component {
         else return null;
     }
 
-    componentDidUpdate(prevProps, prevState) {
+    async componentDidUpdate(prevProps, prevState) {
         if (prevProps !== this.props) {
             //var isFirst = this.state.data && this.state.data.length === 0 ? true : false;
             var isFirst = true;
 
             this.setState({ data: this.props.data });
-            this.draw(this.props.data, this.props.id, this.props.width, this.props.name, this.props.units, isFirst);
+            await this.draw(this.props.data, this.props.id, this.props.width, this.props.name, this.props.units, isFirst);
         }
     }
 
-    draw(data, id, width, name, units, isFirst) {
+    async draw(data, id, width, name, units, isFirst) {
         width = width < 0 ? 1028 : width;
         units = units ? " (" + units + ")" : "";
         //FOR UPDATE: remove chart if it's already there
@@ -184,8 +184,12 @@ export default class StackedChart extends Component {
             var keys = this.props.keys ? storePersistent.getState().layout.types[this.props.keys] ? storePersistent.getState().layout.types[this.props.keys] : this.props.keys : storePersistent.getState().layout.types["overview"];
 
             if (window.location.pathname === "/exceeded") {
-                keys =  getExceededTypes().map(item => item.id);
+                keys = [];
+                for (let hit of await getExceededTypes()) {
+                    keys.push(hit.id);
+                }
             }
+
             //var id = 0;
             var stack = d3.stack()
                 //.keys(["Register new", "Registration expired", "Register del"])
@@ -210,9 +214,9 @@ export default class StackedChart extends Component {
                         if (d.key === "3.6-4.03") { return "#95c196"; }
                         if (d.key === "4.03-*") { return "#4f9850"; }
                     }
-                    else if(window.location.pathname === "/exceeded"){
+                    else if (window.location.pathname === "/exceeded") {
                         return getExceededColor(d.key);
-                    } 
+                    }
                     else if (ColorType[d.key]) {
                         return ColorType[d.key];
                     }

@@ -49,7 +49,7 @@ class Typebar extends Component {
         var pathname = window.location.pathname.substring(1);
 
         if (pathname === "exceeded") {
-            types = getExceededTypes();
+            types = await getExceededTypes();
         }
         else if (jsonData.types[pathname]) {
             for (var i = 0; i < jsonData.types[pathname].length; i++) {
