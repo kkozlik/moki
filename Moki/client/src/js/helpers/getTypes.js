@@ -1,5 +1,6 @@
 import store from "../store/index";
 import storePersistent from "../store/indexPersistent";
+import { getExceededTypes } from '@moki-client/gui';
 
 export const getTypes = () => {
     var types = store.getState().types;
@@ -7,6 +8,9 @@ export const getTypes = () => {
     //check if correct types - changing dashboard from no type to types one
     var pathname = window.location.pathname.substring(1);
     var dashboardTypesChecked = storePersistent.getState().layout.types[pathname];
+    if(window.location.pathname === "/exceeded"){
+        dashboardTypesChecked = getExceededTypes();
+    }
     if (dashboardTypesChecked === undefined) {
         types = [];
     }

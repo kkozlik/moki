@@ -3,7 +3,7 @@ import React, {
 } from 'react';
 
 import Type from './Type';
-import {Types} from '@moki-client/gui';
+import { Types, getExceededTypes } from '@moki-client/gui';
 import checkAll from "../../styles/icons/checkAll.png";
 import uncheckAll from "../../styles/icons/uncheckAll.png";
 import store from "../store/index";
@@ -48,7 +48,10 @@ class Typebar extends Component {
         var jsonData = await getLayoutSettings();
         var pathname = window.location.pathname.substring(1);
 
-        if (jsonData.types[pathname]) {
+        if (pathname === "exceeded") {
+            types = getExceededTypes();
+        }
+        else if (jsonData.types[pathname]) {
             for (var i = 0; i < jsonData.types[pathname].length; i++) {
                 var dashboardTypes = jsonData.types[pathname];
                 //is in url
@@ -78,7 +81,7 @@ class Typebar extends Component {
             }
         }
         //set new types in state, don't dispatch it
-        this.setState({types: types});
+        this.setState({ types: types });
         //store.dispatch(assignType(types));
     }
 
@@ -149,9 +152,9 @@ class Typebar extends Component {
         if (this.state.types.length !== 0) {
             var types = (
                 <div style={{ "display": "contents" }}>
-                    { this.state.types.map((type, index) => {
+                    {this.state.types.map((type, index) => {
                         return <Type key={type.id}
-                            name={type.name} id={type.id} state={type.state} disableType={this.disableType} enableType={this.enableType} />
+                            name={type.name} id={type.id} state={type.state} description={type.description} disableType={this.disableType} enableType={this.enableType} />
                     })}
                 </div>
             )

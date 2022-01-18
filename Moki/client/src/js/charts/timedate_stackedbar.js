@@ -1,15 +1,14 @@
 import React, { Component } from 'react';
 import * as d3 from "d3";
-import {ColorType} from '@moki-client/gui';
-import {Colors} from '@moki-client/gui';
+import { ColorType, getExceededColor, Colors } from '@moki-client/gui';
 import { timestampBucket } from '../bars/TimestampBucket.js';
 import store from "../store/index";
 import storePersistent from "../store/indexPersistent";
 import { setTimerange } from "../actions/index";
-import { createFilter } from '@moki-client/gui';
+import { createFilter, getExceededTypes } from '@moki-client/gui';
 import { getTimeBucket, getTimeBucketInt } from "../helpers/getTimeBucket";
 import emptyIcon from "../../styles/icons/empty_small.png";
-import {parseTimestamp} from "../helpers/parseTimestamp";
+import { parseTimestamp } from "../helpers/parseTimestamp";
 
 /*
 format:
@@ -181,7 +180,12 @@ export default class StackedChart extends Component {
 
             });
 */
+
             var keys = this.props.keys ? storePersistent.getState().layout.types[this.props.keys] ? storePersistent.getState().layout.types[this.props.keys] : this.props.keys : storePersistent.getState().layout.types["overview"];
+
+            if (window.location.pathname === "/exceeded") {
+                keys =  getExceededTypes().map(item => item.id);
+            }
             //var id = 0;
             var stack = d3.stack()
                 //.keys(["Register new", "Registration expired", "Register del"])
@@ -206,9 +210,13 @@ export default class StackedChart extends Component {
                         if (d.key === "3.6-4.03") { return "#95c196"; }
                         if (d.key === "4.03-*") { return "#4f9850"; }
                     }
+                    else if(window.location.pathname === "/exceeded"){
+                        return getExceededColor(d.key);
+                    } 
                     else if (ColorType[d.key]) {
                         return ColorType[d.key];
-                    } else {
+                    }
+                    else {
                         return colorScale(d.key);
                     }
                 })
