@@ -48,7 +48,7 @@ class exceededController extends Controller {
       //INCIDENT COUNT
       { index: "exceeded*", template: timerange_query, filter: "*" },
       //EXCEEDED TYPE
-      { index: "exceeded*", template: agg, params: ["exceeded"], filter: "*" },
+      { index: "exceeded*", template: agg, params: ["exceeded"], filter: "*", types:"*", nofilter:true },
       //TOP OFFENDERS BY COUNT
       { index: "exceeded*", template: agg, params: ["attrs.from.keyword"], filter: "*" },
       //EVENTS BY IP ADDR EXCEEDED
@@ -94,7 +94,7 @@ class exceededController extends Controller {
    *               $ref: '#/definitions/ChartResponseError'
    */
   static getTable(req, res, next) {
-    super.requestTable(req, res, next, { index: "exceeded*", filter: "*" }, "exceeded");
+    super.requestTable(req, res, next, { index: "exceeded*", filter: "*", types:"*" });
   }
 }
 

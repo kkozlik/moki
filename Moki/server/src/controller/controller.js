@@ -20,7 +20,6 @@ class Controller {
   static request(req, res, next, requests, dashboard = "overview") {
     async function search() {
       const client = connectToES();
-      const filters = getFiltersConcat(req.body.filters);
       let types = req.body.types;
 
       if (req.body.timerange_lte) {
@@ -31,6 +30,15 @@ class Controller {
         timestamp_gte = Math.round(req.body.timerange_gte);
       }
 
+      //check if domain fiter should be use
+      const isDomainFilter = await getJWTsipUserFilter(req);
+      if (isDomainFilter.domain) {
+        domainFilter = isDomainFilter.domain;
+        //check if user fiter should be use
+        if (isDomainFilter.userFilter) {
+          userFilter = isDomainFilter.userFilter;
+        }
+      }
 
       //check if encrypt filter should be used
       let isEncryptChecksumFilter = await getEncryptChecksumFilter(req);
@@ -65,6 +73,8 @@ class Controller {
 
       var isEncryptChecksumFilterOld = isEncryptChecksumFilter;
       for (let i = 0; i < requests.length; i++) {
+        var filters = getFiltersConcat(req.body.filters);
+
         //disable types for specific requests (e.g. different index in dashboard)
         if (requests[i].types) {
           types = "*";
@@ -129,22 +139,11 @@ class Controller {
 
         timebucket = getTimestampBucket(timestamp_gte, timestamp_lte);
 
-        if (requests[i].index.includes("collectd")) {
+        if (requests[i].index.includes("collectd")){
           isEncryptChecksumFilter = "*";
         }
 
         if (requests[i].params) {
-
-          //check if domain fiter should be use
-          const isDomainFilter = await getJWTsipUserFilter(req);
-          if (isDomainFilter.domain) {
-            domainFilter = isDomainFilter.domain;
-            //check if user fiter should be use
-            if (isDomainFilter.userFilter) {
-              userFilter = isDomainFilter.userFilter;
-            }
-          }
-
           //check if params contains "timebucket", insert it
           let params = requests[i].params;
           if (params.includes("timebucket")) {
@@ -171,6 +170,11 @@ class Controller {
             isEncryptChecksumFilter = "*";
             types = "*";
           }
+
+          if(requests[i].nofilter){
+            filters = "*";
+          }
+
           requests[i].query = requests[i].template.getTemplate(...params, getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, requests[i].filter, domainFilter, isEncryptChecksumFilter, requests[i].exists), supress);
 
         }
@@ -197,6 +201,8 @@ class Controller {
       }
       console.info("SERVER search with filters: " + filters + " types: " + types + " timerange: " + timestamp_gte + "-" + timestamp_lte + " userFilter: " + userFilter + " domainFilter: " + domainFilter + " encrypt checksum: " + isEncryptChecksumFilter);
       console.log(new Date() + " send msearch");
+
+
       const requestList = [];
       for (let j = 0; j < requests.length; j++) {
         //console.log(JSON.stringify(requests[j].query));
@@ -254,14 +260,14 @@ class Controller {
         }
       }
 
-      if (requests.index === "report*") {
+      if(requests.index === "report*"){
         types = "*";
       }
 
       if (req.url.includes("network")) {
         types = "*";
       }
-
+      
       if (req.body.timerange_lte) {
         timestamp_lte = Math.round(req.body.timerange_lte);
       }
@@ -298,7 +304,7 @@ class Controller {
       console.info("SERVER search with filters: " + filters + " types: " + types + " timerange: " + timestamp_gte + "-" + timestamp_lte + " timebucket: " + timebucket + " userFilter: " + userFilter + " domainFilter: " + domainFilter + " encrypt checksum filter: " + isEncryptChecksumFilter);
       //always timerange_query
       requests.query = timerange_query.getTemplate(getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, requests.filter, domainFilter, isEncryptChecksumFilter), supress, querySize);
-
+  
       if (querySize > 500) {
         var response = await client.search({
           index: requests.index,
@@ -306,7 +312,7 @@ class Controller {
           "ignore_unavailable": true,
           "preference": 1542895076143,
           body: requests.query
-
+  
         });
 
         const totalHits = response.hits.total.value;
@@ -318,7 +324,7 @@ class Controller {
         }
 
         client.clearScroll({
-          "scroll_id": response._scroll_id
+          "scroll_id" : response._scroll_id
         })
       }
       else {

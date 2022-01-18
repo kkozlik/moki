@@ -233,8 +233,6 @@ export default class StackedChart extends Component {
                         }
                     }
                 })
-                .append("svg:title")
-                .text(function (d) { return d.key })
                 .on("click", el => {
                     createFilter(field + ":\"" + el.key + "\"");
                     //bug fix: if you click but not move out
@@ -244,7 +242,9 @@ export default class StackedChart extends Component {
                             tooltips[j].remove();
                         }
                     }
-                });
+                })
+                .append("svg:title")
+                .text(function (d) { return d.key })
         }
     }
 
