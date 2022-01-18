@@ -55,22 +55,27 @@ async function checkSelectedTypes(types, dashboardName) {
       const selectedTypes = jsonLayout.types[dashboardName];
       const field = dashboardName === "exceeded" ? "exceeded" : "attrs.type";
       //filter out not selected types
-      let filtredTypes = types.filter(item => selectedTypes.includes(item));
-      //if no spec types, return selected types from file
-      if (types.length === 0) { filtredTypes = selectedTypes; }
-      //concat types with OR
-      if (filtredTypes.length === 0) {
-        resolve("noTypes");
-      } else {
-        let result = "";
-        for (let i = 0; i < filtredTypes.length; i++) {
-          if (i === 0) {
-            result = field + ":" + filtredTypes[i];
-          } else {
-            result = result + " OR " + field + ":" + filtredTypes[i];
+      if (selectedTypes) {
+        let filtredTypes = types.filter(item => selectedTypes.includes(item));
+        //if no spec types, return selected types from file
+        if (types.length === 0) { filtredTypes = selectedTypes; }
+        //concat types with OR
+        if (filtredTypes.length === 0) {
+          resolve("noTypes");
+        } else {
+          let result = "";
+          for (let i = 0; i < filtredTypes.length; i++) {
+            if (i === 0) {
+              result = field + ":" + filtredTypes[i];
+            } else {
+              result = result + " OR " + field + ":" + filtredTypes[i];
+            }
           }
+          resolve(result);
         }
-        resolve(result);
+      }
+      else {
+        resolve("*");
       }
     });
   });

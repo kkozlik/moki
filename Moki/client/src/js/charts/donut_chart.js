@@ -1,16 +1,10 @@
-import React, {
-    Component
-} from 'react';
+import React, { Component } from 'react';
 import * as d3 from "d3";
-import {
-    createFilter
-} from '@moki-client/gui';
-import {ColorType} from '@moki-client/gui';
-import {Colors} from '@moki-client/gui';
-import {ColorsReds} from '@moki-client/gui';
+import { createFilter } from '@moki-client/gui';
+import { ColorType, getExceededColor, Colors, ColorsReds, getExceededName } from '@moki-client/gui';
 import emptyIcon from "../../styles/icons/empty_small.png";
 import storePersistent from "../store/indexPersistent";
-import {Types} from '@moki-client/gui';
+import { Types } from '@moki-client/gui';
 
 export default class StackedChart extends Component {
     constructor(props) {
@@ -79,19 +73,21 @@ export default class StackedChart extends Component {
                     return "#F6412D";
                 }
 
-            } else if (field === "attrs.type" || field === "exceeded") {
+            } else if (field === "attrs.type") {
                 return ColorType[nmb];
             } else if (field === "encrypt") {
-                
+
                 var hmac = profile[0] ? profile[0].userprefs.validation_code : "";
                 var mode = profile[0] ? profile[0].userprefs.mode : "";
-                
+
                 if ((mode === "anonymous" && nmb !== "plain") || (nmb === "plain" && mode === "plain") || (mode === "encrypt" && nmb === hmac)) {
                     return "green";
                 }
                 else {
                     return colorScale(i);
                 }
+            } else if (field === "exceeded") {
+                return getExceededColor(nmb);
             }
             else {
                 return colorScaleMix(nmb)
@@ -107,7 +103,7 @@ export default class StackedChart extends Component {
 
             svg.append('svg:image')
                 .attr("xlink:href", emptyIcon)
-                .attr('transform', 'translate(' + 70 + ','+250/2+')');
+                .attr('transform', 'translate(' + 70 + ',' + 250 / 2 + ')');
 
         } else {
 
@@ -220,9 +216,12 @@ export default class StackedChart extends Component {
                 .attr('y', legendRectSize - legendSpacing)
                 .text(function (d) {
                     for (var i = 0; i < pie(data).length; i++) {
-                        if(d.key.length <= 20){
-                            if( Types[d.key]){
+                        if (d.key.length <= 20) {
+                            if (Types[d.key]) {
                                 return Types[d.key] + " (" + d.doc_count + ")";
+                            }
+                            else if(field === "exceeded"){
+                                return getExceededName(d.key);
                             }
                             else {
                                 return d.key + " (" + d.doc_count + ")";
@@ -230,6 +229,16 @@ export default class StackedChart extends Component {
                         }
                         else {
                             return d.key.substring(0, 20) + '...' + " (" + d.doc_count + ")";
+                        }
+                    }
+                })
+                .on("click", el => {
+                    createFilter(field + ":\"" + el.key + "\"");
+                    //bug fix: if you click but not move out
+                    var tooltips = document.getElementsByClassName("tooltipDonut");
+                    if (tooltip) {
+                        for (var j = 0; j < tooltips.length; j++) {
+                            tooltips[j].remove();
                         }
                     }
                 })
@@ -249,8 +258,8 @@ export default class StackedChart extends Component {
     }
 
     render() {
-        return (<div id={this.props.id}  className="chart chartMinHeight" style={{"paddingBottom": "10px", "paddingLeft": "10px"}}>
-            <h3 className="alignLeft title" style={{"float": "inherit"}}> {this.props.name} </h3>
+        return (<div id={this.props.id} className="chart chartMinHeight" style={{ "paddingBottom": "10px", "paddingLeft": "10px" }}>
+            <h3 className="alignLeft title" style={{ "float": "inherit" }}> {this.props.name} </h3>
         </div>)
     }
 }

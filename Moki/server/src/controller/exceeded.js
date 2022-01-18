@@ -46,7 +46,7 @@ class exceededController extends Controller {
       //EVENT TIMELINE
       { index: "exceeded*", template: datehistogram_agg_filter_query, params: ["exceeded", "timebucket"], filter: "*" },
       //INCIDENT COUNT
-      { index: "exceeded*", template: timerange_query, filter: "*" },
+      { index: "exceeded*", template: timerange_query, filter: "*"},
       //EXCEEDED TYPE
       { index: "exceeded*", template: agg, params: ["exceeded"], filter: "*" },
       //TOP OFFENDERS BY COUNT
@@ -94,7 +94,7 @@ class exceededController extends Controller {
    *               $ref: '#/definitions/ChartResponseError'
    */
   static getTable(req, res, next) {
-    super.requestTable(req, res, next, { index: "exceeded*", filter: "*" }, "exceeded");
+    super.requestTable(req, res, next, { index: "exceeded*", filter: "*" });
   }
 }
 
