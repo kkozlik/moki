@@ -155,38 +155,39 @@ export default class StackedChart extends Component {
 
             }
 
-
             x.domain(data.map(function (d) {
                 return parseDate(d.time);
             }));
-
-
-
 
             z.domain(data.map(function (d) {
                 return d.keys;
             }));
 
-            /*
-            var keys = d3.keys(data[2]).filter(function (d) {
-                if (d !== "time") {
-                    if (d !== "value") {
-                        if (d !== "sum") {
-                            return d;
-                        }
-                    }
-                }
-                return "";
-
-            });
-*/
-
             var keys = this.props.keys ? storePersistent.getState().layout.types[this.props.keys] ? storePersistent.getState().layout.types[this.props.keys] : this.props.keys : storePersistent.getState().layout.types["overview"];
 
             if (window.location.pathname === "/exceeded") {
                 keys = [];
-                for (let hit of await getExceededTypes()) {
-                    keys.push(hit.id);
+                let exceededTemplate = await getExceededTypes();
+                if (exceededTemplate.length > 0) {
+                    for (let hit of exceededTemplate) {
+                        keys.push(hit.id);
+                    }
+                }
+                else {
+                    //compute keys from data
+                    keys = [];
+                    for (let hit of data) {
+                        for (let key of Object.keys(hit)){
+                            if(!keys.includes(key)){
+                                keys.push(key);
+                            }
+
+                        }
+                    }
+                    ///remove value, sum, time
+                    if(keys.indexOf("value") !== -1) keys.splice(keys.indexOf("value"), 1);
+                    if(keys.indexOf("sum") !== -1) keys.splice(keys.indexOf("sum"), 1);
+                    if(keys.indexOf("time") !== -1) keys.splice(keys.indexOf("time"), 1);
                 }
             }
 
