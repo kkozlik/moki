@@ -1,6 +1,5 @@
 import React from 'react';
 import Popup from "reactjs-popup";
-import excludeIcon from "../../styles/icons/exclude.png";
 import detailsIcon from "../../styles/icons/details.png";
 import TagRanger from "../bars/TagRanger";
 import filterIcon from "../../styles/icons/filter.png";
@@ -22,7 +21,7 @@ import store from "../store/index";
 import { parseTimestamp } from "../helpers/parseTimestamp";
 import SimpleSequenceDiagram from "../charts/simpleSequenceDiagram";
 import { getSearchableAttributes } from '@moki-client/gui';
-import { Types, getExceededName } from '@moki-client/gui';
+import { getExceededName } from '@moki-client/gui';
 
 /*
 create new filter based on html tag with field with attribute as name 
