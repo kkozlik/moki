@@ -11,7 +11,7 @@ class AlertProfile extends Component {
             data: this.props.data,
             result: {}
         }
-
+        this.renderAlertProfile = this.renderAlertProfile.bind(this);
         this.load = this.load.bind(this);
     }
 
@@ -56,8 +56,8 @@ class AlertProfile extends Component {
             result = await this.get("api/bw/geturi?key=" + this.state.data.attrs.from + "&list=uriprofile&hmac=" + hmac + "&pretty=true");
         }
 
-        result = result.Item;
 
+        /*
         //show only result for this alarms
         var newDataFormat = { domain: result.domain };
 
@@ -76,7 +76,7 @@ class AlertProfile extends Component {
 
                 for (let key of Object.keys(result[hit])) {
                     if (DATEFORMATS.includes(key)) {
-                        newDataFormat[key] = parseTimestamp(result[hit][key]*1000);
+                        newDataFormat[key] = parseTimestamp(result[hit][key] * 1000);
                     }
                     else {
                         newDataFormat[key] = result[hit][key];
@@ -90,28 +90,62 @@ class AlertProfile extends Component {
                     if (template.id === hit) {
                         newDataFormat.description = template.description;
                         newDataFormat.key = template.key;
-                        if(template.eventTypes.length > 0)  newDataFormat.eventTypes = template.eventTypes.toString(",");
+                        if (template.eventTypes.length > 0) newDataFormat.eventTypes = template.eventTypes.toString(",");
                     }
                 }
             }
         }
 
+        */
+
         this.setState({
-            result: newDataFormat
+            result: result.Item
         })
+    }
+
+    renderAlertProfile(data) {
+        if (Object.keys(data).length === 0) {
+            return <div>no data to display</div>
+        }
+        else {
+            var result = [];
+            var style = null;
+            for (let row of Object.keys(data)) {
+                if (this.state.data.exceeded.includes(row)) {
+                    style={"color": "var(--main)"};
+                }
+                if (typeof data[row] === 'object') {
+                    result.push(<div key={row} style={style}><b style={{ "display": "inline" }}>{row}</b></div>)
+                    for (let row2 of Object.keys(data[row])) {
+                        if (DATEFORMATS.includes(row2)) {
+                            result.push(<div key={row + row2} ><b style={{ "display": "inline", "marginLeft": "15px" }}>{row2}:</b><p style={{ "display": "inline", "marginLeft": "10px" }}>{parseTimestamp(data[row][row2] * 1000)}</p></div>)
+                        }
+                        else {
+                            result.push(<div key={row + row2} ><b style={{ "display": "inline", "marginLeft": "15px" }}>{row2}:</b><p style={{ "display": "inline", "marginLeft": "10px" }}>{data[row][row2]}</p></div>)
+
+                        }
+                    }
+                } else {
+                    if (DATEFORMATS.includes(row)) {
+                        result.push(<div key={row} ><b style={{ "display": "inline" }}>{row}:</b><p style={{ "display": "inline", "marginLeft": "10px" }}>{parseTimestamp(data[row] * 1000)}</p></div>);
+                    }
+                    else {
+                        result.push(<div key={row} ><b style={{ "display": "inline" }}>{row}:</b><p style={{ "display": "inline", "marginLeft": "10px" }}>{data[row]}</p></div>);
+
+                    }
+                }
+                style = null;
+            }
+            return result;
+        }
     }
 
 
     render() {
-        var data = this.state.result;
         return (
             <div className="row no-gutters" >
-                <div  style={{ "marginRight": "5px", "marginTop": "20px" }} className="preStyle">
-                    {Object.keys(data).length > 0 && Object.keys(data).map((row, i) => {
-                        return (<div key={row} ><b style={{ "display": "inline" }}>{row}:</b><p style={{ "display": "inline", "marginLeft": "10px" }}>{data[row]}</p></div>)
-                    })}
-
-                    {Object.keys(data).length === 0 && <span>loading data...</span>}
+                <div style={{ "marginRight": "5px", "marginTop": "20px" }} className="preStyle">
+                    {this.renderAlertProfile(this.state.result)}
                 </div>
             </div>
         )
