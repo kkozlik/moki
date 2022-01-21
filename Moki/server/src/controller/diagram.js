@@ -62,7 +62,7 @@ class DiagramController {
           return fs.createReadStream(file).pipe(respond);
         }
       });
-      return respond.status(400).send();
+      //return respond.status(400).send();
     }
   }
 
