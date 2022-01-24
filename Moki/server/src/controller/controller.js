@@ -20,7 +20,7 @@ class Controller {
   static request(req, res, next, requests, dashboard = "overview") {
     async function search() {
       const client = connectToES();
-      const filters = getFiltersConcat(req.body.filters);
+      var filters = getFiltersConcat(req.body.filters);
       let types = req.body.types;
 
       if (req.body.timerange_lte) {
@@ -165,6 +165,8 @@ class Controller {
             timebucketAnimation = Math.round(timebucketAnimation) + "s";
             params = params.map(function (item) { return item === "timebucketAnimation" ? timebucketAnimation : item; });
           }
+
+          if(requests[i].filters === "*") filters = "*";
 
           //special case: disable disableHMACfilter - for loging events - different index
           if (requests[i].index === "lastlog*" || requests[i].index === "polda*") {
