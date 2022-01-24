@@ -2,12 +2,12 @@ import React, {
     Component
 } from 'react';
 import { Link } from 'react-router-dom';
-import logout from "../../styles/icons/log_out.png";
+import logoutIcon from "../../styles/icons/log_out.png";
 import password from "../../styles/icons/password.png";
 import store from "../store/index";
 import { setWidthChart } from "../actions/index";
 import collapseIcon from "../../styles/icons/collapse.png";
-import { renderNavBar } from '@moki-client/gui';
+import { renderNavBar, logout } from '@moki-client/gui';
 import storePersistent from "../store/indexPersistent";
 
 class navBar extends Component {
@@ -21,7 +21,6 @@ class navBar extends Component {
 
         };
         this.togglebar = this.togglebar.bind(this);
-        this.logout = this.logout.bind(this);
     }
 
     componentWillReceiveProps(nextProps) {
@@ -166,30 +165,6 @@ class navBar extends Component {
         window.mainPopup.setPopup("visible", changePasswordForm);
     }
 
-    logout() {
-        if (!this.props.aws) {
-            try {
-                fetch("/", {
-                    credentials: 'include',
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": "Basic nouser",
-                        "Access-Control-Allow-Credentials": "include"
-                    }
-                });
-                window.location.reload();
-            }
-            catch (error) {
-            }
-        }
-        //aws case, just redirect
-        else {
-            window.localStorage.clear();
-            window.location.href = "/logout";
-        }
-    }
-
     render() {
         var dashboardsSettings = this.state.dashboardsSettings;
         var dashboards = this.state.dashboards;
@@ -218,9 +193,9 @@ class navBar extends Component {
                     </li>
 
                     {navbarUser}
-                    {this.state.dashboardsUser.includes("logout") && <Link to={this.props.aws === true ? "/logout" : "/"} className="bg-dark list-group-myitem list-group-item-action" onClick={this.logout}>
+                    {this.state.dashboardsUser.includes("logout") && <Link to={this.props.aws === true ? "/logout" : "/"} className="bg-dark list-group-myitem list-group-item-action" onClick={logout}>
                         <div className="d-flex w-100 justify-content-start align-items-center">
-                            <img className="marginRight" src={logout} alt="transport" />
+                            <img className="marginRight" src={logoutIcon} alt="transport" />
                             <span className="menu-collapsed menuText">Log out</span>
                         </div>
                     </Link>
