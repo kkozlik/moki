@@ -1,8 +1,6 @@
 import { Component } from 'react';
-import { getExceededName } from '@moki-client/gui';
 import { parseTimestamp } from "./parseTimestamp";
-import storePersistent from "../store/indexPersistent";
-const DATEFORMATS = ["lastModified", "created", "lastLogin", "lastExceeded", "ts", "lastRaised"];
+const DATEFORMATS = ["lastModified", "created", "lastLogin", "lastExceeded", "ts", "lastRaised", "lastLaunchedTimer", "lastRaisedTS", "lastExceededTS"];
 
 class AlertProfile extends Component {
     constructor(props) {
@@ -46,7 +44,8 @@ class AlertProfile extends Component {
 
     async load() {
         let result = [];
-        let hmac = window.localStorage.HMAC_SHA_256_KEY ? window.localStorage.HMAC_SHA_256_KEY : "plain";
+        //let hmac = window.localStorage.HMAC_SHA_256_KEY ? window.localStorage.HMAC_SHA_256_KEY : "plain";
+        let hmac = this.state.data.encrypt;
         if (hmac !== "plain") hmac = hmac.substring(0, hmac.indexOf(":"));
 
         if (this.state.data["exceeded-by"] === "ip") {
