@@ -280,7 +280,7 @@ function getColumn(column_name, tags, tag) {
                         )}
                     </Popup>
                     }
-                     {(storePersistent.getState().user.aws === true) && <Popup trigger={<img className="icon" alt="alertProfileIcon" src={alertProfileIcon} title="alert profile" />} modal>
+                     {(storePersistent.getState().user.aws === true && window.location.pathname === ("/exceeded")) && <Popup trigger={<img className="icon" alt="alertProfileIcon" src={alertProfileIcon} title="alert profile" />} modal>
                         {close => (
                             <div className="Advanced">
                                 <div className="contentAdvanced" style={{ "padding": "0px" }}>
@@ -364,11 +364,15 @@ function getColumn(column_name, tags, tag) {
                             var value = column_name.source.split('.').reduce((o, i) => o[i], ob);
                         }
                         catch { }
+                        var field = column_name.source;
+                        if(field === "attrs.from" || field === "attrs.to"){
+                            field = field +".keyword";
+                        }
                         if (value) {
                             return <span className="filterToggleActive">
                                 <span className="filterToggle">
-                                    <img onClick={doFilter} field={column_name.source} value={value} className="icon" alt="filterIcon" src={filterIcon} />
-                                    <img field={column_name.source} value={value} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} />
+                                    <img onClick={doFilter} field={field} value={value} className="icon" alt="filterIcon" src={filterIcon} />
+                                    <img field={field} value={value} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} />
                                 </span >{value}
                             </span>
                         }
