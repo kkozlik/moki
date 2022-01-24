@@ -69,8 +69,12 @@ export default class StackedChart extends Component {
         var height = 200 - margin.top - margin.bottom;
 
         var colorScale = d3.scaleOrdinal(Colors);
+        var parseDate = d3.timeParse(timestampBucket(store.getState().timerange[0], store.getState().timerange[1]));
 
-        var parseDate = d3.timeFormat(timestampBucket(store.getState().timerange[0], store.getState().timerange[1]));
+        if (storePersistent.getState().profile[0] && storePersistent.getState().profile[0].userprefs && storePersistent.getState().profile[0].userprefs.timezone) {
+            parseDate = d3.utcFormat(timestampBucket(store.getState().timerange[0], store.getState().timerange[1]));
+
+        }
 
         var rootsvg = svg.append("svg")
             .attr('width', width + margin.left + margin.right)
@@ -156,7 +160,7 @@ export default class StackedChart extends Component {
             }
 
             x.domain(data.map(function (d) {
-                return parseDate(d.time);
+                return parseDate(d.time + new Date(d.time).getTimezoneOffset() * 60000);
             }));
 
             z.domain(data.map(function (d) {
@@ -177,17 +181,17 @@ export default class StackedChart extends Component {
                     //compute keys from data
                     keys = [];
                     for (let hit of data) {
-                        for (let key of Object.keys(hit)){
-                            if(!keys.includes(key)){
+                        for (let key of Object.keys(hit)) {
+                            if (!keys.includes(key)) {
                                 keys.push(key);
                             }
 
                         }
                     }
                     ///remove value, sum, time
-                    if(keys.indexOf("value") !== -1) keys.splice(keys.indexOf("value"), 1);
-                    if(keys.indexOf("sum") !== -1) keys.splice(keys.indexOf("sum"), 1);
-                    if(keys.indexOf("time") !== -1) keys.splice(keys.indexOf("time"), 1);
+                    if (keys.indexOf("value") !== -1) keys.splice(keys.indexOf("value"), 1);
+                    if (keys.indexOf("sum") !== -1) keys.splice(keys.indexOf("sum"), 1);
+                    if (keys.indexOf("time") !== -1) keys.splice(keys.indexOf("time"), 1);
                 }
             }
 

@@ -18,6 +18,7 @@ import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { parseTimestamp } from "../helpers/parseTimestamp";
 import { shareFilters } from '@moki-client/gui';
+import moment from 'moment-timezone';
 
 class timerangeBar extends Component {
     constructor(props) {
@@ -334,6 +335,11 @@ class timerangeBar extends Component {
     setTimerangeLastX(timerange) {
         var timestamp_gte = "";
         var timestamp_lte = new Date();
+        if( storePersistent.getState().profile[0] &&  storePersistent.getState().profile[0].userprefs.timezone){
+            var userprefs = storePersistent.getState().profile[0].userprefs;
+            timestamp_lte = moment().tz(userprefs.timezone);
+        }
+
         if (timerange === "Last 6 hours") {
             timestamp_gte = (Math.round(timestamp_lte.getTime() / 1000) - (6 * 3600)) * 1000;
             timerange = parseTimestamp(new Date(Math.trunc(timestamp_gte))) + " + 6 hours";

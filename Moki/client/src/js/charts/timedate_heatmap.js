@@ -4,6 +4,7 @@ import { timestampBucket } from '../bars/TimestampBucket.js';
 import store from "../store/index";
 import { setTimerange } from "../actions/index";
 import { createFilter} from '@moki-client/gui';
+import storePersistent from "../store/indexPersistent";
 import emptyIcon from "../../styles/icons/empty_small.png";
 import { getTimeBucket, getTimeBucketInt} from "../helpers/getTimeBucket";
 import {ColorsRedGreen} from "@moki-client/gui";
@@ -77,6 +78,11 @@ export default class timedateHeatmap extends Component {
             .domain([minTime, maxTime]);
 
         var parseDate = d3.timeFormat(timestampBucket(store.getState().timerange[0], store.getState().timerange[1]));
+
+        if (storePersistent.getState().profile[0] && storePersistent.getState().profile[0].userprefs && storePersistent.getState().profile[0].userprefs.timezone) {
+            parseDate = d3.utcFormat(timestampBucket(store.getState().timerange[0], store.getState().timerange[1]));
+
+        }
 
         const buckets = 5;
         colorScale = d3.scaleQuantile()
