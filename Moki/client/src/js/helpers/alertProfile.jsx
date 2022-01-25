@@ -1,5 +1,6 @@
 import { Component } from 'react';
 import { parseTimestamp } from "./parseTimestamp";
+import storePersistent from "../store/indexPersistent";
 const DATEFORMATS = ["lastModified", "created", "lastLogin", "lastExceeded", "ts", "lastRaised", "lastLaunchedTimer", "lastRaisedTS", "lastExceededTS"];
 
 class AlertProfile extends Component {
@@ -45,8 +46,9 @@ class AlertProfile extends Component {
     async load() {
         let result = [];
         //let hmac = window.localStorage.HMAC_SHA_256_KEY ? window.localStorage.HMAC_SHA_256_KEY : "plain";
+        //if (hmac !== "plain") hmac = hmac.substring(0, hmac.indexOf(":"));
         let hmac = this.state.data.encrypt;
-        if (hmac !== "plain") hmac = hmac.substring(0, hmac.indexOf(":"));
+        hmac = hmac.substring(0, hmac.indexOf(":"));
 
         if (this.state.data["exceeded-by"] === "ip") {
             result = await this.get("api/bw/getip?key=" + this.state.data.attrs.source + "&list=ipprofile&hmac=" + hmac + "&pretty=true");
@@ -54,6 +56,21 @@ class AlertProfile extends Component {
         else {
             result = await this.get("api/bw/geturi?key=" + this.state.data.attrs.from + "&list=uriprofile&hmac=" + hmac + "&pretty=true");
         }
+
+
+        //add exceeded name from settings
+        if (storePersistent.getState().layout.types.exceeded) {
+            for (let item of Object.keys(result.Item)) {
+                for (let template of storePersistent.getState().layout.types.exceeded) {
+                    if (template.id === item) {
+                        // result.Item[item] = item + " - "+template.key;
+                        result.Item[item + " - " + template.name] = result.Item[item];
+                        delete result.Item[item];
+                    }
+                }
+            }
+        }
+
 
 
         /*
@@ -111,17 +128,31 @@ class AlertProfile extends Component {
             var style = null;
             for (let row of Object.keys(data)) {
                 if (this.state.data.exceeded.includes(row)) {
-                    style={"color": "var(--main)"};
+                    style = { "color": "var(--main)" };
                 }
                 if (typeof data[row] === 'object') {
                     result.push(<div key={row} style={style}><b style={{ "display": "inline" }}>{row}</b></div>)
                     for (let row2 of Object.keys(data[row])) {
-                        if (DATEFORMATS.includes(row2)) {
-                            result.push(<div key={row + row2} ><b style={{ "display": "inline", "marginLeft": "15px" }}>{row2}:</b><p style={{ "display": "inline", "marginLeft": "10px" }}>{parseTimestamp(data[row][row2] * 1000)}</p></div>)
+                        if (typeof data[row][row2] === 'object') {
+                            result.push(<div key={row2} ><b style={{ "display": "inline", "marginLeft": "15px" }}>{row2}</b></div>)
+                            for (let row3 of Object.keys(data[row][row2])) {
+                                if (DATEFORMATS.includes(row3)) {
+                                    result.push(<div key={row + row3} ><b style={{ "display": "inline", "marginLeft": "30px" }}>{row3}:</b><p style={{ "display": "inline", "marginLeft": "10px" }}>{parseTimestamp(data[row][row2][row3] * 1000)}</p></div>)
+                                }
+                                else {
+                                    result.push(<div key={row + row3} ><b style={{ "display": "inline", "marginLeft": "30px" }}>{row3}:</b><p style={{ "display": "inline", "marginLeft": "10px" }}>{data[row][row2][row3]}</p></div>)
+
+                                }
+                            }
                         }
                         else {
-                            result.push(<div key={row + row2} ><b style={{ "display": "inline", "marginLeft": "15px" }}>{row2}:</b><p style={{ "display": "inline", "marginLeft": "10px" }}>{data[row][row2]}</p></div>)
+                            if (DATEFORMATS.includes(row2)) {
+                                result.push(<div key={row + row2} ><b style={{ "display": "inline", "marginLeft": "15px" }}>{row2}:</b><p style={{ "display": "inline", "marginLeft": "10px" }}>{parseTimestamp(data[row][row2] * 1000)}</p></div>)
+                            }
+                            else {
+                                result.push(<div key={row + row2} ><b style={{ "display": "inline", "marginLeft": "15px" }}>{row2}:</b><p style={{ "display": "inline", "marginLeft": "10px" }}>{data[row][row2]}</p></div>)
 
+                            }
                         }
                     }
                 } else {
