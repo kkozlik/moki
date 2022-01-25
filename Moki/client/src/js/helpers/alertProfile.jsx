@@ -46,8 +46,9 @@ class AlertProfile extends Component {
     async load() {
         let result = [];
         //let hmac = window.localStorage.HMAC_SHA_256_KEY ? window.localStorage.HMAC_SHA_256_KEY : "plain";
+        //if (hmac !== "plain") hmac = hmac.substring(0, hmac.indexOf(":"));
         let hmac = this.state.data.encrypt;
-        if (hmac !== "plain") hmac = hmac.substring(0, hmac.indexOf(":"));
+        hmac = hmac.substring(0, hmac.indexOf(":"));
 
         if (this.state.data["exceeded-by"] === "ip") {
             result = await this.get("api/bw/getip?key=" + this.state.data.attrs.source + "&list=ipprofile&hmac=" + hmac + "&pretty=true");
