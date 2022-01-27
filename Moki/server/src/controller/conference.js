@@ -56,15 +56,15 @@ class ConferenceController extends Controller {
       //AVG PARTICIPANTS
       { index: "logstash*", template: agg_sum_bucket_query_term, params: ["attrs.from.keyword"], filter: "attrs.type:conf-join" },
       //TOP CONFERENCES 
-      { index: "collectd*", template: agg_query, params: ["terms", "attrs.conf_id"], filter: "attrs.type:conf-join" },
+      { index: "logstash*", template: agg_query, params: ["terms", "attrs.conf_id"], filter: "attrs.type:conf-join" },
       //EVENT CONFERENCE TIMELINE
       { index: "logstash*", template: datehistogram_agg_filter_query, params: ["attrs.type", "timebucket"], filter: "*" },
       //ACTIVE CONFERENCES  
-      { index: "logstash*", template: agg_query, params: ["max", "attrs.count"], filter: "attrs.type:conference_room", timestamp_gte: " - 1 * 60 * 1000" },
+      { index: "logstash*", template: agg_query, params: ["max", "attrs.count"], filter: "attrs.type:conference_room", timestamp_gte: " - 1 * 60 * 1000", types:"*" },
       //TOP PARTICIPANTS 
-      { index: "logstash*", template: agg_query, params: ["terms", "attrs.from-keyword"], filter: "attrs.type:conf-join" },
+      { index: "logstash*", template: agg_query, params: ["terms", "attrs.from.keyword"], filter: "attrs.type:conf-join" },
       //TOP ACTIVE CONFERENCES  
-      { index: "logstash*", template: sort_query, params: ["attrs.count", 1], filter: "attrs.type:conference_room", timestamp_gte: " - 1 * 60 * 1000" }
+      { index: "logstash*", template: sort_query, params: ["attrs.count", 1], filter: "attrs.type:conference_room", timestamp_gte: " - 1 * 60 * 1000", types:"*" }
     ], "conference");
   }
 
