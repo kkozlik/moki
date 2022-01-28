@@ -121,13 +121,6 @@ class Settings extends Component {
             return true;
         }
 
-        if (attribute === "logstash_heap_mem" || attribute === "elasticsearch_heap_mem" || attribute === "logstash_queue_size") {
-            if ((value.slice(-1) === "g" || value.slice(-1) === "m") && isNumber(value.slice(0, value.length - 1)) && value.slice(0, value.length - 1) % 1 === 0) {
-                return true;
-            }
-            return "Error: " + attribute + " must have format integer and m or g suffix.";
-        }
-
         if (attribute === "slowlog_query_warn" || attribute === "slowlog_query_info" || attribute === "slowlog_fetch_warn" || attribute === "slowlog_fetch_info" || attribute === "slowlog_indexing_info" || attribute === "slowlog_indexing_warn" || attribute === "refresh_interval_logstash" || attribute === "refresh_interval_collectd" || attribute === "refresh_interval_exceeded") {
             if (value.slice(-1) === "s" && isNumber(value.slice(0, value.length - 1)) && value.slice(0, value.length - 1) % 1 === 0) {
                 return true;
@@ -158,6 +151,37 @@ class Settings extends Component {
         if (this.state.wait !== true) {
             var jsonData = this.state.data;
             var result = [];
+
+            //check if LDAP enabled OR gui auth enabled
+            var ldap_enable = false;
+            var auth_dis = false;
+            var ldapChange = false;
+            for (var i = 0; i < jsonData.length; i++) {
+                var data = document.getElementById(jsonData[i].attribute);
+                if (jsonData[i].attribute === "ldap_enable") {
+                    ldap_enable = data.checked;
+                    if (jsonData[i].value !== data.checked) {
+                        ldapChange = true;
+                    }
+                }
+
+                if (jsonData[i].attribute === "disable_auth") {
+                    auth_dis = data.checked;
+                    if (jsonData[i].value !== data.checked) {
+                        ldapChange = true;
+                    }
+                }
+            }
+
+            if (auth_dis === true && ldap_enable === false) {
+                this.setState({
+                    "disable_auth": "You must choose LDAP or GUI authentication"
+                })
+                window.scrollTo(0, 0);
+                return;
+            }
+
+
             for (var i = 0; i < jsonData.length; i++) {
                 var data = document.getElementById(jsonData[i].attribute);
                 if (data.type === "checkbox") {
@@ -219,7 +243,7 @@ class Settings extends Component {
                 }
                 return response.json();
             }).then(function (responseData) {
-                if (responseData.msg) {
+                if (responseData.msg && !ldapChange) {
                     alert(JSON.stringify(responseData.msg));
                 }
 
@@ -381,7 +405,6 @@ class Settings extends Component {
         var General = [];
         var Slowlog = [];
         var LE = [];
-        var Firewall = [];
         var Events = [];
         var Auth = [];
 
@@ -393,8 +416,6 @@ class Settings extends Component {
                 Slowlog.push(data[i]);
             } else if (data[i].category === "Logstash and elasticsearch") {
                 LE.push(data[i]);
-            } else if (data[i].category === "Firewall") {
-                Firewall.push(data[i]);
             } else if (data[i].category === "Events") {
                 Events.push(data[i]);
             }
@@ -406,7 +427,6 @@ class Settings extends Component {
         var Generaldata = this.generate(General);
         var Slowlogdata = this.generate(Slowlog);
         var LEdata = this.generate(LE);
-        var Firewalldata = this.generate(Firewall);
         var Eventsdata = this.generate(Events);
         var Authdata = this.generate(Auth);
         var Tagdata = this.generateTags();
@@ -414,7 +434,6 @@ class Settings extends Component {
 
         return (<div className="container-fluid" > {this.state.wait && < SavingScreen />}
             <div className="chart"><p className="settingsH" > General </p> {Generaldata} </div>
-            <div className="chart"> <p className="settingsH" > Firewall </p> {Firewalldata}</div>
             <div className="chart"><p className="settingsH" > Authentication </p> {Authdata}</div>
             <div className="chart"><p className="settingsH" > Events </p> {Eventsdata} </div>
             <div className="chart"><p className="settingsH" > Elasticsearch and logstash </p> {LEdata} </div>
