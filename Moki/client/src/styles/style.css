@@ -564,6 +564,10 @@ button.export{
     z-index: 9999999;
 }
 
+.errorStay{
+    color: red;
+}
+
 .errorBarLoading{
     background-color: orangered;
     padding-left: 30px;
