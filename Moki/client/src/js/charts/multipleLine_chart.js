@@ -71,9 +71,10 @@ export default class MultipleLineChart extends Component {
                         });
                     }
                     else {
+                        let val = data[k].values[l + 1].value - data[k].values[l].value;
                         divData[k].values.push({
                             date: data[k].values[l].date,
-                            value: data[k].values[l + 1].value - data[k].values[l].value
+                            value: val < 0 ? 0 : val
                         });
                     }
                 }
