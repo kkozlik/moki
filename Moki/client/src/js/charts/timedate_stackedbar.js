@@ -329,10 +329,15 @@ export default class StackedChart extends Component {
 
             //filter type onClick
             layer.on("click", el => {
-                createFilter("attrs.type:" + el.key);
+                if (window.location.pathname === "/exceeded") {
+                    createFilter("exceeded:" + el.key);
+                }
+                else {
+                    createFilter("attrs.type:" + el.key);
+                }
 
                 var tooltips = document.getElementById("tooltip" + id);
-                if (tooltip) {
+                if (tooltips) {
                     tooltips.style.opacity = 0;
                 }
             });
