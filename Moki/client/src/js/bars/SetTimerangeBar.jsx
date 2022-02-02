@@ -276,16 +276,11 @@ class timerangeBar extends Component {
 
     }
     //set to current timestamp
-    setToNow() {
-        var timestamp_gte = store.getState().timerange[0];
-        var timestamp_lte = new Date();
-        var timestamp_readiable = parseTimestamp(new Date(timestamp_gte)) + " - " + parseTimestamp(new Date(timestamp_lte));
-
-        store.dispatch(setTimerange([timestamp_gte, timestamp_lte, timestamp_readiable]));
-
-        this.focousOutLte(timestamp_lte);
-        document.getElementById("dropdownMenuButton").click();
-
+    setToNow(e) {
+        if (e) {
+            e.preventDefault();
+        }
+        this.focousOutLte(Math.round((new Date()).getTime() / 1000) * 1000);
     }
 
     //move half of timerange value back
@@ -537,6 +532,7 @@ class timerangeBar extends Component {
                                                 onBlur={this.focousOutGte}
                                                 onChange={this.focousOutGte}
                                                 defaultValue={new Date(this.state.timestamp_gte)} />
+                                                value={this.state.timestamp_gte}
                                             <p>To: <button className="link" onClick={this.setToNow}>(now)</button></p>
                                             <Datetime closeOnTab
                                                 closeOnSelect
@@ -545,6 +541,7 @@ class timerangeBar extends Component {
                                                 onBlur={this.focousOutLte}
                                                 onChange={this.focousOutLte}
                                                 defaultValue={new Date(this.state.timestamp_lte)}
+                                                value={this.state.timestamp_lte}
                                                 className="timestamp_lteInput" />
                                         </div>
                                     </form>
