@@ -115,13 +115,43 @@ class navBar extends Component {
                 window.mainPopup.error("Password must have at least 8 characters.");
             }
             else {
+
+
+                //get username
+                var username = "";
+                try {
+                    var response = await fetch("/api/user/username", {
+                        method: "GET",
+                        credentials: 'include',
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Access-Control-Allow-Credentials": "include"
+                        }
+                    })
+
+                    if (response.status !== 200) {
+                        window.mainPopup.error("Problem to create user.");
+                    }
+                    var res = await response.json();
+                    if (res.error) {
+                        window.mainPopup.error(res.error);
+                    }
+                    else {
+                        //ok
+                        username = res.username;
+                    }
+                } catch (error) {
+                    window.mainPopup.error(error);
+                }
+
+
                 try {
                     var response = await fetch("/api/user/create", {
                         method: "POST",
                         credentials: 'include',
                         body:
                             JSON.stringify({
-                                name: storePersistent.getState().user.user,
+                                name: username,
                                 password: password
                             }),
                         headers: {
@@ -139,11 +169,11 @@ class navBar extends Component {
                     }
                     else {
                         //ok
-                        window.mainPopup.reset();
+                        window.location.reload();
                     }
                 }
                 catch (error) {
-                    window.mainPopup.error(error);
+                    console.error(error);
                 }
             }
 
@@ -154,10 +184,10 @@ class navBar extends Component {
 
         var changePasswordForm = <span>
             <h3 style={{ "marginBottom": "15px" }}>Set a new password with at least 8 characters:</h3>
-            <input type="password" id="password" class="form-control" placeholder="password"></input>
+            <input type="password" id="password" className="form-control" placeholder="password"></input>
             <div style={{ "textAlign": "end" }}>
                 <button style={{ "marginRight": "5px", "marginTop": "10px" }} className="btn btn-secondary" onClick={window.mainPopup.storno}>Storno </button>
-                <button style={{ "marginRight": "5px", "marginTop": "10px" }} className="btn btn-primary" onClick={() => checkPassword()}><i class="fa fa-circle-o-notch fa-spin" id="create" style={{ "display": "none" }}></i> <span id="createR">Change</span> </button>
+                <button style={{ "marginRight": "5px", "marginTop": "10px" }} className="btn btn-primary" onClick={() => checkPassword()}><i className="fa fa-circle-o-notch fa-spin" id="create" style={{ "display": "none" }}></i> <span id="createR">Change</span> </button>
             </div>
 
         </span>
@@ -173,8 +203,8 @@ class navBar extends Component {
 
         //remove logout and changePassword, it's not dashboard, just link
         var userDash = [...this.state.dashboardsUser];
-        if(userDash.indexOf("logout") !== -1) userDash.splice(userDash.indexOf("logout"), 1);
-        if(userDash.indexOf("changePassword") !== -1) userDash.splice(userDash.indexOf("changePassword"), 1);
+        if (userDash.indexOf("logout") !== -1) userDash.splice(userDash.indexOf("logout"), 1);
+        if (userDash.indexOf("changePassword") !== -1) userDash.splice(userDash.indexOf("changePassword"), 1);
         var navbarUser = renderNavBar(userDash);
 
         return (

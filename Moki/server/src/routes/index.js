@@ -22,6 +22,7 @@ module.exports = () => {
   router
     .get('/user/sip', AdminController.getSipUser)
     .get('/user/check', AdminController.noNginxUser)
+    .get('/user/username', AdminController.getUsername)
     .post('/user/create', AdminController.createUser);
 
   router

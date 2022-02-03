@@ -247,7 +247,7 @@ class AdminController {
 create new user with password in htpasswd
 */
   static async createUser(req, res) {
-    exec("sudo htpasswd -b -c "+cfg.htpasswd+ " " + req.body.name + " " + req.body.password, (error, stdout, stderr) => {
+    exec("sudo htpasswd -b -c " + cfg.htpasswd + " " + req.body.name + " " + req.body.password, (error, stdout, stderr) => {
       if (error) {
         console.error(`Can't create new user in nginx : ${error.message}`);
         return res.json({ "error": error.message });
@@ -296,6 +296,13 @@ create new user with password in htpasswd
       return res.json({ "error": err });
     }
   }
+
+  //get username from authorization header that nginx pass
+  static getUsername(req, res) {
+    return res.json({ username: req.headers.authorization });
+  }
+
+
 }
 
 module.exports = AdminController;
