@@ -169,11 +169,11 @@ class navBar extends Component {
                     }
                     else {
                         //ok
-                        window.mainPopup.reset();
+                        window.location.reload();
                     }
                 }
                 catch (error) {
-                    window.mainPopup.error(error);
+                    console.error(error);
                 }
             }
 
