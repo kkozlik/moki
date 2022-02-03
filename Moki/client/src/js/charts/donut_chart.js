@@ -23,15 +23,15 @@ export default class StackedChart extends Component {
         else return null;
     }
 
-    componentDidUpdate(prevProps, prevState) {
+    async componentDidUpdate(prevProps, prevState) {
         if (prevProps.data !== this.props.data) {
             this.setState({ data: this.props.data });
-            this.draw(this.props.data, this.props.id, this.props.width, this.props.legendSize, this.props.field, this.props.height, this.props.units);
+           await this.draw(this.props.data, this.props.id, this.props.width, this.props.legendSize, this.props.field, this.props.height, this.props.units);
         }
     }
 
 
-    draw(data, id, width, legendSize, field, height, units) {
+    async draw(data, id, width, legendSize, field, height, units) {
         units = units ? " (" + units + ")" : "";
         //FOR UPDATE: remove chart if it's already there
         var chart = document.getElementById(id + "SVG");
@@ -129,8 +129,7 @@ export default class StackedChart extends Component {
                     return color(d.data.key, i);
                 })
                 .style("cursor", "pointer")
-                .on('mouseover', (d) => {
-
+                .on('mouseover', async (d) => {
                     tooltip = d3.select('#' + id).append('div')
                         .style("width", "200px")
                         .style("height", "90px")
@@ -214,14 +213,16 @@ export default class StackedChart extends Component {
             legend.append('text')
                 .attr('x', legendRectSize + legendSpacing)
                 .attr('y', legendRectSize - legendSpacing)
-                .text(function (d) {
+                .text(async function (d) {
                     for (var i = 0; i < pie(data).length; i++) {
                         if (d.key.length <= 20) {
                             if (Types[d.key]) {
                                 return Types[d.key] + " (" + d.doc_count + ")";
                             }
                             else if(field === "exceeded"){
-                                return getExceededName(d.key);
+                                return getExceededName(d.key).then(val => {
+                                    this.textContent = val  + " (" + d.doc_count + ")";
+                                  })
                             }
                             else {
                                 return d.key + " (" + d.doc_count + ")";

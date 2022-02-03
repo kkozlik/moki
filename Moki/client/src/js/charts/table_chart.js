@@ -39,7 +39,6 @@ var JSZip = require("jszip");
 export default class listChart extends Component {
     constructor(props) {
         super(props);
-
         const columns = tableColumns(this.props.name, this.props.tags);
         //get columns name from layout 
         var name = window.location.pathname.substring(1);

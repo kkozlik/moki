@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import Popup from "reactjs-popup";
 import detailsIcon from "../../styles/icons/details.png";
 import TagRanger from "../bars/TagRanger";
@@ -22,6 +22,32 @@ import { parseTimestamp } from "../helpers/parseTimestamp";
 import SimpleSequenceDiagram from "../charts/simpleSequenceDiagram";
 import { getSearchableAttributes } from '@moki-client/gui';
 import { getExceededName } from '@moki-client/gui';
+
+//support class for async value
+class ExceededName extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            name: this.props.data,
+        }
+        this.getName = this.getName.bind(this);
+    }
+    componentDidMount() {
+        this.getName();
+    }
+
+    async getName() {
+        this.setState({
+            name: await getExceededName(this.props.data)
+        })
+    }
+
+    render() {
+        return <span className="filterToggleActive"><span className="filterToggle">
+            <img onClick={this.props.doFilterRaw} field="exceeded" value={this.props.value} className="icon" alt="filterIcon" src={filterIcon} /><img field="exceeded" value={this.props.notvalue} onClick={this.props.doFilterRaw} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span >   {this.state.name}
+        </span>
+    }
+}
 
 /*
 create new filter based on html tag with field with attribute as name 
@@ -173,11 +199,16 @@ function getColumn(column_name, tags, tag) {
                 notvalue = notvalue + ")";
 
                 var exceededName = ob.exceeded ? ob.exceeded.toString() : "";
-                    exceededName = getExceededName(exceededName);
+                // exceededName = getName(exceededName);
 
-                return <span className="filterToggleActive"><span className="filterToggle">
-                    <img onClick={doFilterRaw} field="exceeded" value={value} className="icon" alt="filterIcon" src={filterIcon} /><img field="exceeded" value={notvalue} onClick={doFilterRaw} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span >   {exceededName}
-                </span>
+                /* exceededName.then(function(val){
+                     console.log(val);
+                 } );*/
+                return <ExceededName data={exceededName} notvalue={notvalue} value={value} doFilterRaw={doFilterRaw}></ExceededName>
+                /*  return <span className="filterToggleActive"><span className="filterToggle">
+                      <img onClick={doFilterRaw} field="exceeded" value={value} className="icon" alt="filterIcon" src={filterIcon} /><img field="exceeded" value={notvalue} onClick={doFilterRaw} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span >   {exceededName}
+                  </span>
+                  */
             }
         }
         //array format concat
@@ -266,7 +297,7 @@ function getColumn(column_name, tags, tag) {
                     {(ob.attrs.filenameDownload && column_name.icons.includes("downloadAll")) &&
                         <button className="noFormatButton" onClick={() => downloadAll(ob)} file={ob.attrs.filenameDownload} data={obj}>  <img className="icon" alt="downloadIcon" src={downloadIcon} title="download all" /></button>
                     }
-                     {(ob.attrs.filenameDownload && column_name.icons.includes("diagram") && storePersistent.getState().user.aws === false) && <a href={"/sequenceDiagram/" + ob.attrs.filenameDownload} target="_blank" rel="noopener noreferrer"><img className="icon" alt="viewIcon" src={viewIcon} title="view PCAP" /></a>}
+                    {(ob.attrs.filenameDownload && column_name.icons.includes("diagram") && storePersistent.getState().user.aws === false) && <a href={"/sequenceDiagram/" + ob.attrs.filenameDownload} target="_blank" rel="noopener noreferrer"><img className="icon" alt="viewIcon" src={viewIcon} title="view PCAP" /></a>}
                     {(ob.dbg && ob.dbg.msg_trace && column_name.icons.includes("diagram")) && <Popup trigger={<img className="icon" alt="viewIcon" src={viewIcon} title="diagram" />} modal>
                         {close => (
                             <div className="Advanced">
@@ -280,7 +311,7 @@ function getColumn(column_name, tags, tag) {
                         )}
                     </Popup>
                     }
-                     {(storePersistent.getState().user.aws === true && window.location.pathname === ("/exceeded")) && <Popup trigger={<img className="icon" alt="alertProfileIcon" src={alertProfileIcon} title="alert profile" />} modal>
+                    {(storePersistent.getState().user.aws === true && window.location.pathname === ("/exceeded")) && <Popup trigger={<img className="icon" alt="alertProfileIcon" src={alertProfileIcon} title="alert profile" />} modal>
                         {close => (
                             <div className="Advanced">
                                 <div className="contentAdvanced" style={{ "padding": "0px" }}>
@@ -342,7 +373,7 @@ function getColumn(column_name, tags, tag) {
                     headerStyle: { width: '170px' },
                     formatter: (cell, obj) => {
                         var ob = obj._source[column_name.source];
-                        if(parseTimestamp(ob) !== "Invalid date" ){
+                        if (parseTimestamp(ob) !== "Invalid date") {
                             return parseTimestamp(ob)
                         }
                         else {
@@ -365,8 +396,8 @@ function getColumn(column_name, tags, tag) {
                         }
                         catch { }
                         var field = column_name.source;
-                        if(field === "attrs.from" || field === "attrs.to"){
-                            field = field +".keyword";
+                        if (field === "attrs.from" || field === "attrs.to") {
+                            field = field + ".keyword";
                         }
                         if (value) {
                             return <span className="filterToggleActive">
