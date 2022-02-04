@@ -4,7 +4,7 @@ const fs = require('fs');
 const { exec } = require('child_process');
 const ejs = require('ejs');
 const path = require('path');
-const paramsExec =  {maxBuffer: 1024 * 500};
+const paramsExec =  {maxBuffer: 1024 * 1000};
 
 /**
  * @swagger
