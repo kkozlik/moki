@@ -58,7 +58,7 @@ class Controller {
       }
 
       //disable types for network dashboard
-      if (req.url.includes("network")) {
+      if (req.url.includes("network") || req.url.includes("system")) {
         types = "*";
       }
       const oldtypes = types;
@@ -260,7 +260,7 @@ class Controller {
         types = "*";
       }
 
-      if (req.url.includes("network")) {
+      if (req.url.includes("network") || req.url.includes("system")) {
         types = "*";
       }
 

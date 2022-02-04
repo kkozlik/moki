@@ -103,7 +103,7 @@ class systemController extends Controller {
    *               $ref: '#/definitions/ChartResponseError'
    */
   static getTable(req, res, next) {
-    super.requestTable(req, res, next, { index: "logstash*", filter: "tags:collectd AND NOT type_instance:fSBCCallsTimeout AND NOT type_instance:fSBCRegsTimeout AND NOT attrs.type:realm_counters AND NOT attrs.type:global_counters" });
+    super.requestTable(req, res, next, { index: "collectd*", filter: "tags:collectd AND NOT type_instance:fSBCCallsTimeout AND NOT type_instance:fSBCRegsTimeout AND NOT attrs.type:realm_counters AND NOT attrs.type:global_counters" });
   }
 
 }
