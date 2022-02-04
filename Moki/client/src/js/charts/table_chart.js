@@ -129,6 +129,7 @@ export default class listChart extends Component {
     componentDidUpdate(prevProps) {
         if (prevProps.data !== this.props.data) {
             this.setState({ data: this.props.data });
+            var thiss = this;
             var table = document.getElementsByClassName('table table-hover')[0];
             if (table) {
                 resizableGrid(table);
@@ -149,6 +150,7 @@ export default class listChart extends Component {
                     setListeners(div);
                 }
                 function setListeners(div) {
+
                     var pageX, curCol, nxtCol, curColWidth, nxtColWidth;
 
                     div.addEventListener('mousedown', function (e) {
@@ -190,21 +192,19 @@ export default class listChart extends Component {
                             var columns = JSON.parse(window.localStorage.getItem("columns"));
                             var dashboard = window.location.pathname.substring(1);
 
-                            if (columns && columns[dashboard] && columns[dashboard][column]) {
-                                columns[dashboard][column] = width;
+                            if (!columns) {
+                                columns = {};
                             }
-                            else if (columns && columns[dashboard]) {
-                                columns[dashboard][column] = { "width": width };
-                            }
-                            else {
-                                if (columns === null) {
-                                    columns = {};
-                                }
-                                //columns = { [dashboard]: { [column]: width } });
-                                columns[dashboard] = { [column]: { "width": width } };
-                            }
-                            window.localStorage.setItem("columns", JSON.stringify(columns));
 
+                            var result =JSON.parse(JSON.stringify(thiss.state.columns));
+                            for (let hit of result) {
+                                if (hit.text === column) {
+                                    hit.headerStyle.width = width;
+                        
+                                }
+                            }
+                            columns[dashboard] = result;
+                            window.localStorage.setItem("columns", JSON.stringify(columns));
                         }
                         curCol = undefined;
                         nxtCol = undefined;
@@ -773,6 +773,15 @@ export default class listChart extends Component {
                                         }
                                     }
                                     this.setState({ columns: columns });
+                                    //store new columns in browser storage
+                                    var storedColumns = JSON.parse(window.localStorage.getItem("columns"));
+                                    var dashboard = window.location.pathname.substring(1);
+        
+                                    if (!storedColumns) {
+                                        storedColumns = {};
+                                    }
+                                    storedColumns[dashboard] = columns;
+                                    window.localStorage.setItem("columns", JSON.stringify(storedColumns));
                                 }
                                 }>
                                 {column.text}
