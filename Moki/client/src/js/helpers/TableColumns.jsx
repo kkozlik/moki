@@ -136,18 +136,12 @@ export const onEnterKeyExclude = (event, ob) => {
 
 // check if column width is stored in local storage
 function getColumnWidth(column, width = 0) {
-    var dashboard = window.location.pathname.substring(1);
-    var columns = JSON.parse(window.localStorage.getItem("columns"));
-    if (columns && columns[dashboard] && columns[dashboard][column]) {
-        return columns[dashboard][column];
+
+    if (width !== 0) {
+        return width;
     }
     else {
-        if (width !== 0) {
-            return width;
-        }
-        else {
-            return "auto";
-        }
+        return "auto";
     }
 }
 
@@ -423,6 +417,8 @@ function getColumn(column_name, tags, tag) {
 }
 
 export function tableColumns(dashboard, tags) {
+    var storedColumns = JSON.parse(window.localStorage.getItem("columns"));
+    if (storedColumns && storedColumns[dashboard]) return storedColumns[dashboard];
 
     var tag = true;
     //disable tags for end user
