@@ -213,7 +213,7 @@ export default class StackedChart extends Component {
             legend.append('text')
                 .attr('x', legendRectSize + legendSpacing)
                 .attr('y', legendRectSize - legendSpacing)
-                .text(async function (d) {
+                .text(function (d) {
                     for (var i = 0; i < pie(data).length; i++) {
                         if (d.key.length <= 20) {
                             if (Types[d.key]) {

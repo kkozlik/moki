@@ -531,8 +531,8 @@ class timerangeBar extends Component {
                                                 input={true}
                                                 onBlur={this.focousOutGte}
                                                 onChange={this.focousOutGte}
-                                                defaultValue={new Date(this.state.timestamp_gte)} />
-                                                value={this.state.timestamp_gte}
+                                                defaultValue={new Date(this.state.timestamp_gte)} 
+                                                value={this.state.timestamp_gte}/>
                                             <p>To: <button className="link" onClick={this.setToNow}>(now)</button></p>
                                             <Datetime closeOnTab
                                                 closeOnSelect
