@@ -15,9 +15,20 @@ export default class FirstLoginPopup extends Component {
         document.getElementById("create").style.display = "block";
 
         var password = document.getElementById("password").value;
+        var password2 = document.getElementById("password2").value;
+
         //password length > 8
         if (password.length < 8) {
             this.setState({ "error": "Password must have at least 8 characters." });
+            document.getElementById("createR").style.display = "block";
+            document.getElementById("create").style.display = "none";
+
+        }
+        else if (password !== password2) {
+            this.setState({ "error": "Passwords are not the same." });
+            document.getElementById("createR").style.display = "block";
+            document.getElementById("create").style.display = "none";
+
         }
         else {
 
@@ -41,7 +52,7 @@ export default class FirstLoginPopup extends Component {
                     document.getElementById("create").style.display = "none";
                     this.setState({ "error": "Problem to create user." });
                 }
-                
+
                 var res = await response.json();
                 if (res.error) {
                     this.setState({ "error": res.error });
@@ -50,6 +61,7 @@ export default class FirstLoginPopup extends Component {
                     var thiss = this;
                     setTimeout(function () {
                         thiss.props.setFirstTimeLogin(false);
+                        window.location.reload();
                     }, 5000);
                 }
             }
@@ -68,12 +80,14 @@ export default class FirstLoginPopup extends Component {
                 <div id="popupsmall" style={{ "maxWidth": "550px" }}>
                     <h3 style={{ "marginBottom": "15px" }}>It seems to be your first time to log in. Please create a new user:</h3>
                     <div className="form-group row">
-                        <label className="col-sm-3 col-form-label" style={{ "color": "grey" }}>Name </label>
+                        <label className="col-sm-4 col-form-label" style={{ "color": "grey" }}>Name </label>
                         <input type="text" id="name" required className="form-control" placeholder="username"></input>
                     </div>
                     <div className="form-group row">
-                        <label className="col-sm-3 col-form-label" style={{ "color": "grey" }}>Password </label>
+                        <label className="col-sm-4 col-form-label" style={{ "color": "grey" }}>Password </label>
                         <input type="password" id="password" required className="form-control" placeholder="password"></input>
+                        <label className="col-sm-4 col-form-label" style={{ "color": "grey" }}>Password again</label>
+                        <input type="password2" id="password" required className="form-control" placeholder="same password again"></input>
                     </div>
                     {this.state.error ? <p className="error">{this.state.error}</p> : ""}
                     <div style={{ "textAlign": "end" }}>
