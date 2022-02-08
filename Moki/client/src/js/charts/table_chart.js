@@ -865,7 +865,7 @@ export default class listChart extends Component {
                                         <img className="icon" alt="downloadIcon" src={downloadPcapIcon} onClick={() => getPcaps()} title="download merge PCAP" />
                                     </span>
                                     }
-                                    {this.props.id !== "LAST LOGIN EVENTS" && <button className="noFormatButton" onClick={() => downloadAllCheck()} >  <img className="icon" alt="downloadIcon" src={downloadIcon} title="download selected" /><span id="downloadAllTooltip" style={{ "display": "none" }}>Downloading a lot of data, it can take a while.</span></button>}
+                                    {this.props.id !== "LAST LOGIN EVENTS" && <button className="noFormatButton" onClick={() => downloadAllCheck()} >  <img className="icon" alt="downloadIcon" src={downloadIcon} title="download selected" /><span id="downloadAllTooltip" style={{ "display": "none" }}>Downloading a lot of data, it can take a while. Max. 500 events will be download. Use export button for more</span></button>}
 
                                     {this.props.id !== "LAST LOGIN EVENTS" && <button className="noFormatButton" onClick={() => this.shareFilters()} >  <img className="icon" alt="shareIcon" src={shareIcon} title="share selected" /><span id="tooltipshareFilters" style={{ "display": "none", "position": "absolute", "backgroundColor": "white" }}>Copied to clipboard</span></button>}
 
