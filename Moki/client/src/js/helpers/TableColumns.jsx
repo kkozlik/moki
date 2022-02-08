@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
 import Popup from "reactjs-popup";
 import detailsIcon from "../../styles/icons/details.png";
 import TagRanger from "../bars/TagRanger";
@@ -22,6 +23,16 @@ import { parseTimestamp } from "../helpers/parseTimestamp";
 import SimpleSequenceDiagram from "../charts/simpleSequenceDiagram";
 import { getSearchableAttributes } from '@moki-client/gui';
 import { getExceededName } from '@moki-client/gui';
+
+const attrsTypes = {
+    "@timestamp": "time",
+    "ts-start": "time",
+    "rx": "round",
+    "tx": "round",
+    "shortterm": "round",
+    "midterm": "round",
+    "longterm": "round"
+}
 
 //support class for async value
 class ExceededName extends Component {
@@ -107,7 +118,6 @@ export const syntaxHighlight = (json) => {
     });
 }
 
-
 const shareEvent = (id) => {
     let href = window.location.origin + window.location.pathname + "?from=" + store.getState().timerange[0] + "&to=" + store.getState().timerange[1];
 
@@ -145,7 +155,7 @@ function getColumnWidth(column, width = 0) {
     }
 }
 
-function getColumn(column_name, tags, tag) {
+function getColumn(column_name, tags, tag, width = 0, hidden = false) {
     switch (column_name.source) {
         case '_id': return {
             dataField: '_source._id',
@@ -157,8 +167,9 @@ function getColumn(column_name, tags, tag) {
         case 'attrs.reason': return {
             dataField: '_source.attrs.reason',
             editable: false,
-            headerStyle: { width: getColumnWidth("REASON") },
+            headerStyle: { width: getColumnWidth("REASON", width) },
             sort: true,
+            hidden: hidden,
             text: 'REASON',
             formatter: (cell, obj) => {
                 var ob = obj._source;
@@ -174,8 +185,9 @@ function getColumn(column_name, tags, tag) {
             dataField: '_source.exceeded',
             text: 'EXCEEDED',
             sort: true,
+            hidden: hidden,
             editable: false,
-            headerStyle: { width: getColumnWidth("EXCEEDED") },
+            headerStyle: { width: getColumnWidth("EXCEEDED", width) },
             formatter: (cell, obj) => {
                 var ob = obj._source;
                 var value = "";
@@ -193,16 +205,7 @@ function getColumn(column_name, tags, tag) {
                 notvalue = notvalue + ")";
 
                 var exceededName = ob.exceeded ? ob.exceeded.toString() : "";
-                // exceededName = getName(exceededName);
-
-                /* exceededName.then(function(val){
-                     console.log(val);
-                 } );*/
                 return <ExceededName data={exceededName} notvalue={notvalue} value={value} doFilterRaw={doFilterRaw}></ExceededName>
-                /*  return <span className="filterToggleActive"><span className="filterToggle">
-                      <img onClick={doFilterRaw} field="exceeded" value={value} className="icon" alt="filterIcon" src={filterIcon} /><img field="exceeded" value={notvalue} onClick={doFilterRaw} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span >   {exceededName}
-                  </span>
-                  */
             }
         }
         //array format concat
@@ -210,8 +213,9 @@ function getColumn(column_name, tags, tag) {
             dataField: '_source.exceeded-by',
             text: 'EXCEEDED BY',
             sort: true,
+            hidden: hidden,
             editable: false,
-            headerStyle: { width: getColumnWidth("EXCEEDED BY") },
+            headerStyle: { width: getColumnWidth("EXCEEDED BY", width) },
             formatter: (cell, obj) => {
 
                 var ob = obj._source;
@@ -241,7 +245,8 @@ function getColumn(column_name, tags, tag) {
             text: 'DURATION',
             sort: true,
             editable: false,
-            headerStyle: { width: getColumnWidth("DURATION") },
+            hidden: hidden,
+            headerStyle: { width: getColumnWidth("DURATION", width) },
             formatter: (cell, obj) => {
                 var ob = obj._source;
                 return <span className="filterToggleActive"><span className="filterToggle">
@@ -255,6 +260,7 @@ function getColumn(column_name, tags, tag) {
             dataField: '_source.attrs.tags',
             text: 'TAGS',
             sort: true,
+            hidden: hidden,
             headerStyle: { width: '150px !important' },
             editorRenderer: (editorProps, value, row, column, rowIndex, columnIndex) => (
                 <TagRanger tags={tags} row={row} />
@@ -271,7 +277,8 @@ function getColumn(column_name, tags, tag) {
             dataField: '_source.attrs.rtp-MOScqex-avg',
             text: 'AVG QoS',
             sort: true,
-            headerStyle: { width: getColumnWidth("AVG QoS") },
+            hidden: hidden,
+            headerStyle: { width: getColumnWidth("AVG QoS", width) },
             editable: false,
             classes: function callback(cell, row, rowIndex, colIndex) { if (cell <= 3) { return "red" }; }
         }
@@ -341,13 +348,14 @@ function getColumn(column_name, tags, tag) {
         //default case with searchable icons and not searchable
         default:
             //fnc case - round
-            if (column_name.fnc && column_name.fnc === "round") {
+            if (attrsTypes[column_name] && attrsTypes[column_name] === "round") {
                 return {
                     dataField: '_source.' + column_name.source,
                     text: column_name ? column_name.name.toUpperCase() : "",
                     sort: true,
+                    hidden: hidden,
                     editable: false,
-                    headerStyle: { width: getColumnWidth(column_name.source) },
+                    headerStyle: { width: getColumnWidth(column_name.source, width) },
                     formatter: (cell, obj) => {
                         var ob = obj._source[column_name.source]
                         if (ob) {
@@ -358,12 +366,13 @@ function getColumn(column_name, tags, tag) {
                 }
             }
             //time format
-            else if (column_name.fnc && column_name.fnc === "time") {
+            else if (attrsTypes[column_name] && attrsTypes[column_name] === "time") {
                 return {
                     dataField: '_source.' + column_name.source,
                     text: column_name ? column_name.name.toUpperCase() : "",
                     editable: false,
                     sort: true,
+                    hidden: hidden,
                     headerStyle: { width: '170px' },
                     formatter: (cell, obj) => {
                         var ob = obj._source[column_name.source];
@@ -382,7 +391,8 @@ function getColumn(column_name, tags, tag) {
                     text: column_name ? column_name.name.toUpperCase() : "",
                     editable: false,
                     sort: true,
-                    headerStyle: { width: getColumnWidth(column_name.source) },
+                    hidden: hidden,
+                    headerStyle: { width: getColumnWidth(column_name.source, width) },
                     formatter: (cell, obj) => {
                         var ob = obj._source;
                         try {
@@ -410,24 +420,40 @@ function getColumn(column_name, tags, tag) {
                     text: column_name ? column_name.name.toUpperCase() : "",
                     editable: false,
                     sort: true,
-                    headerStyle: { width: getColumnWidth(column_name.source) }
+                    hidden: hidden,
+                    headerStyle: { width: getColumnWidth(column_name.source, width) }
                 }
             }
     }
 }
 
 export function tableColumns(dashboard, tags) {
+    //check browser local storage
     var storedColumns = JSON.parse(window.localStorage.getItem("columns"));
-    if (storedColumns && storedColumns[dashboard]) return storedColumns[dashboard];
+    if (storedColumns && storedColumns[dashboard]) {
+        var storedColumns = storedColumns[dashboard];
+        var result = [];
 
-    var tag = true;
-    //disable tags for end user
-    if (storePersistent.getState().user.jwt === "2") { tag = false };
-
-    let layout = storePersistent.getState().layout.table.columns;
-    let columns = [];
-    for (const column of layout[dashboard]) {
-        columns.push(getColumn(column, tags, tag));
+        //generate new columns from local storage list and stored with
+        for (let field of storedColumns) {
+            let width = field.headerStyle && field.headerStyle.width ? field.headerStyle.width : null;
+            let hidden = field.hidden ? field.hidden : null;
+            let source = field.text === "ADVANCED" ? "advanced" : field.dataField.slice(8);
+            result.push(getColumn({ source: source, name: field.text,  "icons": ["download", "details", "share"] }, tags, tag, width = width, hidden = hidden));
+        }
+        return result;
     }
-    return columns;
+    else {
+
+        var tag = true;
+        //disable tags for end user
+        if (storePersistent.getState().user.jwt === "2") { tag = false };
+
+        let layout = storePersistent.getState().layout.table.columns;
+        let columns = [];
+        for (const column of layout[dashboard]) {
+            columns.push(getColumn(column, tags, tag));
+        }
+        return columns;
+    }
 }

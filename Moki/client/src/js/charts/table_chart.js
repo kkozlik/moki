@@ -4,9 +4,7 @@ Get call table
 
 it is seperate request from call charts
 */
-import React, {
-    Component
-} from 'react';
+import React, { Component } from 'react';
 import BootstrapTable from '@moki-client/react-bootstrap-table-next';
 import cellEditFactory from 'react-bootstrap-table2-editor';
 import paginationFactory from 'react-bootstrap-table2-paginator';
@@ -196,14 +194,22 @@ export default class listChart extends Component {
                                 columns = {};
                             }
 
-                            var result =JSON.parse(JSON.stringify(thiss.state.columns));
+                            var result = JSON.parse(JSON.stringify(thiss.state.columns));
                             for (let hit of result) {
                                 if (hit.text === column) {
                                     hit.headerStyle.width = width;
-                        
+
                                 }
+
+                                //check if format fnc
+                               /* for (let field of thiss.state.columns) {
+                                    if (field.formatter) {
+                                        hit.formatter = field.formatter.toString();
+                                    }
+                                }*/
                             }
                             columns[dashboard] = result;
+
                             window.localStorage.setItem("columns", JSON.stringify(columns));
                         }
                         curCol = undefined;
@@ -524,6 +530,7 @@ export default class listChart extends Component {
     }
 
     renderExpand(row) {
+
         var keys = Object.keys(row);
         var displayedAttrs = getDisplayedAttributes();
         var result = [];
@@ -578,6 +585,7 @@ export default class listChart extends Component {
             )
         }
         return result;
+
     }
 
     render() {
@@ -776,7 +784,7 @@ export default class listChart extends Component {
                                     //store new columns in browser storage
                                     var storedColumns = JSON.parse(window.localStorage.getItem("columns"));
                                     var dashboard = window.location.pathname.substring(1);
-        
+
                                     if (!storedColumns) {
                                         storedColumns = {};
                                     }
@@ -832,7 +840,6 @@ export default class listChart extends Component {
         };
 
         getSearchableAttributes();
-
         return (
             <div key={"table" + this.props.name} className="chart">
                 {columnsList &&
@@ -862,7 +869,7 @@ export default class listChart extends Component {
 
                                     {this.props.id !== "LAST LOGIN EVENTS" && <button className="noFormatButton" onClick={() => this.shareFilters()} >  <img className="icon" alt="shareIcon" src={shareIcon} title="share selected" /><span id="tooltipshareFilters" style={{ "display": "none", "position": "absolute", "backgroundColor": "white" }}>Copied to clipboard</span></button>}
 
-                                    <span className="smallText"> (total: {this.props.total.toLocaleString()})</span>
+                                    <span className="smallText"> (total: {this.props.total > 500 ? "500/" + this.props.total.toLocaleString() : this.props.total.toLocaleString()})</span>
                                     <CustomToggleList {...props.columnToggleProps} />
                                     <BootstrapTable {...props.baseProps}
                                         pagination={
