@@ -264,6 +264,11 @@ class Controller {
         types = "*";
       }
 
+       //disable types for specific requests (e.g. different index in dashboard)
+       if (requests.types === "*") {
+        types = "*";
+      }
+
       if (req.body.timerange_lte) {
         timestamp_lte = Math.round(req.body.timerange_lte);
       }
