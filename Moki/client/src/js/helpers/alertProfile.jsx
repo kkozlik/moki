@@ -53,8 +53,11 @@ class AlertProfile extends Component {
         if (this.state.data["exceeded-by"] === "ip") {
             result = await this.get("api/bw/getip?key=" + this.state.data.attrs.source + "&list=ipprofile&hmac=" + hmac + "&pretty=true");
         }
-        else {
+        else if  (this.state.data["exceeded-by"] === "uri"){
             result = await this.get("api/bw/geturi?key=" + this.state.data.attrs.from + "&list=uriprofile&hmac=" + hmac + "&pretty=true");
+        }
+        else {
+            result = await this.get("api/bw/gettenantprofile&pretty=true");
         }
 
 
@@ -63,7 +66,6 @@ class AlertProfile extends Component {
             for (let item of Object.keys(result.Item)) {
                 for (let template of storePersistent.getState().layout.types.exceeded) {
                     if (template.id === item) {
-                        // result.Item[item] = item + " - "+template.key;
                         result.Item[item + " - " + template.name] = result.Item[item];
                         delete result.Item[item];
                     }
