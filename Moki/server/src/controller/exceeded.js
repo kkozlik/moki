@@ -94,7 +94,7 @@ class exceededController extends Controller {
    *               $ref: '#/definitions/ChartResponseError'
    */
   static getTable(req, res, next) {
-    super.requestTable(req, res, next, { index: "exceeded*", filter: "*" });
+    super.requestTable(req, res, next, { index: "exceeded*", filter: "*", types:"*" });
   }
 }
 
