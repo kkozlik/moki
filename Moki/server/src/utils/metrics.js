@@ -171,7 +171,7 @@ function getQueries(filter, types, timestamp_gte, timestamp_lte, userFilter, cha
     });
   }
 
-  if (chartFilter !== "*") {
+  if (chartFilter && chartFilter !== "*") {
     queries.push({
       "query_string": {
         "query": chartFilter
