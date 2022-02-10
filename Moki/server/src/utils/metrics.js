@@ -1,6 +1,8 @@
 // metrics.js hold some metric logic
 const fs = require('fs');
 const { cfg } = require('../modules/config');
+const { parseBase64 } = require('../modules/jwt');
+const hfName = 'x-amzn-oidc-data';
 
 function getFiltersConcat(filters) {
   // get filters, if no place "*", if more than 1, concat with AND
@@ -169,7 +171,7 @@ function getQueries(filter, types, timestamp_gte, timestamp_lte, userFilter, cha
     });
   }
 
-  if (chartFilter && chartFilter !== "*") {
+  if (chartFilter !== "*") {
     queries.push({
       "query_string": {
         "query": chartFilter
@@ -181,9 +183,21 @@ function getQueries(filter, types, timestamp_gte, timestamp_lte, userFilter, cha
 }
 
 
+function getParameterFromHeader(req, info) {
+  try {
+    return parsedHeader[info];
+  } catch (e) {
+    console.log("parsing failed header failed");
+    return { error: "Problem to get "+info+" parameter from request header" };
+  }
+
+}
+
+
 module.exports = {
   getFiltersConcat: getFiltersConcat,
   getTypesConcat: getTypesConcat,
   getQueries: getQueries,
-  checkSelectedTypes: checkSelectedTypes
+  checkSelectedTypes: checkSelectedTypes,
+  getParameterFromHeader: getParameterFromHeader
 };
