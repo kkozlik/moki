@@ -611,6 +611,7 @@ class App extends Component {
                         </div>
                         <span className="footer" style={{ "float": "right" }}>
                             <img src={this.state.logo} alt="logo" id="footerlogo" />
+                            <p> {this.state.monitorName} </p>
                         </span>
                     </div>
                 </div>;
