@@ -201,7 +201,7 @@ class Controller {
       console.log(new Date() + " send msearch");
       const requestList = [];
       for (let j = 0; j < requests.length; j++) {
-       // console.log(JSON.stringify(requests[j].query));
+        // console.log(JSON.stringify(requests[j].query));
         requestList.push(
           {
             index: requests[j].index,
@@ -226,7 +226,12 @@ class Controller {
 
       console.log(new Date() + " got elastic data");
       client.close();
-      return res.json(response);
+      let resp = res.json(response);
+      if (typeof resp === "string") {
+        console.error("Failed msearch: "+resp);
+        console.error("Failed msearch query: "+JSON.stringify(requestList));
+      }
+      return resp;
     }
 
     return search().catch(e => {
@@ -340,7 +345,12 @@ class Controller {
       userFilter = "*";
       console.info(new Date() + " got elastic data");
       client.close();
-      return res.json(response);
+      let resp = res.json(response);
+      if (typeof resp === "string") {
+        console.error("Failed msearch: "+resp);
+        console.error("Failed msearch query: "+requests.query);
+      }
+      return resp;
     }
 
     return search().catch(e => {
