@@ -348,7 +348,7 @@ class Controller {
       let resp = res.json(response);
       if (typeof resp === "string") {
         console.error("Failed msearch: "+resp);
-        console.error("Failed msearch query: "+requests.query);
+        console.error("Failed msearch query: "+JSON.stringify(requests.query));
       }
       return resp;
     }
