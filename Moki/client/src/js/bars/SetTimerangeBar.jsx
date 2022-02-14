@@ -550,19 +550,18 @@ class timerangeBar extends Component {
                                 <button style={{ "marginLeft": "10%", "marginTop": "60px" }} onClick={this.close} className="setTimerange btn btn-secondary">Cancel</button>  <button style={{ "marginTop": "60px" }} onClick={this.setTimerange} className="setTimerange btn btn-primary">Set</button>
                             </div>
                             <hr></hr>
-                            <div className="row" style={{ "marginLeft": "15px" }}>
+                            {this.state.autoRefresh && <div className="row" style={{ "marginLeft": "15px" }}>
                                 <br />
                                 <h3 style={{ "marginTop": "15px" }}>Refresh </h3>
-                            </div>
-                            <div className="row" style={{ "marginLeft": "30px" }}>
+                            </div>}
+                            {this.state.autoRefresh && <div className="row" style={{ "marginLeft": "30px" }}>
                                 <p style={{ "whiteSpace": "pre-wrap" }}>every </p> <input type="number" id="refresh" min="1" max="60" defaultValue={this.state.refreshValue} style={{ "width": "fit-content" }} /><select id="timeUnit" style={{ "width": "fit-content" }} defaultValue={this.state.refreshUnit} >
                                     <option value="seconds">seconds</option>
                                     <option value="minutes">minutes</option>
                                     <option value="hours">hours</option>
                                 </select>
                                 <button onClick={this.setRefresh} className="setTimerange btn btn-secondary" style={{ "marginLeft": "50px" }}>OK</button>
-                            </div>
-
+                            </div>}
                         </div>
                         }
                     </div>
