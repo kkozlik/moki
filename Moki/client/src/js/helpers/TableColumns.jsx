@@ -220,19 +220,25 @@ function getColumn(column_name, tags, tag, width = 0, hidden = false) {
 
                 var ob = obj._source;
                 if (ob["exceeded-by"]) {
-                    var value = "";
-                    var notvalue = "";
-                    for (var i = 0; i < ob["exceeded-by"].length; i++) {
-                        if (i === 0) {
-                            value = "exceeded-by: " + ob["exceeded-by"][i];
-                            notvalue = "NOT (exceeded-by: " + ob["exceeded-by"][i];
+                    if (Array.isArray(ob["exceeded-by"])) {
+                        var value = "";
+                        var notvalue = "";
+                        for (var i = 0; i < ob["exceeded-by"].length; i++) {
+                            if (i === 0) {
+                                value = "exceeded-by: " + ob["exceeded-by"][i];
+                                notvalue = "NOT (exceeded-by: " + ob["exceeded-by"][i];
+                            }
+                            else {
+                                value = value + " AND exceeded-by:" + ob["exceeded-by"][i];
+                                notvalue = notvalue + " AND exceeded-by:" + ob["exceeded-by"][i];
+                            }
                         }
-                        else {
-                            value = value + " AND exceeded-by:" + ob["exceeded-by"][i];
-                            notvalue = notvalue + " AND exceeded-by:" + ob["exceeded-by"][i];
-                        }
+                        notvalue = notvalue + ")";
                     }
-                    notvalue = notvalue + ")";
+                    else {
+                        var value = "exceeded-by: " + ob["exceeded-by"];
+                        var notvalue = "NOT exceeded-by: " + ob["exceeded-by"];
+                    }
                     return <span className="filterToggleActive"><span className="filterToggle">
                         <img onClick={doFilterRaw} field="exceeded-by" value={value} className="icon" alt="filterIcon" src={filterIcon} /><img field="exceeded-by" value={notvalue} onClick={doFilterRaw} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span > {ob['exceeded-by'] ? ob['exceeded-by'].toString() : ""}
                     </span>
@@ -439,7 +445,7 @@ export function tableColumns(dashboard, tags) {
             let width = field.headerStyle && field.headerStyle.width ? field.headerStyle.width : null;
             let hidden = field.hidden ? field.hidden : null;
             let source = field.text === "ADVANCED" ? "advanced" : field.dataField.slice(8);
-            result.push(getColumn({ source: source, name: field.text,  "icons": ["download", "details", "share"] }, tags, tag, width = width, hidden = hidden));
+            result.push(getColumn({ source: source, name: field.text, "icons": ["download", "details", "share"] }, tags, tag, width = width, hidden = hidden));
         }
         return result;
     }
