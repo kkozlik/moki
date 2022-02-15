@@ -101,6 +101,34 @@ class monitoringController {
         }
       });
 
+      let memoryFree = "";
+       //get avail + buff/cache memory
+       exec("free | awk '/Mem:/ { print $7 }'", function (error, stdout) {
+        if (!error) {
+          memoryFree = parseInt(stdout);
+        } else {
+          memory = error;
+        }
+      });
+
+      exec("free | awk '/Mem:/ { print $6 }'", function (error, stdout) {
+          if (!error) {
+           memoryFree = memoryFree + parseInt(stdout);
+          } else {
+            memoryFree = error;
+          }
+      });
+
+      let memoryTotal = "";
+      //get avail + buff/cache memory
+      exec("free | awk '/Mem:/ { print $2 }'", function (error, stdout) {
+       if (!error) {
+        memoryTotal = parseInt(stdout);
+       } else {
+        memoryTotal = error;
+       }
+     });
+
       const data = [];
       let node;
       let indices;
@@ -113,7 +141,9 @@ class monitoringController {
         data.push({});
         data.push({
           logstash: logstash,
-          elasticsearch: elasticsearch
+          elasticsearch: elasticsearch,
+          memoryFree: memoryFree,
+          memoryTotal: memoryTotal
         });
         data.push({});
         res.send(data);
@@ -122,7 +152,9 @@ class monitoringController {
       data.push(node);
       data.push({
         logstash: logstash,
-        elasticsearch: elasticsearch
+        elasticsearch: elasticsearch,
+        memoryFree: memoryFree,
+        memoryTotal: memoryTotal
       });
       data.push(indices);
       client.close();
@@ -277,8 +309,6 @@ class monitoringController {
   static getSbc(req, res, next) {
     async function search() {
       const client = connectToES();
-      const filters = getFiltersConcat(req.body.filters);
-
       if (req.body.timerange_lte) {
         timestamp_lte = Math.round(req.body.timerange_lte);
       }
@@ -294,7 +324,7 @@ class monitoringController {
       }
 
       //SBC ACTIVITY TYPES
-      const sbcTypes = two_agg_query_limit.getTemplate("attrs.sbc", "terms", "attrs.type", getQueries(filters, "*", timestamp_gte, timestamp_lte, "*", "*", domainFilter), supress);
+      const sbcTypes = two_agg_query_limit.getTemplate("attrs.sbc", "terms", "attrs.type", getQueries("*", "*", timestamp_gte, timestamp_lte, "*", "*", domainFilter), supress);
 
       const response = await client.search({
         index: 'logstash*',
