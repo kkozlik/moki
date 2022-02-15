@@ -35,6 +35,10 @@ export default class CountUpChart extends Component {
         }
     }
 
+    getNumberLength(number) {
+        return number.toString().length;
+    }
+
     countUp(data) {
         if (data > 0) {
             var end = data;
@@ -70,12 +74,21 @@ export default class CountUpChart extends Component {
 
     //display="none"
     render() {
+        var digits = this.getNumberLength(this.state.count);
+        var style ="4rem";
+
+        if(digits > 8){
+            style ="2rem";
+        }
+        else if(digits > 5){
+            style ="3rem";
+        }
         var bucket = getTimeBucket();
         return (
             <div id={this.props.name} className={ (window.location.pathname === "/home" || window.location.pathname === "/") ? "chart valuechartHeight" : "chart valuechart" } >
                 {window.location.pathname === "/web" && <Animation name={this.props.name} type={this.props.type} setData={this.setData} dataAll={this.state.data} autoplay={this.props.autoplay} display={this.props.displayAnimation} />}
                 <h3 className="alignLeft title" style={{ "float": "inherit" }}>{this.props.name}</h3>
-                <h4 className={"alignLeft " + this.props.biggerFont} title={"last " + bucket}>{this.state.count ? this.state.count.toLocaleString() : 0}</h4>
+                <h4 className={"alignLeft"} title={"last " + bucket} style={{"font-size": style}}>{this.state.count ? this.state.count.toLocaleString() : 0}</h4>
                 {!Number.isNaN(this.state.valueAgo) && <h4 className={"alignLeft "} title={"difference to previous"}><span style={{ "color": this.state.valueAgo === 0 ? "black" : this.state.valueAgo > 0 ? "green" : "red" }}>{this.state.valueAgo > 0 ? "(+" + this.state.valueAgo + ")" : "(" + this.state.valueAgo + ")"}</span></h4>}
             </div>
         )
