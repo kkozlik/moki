@@ -37,11 +37,11 @@ class MonitoringCharts extends Component {
             loadAverage5m: 0,
             loadAverage15m: 0,
             memoryBytes: 0,
-            memoryFree: 0,
             memoryUsed: 0,
             disk: 0,
             eventStats: 0,
             indices: [],
+            freeMemory: 0,
             sbcTypeCount: []
         }
         store.subscribe(() => this.loadData());
@@ -110,17 +110,6 @@ class MonitoringCharts extends Component {
             // 15-minute load average on the system
             var loadAverage15m = data[0].nodes[node].os.cpu.load_average["15m"];
 
-
-            //MEMORY
-            // Total amount of physical memory in bytes.
-            var memoryBytes = data[0].nodes[node].os.mem.total_in_bytes / 1000000;
-
-            // Percentage of free memory.
-            var memoryFree = data[0].nodes[node].os.mem.free_percent;
-
-            // Percentage of used memory.
-            var memoryUsed = data[0].nodes[node].os.mem.used_percent;
-
             //DISK
             //  (Linux only) - Array of disk metrics for each device that is backing an Elasticsearch data path. These disk metrics are probed periodically and averages between the last probe and the current probe are computed.
             var disk = data[0].nodes[node].fs.io_stats.devices;
@@ -152,6 +141,8 @@ class MonitoringCharts extends Component {
             //elasticsearch status
             var elasticsearchStatus = data[1].elasticsearch;
 
+            var freeMemory = data[1].memoryFree;
+            var memoryBytes = data[1].memoryTotal;
 
             //LOGSTASH       
             //logstash status
@@ -191,10 +182,9 @@ class MonitoringCharts extends Component {
             loadAverage5m: loadAverage5m,
             loadAverage15m: loadAverage15m,
             memoryBytes: memoryBytes,
-            memoryFree: memoryFree,
-            memoryUsed: memoryUsed,
             disk: disk,
             indices: indices,
+            freeMemory: freeMemory,
             eventStats: eventStats,
             sbcTypeCount: sbcTypeCount
 
@@ -212,7 +202,7 @@ class MonitoringCharts extends Component {
 
             <h4> CPU </h4> <div className="row no-gutters bottomMargin" >
                 <div className="col-auto" style={{ "marginRight": "5px" }}>
-                    <GaugeChart data={  this.state.cpu }
+                    <GaugeChart data={this.state.cpu}
                         name={"CPU USAGE (%)"}
                         id={"used_cpu"}
                         width={300}
@@ -240,15 +230,22 @@ class MonitoringCharts extends Component {
                         }
                     />
                 </div></div>
-            <h4> MEMORY </h4> <div className="row no-gutters bottomMargin" > <div className="col-auto">
-                <ValueChart data={
-                    this.state.memoryBytes
-                }
-                    name={
-                        "TOTAL MEMORY (MB)"
+            <h4> MEMORY </h4> <div className="row no-gutters bottomMargin" >
+                <div className="col-auto">
+                    <ValueChart data={this.state.freeMemory}
+                        name={"FREE MEMORY (KB)"}
+                    />
+                </div>
+                <div className="col-auto" style={{"marginLeft": "5px"}}>
+                    <ValueChart data={
+                        this.state.memoryBytes
                     }
-                />
-            </div>
+                        name={
+                            "TOTAL MEMORY (KB)"
+                        }
+                    />
+
+                </div>
             </div> <h4> DISK(Linux only) </h4> <div className="row no-gutters bottomMargin" >
                 <div className="col-auto">
                     <MultiListChart data={
@@ -341,14 +338,17 @@ class MonitoringCharts extends Component {
                         "INDICES STATS"
                     }
                 /> </div>
-            <div className="row no-gutters">
-                <MultiListChart data={
-                    this.state.sbcTypeCount
-                } name={"SBC EVENTS COUNT"} field={"attrs.type"} />
-            </div>
         </div>
         );
     }
 }
 
+
+/*
+ <div className="row no-gutters">
+                <MultiListChart data={
+                    this.state.sbcTypeCount
+                } name={"SBC EVENTS COUNT"} field={"attrs.type"} />
+            </div>
+*/
 export default MonitoringCharts;
