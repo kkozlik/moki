@@ -90,7 +90,7 @@ export default class FirstLoginPopup extends Component {
                         <input type="password" id="password2" required className="form-control" placeholder="same password again"></input>
                     </div>
                     {this.state.error ? <p className="error">{this.state.error}</p> : ""}
-                    <div style={{ "textAlign": "end" }}>
+                    <div style={{ "textAlign": "center" }}>
                         <button onClick={this.createUser} style={{ "marginRight": "5px" }} className="btn btn-primary"><i className="fa fa-circle-o-notch fa-spin" id="create" style={{ "display": "none" }}></i> <span id="createR">Create</span> </button>
                     </div>
                 </div>
