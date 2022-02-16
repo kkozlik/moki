@@ -87,7 +87,7 @@ export default class FirstLoginPopup extends Component {
                         <label className="col-sm-4 col-form-label" style={{ "color": "grey" }}>Password </label>
                         <input type="password" id="password" required className="form-control" placeholder="password"></input>
                         <label className="col-sm-4 col-form-label" style={{ "color": "grey" }}>Password again</label>
-                        <input type="password2" id="password" required className="form-control" placeholder="same password again"></input>
+                        <input type="password" id="password2" required className="form-control" placeholder="same password again"></input>
                     </div>
                     {this.state.error ? <p className="error">{this.state.error}</p> : ""}
                     <div style={{ "textAlign": "end" }}>
