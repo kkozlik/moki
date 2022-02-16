@@ -102,8 +102,8 @@ class monitoringController {
       });
 
       let memoryFree = "";
-       //get avail + buff/cache memory
-       exec("free | awk '/Mem:/ { print $7 }'", function (error, stdout) {
+       //get free memory
+       exec("free | awk '/Mem:/ { print $4 }'", function (error, stdout) {
         if (!error) {
           memoryFree = parseInt(stdout);
         } else {
@@ -111,13 +111,6 @@ class monitoringController {
         }
       });
 
-      exec("free | awk '/Mem:/ { print $6 }'", function (error, stdout) {
-          if (!error) {
-           memoryFree = memoryFree + parseInt(stdout);
-          } else {
-            memoryFree = error;
-          }
-      });
 
       let memoryTotal = "";
       //get avail + buff/cache memory
