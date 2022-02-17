@@ -57,7 +57,7 @@ class AlertProfile extends Component {
             result = await this.get("api/bw/geturi?key=" + this.state.data.attrs.from + "&list=uriprofile&hmac=" + hmac + "&pretty=true");
         }
         else {
-            result = await this.get("api/bw/gettenantprofile&pretty=true");
+            result = await this.get("api/bw/gettenantprofile?pretty=true");
         }
 
 
