@@ -34,7 +34,7 @@ class SequenceDiagram extends Component {
      */
   async load() {
     var thiss = this;
-    var path = "/data/sbcsync/traffic_log/"+window.location.pathname.substring(17);
+    var path = "/data/sbcsync/traffic_log/" + window.location.pathname.substring(17);
 
     if (window.location.search) {
       if (window.location.search === "?id=") {
@@ -188,24 +188,27 @@ class SequenceDiagram extends Component {
       var filename = array;
 
       await downloadSD(filename).then(function (data) {
-        var blob = new Blob([data], { type: "pcap" });
-        const element = document.createElement("a");
-        element.download = "merge-" + Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 10) + ".html";
-        element.href = URL.createObjectURL(blob);
-        document.body.appendChild(element);
-        element.click();
-
+        if (data && (!data.includes("Error") || !data.includes("error"))) {
+          var blob = new Blob([data], { type: "pcap" });
+          const element = document.createElement("a");
+          element.download = "merge-" + Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 10) + ".html";
+          element.href = URL.createObjectURL(blob);
+          document.body.appendChild(element);
+          element.click();
+        }
       })
     }
     else {
       filename = window.location.pathname.substring(17);
       await downloadSD(filename).then(function (data) {
-        var blob = new Blob([data], { type: "html" });
-        const element = document.createElement("a");
-        element.download = filename + ".html";
-        element.href = URL.createObjectURL(blob);
-        document.body.appendChild(element);
-        element.click();
+        if (data && (!data.includes("Error") || !data.includes("error"))) {
+          var blob = new Blob([data], { type: "html" });
+          const element = document.createElement("a");
+          element.download = filename + ".html";
+          element.href = URL.createObjectURL(blob);
+          document.body.appendChild(element);
+          element.click();
+        }
       })
     }
   }
@@ -348,7 +351,7 @@ class SequenceDiagram extends Component {
         dataNew.forEach(function (m, i) {
           if (m.src === m.dst) {
             var y = MESSAGE_ARROW_Y_OFFSET + (i) * MESSAGE_SPACE;
-            var pathData = curve([[XPAD + classes.indexOf(m.src) * VERT_SPACE-10, y-20], [XPAD + classes.indexOf(m.src) * VERT_SPACE + 10, y + 45], [XPAD + classes.indexOf(m.src) * VERT_SPACE + 45, y + 10]]);
+            var pathData = curve([[XPAD + classes.indexOf(m.src) * VERT_SPACE - 10, y - 20], [XPAD + classes.indexOf(m.src) * VERT_SPACE + 10, y + 45], [XPAD + classes.indexOf(m.src) * VERT_SPACE + 45, y + 10]]);
             svg.append("path")
               .attr("d", pathData)
               .attr("stroke", function (d) { return m.color; })

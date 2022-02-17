@@ -660,7 +660,7 @@ export default class listChart extends Component {
                     //download sd
                     if (record._source.attrs.filename) {
                         var sd = await downloadSD(record._source.attrs.filename);
-                        if (sd && !sd.includes("Error")) {
+                        if (sd && !sd.includes("Error") && !sd.includes("error")) {
                             zip.file(filename + ".html", sd);
                         }
                     }
