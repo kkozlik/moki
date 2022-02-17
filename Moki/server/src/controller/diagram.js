@@ -325,7 +325,7 @@ class DiagramController {
               "Error": "File doesn't exist."
             });
             respond.end();
-
+            return;
           }
           process = ["cfanal -time-sort-destinations -ignore-ser-dns-wd -ignore-dns-ptr -sip-timestamp -sip-message-details -silent -print-cf - -r ", file].join(' ');
 
