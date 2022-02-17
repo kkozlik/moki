@@ -175,10 +175,12 @@ export default class listChart extends Component {
                         if (curCol) {
                             var diffX = e.pageX - pageX;
 
-                            if (nxtCol)
-                                nxtCol.style.width = (nxtColWidth - (diffX)) + 'px';
+                            if (curColWidth + diffX > 50  && curColWidth + diffX < 400) {
+                                if (nxtCol)
+                                    nxtCol.style.width = (nxtColWidth - (diffX)) + 'px';
 
-                            curCol.style.width = (curColWidth + diffX) + 'px';
+                                curCol.style.width = (curColWidth + diffX) + 'px';
+                            }
                         }
                     });
 
@@ -189,7 +191,6 @@ export default class listChart extends Component {
                             var column = curCol.innerHTML.substr(0, curCol.innerHTML.indexOf("<"));
                             var columns = JSON.parse(window.localStorage.getItem("columns"));
                             var dashboard = window.location.pathname.substring(1);
-
                             if (!columns) {
                                 columns = {};
                             }
@@ -198,15 +199,12 @@ export default class listChart extends Component {
                             for (let hit of result) {
                                 if (hit.text === column) {
                                     hit.headerStyle.width = width;
-
                                 }
-
-                                //check if format fnc
-                               /* for (let field of thiss.state.columns) {
-                                    if (field.formatter) {
-                                        hit.formatter = field.formatter.toString();
-                                    }
-                                }*/
+                            }
+                            for (let hit of thiss.state.columns) {
+                                if (hit.text === column) {
+                                    hit.headerStyle.width = width;
+                                }
                             }
                             columns[dashboard] = result;
 
@@ -660,7 +658,7 @@ export default class listChart extends Component {
                     //download sd
                     if (record._source.attrs.filename) {
                         var sd = await downloadSD(record._source.attrs.filename);
-                        if (sd && !sd.includes("Error") && !sd.includes("error")) {
+                        if (sd && (!sd.includes("Error") || !sd.includes("error"))) {
                             zip.file(filename + ".html", sd);
                         }
                     }
