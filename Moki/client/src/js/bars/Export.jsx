@@ -11,7 +11,8 @@ class Export extends Component {
             data: "",
             //attributes attrs+, @timestamp   
             attributes: [],
-            exportOpen: false
+            exportOpen: false,
+            error: ""
         }
         this.loadData = this.loadData.bind(this);
         this.export = this.export.bind(this);
@@ -40,34 +41,44 @@ class Export extends Component {
             if (name === "connectivityCA" || name === "connectivity" || name === "home" || name === "microanalysis") {
                 name = "overview";
             }
-            // Retrieves the list of calls
 
+            // Retrieves the list of calls
             var calls = await elasticsearchConnection(name + "/table");
             //parse data
-            var data = await parseTableHits(calls.hits.hits);
+            if (calls && calls.hits && calls.hits.hits) {
+                var data = await parseTableHits(calls.hits.hits);
 
-            this.setState({
-                data: data
-            });
+                this.setState({
+                    data: data
+                });
 
-            //attributes attrs+, @timestamp   
-            if (data[0]) {
-                var attributes = Object.keys(data[0]._source.attrs);
-                attributes.push("@timestamp");
-                //get list of attributes from all data (can be different attributes)
-                for (var i = 1; i < data.length; i++) {
-                    var keys = Object.keys(data[i]._source.attrs);
-                    for (var j = 0; j < keys.length; j++) {
-                        if (!attributes.includes(keys[j])) {
-                            attributes.push(keys[j]);
+                //attributes attrs+, @timestamp   
+                if (data[0]) {
+                    var attributes = Object.keys(data[0]._source.attrs);
+                    attributes.push("@timestamp");
+                    //get list of attributes from all data (can be different attributes)
+                    for (var i = 1; i < data.length; i++) {
+                        var keys = Object.keys(data[i]._source.attrs);
+                        for (var j = 0; j < keys.length; j++) {
+                            if (!attributes.includes(keys[j])) {
+                                attributes.push(keys[j]);
+                            }
+
                         }
-
                     }
+                    this.setState({ attributes: attributes });
                 }
-                this.setState({ attributes: attributes });
+            }
+            else {
+                this.setState({
+                    error: "No column list from elasticsearch"
+                })
             }
 
         } catch (error) {
+            this.setState({
+                error: error
+            })
             console.error(error);
         }
 
@@ -130,7 +141,7 @@ class Export extends Component {
                 var jsonObject = JSON.stringify(result);
                 result = this.convertToCSV(jsonObject);
                 element.download = "data.csv";
-                if(storePersistent.getState().profile && storePersistent.getState().profile[0] && storePersistent.getState().profile[0].userprefs.mode === "encrypt"){
+                if (storePersistent.getState().profile && storePersistent.getState().profile[0] && storePersistent.getState().profile[0].userprefs.mode === "encrypt") {
                     element.download = "data_decrypted.csv"
                 }
                 file = new Blob([result], { type: 'text/plain' });
@@ -138,7 +149,7 @@ class Export extends Component {
             else {
                 //JSON
                 element.download = "data.json";
-                if(storePersistent.getState().profile && storePersistent.getState().profile[0] &&  storePersistent.getState().profile[0].userprefs.mode === "encrypt"){
+                if (storePersistent.getState().profile && storePersistent.getState().profile[0] && storePersistent.getState().profile[0].userprefs.mode === "encrypt") {
                     element.download = "data_decrypted.json"
                 }
                 file = new Blob([JSON.stringify(result)], { type: 'text/plain' });
@@ -169,11 +180,11 @@ class Export extends Component {
         return (
             <span className="exportBody">
                 <div className="row">
-                    <h3 className="tab"> Select columns</h3>
+                   <h3 className="tab"> Select columns</h3>
                     <hr />
                 </div>
                 <div className="row">
-                    {this.state.attributes.length === 0 && <span className="tab">Getting list of attributes...</span>}
+                    {this.state.attributes.length === 0 && <span className="tab" style={{"color": "grey"}}>Getting list of attributes...</span>}
                     {this.state.attributes.map((attribute, i) => {
                         return (<div className="col-3" key={i}><input type="checkbox" id={attribute} className="exportCheckbox" defaultChecked={isSearchable("attrs." + attribute) ? true : false} /><label key={i}>{attribute}</label></div>)
                     })}
