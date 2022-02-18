@@ -297,6 +297,7 @@ label {
     margin-bottom: 0px !important;
     font: 14px Arial;
     vertical-align: -webkit-baseline-middle;
+    vertical-align: -moz-middle-with-baseline;
     color: black;
 }
 
