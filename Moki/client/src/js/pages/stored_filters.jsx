@@ -69,7 +69,7 @@ class StoredFilters extends Component {
     }
 
     //redirect to dashboard stored in filters, active  stored types, filters and timerange
-    activateFilter(event) {
+    async activateFilter(event) {
         var filterID = event.currentTarget.getAttribute("filterid");
         var storedFilters = this.state.filters;
         var filters = "";
@@ -88,7 +88,7 @@ class StoredFilters extends Component {
         //filters
         if (filters.attribute[0].filters) {
             for (i = 0; i < filters.attribute[0].filters[0].length; i++) {
-                newFilters.push(createFilter(filters.attribute[0].filters[0][i].title, i, false, false));
+                newFilters.push(await createFilter(filters.attribute[0].filters[0][i].title, i, false, false));
             }
             store.dispatch(setFilters(newFilters));
         }
