@@ -45,52 +45,55 @@ export default class listChart extends Component {
         //if there is settings with min pages, use it
         var count = 10;
 
-        var aws = storePersistent.getState().user.aws;
-        if (aws !== true) {
-            if (storePersistent.getState().settings.length > 0) {
-                for (var i = 0; i < storePersistent.getState().settings[0].attrs.length; i++) {
-                    if (storePersistent.getState().settings[0].attrs[i].attribute === "eventTableCount") {
-                        count = storePersistent.getState().settings[0].attrs[i].value;
+        var storedColumns = JSON.parse(window.localStorage.getItem("columns"));
+        if (!storedColumns || (storedColumns && !storedColumns[name])) {
+            var aws = storePersistent.getState().user.aws;
+            if (aws !== true) {
+                if (storePersistent.getState().settings.length > 0) {
+                    for (var i = 0; i < storePersistent.getState().settings[0].attrs.length; i++) {
+                        if (storePersistent.getState().settings[0].attrs[i].attribute === "eventTableCount") {
+                            count = storePersistent.getState().settings[0].attrs[i].value;
+                        }
                     }
                 }
             }
-        }
 
-        var searchable = layout[name] ? layout[name] : layout.default;
-        //remove the same
-        var removeIndices = [];
-        for (var i = 0; i < searchable.length; i++) {
-            for (var j = 0; j < columns.length; j++) {
-                if (searchable[i] && columns[j].dataField === "_source." + searchable[i]) {
-                    removeIndices.push(i);
+            var searchable = layout[name] ? layout[name] : layout.default;
+            //remove the same
+            var removeIndices = [];
+            for (var i = 0; i < searchable.length; i++) {
+                for (var j = 0; j < columns.length; j++) {
+                    if (searchable[i] && columns[j].dataField === "_source." + searchable[i]) {
+                        removeIndices.push(i);
+                    }
                 }
             }
-        }
 
-        //remove indices
-        for (i = removeIndices.length - 1; i >= 0; i--)
-            searchable.splice(removeIndices[i], 1);
-
-        //insert filtered columns
-        for (i = 0; i < searchable.length; i++) {
-            var field = searchable[i];
-            columns.push(
-                {
-                    dataField: '_source.' + field,
-                    text: field.substring(field.indexOf(".") + 1).toUpperCase(),
-                    hidden: true,
-                    editable: false,
-                    sort: true,
-                    headerStyle: { width: '150px' },
-                    formatExtraData: field,
-                    formatter: (cell, obj, i, formatExtraData) => {
-                        return <span className="filterToggleActive"><span className="filterToggle">
-                            <img onClick={this.filter} field={formatExtraData} value={cell} className="icon" alt="filterIcon" src={filter} />
-                            <img field={formatExtraData} value={cell} onClick={this.unfilter} className="icon" alt="unfilterIcon" src={unfilter} /></span >
-                            {cell}
-                        </span>
-                    }
-                });
+            //remove indices
+            for (i = removeIndices.length - 1; i >= 0; i--) {
+                searchable.splice(removeIndices[i], 1);
+            }
+            //insert filtered columns
+            for (i = 0; i < searchable.length; i++) {
+                var field = searchable[i];
+                columns.push(
+                    {
+                        dataField: '_source.' + field,
+                        text: field.substring(field.indexOf(".") + 1).toUpperCase(),
+                        hidden: true,
+                        editable: false,
+                        sort: true,
+                        headerStyle: { width: '100px' },
+                        formatExtraData: field,
+                        formatter: (cell, obj, i, formatExtraData) => {
+                            return <span className="filterToggleActive"><span className="filterToggle">
+                                <img onClick={this.filter} field={formatExtraData} value={cell} className="icon" alt="filterIcon" src={filter} />
+                                <img field={formatExtraData} value={cell} onClick={this.unfilter} className="icon" alt="unfilterIcon" src={unfilter} /></span >
+                                {cell}
+                            </span>
+                        }
+                    });
+            }
         }
 
         this.state = {
@@ -175,7 +178,7 @@ export default class listChart extends Component {
                         if (curCol) {
                             var diffX = e.pageX - pageX;
 
-                            if (curColWidth + diffX > 50  && curColWidth + diffX < 400) {
+                            if (curColWidth + diffX > 50 && curColWidth + diffX < 400) {
                                 if (nxtCol)
                                     nxtCol.style.width = (nxtColWidth - (diffX)) + 'px';
 
@@ -196,16 +199,20 @@ export default class listChart extends Component {
                             }
 
                             var result = JSON.parse(JSON.stringify(thiss.state.columns));
+
                             for (let hit of result) {
                                 if (hit.text === column) {
                                     hit.headerStyle.width = width;
                                 }
                             }
-                            for (let hit of thiss.state.columns) {
+
+                            var stateColumns = thiss.state.columns;
+                            for (let hit of stateColumns) {
                                 if (hit.text === column) {
                                     hit.headerStyle.width = width;
                                 }
                             }
+                            thiss.setState({ columns: stateColumns });
                             columns[dashboard] = result;
 
                             window.localStorage.setItem("columns", JSON.stringify(columns));
@@ -744,6 +751,7 @@ export default class listChart extends Component {
         };
 
         const columnsList = this.state.columns;
+
         var CustomToggleList = ({
             columns,
             onColumnToggle,
