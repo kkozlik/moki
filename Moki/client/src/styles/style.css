@@ -826,7 +826,7 @@ tr:hover td {
 }
 
 .table{
-    width: min-content;
+    width: 100%;
     table-layout: fixed;
 }
 

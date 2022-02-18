@@ -292,7 +292,7 @@ function getColumn(column_name, tags, tag, width = 0, hidden = false) {
             dataField: '_source',
             text: column_name.name.toUpperCase(),
             editable: false,
-            headerStyle: { width: "150px !important" },
+            headerStyle: { width: "150px" },
             formatter: (cell, obj) => {
 
                 var ob = obj._source;
