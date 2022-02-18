@@ -48,7 +48,7 @@ export default class barChart extends Component {
         var bottomMargin = 100;
         if (data && data.length > 0) {
             var maxTextWidth = d3.max(data.map(n => n.key.length));
-            bottomMargin = maxTextWidth > 100 ? 100 : maxTextWidth * 13;
+            bottomMargin = maxTextWidth  > 30 ? 100 : maxTextWidth * 13;
         }
         if (name === "TOTAL EVENTS IN INTERVAL") {
             bottomMargin = 100;
@@ -56,7 +56,7 @@ export default class barChart extends Component {
 
         var margin = { top: 10, right: 20, bottom: bottomMargin, left: 60 };
         width = width - margin.left - margin.right;
-        var height = 250 - margin.top - margin.bottom;
+        var height = 350 - margin.top - margin.bottom;
         var xScale = d3.scaleBand()
             .range([0, width])
             .round(true)
