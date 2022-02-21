@@ -166,7 +166,7 @@ class Controller {
             params = params.map(function (item) { return item === "timebucketAnimation" ? timebucketAnimation : item; });
           }
 
-          if(requests[i].filters === "*") filters = "*";
+          if (requests[i].filters === "*") filters = "*";
 
           //special case: disable disableHMACfilter - for loging events - different index
           if (requests[i].index === "lastlog*" || requests[i].index === "polda*") {
@@ -245,7 +245,7 @@ class Controller {
       const client = connectToES();
       const filters = getFiltersConcat(req.body.filters);
       let types = req.body.types;
-      const querySize = req.body.size ? req.body.size : 500;
+      const querySize = req.body.params.size ? req.body.params.size : 500;
 
       //if no types from client, get types from monitor_layout
       if (!types || types.length === 0) {
@@ -269,10 +269,11 @@ class Controller {
         types = "*";
       }
 
-       //disable types for specific requests (e.g. different index in dashboard)
-       if (requests.types === "*") {
+      //disable types for specific requests (e.g. different index in dashboard)
+      if (requests.types === "*") {
         types = "*";
       }
+
 
       if (req.body.timerange_lte) {
         timestamp_lte = Math.round(req.body.timerange_lte);
@@ -344,8 +345,9 @@ class Controller {
 
       userFilter = "*";
       console.info(new Date() + " got elastic data");
-      client.close();
       let resp = res.json(response);
+
+      client.close(); 
       if (typeof resp === "string") {
         console.error("Failed msearch: "+resp);
         console.error("Failed msearch query: "+JSON.stringify(requests.query));

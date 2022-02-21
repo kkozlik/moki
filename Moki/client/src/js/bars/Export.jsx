@@ -43,7 +43,7 @@ class Export extends Component {
             }
 
             // Retrieves the list of calls
-            var calls = await elasticsearchConnection(name + "/table");
+            var calls = await elasticsearchConnection(name + "/table", {"size": "10000"});
             //parse data
             if (calls && calls.hits && calls.hits.hits) {
                 var data = await parseTableHits(calls.hits.hits);
@@ -184,7 +184,7 @@ class Export extends Component {
                     <hr />
                 </div>
                 <div className="row">
-                    {this.state.attributes.length === 0 && <span className="tab" style={{"color": "grey"}}>Getting list of attributes...</span>}
+                    {this.state.attributes.length === 0 && <span style={{"color": "grey", "fontSize": "large", "marginLeft": "40%"}}>Getting all data, it can take a while!</span>}
                     {this.state.attributes.map((attribute, i) => {
                         return (<div className="col-3" key={i}><input type="checkbox" id={attribute} className="exportCheckbox" defaultChecked={isSearchable("attrs." + attribute) ? true : false} /><label key={i}>{attribute}</label></div>)
                     })}
