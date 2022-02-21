@@ -18,6 +18,7 @@ import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { parseTimestamp } from "../helpers/parseTimestamp";
 import { shareFilters } from '@moki-client/gui';
+const hiddenExport = ["wblist", "config", "account", "alarms", "settings", "monitoring" ];
 
 class timerangeBar extends Component {
     constructor(props) {
@@ -480,7 +481,7 @@ class timerangeBar extends Component {
             <div id="popup">
                 <div className="d-flex justify-content-between">
                     {sipUserSwitch}
-                    {name !== "wblist" && <div className="dropdown float-right text-right">
+                    {!hiddenExport.includes(name) && <div className="dropdown float-right text-right">
                         <button className="btn dropdown-toggle" type="button" id="dropdownMenuExportButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             Export
                         </button>
