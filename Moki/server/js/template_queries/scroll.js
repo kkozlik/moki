@@ -4,7 +4,7 @@ used for table charts
 */
 var scroll = async function (client, scroll_id) {
     var response = await client.scroll({
-        scroll: '2m',
+        scroll: '20s',
         scroll_id: scroll_id
     });
     return response;
