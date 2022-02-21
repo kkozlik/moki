@@ -115,6 +115,7 @@ export default class listChart extends Component {
         this.handleOnSelect = this.handleOnSelect.bind(this);
         this.handleOnSelectAll = this.handleOnSelectAll.bind(this);
         this.getRecord = this.getRecord.bind(this);
+        this.resizableGrid = this.resizableGrid.bind(this);
     }
 
     static getDerivedStateFromProps(nextProps, prevState) {
@@ -133,124 +134,125 @@ export default class listChart extends Component {
             var thiss = this;
             var table = document.getElementsByClassName('table table-hover')[0];
             if (table) {
-                resizableGrid(table);
+                this.resizableGrid(table);
             }
-            //add resizable grid to table, function from https://www.brainbell.com/javascript/making-resizable-table-js.html
-            function resizableGrid(table) {
-                var row = table.getElementsByTagName('tr')[0],
-                    cols = row ? row.children : undefined;
-                if (!cols) return;
+        }
+    }
 
-                table.style.overflow = 'hidden';
+    //add resizable grid to table, function from https://www.brainbell.com/javascript/making-resizable-table-js.html
+    resizableGrid(table) {
+        var row = table.getElementsByTagName('tr')[0],
+            cols = row ? row.children : undefined;
+        if (!cols) return;
 
-                var tableHeight = table.offsetHeight;
-                for (var i = 0; i < cols.length; i++) {
-                    var div = createDiv(tableHeight);
-                    cols[i].appendChild(div);
-                    cols[i].style.position = 'relative';
-                    setListeners(div);
-                }
-                function setListeners(div) {
+        table.style.overflow = 'hidden';
 
-                    var pageX, curCol, nxtCol, curColWidth, nxtColWidth;
+        var tableHeight = table.offsetHeight;
+        for (var i = 0; i < cols.length; i++) {
+            var div = createDiv(tableHeight);
+            cols[i].appendChild(div);
+            cols[i].style.position = 'relative';
+            setListeners(div);
+        }
+        function setListeners(div) {
 
-                    div.addEventListener('mousedown', function (e) {
-                        e.stopPropagation();
-                        curCol = e.target.parentElement;
-                        nxtCol = curCol.nextElementSibling;
-                        pageX = e.pageX;
+            var pageX, curCol, nxtCol, curColWidth, nxtColWidth;
 
-                        var padding = paddingDiff(curCol);
+            div.addEventListener('mousedown', function (e) {
+                e.stopPropagation();
+                curCol = e.target.parentElement;
+                nxtCol = curCol.nextElementSibling;
+                pageX = e.pageX;
 
-                        curColWidth = curCol.offsetWidth - padding;
+                var padding = paddingDiff(curCol);
+
+                curColWidth = curCol.offsetWidth - padding;
+                if (nxtCol)
+                    nxtColWidth = nxtCol.offsetWidth - padding;
+            });
+
+            div.addEventListener('mouseover', function (e) {
+                e.target.style.borderRight = '4px solid #30427f';
+            })
+
+            div.addEventListener('mouseout', function (e) {
+                e.target.style.borderRight = '';
+            })
+            document.addEventListener('mousemove', function (e) {
+                if (curCol) {
+                    var diffX = e.pageX - pageX;
+
+                    if (curColWidth + diffX > 50 && curColWidth + diffX < 400) {
                         if (nxtCol)
-                            nxtColWidth = nxtCol.offsetWidth - padding;
-                    });
+                            nxtCol.style.width = (nxtColWidth - (diffX)) + 'px';
 
-                    div.addEventListener('mouseover', function (e) {
-                        e.target.style.borderRight = '4px solid #30427f';
-                    })
-
-                    div.addEventListener('mouseout', function (e) {
-                        e.target.style.borderRight = '';
-                    })
-                    document.addEventListener('mousemove', function (e) {
-                        if (curCol) {
-                            var diffX = e.pageX - pageX;
-
-                            if (curColWidth + diffX > 50 && curColWidth + diffX < 400) {
-                                if (nxtCol)
-                                    nxtCol.style.width = (nxtColWidth - (diffX)) + 'px';
-
-                                curCol.style.width = (curColWidth + diffX) + 'px';
-                            }
-                        }
-                    });
-
-                    document.addEventListener('mouseup', function (e) {
-                        //store column width in browser localstorage
-                        if (curCol) {
-                            var width = curCol.style.width;
-                            var column = curCol.innerHTML.substr(0, curCol.innerHTML.indexOf("<"));
-                            var columns = JSON.parse(window.localStorage.getItem("columns"));
-                            var dashboard = window.location.pathname.substring(1);
-                            if (!columns) {
-                                columns = {};
-                            }
-
-                            var result = JSON.parse(JSON.stringify(thiss.state.columns));
-
-                            for (let hit of result) {
-                                if (hit.text === column) {
-                                    hit.headerStyle.width = width;
-                                }
-                            }
-
-                            var stateColumns = thiss.state.columns;
-                            for (let hit of stateColumns) {
-                                if (hit.text === column) {
-                                    hit.headerStyle.width = width;
-                                }
-                            }
-                            thiss.setState({ columns: stateColumns });
-                            columns[dashboard] = result;
-
-                            window.localStorage.setItem("columns", JSON.stringify(columns));
-                        }
-                        curCol = undefined;
-                        nxtCol = undefined;
-                        pageX = undefined;
-                        nxtColWidth = undefined;
-                        curColWidth = undefined
-                    });
-                } function createDiv(height) {
-                    var div = document.createElement('div');
-                    div.className = "resize";
-                    div.style.top = 0;
-                    div.style.right = 0;
-                    div.style.width = '50px';
-                    div.style.position = 'absolute';
-                    div.style.cursor = 'col-resize';
-                    div.style.userSelect = 'none';
-                    div.style.height = height + 'px';
-                    return div;
-                }
-
-                function paddingDiff(col) {
-
-                    if (getStyleVal(col, 'box-sizing') === 'border-box') {
-                        return 0;
+                        curCol.style.width = (curColWidth + diffX) + 'px';
                     }
-                    var padLeft = getStyleVal(col, 'padding-left');
-                    var padRight = getStyleVal(col, 'padding-right');
-                    return (parseInt(padLeft) + parseInt(padRight));
-
                 }
+            });
 
-                function getStyleVal(elm, css) {
-                    return (window.getComputedStyle(elm, null).getPropertyValue(css))
+            document.addEventListener('mouseup', function (e) {
+                //store column width in browser localstorage
+                if (curCol) {
+                    var width = curCol.style.width;
+                    var column = curCol.innerHTML.substr(0, curCol.innerHTML.indexOf("<"));
+                    var columns = JSON.parse(window.localStorage.getItem("columns"));
+                    var dashboard = window.location.pathname.substring(1);
+                    if (!columns) {
+                        columns = {};
+                    }
+
+                    var result = JSON.parse(JSON.stringify(this.state.columns));
+
+                    for (let hit of result) {
+                        if (hit.text === column) {
+                            hit.headerStyle.width = width;
+                        }
+                    }
+
+                    var stateColumns = this.state.columns;
+                    for (let hit of stateColumns) {
+                        if (hit.text === column) {
+                            hit.headerStyle.width = width;
+                        }
+                    }
+                    this.setState({ columns: stateColumns });
+                    columns[dashboard] = result;
+
+                    window.localStorage.setItem("columns", JSON.stringify(columns));
                 }
+                curCol = undefined;
+                nxtCol = undefined;
+                pageX = undefined;
+                nxtColWidth = undefined;
+                curColWidth = undefined
+            });
+        } function createDiv(height) {
+            var div = document.createElement('div');
+            div.className = "resize";
+            div.style.top = 0;
+            div.style.right = 0;
+            div.style.width = '50px';
+            div.style.position = 'absolute';
+            div.style.cursor = 'col-resize';
+            div.style.userSelect = 'none';
+            div.style.height = height + 'px';
+            return div;
+        }
+
+        function paddingDiff(col) {
+
+            if (getStyleVal(col, 'box-sizing') === 'border-box') {
+                return 0;
             }
+            var padLeft = getStyleVal(col, 'padding-left');
+            var padRight = getStyleVal(col, 'padding-right');
+            return (parseInt(padLeft) + parseInt(padRight));
+
+        }
+
+        function getStyleVal(elm, css) {
+            return (window.getComputedStyle(elm, null).getPropertyValue(css))
         }
     }
 
@@ -796,6 +798,11 @@ export default class listChart extends Component {
                                     }
                                     storedColumns[dashboard] = columns;
                                     window.localStorage.setItem("columns", JSON.stringify(storedColumns));
+
+                                    var table = document.getElementsByClassName('table table-hover')[0];
+                                    if (table) {
+                                        this.resizableGrid(table);
+                                    }
                                 }
                                 }>
                                 {column.text}
