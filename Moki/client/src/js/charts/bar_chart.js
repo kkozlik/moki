@@ -48,7 +48,7 @@ export default class barChart extends Component {
         var bottomMargin = 100;
         if (data && data.length > 0) {
             var maxTextWidth = d3.max(data.map(n => n.key.length));
-            bottomMargin = maxTextWidth  > 30 ? 100 : maxTextWidth * 13;
+            bottomMargin = maxTextWidth  > 20 ? 100 : maxTextWidth * 13;
         }
         if (name === "TOTAL EVENTS IN INTERVAL") {
             bottomMargin = 100;
@@ -56,7 +56,7 @@ export default class barChart extends Component {
 
         var margin = { top: 10, right: 20, bottom: bottomMargin, left: 60 };
         width = width - margin.left - margin.right;
-        var height = 350 - margin.top - margin.bottom;
+        var height = 300 - margin.top - margin.bottom;
         var xScale = d3.scaleBand()
             .range([0, width])
             .round(true)
@@ -70,10 +70,11 @@ export default class barChart extends Component {
                 //tickValues
                 if (name === "QoS HISTOGRAM") {
                     if (d === "*-2.58") { return "Nearly all users dissatisfied"; }
-                    if (d === "2.58-3.1") { return "Many users dissatisfied"; }
-                    if (d === "3.1-3.6") { return "Some users dissatisfied"; }
-                    if (d === "3.6-4.03") { return "Satisfied"; }
-                    if (d === "4.03-*") { return "Very satisfied"; }
+                    else if (d === "2.58-3.1") { return "Many users dissatisfied"; }
+                    else if (d === "3.1-3.6") { return "Some users dissatisfied"; }
+                    else if (d === "3.6-4.03") { return "Satisfied"; }
+                    else if (d === "4.03-*") { return "Very satisfied"; }
+                    else {return d}
                 }
                 else {
                     return d;
@@ -128,7 +129,7 @@ export default class barChart extends Component {
                     y = text.attr("y"),
                     dy = parseFloat(text.attr("dy")),
                     tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em");
-                while (word) {
+                while (word = words.pop()) {
                     line.push(word);
                     tspan.text(line.join(" "));
                     if (tspan.node().getComputedTextLength() > width) {
@@ -137,10 +138,10 @@ export default class barChart extends Component {
                         line = [word];
                         tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "em").text(word);
                     }
-                    word  = words.pop();
                 }
             });
         }
+
 
 
 
