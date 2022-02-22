@@ -111,11 +111,11 @@ class Settings extends Component {
                 return "Error: " + attribute + " must be integer.";
             }
 
-            if (restriction.type === "ldpaIP") {
+            if (restriction.type === "ldapIP") {
                 if (/^ldap(s)?:\/\/(((\d{1,3}.){3}\d{1,3}(:\d+)?)|(\w|\d|)+).\w+$/.test(value)) {
                     return true;
                 }
-                return "Error: " + attribute + " must LDAP IP";
+                return "Error: " + attribute + " must have format 'ldap:// + ipv4 or ipv4:port or ipv6 or ip6:port or dns";
             }
 
             if (restriction.type && restriction.type.enum) {
