@@ -111,6 +111,13 @@ class Settings extends Component {
                 return "Error: " + attribute + " must be integer.";
             }
 
+            if (restriction.type === "ldpaIP") {
+                if (/^ldap(s)?:\/\/(((\d{1,3}.){3}\d{1,3}(:\d+)?)|(\w|\d|)+).\w+$/.test(value)) {
+                    return true;
+                }
+                return "Error: " + attribute + " must LDAP IP";
+            }
+
             if (restriction.type && restriction.type.enum) {
                 if (restriction.type.enum.includes(value)) {
                     return true;
@@ -210,47 +217,72 @@ class Settings extends Component {
             });
             var thiss = this;
 
-
-            await fetch("api/save", {
-                method: "POST",
-                body: JSON.stringify({
-                    "app": "m_config",
-                    "attrs": result
-                }),
-                credentials: 'include',
-                headers: {
-                    "Content-Type": "application/json",
-                    "Access-Control-Allow-Credentials": "include"
-                }
-            }).then(function (response) {
-                thiss.setState({
-                    wait: false
-                });
-                if (!response.ok) {
-                    console.error(response.statusText);
-                }
-                else {
-                    //store new settings in storage
-                    result.forEach(res => {
-                        jsonData.forEach(data => {
-                            if (data.attributes === res.attribute) {
-                                data.value = res.value;
-                            }
-                        })
+            if (!ldapChange) {
+                await fetch("api/save", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        "app": "m_config",
+                        "attrs": result
+                    }),
+                    credentials: 'include',
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Access-Control-Allow-Credentials": "include"
+                    }
+                }).then(function (response) {
+                    thiss.setState({
+                        wait: false
                     });
-                    let settings = storePersistent.getState().settings;
-                    settings[0] = { app: "m_config", attrs: jsonData };
-                }
-                return response.json();
-            }).then(function (responseData) {
-                if (responseData.msg && !ldapChange) {
-                    alert(JSON.stringify(responseData.msg));
-                }
+                    if (!response.ok) {
+                        console.error(response.statusText);
+                    }
+                    else {
+                        //store new settings in storage
+                        result.forEach(res => {
+                            jsonData.forEach(data => {
+                                if (data.attributes === res.attribute) {
+                                    data.value = res.value;
+                                }
+                            })
+                        });
+                        let settings = storePersistent.getState().settings;
+                        settings[0] = { app: "m_config", attrs: jsonData };
+                    }
+                    return response.json();
+                }).then(function (responseData) {
+                    if (responseData.msg) {
+                        alert(JSON.stringify(responseData.msg));
+                    }
 
-            }).catch(function (error) {
-                console.error(error);
-                alert("Problem with saving data. " + error);
-            });
+                }).catch(function (error) {
+                    console.error(error);
+                    alert("Problem with saving data. " + error);
+                });
+            }
+            else {
+                fetch("api/save", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        "app": "m_config",
+                        "attrs": result
+                    }),
+                    credentials: 'include',
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Access-Control-Allow-Credentials": "include"
+                    }
+
+                })
+
+
+                setTimeout(function () {
+                    thiss.setState({
+                        wait: false
+                    });
+
+                }, 1000);
+            }
+
 
         }
     }
