@@ -436,7 +436,7 @@ function getColumn(column_name, tags, tag, width = 0, hidden = false) {
 export function tableColumns(dashboard, tags) {
     //check browser local storage
     var storedColumns = JSON.parse(window.localStorage.getItem("columns"));
-    if (storedColumns && storedColumns[dashboard]) {
+    if (storedColumns && storedColumns[dashboard]  && storedColumns.version  && storedColumns.version === "1.0") {
         var storedColumns = storedColumns[dashboard];
         var result = [];
 
@@ -450,7 +450,9 @@ export function tableColumns(dashboard, tags) {
         return result;
     }
     else {
-
+        if(storedColumns && (!storedColumns.version || storedColumns.version !== "1.0")){
+            window.localStorage.removeItem("columns");
+        }
         var tag = true;
         //disable tags for end user
         if (storePersistent.getState().user.jwt === "2") { tag = false };
