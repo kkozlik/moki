@@ -73,6 +73,7 @@ export default class listChart extends Component {
             for (i = removeIndices.length - 1; i >= 0; i--) {
                 searchable.splice(removeIndices[i], 1);
             }
+
             //insert filtered columns
             for (i = 0; i < searchable.length; i++) {
                 var field = searchable[i];
@@ -522,10 +523,10 @@ export default class listChart extends Component {
 
         //var*
         if (isSearchable) {
-            return <p key={cell} field={"var." + cell} value={value}>
+            return <p key={cell} field={"vars." + cell} value={value}>
                 <span className="spanTab">{cell}: </span>
-                <img onClick={this.filter} field={"var." + cell} value={value} title="filter" className="icon" alt="filterIcon" src={filter} />
-                <img field={"var." + cell} value={value} onClick={this.unfilter} className="icon" alt="unfilterIcon" title="unfilter" src={unfilter} />
+                <img onClick={this.filter} field={"vars." + cell} value={value} title="filter" className="icon" alt="filterIcon" src={filter} />
+                <img field={"vars." + cell} value={value} onClick={this.unfilter} className="icon" alt="unfilterIcon" title="unfilter" src={unfilter} />
                 <span className="spanTab">{value}</span>
             </p>
         }
@@ -551,7 +552,18 @@ export default class listChart extends Component {
                         if (!categorySort[category]) categorySort[category] = [];
                         categorySort[category].push(this.renderExpandRow(attrs[j], row[keys[i]][attrs[j]]));
                     }
+
+                    //custom variable in vars.* - render all and everything is searchable
+                    if (attrs[j] === "vars") {
+                        var variable = Object.keys( row[keys[i]][attrs[j]]);
+                        for (let k = 0; k < variable.length; k++) {
+                            let categoryInner = "VARS";
+                            if (!categorySort[categoryInner]) categorySort[categoryInner] = [];
+                            categorySort[categoryInner].push(this.renderExpandRow(variable[k], row[keys[i]][attrs[j]][variable[k]], true));
+                        }
+                    }
                 }
+
             }
             else if (keys[i] === "geoip") {
                 let attrs = Object.keys(row[keys[i]]);
@@ -563,15 +575,6 @@ export default class listChart extends Component {
                     }
                 }
 
-            }
-            //custom variable in var.* - render all and everything is searchable
-            else if (keys[i] === "var") {
-                var variable = Object.keys(row[keys[i]]);
-                for (let j = 0; j < variable.length; j++) {
-                    let category = "VAR";
-                    if (!categorySort[category]) categorySort[category] = [];
-                    categorySort[category].push(this.renderExpandRow(variable[j], row[keys[i]][variable[j]], true));
-                }
             }
             else {
                 if (displayedAttrs.includes(keys[i])) {
