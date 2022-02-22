@@ -200,7 +200,7 @@ export default class listChart extends Component {
                     var columns = JSON.parse(window.localStorage.getItem("columns"));
                     var dashboard = window.location.pathname.substring(1);
                     if (!columns) {
-                        columns = {};
+                        columns = {"version": "1.0"};
                     }
 
                     var result = JSON.parse(JSON.stringify(this.state.columns));
@@ -797,7 +797,7 @@ export default class listChart extends Component {
                                     var dashboard = window.location.pathname.substring(1);
 
                                     if (!storedColumns) {
-                                        storedColumns = {};
+                                        storedColumns = {"version": "1.0"};
                                     }
                                     storedColumns[dashboard] = columns;
                                     window.localStorage.setItem("columns", JSON.stringify(storedColumns));
