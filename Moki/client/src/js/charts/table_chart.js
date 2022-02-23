@@ -523,10 +523,10 @@ export default class listChart extends Component {
 
         //var*
         if (isSearchable) {
-            return <p key={cell} field={"vars." + cell} value={value}>
+            return <p key={cell} field={"attrs.vars." + cell} value={value}>
                 <span className="spanTab">{cell}: </span>
-                <img onClick={this.filter} field={"vars." + cell} value={value} title="filter" className="icon" alt="filterIcon" src={filter} />
-                <img field={"vars." + cell} value={value} onClick={this.unfilter} className="icon" alt="unfilterIcon" title="unfilter" src={unfilter} />
+                <img onClick={this.filter} field={"attrs.vars." + cell} value={value} title="filter" className="icon" alt="filterIcon" src={filter} />
+                <img field={"attrs.vars." + cell} value={value} onClick={this.unfilter} className="icon" alt="unfilterIcon" title="unfilter" src={unfilter} />
                 <span className="spanTab">{value}</span>
             </p>
         }
