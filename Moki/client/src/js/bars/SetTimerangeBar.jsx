@@ -18,7 +18,7 @@ import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { parseTimestamp } from "../helpers/parseTimestamp";
 import { shareFilters } from '@moki-client/gui';
-const hiddenExport = ["wblist", "config", "account", "alarms", "settings", "monitoring" ];
+const hiddenExport = ["wblist", "config", "account", "alarms", "settings", "monitoring"];
 
 class timerangeBar extends Component {
     constructor(props) {
@@ -442,8 +442,11 @@ class timerangeBar extends Component {
     renderPDF() {
         const input = document.getElementById('context');
         html2canvas(input).then(function (canvas) {
-            var imgData = canvas.toDataURL('image/png');
-            const pdf = new jsPDF('p', 'pt', [canvas.width - 50, canvas.height - 100]);
+            var imgData = canvas.toDataURL('image/png', 0.5);
+            var width = input.scrollWidth;
+            var height = input.scrollHeight;
+            const pdf = new jsPDF("p", "pt", [width, height]);
+
             pdf.addImage(imgData, 'PNG', 0, 0);
             var pathname = window.location.pathname;
             pathname = pathname.substr(1);
@@ -532,8 +535,8 @@ class timerangeBar extends Component {
                                                 input={true}
                                                 onBlur={this.focousOutGte}
                                                 onChange={this.focousOutGte}
-                                                defaultValue={new Date(this.state.timestamp_gte)} 
-                                                value={this.state.timestamp_gte}/>
+                                                defaultValue={new Date(this.state.timestamp_gte)}
+                                                value={this.state.timestamp_gte} />
                                             <p>To: <button className="link" onClick={this.setToNow}>(now)</button></p>
                                             <Datetime closeOnTab
                                                 closeOnSelect
