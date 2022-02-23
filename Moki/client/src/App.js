@@ -18,7 +18,7 @@ import { setUser, setWidthChart, setLayout, setSettings } from "./js/actions/ind
 import { Redirect } from 'react-router';
 import { paths } from "./js/controllers/paths.jsx";
 import { getProfile } from '@moki-client/gui';
-import  Popup from "./js/helpers/Popup";
+import Popup from "./js/helpers/Popup";
 import DecryptPasswordPopup from '@moki-client/gui/src/menu/decryptPasswordPopup';
 import Notificationbar from './js/bars/Notificationbar';
 import { parseTimestamp } from "./js/helpers/parseTimestamp";
@@ -205,7 +205,7 @@ class App extends Component {
         var dashboards = Object.keys(jsonData.dashboards);
         if ((this.state.aws && !this.state.admin) || !this.state.aws) {
             dashboards = dashboards.filter(dashboard => jsonData.dashboards[dashboard]);
-        } 
+        }
 
         this.setState({
             dashboards: dashboards
@@ -475,6 +475,25 @@ class App extends Component {
 
                     console.info("MOKI: sip user: " + sip.user);
 
+                    //get username
+                    var username = "";
+                    try {
+                        var response = await fetch("/api/user/username", {
+                            method: "GET",
+                            credentials: 'include',
+                            headers: {
+                                "Content-Type": "application/json",
+                                "Access-Control-Allow-Credentials": "include"
+                            }
+                        })
+
+                        var res = await response.json();
+                        sip.username =  res.username;
+                    } catch (error) {
+                       
+                    }
+
+
                     //set user info :  email:email, domainID:domainID, jwt: jwtbit
                     storePersistent.dispatch(setUser(sip));
                     this.setState({
@@ -552,7 +571,7 @@ class App extends Component {
         //get userto display
         var sipUser = storePersistent.getState().user;
         if (sipUser) {
-            sipUser = storePersistent.getState().user.email ? storePersistent.getState().user.user + ": " + storePersistent.getState().user.email : storePersistent.getState().user.user;
+            sipUser = storePersistent.getState().user.email ? storePersistent.getState().user.user + ": " + storePersistent.getState().user.email : storePersistent.getState().user.username ? storePersistent.getState().user.user + " "+storePersistent.getState().user.username : storePersistent.getState().user.user ;
         } else {
             sipUser = "";
         }
