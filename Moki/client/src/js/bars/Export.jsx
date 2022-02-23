@@ -35,6 +35,7 @@ class Export extends Component {
     }
 
     async loadData() {
+        document.getElementById("loadingExport").innerHTML = "Getting all data, it can take a while!";
         try {
 
             var name = window.location.pathname.substr(1);
@@ -43,9 +44,10 @@ class Export extends Component {
             }
 
             // Retrieves the list of calls
-            var calls = await elasticsearchConnection(name + "/table", {"size": "10000"});
+            var calls = await elasticsearchConnection(name + "/table", { "size": "10000" });
             //parse data
-            if (calls && calls.hits && calls.hits.hits) {
+            console.log(calls);
+            if (calls && calls.hits && calls.hits.hits && calls.hits.hits.length > 0) {
                 var data = await parseTableHits(calls.hits.hits);
 
                 this.setState({
@@ -73,12 +75,15 @@ class Export extends Component {
                 this.setState({
                     error: "No column list from elasticsearch"
                 })
+                document.getElementById("loadingExport").innerHTML = "No data in elasticsearch";
+
             }
 
         } catch (error) {
             this.setState({
                 error: error
             })
+            document.getElementById("loadingExport").innerHTML = "Problem to get data from elasticsearch";
             console.error(error);
         }
 
@@ -103,6 +108,7 @@ class Export extends Component {
     }
 
     export() {
+        this.setState({attributes: [] });
         const attributesState = this.state.attributes;
         var attributes = [];
         //get rid of uncheck columns
@@ -160,7 +166,14 @@ class Export extends Component {
             //close export window
             this.props.close();
         }
+    }
 
+    checkAll() {
+        let checkboxes = document.getElementsByClassName("exportCheckbox");
+        let isChecked = document.getElementById("allCheckExport").checked;
+        for (let hit of checkboxes) {
+            hit.checked = isChecked;
+        }
     }
 
     render() {
@@ -170,7 +183,7 @@ class Export extends Component {
             var searchable = getSearchableFields();
             searchable.push("@timestamp");
             for (var j = 0; j < searchable.length; j++) {
-                if ("attrs." + searchable[j] === field) {
+                if (searchable[j] === field) {
                     return true;
                 }
             }
@@ -180,11 +193,12 @@ class Export extends Component {
         return (
             <span className="exportBody">
                 <div className="row">
-                   <h3 className="tab"> Select columns</h3>
+                    {this.state.attributes.length !== 0 && <h3 className="tab"> Select columns</h3>}
+                    {this.state.attributes.length !== 0 && <span> <input type="checkbox" id="allCheckExport" className="exportCheckbox" onClick={this.checkAll} /><span>all</span></span>}
                     <hr />
                 </div>
                 <div className="row">
-                    {this.state.attributes.length === 0 && <span style={{"color": "grey", "fontSize": "large", "marginLeft": "40%"}}>Getting all data, it can take a while!</span>}
+                    {this.state.attributes.length === 0 && <span style={{ "color": "grey", "fontSize": "large", "marginLeft": "40%" }} id="loadingExport">Getting all data, it can take a while!</span>}
                     {this.state.attributes.map((attribute, i) => {
                         return (<div className="col-3" key={i}><input type="checkbox" id={attribute} className="exportCheckbox" defaultChecked={isSearchable("attrs." + attribute) ? true : false} /><label key={i}>{attribute}</label></div>)
                     })}
