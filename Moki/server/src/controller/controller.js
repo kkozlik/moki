@@ -245,7 +245,7 @@ class Controller {
       const client = connectToES();
       const filters = getFiltersConcat(req.body.filters);
       let types = req.body.types;
-      const querySize = req.body.params.size ? req.body.params.size : 500;
+      const querySize = req.body.params && req.body.params.size ? req.body.params.size : 500;
 
       //if no types from client, get types from monitor_layout
       if (!types || types.length === 0) {
