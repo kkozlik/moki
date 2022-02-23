@@ -97,6 +97,7 @@ export default class listChart extends Component {
             }
         }
 
+
         this.state = {
             columns: columns,
             data: [],
@@ -142,6 +143,7 @@ export default class listChart extends Component {
 
     //add resizable grid to table, function from https://www.brainbell.com/javascript/making-resizable-table-js.html
     resizableGrid(table) {
+        var thiss = this;
         var row = table.getElementsByTagName('tr')[0],
             cols = row ? row.children : undefined;
         if (!cols) return;
@@ -203,7 +205,7 @@ export default class listChart extends Component {
                         columns = {"version": "1.0"};
                     }
 
-                    var result = JSON.parse(JSON.stringify(this.state.columns));
+                    var result = JSON.parse(JSON.stringify(thiss.state.columns));
 
                     for (let hit of result) {
                         if (hit.text === column) {
@@ -211,13 +213,13 @@ export default class listChart extends Component {
                         }
                     }
 
-                    var stateColumns = this.state.columns;
+                    var stateColumns = thiss.state.columns;
                     for (let hit of stateColumns) {
                         if (hit.text === column) {
                             hit.headerStyle.width = width;
                         }
                     }
-                    this.setState({ columns: stateColumns });
+                    thiss.setState({ columns: stateColumns });
                     columns[dashboard] = result;
 
                     window.localStorage.setItem("columns", JSON.stringify(columns));
