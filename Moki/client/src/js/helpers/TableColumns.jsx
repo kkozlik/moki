@@ -151,7 +151,7 @@ function getColumnWidth(column, width = 0) {
         return width;
     }
     else {
-        return "50px";
+        return "auto";
     }
 }
 
@@ -263,21 +263,21 @@ function getColumn(column_name, tags, tag, width = 0, hidden = false) {
             }
         }
         case 'attrs.tags': return {
-                dataField: '_source.attrs.tags',
-                text: 'TAGS',
-                sort: true,
-                hidden: hidden,
-                headerStyle: { width: '150px !important' },
-                editorRenderer: (editorProps, value, row, column, rowIndex, columnIndex) => (
-                    <TagRanger tags={tags} row={row} />
-                ),
-                formatter: (cell, obj) => {
-                    var ob = obj._source;
-                    return <span className="filterToggleActive"><span className="filterToggle">
-                        <img onClick={doFilter} field="attrs.tags" value={ob.attrs.tags} className="icon" alt="filterIcon" src={filterIcon} /><img field="attrs.tags" value={ob.attrs.tags} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span > {ob.attrs.tags ? ob.attrs.tags.toString() : []}
-                    </span>
-                }
+            dataField: '_source.attrs.tags',
+            text: 'TAGS',
+            sort: true,
+            hidden: hidden,
+            headerStyle: { width: '150px !important' },
+            editorRenderer: (editorProps, value, row, column, rowIndex, columnIndex) => (
+                <TagRanger tags={tags} row={row} />
+            ),
+            formatter: (cell, obj) => {
+                var ob = obj._source;
+                return <span className="filterToggleActive"><span className="filterToggle">
+                    <img onClick={doFilter} field="attrs.tags" value={ob.attrs.tags} className="icon" alt="filterIcon" src={filterIcon} /><img field="attrs.tags" value={ob.attrs.tags} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span > {ob.attrs.tags ? ob.attrs.tags.toString() : []}
+                </span>
             }
+        }
         //different color
         case 'attrs.rtp-MOScqex-avg': return {
             dataField: '_source.attrs.rtp-MOScqex-avg',
@@ -435,84 +435,73 @@ function getColumn(column_name, tags, tag, width = 0, hidden = false) {
 export function tableColumns(dashboard, tags, layout) {
     //check browser local storage
     var storedColumns = JSON.parse(window.localStorage.getItem("columns"));
+
+    var result = [];
+    var name = window.location.pathname.substring(1);
+
+    //get also layout and compare it
+    var columnsTableDefault = layout.columns[name] ? layout.columns[name] : layout.columns.default;
+    var toggleListDefault = layout.toggleList[name] ? layout.toggleList[name] : layout.toggleList.default;
+
+    var columnsTableDefaultListConcat = columnsTableDefault;
+
+    //everything from table is visible
+    for (let hit of columnsTableDefaultListConcat) {
+        hit.hidden = false;
+    }
+
+    for (let toggleHit of toggleListDefault) {
+        let isExist = false;
+        for (let hit of columnsTableDefault) {
+            if (toggleHit.source === hit.source) {
+                isExist = true;
+            }
+        }
+        if (!isExist) {
+            columnsTableDefaultListConcat.push(toggleHit);
+        }
+    }
+
     if (storedColumns && storedColumns[dashboard] && storedColumns.version && storedColumns.version === "1.0") {
         var storedColumns = storedColumns[dashboard];
-        var result = [];
-        var name = window.location.pathname.substring(1);
-
-        //generate new columns from local storage list and stored with
-        for (let field of storedColumns) {
-            let width = field.headerStyle && field.headerStyle.width ? field.headerStyle.width : null;
-            let hidden = field.hidden ? field.hidden : null;
-            let source = field.text === "ADVANCED" ? "advanced" : field.dataField.slice(8);
-            result.push(getColumn({ source: source, name: field.text, "icons": ["download", "details", "share"] }, tags, tag, width = width, hidden = hidden));
-        }
-
-        //get also layout and compare it
-
-        var searchable = layout[name] ? layout[name] : layout.default;
-        var newIndices = [];
-
-        var columnsTableDefault = storePersistent.getState().layout.table.columns[name];
-        var columnsTableDefaultList = [];
-        for (let i = 0; i < columnsTableDefault.length; i++) {
-            columnsTableDefaultList.push(columnsTableDefault[i].source);
-        }
-
-        var columnsTableDefaultListConcat = columnsTableDefaultList.concat(searchable.filter((item) => columnsTableDefaultList.indexOf(item) < 0))
         for (let i = 0; i < columnsTableDefaultListConcat.length; i++) {
-            var exists = false;
-            for (let j = 0; j < result.length; j++) {
-                if (columnsTableDefaultListConcat[i] && result[j].dataField === "_source." + columnsTableDefaultListConcat[i]) {
-                    exists = true;
+            //check if this column was stored, if so use the parameraters
+            var isExists = false
+            for (var field of storedColumns) {
+                if ("_source." + columnsTableDefaultListConcat[i].source === field.dataField) {
+                    isExists = field;
                 }
             }
-            if (!exists) {
-                newIndices.push(columnsTableDefaultListConcat[i]);
+            if (isExists) {
+                field = isExists;
+                var width = field.headerStyle && field.headerStyle.width ? field.headerStyle.width : null;
+                var hidden = field.hidden ? field.hidden : null;
+                var source = field.text === "ADVANCED" ? "advanced" : field.dataField.slice(8);
+                result.push(getColumn({ source: source, name: field.text, "icons": ["download", "details", "share"] }, tags, tag, width = width, hidden = hidden));
+            }
+            else {
+                let name = columnsTableDefaultListConcat[i].name ? columnsTableDefaultListConcat[i].name : columnsTableDefaultListConcat[i];
+                let source = columnsTableDefaultListConcat[i].source ? columnsTableDefaultListConcat[i].source : columnsTableDefaultListConcat[i];
+                let hidden = columnsTableDefaultListConcat[i].hasOwnProperty("hidden") ? columnsTableDefaultListConcat[i].hidden : true;
+                result.push(getColumn({ source: source, name: name, "icons": ["download", "details", "share"] }, tags, tag, width = "50px", hidden = hidden));
             }
         }
-
-        //new columns were added to moki_layout
-        if (newIndices.length > 0) {
-            for (let i = 0; i < newIndices.length; i++) {
-                var field = newIndices[i];
-                result.push(getColumn({ source: field, name: field.substring(field.indexOf(".") + 1).toUpperCase() }, tags, tag, "100px", true));
-            }
-        }
-
-        var removeIndices = [];
-        for (let i = 0; i < result.length; i++) {
-            if (!columnsTableDefaultListConcat.includes(result[i].dataField.slice(8))) {
-                removeIndices.push(result[i].dataField);
-            }
-        }
-
-
-        //remove advanced
-        removeIndices.splice(removeIndices.indexOf("_source"), 1);
-        for (let i = 0; i < removeIndices.length; i++) {
-            for (let j = 0; j < result.length; j++) {
-                if (result[j].dataField === removeIndices[i]) {
-                    result.splice(j, 1);
-                }
-            }
-        }
-
         return result;
     }
     else {
         if (storedColumns && (!storedColumns.version || storedColumns.version !== "1.0")) {
-            window.localStorage.removeItem("columns");
+            window.removeItem("columns");
         }
         var tag = true;
         //disable tags for end user
         if (storePersistent.getState().user.jwt === "2") { tag = false };
 
-        let layout = storePersistent.getState().layout.table.columns;
-        let columns = [];
-        for (const column of layout[dashboard]) {
-            columns.push(getColumn(column, tags, tag));
+        for (let i = 0; i < columnsTableDefaultListConcat.length; i++) {
+            let name = columnsTableDefaultListConcat[i].name ? columnsTableDefaultListConcat[i].name : columnsTableDefaultListConcat[i];
+            let source = columnsTableDefaultListConcat[i].source ? columnsTableDefaultListConcat[i].source : columnsTableDefaultListConcat[i];
+            let hidden = columnsTableDefaultListConcat[i].hasOwnProperty("hidden") ? columnsTableDefaultListConcat[i].hidden : true;
+            result.push(getColumn({ source: source, name: name, "icons": ["download", "details", "share"] }, tags, tag, width = "50px", hidden = hidden));
         }
-        return columns;
+        return result;
     }
 }
