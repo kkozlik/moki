@@ -37,27 +37,28 @@ var JSZip = require("jszip");
 export default class listChart extends Component {
     constructor(props) {
         super(props);
-        const columns = tableColumns(this.props.name, this.props.tags);
+        var layout = storePersistent.getState().layout.table;
+        const columns = tableColumns(this.props.name, this.props.tags, layout);
         //get columns name from layout 
         var name = window.location.pathname.substring(1);
-        var layout = storePersistent.getState().layout.table;
 
         //if there is settings with min pages, use it
         var count = 10;
 
         var storedColumns = JSON.parse(window.localStorage.getItem("columns"));
-        if (!storedColumns || (storedColumns && !storedColumns[name])) {
-            var aws = storePersistent.getState().user.aws;
-            if (aws !== true) {
-                if (storePersistent.getState().settings.length > 0) {
-                    for (var i = 0; i < storePersistent.getState().settings[0].attrs.length; i++) {
-                        if (storePersistent.getState().settings[0].attrs[i].attribute === "eventTableCount") {
-                            count = storePersistent.getState().settings[0].attrs[i].value;
-                        }
+
+        var aws = storePersistent.getState().user.aws;
+        if (aws !== true) {
+            if (storePersistent.getState().settings.length > 0) {
+                for (var i = 0; i < storePersistent.getState().settings[0].attrs.length; i++) {
+                    if (storePersistent.getState().settings[0].attrs[i].attribute === "eventTableCount") {
+                        count = storePersistent.getState().settings[0].attrs[i].value;
                     }
                 }
             }
+        }
 
+        if (!storedColumns || (storedColumns && !storedColumns[name])) {
             var searchable = layout[name] ? layout[name] : layout.default;
             //remove the same
             var removeIndices = [];
@@ -97,7 +98,6 @@ export default class listChart extends Component {
             }
         }
 
-
         this.state = {
             columns: columns,
             data: [],
@@ -120,6 +120,7 @@ export default class listChart extends Component {
         this.resizableGrid = this.resizableGrid.bind(this);
     }
 
+    /*
     static getDerivedStateFromProps(nextProps, prevState) {
         if (nextProps.data !== prevState.data) {
             return { data: nextProps.data };
@@ -128,7 +129,7 @@ export default class listChart extends Component {
             return { tags: nextProps.tags };
         }
         else return null;
-    }
+    }*/
 
     componentDidUpdate(prevProps) {
         if (prevProps.data !== this.props.data) {
@@ -202,7 +203,7 @@ export default class listChart extends Component {
                     var columns = JSON.parse(window.localStorage.getItem("columns"));
                     var dashboard = window.location.pathname.substring(1);
                     if (!columns) {
-                        columns = {"version": "1.0"};
+                        columns = { "version": "1.0" };
                     }
 
                     var result = JSON.parse(JSON.stringify(thiss.state.columns));
@@ -557,7 +558,7 @@ export default class listChart extends Component {
 
                     //custom variable in vars.* - render all and everything is searchable
                     if (attrs[j] === "vars") {
-                        var variable = Object.keys( row[keys[i]][attrs[j]]);
+                        var variable = Object.keys(row[keys[i]][attrs[j]]);
                         for (let k = 0; k < variable.length; k++) {
                             let categoryInner = "VARS";
                             if (!categorySort[categoryInner]) categorySort[categoryInner] = [];
@@ -799,7 +800,7 @@ export default class listChart extends Component {
                                     var dashboard = window.location.pathname.substring(1);
 
                                     if (!storedColumns) {
-                                        storedColumns = {"version": "1.0"};
+                                        storedColumns = { "version": "1.0" };
                                     }
                                     storedColumns[dashboard] = columns;
                                     window.localStorage.setItem("columns", JSON.stringify(storedColumns));

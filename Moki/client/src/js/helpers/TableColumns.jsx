@@ -151,7 +151,7 @@ function getColumnWidth(column, width = 0) {
         return width;
     }
     else {
-        return "auto";
+        return "50px";
     }
 }
 
@@ -262,22 +262,22 @@ function getColumn(column_name, tags, tag, width = 0, hidden = false) {
                 </span>
             }
         }
-        case 'attrs.tags': if (tag) return {
-            dataField: '_source.attrs.tags',
-            text: 'TAGS',
-            sort: true,
-            hidden: hidden,
-            headerStyle: { width: '150px !important' },
-            editorRenderer: (editorProps, value, row, column, rowIndex, columnIndex) => (
-                <TagRanger tags={tags} row={row} />
-            ),
-            formatter: (cell, obj) => {
-                var ob = obj._source;
-                return <span className="filterToggleActive"><span className="filterToggle">
-                    <img onClick={doFilter} field="attrs.tags" value={ob.attrs.tags} className="icon" alt="filterIcon" src={filterIcon} /><img field="attrs.tags" value={ob.attrs.tags} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span > {ob.attrs.tags ? ob.attrs.tags.toString() : []}
-                </span>
+        case 'attrs.tags': return {
+                dataField: '_source.attrs.tags',
+                text: 'TAGS',
+                sort: true,
+                hidden: hidden,
+                headerStyle: { width: '150px !important' },
+                editorRenderer: (editorProps, value, row, column, rowIndex, columnIndex) => (
+                    <TagRanger tags={tags} row={row} />
+                ),
+                formatter: (cell, obj) => {
+                    var ob = obj._source;
+                    return <span className="filterToggleActive"><span className="filterToggle">
+                        <img onClick={doFilter} field="attrs.tags" value={ob.attrs.tags} className="icon" alt="filterIcon" src={filterIcon} /><img field="attrs.tags" value={ob.attrs.tags} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span > {ob.attrs.tags ? ob.attrs.tags.toString() : []}
+                    </span>
+                }
             }
-        }
         //different color
         case 'attrs.rtp-MOScqex-avg': return {
             dataField: '_source.attrs.rtp-MOScqex-avg',
@@ -292,7 +292,6 @@ function getColumn(column_name, tags, tag, width = 0, hidden = false) {
             dataField: '_source',
             text: column_name.name.toUpperCase(),
             editable: false,
-            headerStyle: { width: "150px" },
             formatter: (cell, obj) => {
 
                 var ob = obj._source;
@@ -433,12 +432,13 @@ function getColumn(column_name, tags, tag, width = 0, hidden = false) {
     }
 }
 
-export function tableColumns(dashboard, tags) {
+export function tableColumns(dashboard, tags, layout) {
     //check browser local storage
     var storedColumns = JSON.parse(window.localStorage.getItem("columns"));
-    if (storedColumns && storedColumns[dashboard]  && storedColumns.version  && storedColumns.version === "1.0") {
+    if (storedColumns && storedColumns[dashboard] && storedColumns.version && storedColumns.version === "1.0") {
         var storedColumns = storedColumns[dashboard];
         var result = [];
+        var name = window.location.pathname.substring(1);
 
         //generate new columns from local storage list and stored with
         for (let field of storedColumns) {
@@ -447,10 +447,61 @@ export function tableColumns(dashboard, tags) {
             let source = field.text === "ADVANCED" ? "advanced" : field.dataField.slice(8);
             result.push(getColumn({ source: source, name: field.text, "icons": ["download", "details", "share"] }, tags, tag, width = width, hidden = hidden));
         }
+
+        //get also layout and compare it
+
+        var searchable = layout[name] ? layout[name] : layout.default;
+        var newIndices = [];
+
+        var columnsTableDefault = storePersistent.getState().layout.table.columns[name];
+        var columnsTableDefaultList = [];
+        for (let i = 0; i < columnsTableDefault.length; i++) {
+            columnsTableDefaultList.push(columnsTableDefault[i].source);
+        }
+
+        var columnsTableDefaultListConcat = columnsTableDefaultList.concat(searchable.filter((item) => columnsTableDefaultList.indexOf(item) < 0))
+        for (let i = 0; i < columnsTableDefaultListConcat.length; i++) {
+            var exists = false;
+            for (let j = 0; j < result.length; j++) {
+                if (columnsTableDefaultListConcat[i] && result[j].dataField === "_source." + columnsTableDefaultListConcat[i]) {
+                    exists = true;
+                }
+            }
+            if (!exists) {
+                newIndices.push(columnsTableDefaultListConcat[i]);
+            }
+        }
+
+        //new columns were added to moki_layout
+        if (newIndices.length > 0) {
+            for (let i = 0; i < newIndices.length; i++) {
+                var field = newIndices[i];
+                result.push(getColumn({ source: field, name: field.substring(field.indexOf(".") + 1).toUpperCase() }, tags, tag, "100px", true));
+            }
+        }
+
+        var removeIndices = [];
+        for (let i = 0; i < result.length; i++) {
+            if (!columnsTableDefaultListConcat.includes(result[i].dataField.slice(8))) {
+                removeIndices.push(result[i].dataField);
+            }
+        }
+
+
+        //remove advanced
+        removeIndices.splice(removeIndices.indexOf("_source"), 1);
+        for (let i = 0; i < removeIndices.length; i++) {
+            for (let j = 0; j < result.length; j++) {
+                if (result[j].dataField === removeIndices[i]) {
+                    result.splice(j, 1);
+                }
+            }
+        }
+
         return result;
     }
     else {
-        if(storedColumns && (!storedColumns.version || storedColumns.version !== "1.0")){
+        if (storedColumns && (!storedColumns.version || storedColumns.version !== "1.0")) {
             window.localStorage.removeItem("columns");
         }
         var tag = true;
