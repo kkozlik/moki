@@ -21,6 +21,7 @@ import downloadIcon from "../../styles/icons/download.png";
 import shareIcon from "../../styles/icons/share_dark.png";
 import downloadPcapIcon from "../../styles/icons/downloadPcap.png";
 import viewIcon from "../../styles/icons/view.png";
+import resetIcon from "../../styles/icons/disable_grey.png";
 import storePersistent from "../store/indexPersistent";
 import store from "../store/index";
 import { elasticsearchConnection } from '@moki-client/gui';
@@ -328,6 +329,18 @@ export default class listChart extends Component {
     onEnterKey(event) {
         if (event.keyCode === 13) {
             this.tags();
+        }
+    }
+
+    //reset table layout - delete it from localstorage
+    resetLayout() {
+        let storedColumns = JSON.parse(window.localStorage.getItem("columns"));
+        let name = window.location.pathname.substring(1);
+
+        if (storedColumns && storedColumns[name]) {
+            delete storedColumns[name];
+            window.localStorage.setItem("columns", JSON.stringify(storedColumns));
+            window.location.reload();
         }
     }
 
@@ -888,6 +901,7 @@ export default class listChart extends Component {
 
                                     {this.props.id !== "LAST LOGIN EVENTS" && <button className="noFormatButton" onClick={() => this.shareFilters()} >  <img className="icon" alt="shareIcon" src={shareIcon} title="share selected" /><span id="tooltipshareFilters" style={{ "display": "none", "position": "absolute", "backgroundColor": "white" }}>Copied to clipboard</span></button>}
 
+                                    {<button className="noFormatButton" onClick={() => this.resetLayout()} >  <img className="icon" alt="resetLayoutIcon" src={resetIcon} title="reset table layout to default" style={{"height": "15px"}} /></button>}
                                     <span className="smallText"> (total: {this.props.total > 500 ? "500/" + this.props.total.toLocaleString() : this.props.total.toLocaleString()})</span>
                                     <CustomToggleList {...props.columnToggleProps} />
                                     <BootstrapTable {...props.baseProps}
