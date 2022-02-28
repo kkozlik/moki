@@ -115,6 +115,7 @@ class Settings extends Component {
                 if (/^ldap(s)?:\/\/(((\d{1,3}.){3}\d{1,3}(:\d+)?)|(\w|\d|)+).\w+$/.test(value)) {
                     return true;
                 }
+                else if(value === "") return true;
                 return "Error: " + attribute + " must have format 'ldap:// + ipv4 or ipv4:port or ipv6 or ip6:port or dns";
             }
 
