@@ -291,6 +291,7 @@ function getColumn(column_name, tags, tag, width = 0, hidden = false) {
         case 'advanced': return {
             dataField: '_source',
             text: column_name.name.toUpperCase(),
+            headerStyle: { width: "100px"},
             editable: false,
             formatter: (cell, obj) => {
 

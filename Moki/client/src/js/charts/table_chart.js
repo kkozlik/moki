@@ -142,8 +142,7 @@ export default class listChart extends Component {
             document.addEventListener('mousemove', function (e) {
                 if (curCol) {
                     var diffX = e.pageX - pageX;
-
-                    if (curColWidth + diffX > 50 && curColWidth + diffX < 400) {
+                    if (curColWidth + diffX > 80 && curColWidth + diffX < 400) {
                         if (nxtCol)
                             nxtCol.style.width = (nxtColWidth - (diffX)) + 'px';
 
