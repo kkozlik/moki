@@ -492,7 +492,6 @@ class timerangeBar extends Component {
                             <div id="exportMenu">
                                 <button className="dropdown-item tabletd" onClick={this.exportCSV}>CSV</button>
                                 <button className="dropdown-item tabletd" onClick={this.exportJSON}>JSON</button>
-                                <button className="dropdown-item tabletd" onClick={this.renderPDF}>PDF</button>
                             </div>
                         </div>
                     </div>
