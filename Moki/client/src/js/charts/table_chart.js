@@ -21,6 +21,7 @@ import downloadIcon from "../../styles/icons/download.png";
 import shareIcon from "../../styles/icons/share_dark.png";
 import downloadPcapIcon from "../../styles/icons/downloadPcap.png";
 import viewIcon from "../../styles/icons/view.png";
+import resetIcon from "../../styles/icons/disable_grey.png";
 import storePersistent from "../store/indexPersistent";
 import store from "../store/index";
 import { elasticsearchConnection } from '@moki-client/gui';
@@ -37,67 +38,23 @@ var JSZip = require("jszip");
 export default class listChart extends Component {
     constructor(props) {
         super(props);
-        const columns = tableColumns(this.props.name, this.props.tags);
+        var layout = storePersistent.getState().layout.table;
+        const columns = tableColumns(this.props.name, this.props.tags, layout);
         //get columns name from layout 
         var name = window.location.pathname.substring(1);
-        var layout = storePersistent.getState().layout.table;
 
         //if there is settings with min pages, use it
         var count = 10;
-
-        var storedColumns = JSON.parse(window.localStorage.getItem("columns"));
-        if (!storedColumns || (storedColumns && !storedColumns[name])) {
-            var aws = storePersistent.getState().user.aws;
-            if (aws !== true) {
-                if (storePersistent.getState().settings.length > 0) {
-                    for (var i = 0; i < storePersistent.getState().settings[0].attrs.length; i++) {
-                        if (storePersistent.getState().settings[0].attrs[i].attribute === "eventTableCount") {
-                            count = storePersistent.getState().settings[0].attrs[i].value;
-                        }
+        var aws = storePersistent.getState().user.aws;
+        if (aws !== true) {
+            if (storePersistent.getState().settings.length > 0) {
+                for (var i = 0; i < storePersistent.getState().settings[0].attrs.length; i++) {
+                    if (storePersistent.getState().settings[0].attrs[i].attribute === "eventTableCount") {
+                        count = storePersistent.getState().settings[0].attrs[i].value;
                     }
                 }
-            }
-
-            var searchable = layout[name] ? layout[name] : layout.default;
-            //remove the same
-            var removeIndices = [];
-            for (var i = 0; i < searchable.length; i++) {
-                for (var j = 0; j < columns.length; j++) {
-                    if (searchable[i] && columns[j].dataField === "_source." + searchable[i]) {
-                        removeIndices.push(i);
-                    }
-                }
-            }
-
-            //remove indices
-            for (i = removeIndices.length - 1; i >= 0; i--) {
-                searchable.splice(removeIndices[i], 1);
-            }
-
-            //insert filtered columns
-            for (i = 0; i < searchable.length; i++) {
-                var field = searchable[i];
-                columns.push(
-                    {
-                        dataField: '_source.' + field,
-                        text: field.substring(field.indexOf(".") + 1).toUpperCase(),
-                        hidden: true,
-                        editable: false,
-                        sort: true,
-                        headerStyle: { width: '100px' },
-                        formatExtraData: field,
-                        formatter: (cell, obj, i, formatExtraData) => {
-                            return <span className="filterToggleActive"><span className="filterToggle">
-                                <img onClick={this.filter} field={formatExtraData} value={cell} className="icon" alt="filterIcon" src={filter} />
-                                <img field={formatExtraData} value={cell} onClick={this.unfilter} className="icon" alt="unfilterIcon" src={unfilter} /></span >
-                                {cell}
-                            </span>
-                        }
-                    });
             }
         }
-
-
         this.state = {
             columns: columns,
             data: [],
@@ -120,6 +77,7 @@ export default class listChart extends Component {
         this.resizableGrid = this.resizableGrid.bind(this);
     }
 
+    /*
     static getDerivedStateFromProps(nextProps, prevState) {
         if (nextProps.data !== prevState.data) {
             return { data: nextProps.data };
@@ -128,7 +86,7 @@ export default class listChart extends Component {
             return { tags: nextProps.tags };
         }
         else return null;
-    }
+    }*/
 
     componentDidUpdate(prevProps) {
         if (prevProps.data !== this.props.data) {
@@ -184,8 +142,7 @@ export default class listChart extends Component {
             document.addEventListener('mousemove', function (e) {
                 if (curCol) {
                     var diffX = e.pageX - pageX;
-
-                    if (curColWidth + diffX > 50 && curColWidth + diffX < 400) {
+                    if (curColWidth + diffX > 80 && curColWidth + diffX < 400) {
                         if (nxtCol)
                             nxtCol.style.width = (nxtColWidth - (diffX)) + 'px';
 
@@ -202,7 +159,7 @@ export default class listChart extends Component {
                     var columns = JSON.parse(window.localStorage.getItem("columns"));
                     var dashboard = window.location.pathname.substring(1);
                     if (!columns) {
-                        columns = {"version": "1.0"};
+                        columns = { "version": "1.0" };
                     }
 
                     var result = JSON.parse(JSON.stringify(thiss.state.columns));
@@ -327,6 +284,18 @@ export default class listChart extends Component {
     onEnterKey(event) {
         if (event.keyCode === 13) {
             this.tags();
+        }
+    }
+
+    //reset table layout - delete it from localstorage
+    resetLayout() {
+        let storedColumns = JSON.parse(window.localStorage.getItem("columns"));
+        let name = window.location.pathname.substring(1);
+
+        if (storedColumns && storedColumns[name]) {
+            delete storedColumns[name];
+            window.localStorage.setItem("columns", JSON.stringify(storedColumns));
+            window.location.reload();
         }
     }
 
@@ -557,7 +526,7 @@ export default class listChart extends Component {
 
                     //custom variable in vars.* - render all and everything is searchable
                     if (attrs[j] === "vars") {
-                        var variable = Object.keys( row[keys[i]][attrs[j]]);
+                        var variable = Object.keys(row[keys[i]][attrs[j]]);
                         for (let k = 0; k < variable.length; k++) {
                             let categoryInner = "VARS";
                             if (!categorySort[categoryInner]) categorySort[categoryInner] = [];
@@ -799,7 +768,7 @@ export default class listChart extends Component {
                                     var dashboard = window.location.pathname.substring(1);
 
                                     if (!storedColumns) {
-                                        storedColumns = {"version": "1.0"};
+                                        storedColumns = { "version": "1.0" };
                                     }
                                     storedColumns[dashboard] = columns;
                                     window.localStorage.setItem("columns", JSON.stringify(storedColumns));
@@ -887,6 +856,7 @@ export default class listChart extends Component {
 
                                     {this.props.id !== "LAST LOGIN EVENTS" && <button className="noFormatButton" onClick={() => this.shareFilters()} >  <img className="icon" alt="shareIcon" src={shareIcon} title="share selected" /><span id="tooltipshareFilters" style={{ "display": "none", "position": "absolute", "backgroundColor": "white" }}>Copied to clipboard</span></button>}
 
+                                    {<button className="noFormatButton" onClick={() => this.resetLayout()} >  <img className="icon" alt="resetLayoutIcon" src={resetIcon} title="reset table layout to default" style={{"height": "15px"}} /></button>}
                                     <span className="smallText"> (total: {this.props.total > 500 ? "500/" + this.props.total.toLocaleString() : this.props.total.toLocaleString()})</span>
                                     <CustomToggleList {...props.columnToggleProps} />
                                     <BootstrapTable {...props.baseProps}
