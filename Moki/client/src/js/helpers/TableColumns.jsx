@@ -501,7 +501,7 @@ export function tableColumns(dashboard, tags, layout) {
             let name = columnsTableDefaultListConcat[i].name ? columnsTableDefaultListConcat[i].name : columnsTableDefaultListConcat[i];
             let source = columnsTableDefaultListConcat[i].source ? columnsTableDefaultListConcat[i].source : columnsTableDefaultListConcat[i];
             let hidden = columnsTableDefaultListConcat[i].hasOwnProperty("hidden") ? columnsTableDefaultListConcat[i].hidden : true;
-            result.push(getColumn({ source: source, name: name, "icons": ["download", "details", "share"] }, tags, tag, width = "50px", hidden = hidden));
+            result.push(getColumn({ source: source, name: name, "icons": ["download", "details", "share"] }, tags, tag, width = "200px", hidden = hidden));
         }
         return result;
     }
