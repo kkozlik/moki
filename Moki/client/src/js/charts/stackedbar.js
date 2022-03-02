@@ -352,7 +352,7 @@ export default class StackedChart extends Component {
     render() {
         return (<div id={
             this.props.id
-        } className="chart chartMinHeight"> <h3 className="alignLeft title" > {
+        } className="chart chartMinHeight"> <h3 className="alignLeft title" style={{ "float": "inherit" }} > {
             this.props.name
         } </h3></div >)
     }
