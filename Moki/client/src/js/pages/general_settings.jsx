@@ -462,16 +462,15 @@ class Settings extends Component {
         var LEdata = this.generate(LE);
         var Eventsdata = this.generate(Events);
         var Authdata = this.generate(Auth);
-        var Tagdata = this.generateTags();
+//        var Tagdata = this.generateTags();
 
 
         return (<div className="container-fluid" > {this.state.wait && < SavingScreen />}
-            <div className="chart"><p className="settingsH" > General </p> {Generaldata} </div>
+            <div className="chart"><p className="settingsH" style={{"marginTop": "30px"}}> General </p> {Generaldata} </div>
             <div className="chart"><p className="settingsH" > Authentication </p> {Authdata}</div>
             <div className="chart"><p className="settingsH" > Events </p> {Eventsdata} </div>
             <div className="chart"><p className="settingsH" > Elasticsearch and logstash </p> {LEdata} </div>
             <div className="chart"><p className="settingsH" > Slowlog </p> {Slowlogdata} </div>
-            <div className="chart"><p className="settingsH" > Tags </p> {Tagdata}</div>
             <div className="btn-group rightButton" >
                 <button type="button"
                     className="btn btn-primary "
