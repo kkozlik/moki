@@ -49,7 +49,7 @@ class OverviewCharts extends Dashboard {
                 [],
 
                 //TAGS LIST
-                [{ result: 'tags', func: parseListData }],
+                [],
 
                 //DISTINCT IP
                 [{ result: 'distinctIP', func: parseAggDistinct }],
@@ -91,19 +91,6 @@ class OverviewCharts extends Dashboard {
                         <StackedChart data={
                             this.state.totalEventsInInterval
                         } units={"count"} id="totalEvents" bottomMargin={80} keys={"overview"} name={"TOTAL EVENTS IN INTERVAL"} width={store.getState().width / 2}
-                        />
-                    </div>
-                    }
-                    {this.state.charts["TOP TAGS"] && <div className="col" >
-                        <ListChart data={
-                            this.state.tags
-                        }
-                            name={
-                                "TOP TAGS"
-                            }
-                            field={
-                                "attrs.tags"
-                            }
                         />
                     </div>
                     }
