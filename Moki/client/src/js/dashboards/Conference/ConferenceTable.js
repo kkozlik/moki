@@ -41,7 +41,7 @@ class ConferenceTable extends Component {
 
             return;
         } else if (calls) {
-            var data = parseTable(calls.hits.hits);
+            var data = await parseTable(calls.hits.hits);
             var total = calls.hits.total.value;
             this.setState({
                 calls: data,

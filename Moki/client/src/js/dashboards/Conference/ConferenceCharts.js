@@ -108,7 +108,7 @@ class ConferenceCharts extends Dashboard {
             <div className = "row no-gutters" >
                     <TimedateStackedChart id="eventsOverTime" data = {
                         this.state.eventCallsTimeline
-                    } name={"EVENTS OVER TIME"}  width={store.getState().width-300}
+                    } keys="conference"  name={"EVENTS OVER TIME"}  width={store.getState().width-300}
                     /> 
             </div>
             <div className = "row no-gutters" >
