@@ -24,7 +24,7 @@ export const formatDuration = (duration) => {
 
     //if value is less than zero => less than second, show ms
     if (sec_num < 1) {
-        return sec_num * 100 + "ms";
+        return sec_num * 1000 + "ms";
     }
 
     //duration < 10 display format s:ms
