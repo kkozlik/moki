@@ -65,7 +65,7 @@ class networkController extends Controller {
       //TX PACKETS BY INTERFACE
       { index: "collectd*", template: datehistogram_three_agg_query, params: ['type_instance', 'tx', 'tx', "timebucket"], filter: "tags:collectd AND attrs.type:if_packets" },
       //IPS ON FW BLACKLIST BY HOST
-      { index: "collectd*", template: datehistogram_three_agg_query, params: ['type_instance', 'value', 'value', "timebucket"], filter: "tags:collectd AND plugin_instance:blacklist" },
+      { index: "collectd*", template: datehistogram_three_agg_query, params: ['attrs.hostnames', 'value', 'value', "timebucket"], filter: "tags:collectd AND plugin_instance:blacklist" },
       //IPS ON FW GREYLIST BY HOST
       { index: "collectd*", template: datehistogram_three_agg_query, params: ['attrs.hostname', 'value', 'value', "timebucket"], filter: "tags:collectd AND plugin_instance:greylist" },
       //IPS ON FW WHITELIST BY HOST
