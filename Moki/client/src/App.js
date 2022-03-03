@@ -368,7 +368,7 @@ class App extends Component {
                 var hostnamesColor = [];
                 if (json.responses && json.responses[0] && json.responses[0].aggregations && json.responses[0].aggregations.distinct && json.responses[0].aggregations.distinct.buckets) {
                     hostnames = json.responses[0].aggregations.distinct.buckets;
-                    var colors = ["#caa547", "#30427F", "#697F30", "#ca8b47", "#0a3f53", "#4d8296", "#58a959", "#A5CA47", "#5b67a4", "#121e5b", "#efcc76", "#3c488a", "#844a0b", "#efb576"]
+                    var colors = ['#58a959', '#61BEE2', '#f58231', '#00008B', '#c41d03', '#2077e8','#41FA51', '#d66bad', '#ffe119', '#e6beff', '#ccc8a0', '#aa59e0', '#99e5af', '#d18e1a', '#465D00'];
                     for (var i = 0; i <= hostnames.length; i++) {
                         if (hostnames[i]) {
                             hostnamesColor[hostnames[i].key] = colors[i % 14];
