@@ -19,7 +19,7 @@ export const formatDuration = (duration) => {
 
     //rounding up removed real value
     if (sec_num == 0) {
-        return ">0.01 ms";
+        return "less than 0.01 ms";
     }
 
     //if value is less than zero => less than second, show ms
