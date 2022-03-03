@@ -41,9 +41,8 @@ class MonitoringCharts extends Component {
             disk: 0,
             eventStats: 0,
             indices: [],
-            freeMemory: 0,
-            sbcTypeCount: []
-        }
+            freeMemory: 0
+                }
         store.subscribe(() => this.loadData());
 
 
@@ -71,7 +70,7 @@ class MonitoringCharts extends Component {
         try {
             var data = await elasticsearchConnection("monitoring/charts");
             var events = await elasticsearchConnection("monitoring/events");
-            var sbcEventsStats = await elasticsearchConnection("monitoring/sbc");
+            //var sbcEventsStats = await elasticsearchConnection("monitoring/sbc");
         }
         catch (error) {
             console.error("Error receiving data: " + error);
@@ -87,11 +86,11 @@ class MonitoringCharts extends Component {
             this.setState({ isLoading: false });
             return;
         }
-        if (typeof sbcEventsStats === "string" && sbcEventsStats.includes("ERROR:")) {
+        /*if (typeof sbcEventsStats === "string" && sbcEventsStats.includes("ERROR:")) {
             this.props.showError(sbcEventsStats);
             this.setState({ isLoading: false });
             return;
-        }
+        }*/
 
         //get node name
         if (data && data[0] && data[0].hasOwnProperty("nodes")) {
@@ -160,12 +159,12 @@ class MonitoringCharts extends Component {
         }
 
         //SBC - type count
-        var sbcTypeCount = [];
+        /*var sbcTypeCount = [];
 
         if (sbcEventsStats && sbcEventsStats.aggregations && sbcEventsStats.aggregations.agg && sbcEventsStats.aggregations.agg.buckets) {
             sbcTypeCount = sbcEventsStats.aggregations.agg.buckets;
         }
-
+*/
 
         console.log(new Date() + " MOKI MONITORING: finished parsíng data");
 
@@ -185,8 +184,7 @@ class MonitoringCharts extends Component {
             disk: disk,
             indices: indices,
             freeMemory: freeMemory,
-            eventStats: eventStats,
-            sbcTypeCount: sbcTypeCount
+            eventStats: eventStats
 
         });
 
