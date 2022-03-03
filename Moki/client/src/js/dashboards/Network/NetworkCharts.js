@@ -145,22 +145,22 @@ class NetworkCharts extends Dashboard {
                     </div>
 
                     <div className="col">
-                        <MultipleLineChart id="rxBytesByInterface" hostnames={this.state.hostnames} data={this.state.rxBytesByInterface} name={"RX BYTES BY INTERFACE"} width={(store.getState().width - 300) / 3} ticks={3}
+                        <MultipleLineChart id="rxBytesByInterface" field="type_instance" hostnames={this.state.hostnames} data={this.state.rxBytesByInterface} name={"RX BYTES BY INTERFACE"} width={(store.getState().width - 300) / 3} ticks={3}
                         />
                     </div>
 
                     <div className="col">
-                        <MultipleLineChart id="txBytesByInterface" hostnames={this.state.hostnames} data={this.state.txBytesByInterface} name={"TX BYTES BY INTERFACE"} width={(store.getState().width - 300) / 3} ticks={3}
+                        <MultipleLineChart id="txBytesByInterface" field="type_instance" hostnames={this.state.hostnames} data={this.state.txBytesByInterface} name={"TX BYTES BY INTERFACE"} width={(store.getState().width - 300) / 3} ticks={3}
                         />
                     </div>
 
                     <div className="col">
-                        <MultipleLineChart id="rxPacketByInterface" hostnames={this.state.hostnames} data={this.state.rxPacketByInterface} name={"RX PACKETS BY INTERFACE"} width={(store.getState().width - 300) / 3} ticks={3}
+                        <MultipleLineChart id="rxPacketByInterface" field="type_instance" hostnames={this.state.hostnames} data={this.state.rxPacketByInterface} name={"RX PACKETS BY INTERFACE"} width={(store.getState().width - 300) / 3} ticks={3}
                         />
                     </div>
 
                     <div className="col">
-                        <MultipleLineChart id="txPacketByInterface" hostnames={this.state.hostnames} data={this.state.txPacketByInterface} name={"TX PACKETS BY INTERFACE"} width={(store.getState().width - 300) / 3} ticks={3}
+                        <MultipleLineChart id="txPacketByInterface" field="type_instance" hostnames={this.state.hostnames} data={this.state.txPacketByInterface} name={"TX PACKETS BY INTERFACE"} width={(store.getState().width - 300) / 3} ticks={3}
                         />
                     </div>
                     <div className="col">
