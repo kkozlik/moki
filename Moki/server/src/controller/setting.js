@@ -825,7 +825,7 @@ class SettingController {
       const response = await client.msearch({
         body: [
           {
-            index: 'logstash*',
+            index: '*',
             ignore_unavailable: true,
             preference: 1542895076143,
           },
