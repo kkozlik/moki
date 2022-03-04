@@ -291,7 +291,7 @@ export default class heatmap extends Component {
                         "translate(" + (width) + " ," +
                         (height + margin.top) + ")")
                     .style("text-anchor", "middle")
-                    .text("DST CA");
+                    .text("DST");
 
                 // text label for the y axis
                 svg.append("text")
@@ -299,7 +299,7 @@ export default class heatmap extends Component {
                     .attr("x", -20)
                     .attr("dy", "1em")
                     .style("text-anchor", "middle")
-                    .text("SRC CA");
+                    .text("SRC");
             }
             else if (id === "codeAnalysis") {
 

@@ -601,6 +601,7 @@ class App extends Component {
                 var dashboardAlter = [...this.state.dashboards];
                 if (this.state.aws) {
                     dashboardAlter.push("tenant");
+                    dashboardAlter.push("connectivityIP");
                 }
 
                 //admin context
