@@ -13,7 +13,10 @@ export default class multivalueChart extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            data: []
+            data: [],
+            direction: "desc",
+            page: 0,
+            pagginationData: []
         }
         this.order = this.order.bind(this);
     }
@@ -28,6 +31,16 @@ export default class multivalueChart extends Component {
     componentDidUpdate(prevProps, prevState) {
         if (prevProps.data !== this.props.data) {
             this.setState({ data: this.props.data });
+
+            //data format: [list, sum]
+            var pagginationData = [];
+            if (this.props.data.length > 0) {
+                pagginationData = this.props.data.slice(0, 10)
+            }
+            this.setState({
+                data: this.props.data,
+                pagginationData: pagginationData
+            });
         }
     }
 
@@ -41,23 +54,71 @@ export default class multivalueChart extends Component {
     }
 
     wrapText(text) {
-        if (text.length > 20)
-            return text.substring(0, 20) + '...';
+        if (text.length > 40)
+            return text.substring(0, 40) + '...';
         else
             return text;
     }
 
-    sortByKey(array, key) {
-        return array.sort(function (a, b) {
-            var x = a[key];
-            var y = b[key];
-            return ((x > y) ? -1 : ((x < y) ? 1 : 0));
-        });
+    sortByKey(array, key, direction) {
+        if (direction === "desc") {
+            return array.sort(function (a, b) {
+                var x = a[key];
+                var y = b[key];
+                return ((x > y) ? -1 : ((x < y) ? 1 : 0));
+            });
+        }
+        else {
+            return array.sort(function (a, b) {
+                var x = a[key];
+                var y = b[key];
+                return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+            });
+        }
+    }
+
+    //change paggination page, stay on same page or move
+    setPage(i, stay = false) {
+        i = parseInt(i);
+        var pagginationData = i === 1 ? this.state.data.slice(0, 10) : this.state.data.slice((i * 10) - 10, i * 10);
+        if (stay) {
+            this.setState({
+                pagginationData: pagginationData
+            })
+        }
+        else {
+            this.setState({
+                page: i - 1,
+                pagginationData: pagginationData
+            })
+        }
+    }
+
+    //Create buttons list for paggination
+    createPaggination() {
+        var data = this.state.data;
+        if (data) {
+            var pageCount = Math.ceil(data.length / 10);
+            if (pageCount >= 2) {
+                var buttons = [];
+                for (var i = 0; i < pageCount; i++) {
+                    buttons.push(<button value={i + 1} key={i} onClick={e => this.setPage(e.target.value)} className={this.state.page === i ? "page-link-active page-link page-link-myPadding " : "page-link page-link-myPadding "}>{i + 1}</button>);
+                }
+                return buttons;
+            }
+
+        }
     }
 
     order(event) {
-        var dataSorted = this.sortByKey(this.state.data, event.currentTarget.getAttribute('field'));
-        this.setState({ data: dataSorted });
+        if (this.state.direction === "desc") {
+            this.setState({ direction: "asc" })
+        }
+        else {
+            this.setState({ direction: "desc" })
+        }
+        var dataSorted = this.sortByKey(this.state.data, event.currentTarget.getAttribute('field'), this.state.direction);
+        this.setState({ data: dataSorted }, function () { this.setPage(this.state.page, true) });
     }
 
     render() {
@@ -70,7 +131,7 @@ export default class multivalueChart extends Component {
         }
 
 
-        var data = this.state.data;
+        var data = this.state.pagginationData;
         var items = [];
         if (data) {
             for (var i = 0; i < data.length; i++) {
@@ -88,7 +149,6 @@ export default class multivalueChart extends Component {
                 </tr>
                 )
             }
-
             if (data.length === 0) {
                 items.push(<tr key={"key"}><td key={"value"}>-</td>
                     <td className="filtertd" key={"value0"}>0</td>
@@ -103,7 +163,7 @@ export default class multivalueChart extends Component {
 
 
         return (
-            <div id={this.props.id} style={{ "width": "100%" }}  className="chart">
+            <div id={this.props.id} style={{ "width": "100%" }} className="chart">
                 <h3 className="alignLeft title">{this.props.name}</h3>
                 <table style={{ "width": "100%" }}>
                     <tbody>
@@ -117,6 +177,7 @@ export default class multivalueChart extends Component {
                             <th><h3>{this.props.name6} <img onClick={this.order} field="value4" className="icon" alt="filterIcon" src={sortIcon} /></h3></th>
                         </tr>
                         {items}
+                        { this.state.data && this.state.data.length > 10 && this.createPaggination()}
                     </tbody>
                 </table>
             </div>

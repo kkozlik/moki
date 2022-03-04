@@ -1,4 +1,4 @@
-var getTemplate = function (field1, field2, field3, field4, field5, field6, field7, queries, supress) {
+var getTemplate = function (field1, field2, field3, field4, field5, field6, field7, queries, supress, order="_count") {
     var template = {
         "size": 0,
         track_total_hits: true,
@@ -19,7 +19,7 @@ var getTemplate = function (field1, field2, field3, field4, field5, field6, fiel
                     "field": field1,
                     "size": 100,
                     "order": {
-                        "_term": "asc"
+                        [order]: "desc"
                     }
                 },
                 "aggs": {
