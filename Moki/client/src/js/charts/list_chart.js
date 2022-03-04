@@ -6,7 +6,7 @@ import filter from "../../styles/icons/filter.png";
 import unfilter from "../../styles/icons/unfilter.png";
 import emptyIcon from "../../styles/icons/empty_small.png";
 import Animation from '../helpers/Animation';
-import ReactCountryFlag from "react-country-flag";
+import CountryFlag from "../helpers/countryFlag";
 import storePersistent from "../store/indexPersistent";
 
 class TableChart extends Component {
@@ -91,8 +91,6 @@ class TableChart extends Component {
       }
       return longestText < 30 ? longestText : 30;
     }
-
-
     if (window.location.pathname === "/web") {
       var data = this.state.data[0];
 
@@ -101,6 +99,7 @@ class TableChart extends Component {
         data.push({ "key": "", "doc_count": "" });
 
       }
+
       return (
         <div className="tableChart chart">
           <h3 className="alignLeft title" style={{ "float": isAnimation ? "left" : "inherit" }}>{this.props.name}</h3>
@@ -111,7 +110,7 @@ class TableChart extends Component {
                 return (
                   <tr key={key} style={{ "height": "30px" }}>
                     <td className="listChart filterToggleActiveWhite" id={item.key} style={{ "borderBottom": "none" }} title={item.key}>
-                      {(this.props.name.includes("COUNTRY") || this.props.name.includes("COUNTRIES")) && item.key !== "unknown" && item.key !== "" && storePersistent.getState().profile[0].mode !== "anonymous" ? <ReactCountryFlag style={{ "marginRight": "5px" }} countryCode={item.key} svg /> : <span />}
+                      {(this.props.name.includes("COUNTRY") || this.props.name.includes("COUNTRIES")) && item.key !== "unknown" && item.key !== "" && storePersistent.getState().profile[0].mode !== "anonymous" ? <CountryFlag  countryCode={item.key} /> : <span />}
                       {item.key.substring(0, 16)}
                     </td>
                     {(item.doc_count !== "" && this.state.data[1]) && <td className="listChart" style={{ "borderBottom": "none", "color": "grey" }}>{roundNumber(item.doc_count / this.state.data[1] * 100) + "%"}</td>}
@@ -141,8 +140,8 @@ class TableChart extends Component {
               <tbody>{this.state.data[0].map((item, key) => {
                 return (
                   <tr key={key}>
-                    <td className="filtertd listChart filterToggleActiveWhite" id={item.key} title={item.key} style={{ "width": longestText(this.state.data) * 10 + 50 + "px" }}>
-                      {(this.props.name.includes("COUNTRY") || this.props.name.includes("COUNTRIES")) && item.key !== "unknown"  && storePersistent.getState().profile[0] && storePersistent.getState().profile[0].mode !== "anonymous" ? <ReactCountryFlag style={{ "marginRight": "5px" }} countryCode={item.key} svg /> : <span />}
+                    <td className="filtertd listChart filterToggleActiveWhite" id={item.key} title={item.key} style={{ "width": longestText(this.state.data) * 10 + 80 + "px" }}>
+                      {(this.props.name.includes("COUNTRY") || this.props.name.includes("COUNTRIES")) && item.key !== "unknown"  && storePersistent.getState().profile[0] && storePersistent.getState().profile[0].mode !== "anonymous" ? <CountryFlag  countryCode={item.key}  /> : <span />}
                       {shortText(item.key)}
                       {this.props.field && <span className="filterToggle">
                         <img onClick={this.filter} field={this.props.field} value={item.key} className="icon" alt="filterIcon" src={filter} />
