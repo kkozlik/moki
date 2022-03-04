@@ -164,15 +164,15 @@ class filterBar extends Component {
 
     //disable filter according filter id
     disableFilter(filter) {
-        var oldFilters = store.getState().filters;
+        var oldFilters = JSON.parse(JSON.stringify(store.getState().filters));
         for (var i = 0; i < oldFilters.length; i++) {
             if ('filter' + oldFilters[i].id === filter) {
                 oldFilters[i].state = 'disable';
+                oldFilters[i].previousState = 'enable';
             }
         }
         console.info("Filter is disabled: " + JSON.stringify(oldFilters));
         store.dispatch(setFilters(oldFilters));
-
     }
 
     //change state of filter to enable
@@ -181,6 +181,7 @@ class filterBar extends Component {
         for (var i = 0; i < oldFilters.length; i++) {
             if ('filter' + oldFilters[i].id === filter) {
                 oldFilters[i].state = 'enable';
+                oldFilters[i].previousState = 'disable';
             }
         }
         console.info("Filter is enabled: " + oldFilters);
