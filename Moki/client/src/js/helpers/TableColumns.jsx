@@ -291,7 +291,7 @@ function getColumn(column_name, tags, tag, width = 0, hidden = false) {
         case 'advanced': return {
             dataField: '_source',
             text: column_name.name.toUpperCase(),
-            headerStyle: { width: "100px"},
+            headerStyle: { width: "100px" },
             editable: false,
             formatter: (cell, obj) => {
 
@@ -436,30 +436,31 @@ function getColumn(column_name, tags, tag, width = 0, hidden = false) {
 export function tableColumns(dashboard, tags, layout) {
     //check browser local storage
     var storedColumns = JSON.parse(window.localStorage.getItem("columns"));
-
     var result = [];
     var name = window.location.pathname.substring(1);
 
     //get also layout and compare it
     var columnsTableDefault = layout.columns[name] ? layout.columns[name] : layout.columns.default;
     var toggleListDefault = layout.toggleList[name] ? layout.toggleList[name] : layout.toggleList.default;
-
     var columnsTableDefaultListConcat = columnsTableDefault;
-
     //everything from table is visible
-    for (let hit of columnsTableDefaultListConcat) {
-        hit.hidden = false;
+    if (columnsTableDefaultListConcat) {
+        for (let hit of columnsTableDefaultListConcat) {
+            hit.hidden = false;
+        }
     }
 
-    for (let toggleHit of toggleListDefault) {
-        let isExist = false;
-        for (let hit of columnsTableDefault) {
-            if (toggleHit.source === hit.source) {
-                isExist = true;
+    if (toggleListDefault) {
+        for (let toggleHit of toggleListDefault) {
+            let isExist = false;
+            for (let hit of columnsTableDefault) {
+                if (toggleHit.source === hit.source) {
+                    isExist = true;
+                }
             }
-        }
-        if (!isExist) {
-            columnsTableDefaultListConcat.push(toggleHit);
+            if (!isExist) {
+                columnsTableDefaultListConcat.push(toggleHit);
+            }
         }
     }
 
