@@ -192,18 +192,24 @@ function getColumn(column_name, tags, tag, width = 0, hidden = false) {
                 var ob = obj._source;
                 var value = "";
                 var notvalue = "";
-                for (var i = 0; i < ob.exceeded.length; i++) {
-                    if (i === 0) {
-                        value = "exceeded: " + ob.exceeded[i];
-                        notvalue = "NOT (exceeded: " + ob.exceeded[i];
+                if (Array.isArray(ob.exceeded)) {
+                    for (var i = 0; i < ob.exceeded.length; i++) {
+                        if (i === 0) {
+                            value = "exceeded: " + ob.exceeded[i];
+                            notvalue = "NOT (exceeded: " + ob.exceeded[i];
+                        }
+                        else {
+                            value = value + " AND exceeded:" + ob.exceeded[i];
+                            notvalue = notvalue + " AND exceeded:" + ob.exceeded[i];
+                        }
                     }
-                    else {
-                        value = value + " AND exceeded:" + ob.exceeded[i];
-                        notvalue = notvalue + " AND exceeded:" + ob.exceeded[i];
-                    }
-                }
-                notvalue = notvalue + ")";
+                    notvalue = notvalue + ")";
 
+                }
+                else {
+                    value = "exceeded: " + ob.exceeded;
+                    notvalue = "NOT exceeded: " + ob.exceeded;
+                }
                 var exceededName = ob.exceeded ? ob.exceeded.toString() : "";
                 return <ExceededName data={exceededName} notvalue={notvalue} value={value} doFilterRaw={doFilterRaw}></ExceededName>
             }
