@@ -360,7 +360,7 @@ function getColumn(column_name, tags, tag, width = 0, hidden = false) {
         //default case with searchable icons and not searchable
         default:
             //fnc case - round
-            if (attrsTypes[column_name] && attrsTypes[column_name] === "round") {
+            if (attrsTypes[column_name.source] && attrsTypes[column_name.source] === "round") {
                 return {
                     dataField: '_source.' + column_name.source,
                     text: column_name ? column_name.name.toUpperCase() : "",
@@ -378,7 +378,7 @@ function getColumn(column_name, tags, tag, width = 0, hidden = false) {
                 }
             }
             //time format
-            else if (attrsTypes[column_name] && attrsTypes[column_name] === "time") {
+            else if (attrsTypes[column_name.source] && attrsTypes[column_name.source] === "time") {
                 return {
                     dataField: '_source.' + column_name.source,
                     text: column_name ? column_name.name.toUpperCase() : "",
@@ -475,13 +475,14 @@ export function tableColumns(dashboard, tags, layout) {
         for (let i = 0; i < columnsTableDefaultListConcat.length; i++) {
             //check if this column was stored, if so use the parameraters
             var isExists = false
-            for (var field of storedColumns) {
-                if ("_source." + columnsTableDefaultListConcat[i].source === field.dataField) {
-                    isExists = field;
+            var field = null;
+            for (var fields of storedColumns) {
+                if ("_source." + columnsTableDefaultListConcat[i].source === fields.dataField) {
+                    isExists = true;
+                    field = fields;
                 }
             }
             if (isExists) {
-                field = isExists;
                 var width = field.headerStyle && field.headerStyle.width ? field.headerStyle.width : null;
                 var hidden = field.hidden ? field.hidden : false;
                 var source = field.text === "ADVANCED" ? "advanced" : field.dataField.slice(8);
