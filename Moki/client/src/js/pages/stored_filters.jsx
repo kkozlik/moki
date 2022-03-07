@@ -88,7 +88,7 @@ class StoredFilters extends Component {
         //filters
         if (filters.attribute[0].filters) {
             for (i = 0; i < filters.attribute[0].filters[0].length; i++) {
-                newFilters.push(await createFilter(filters.attribute[0].filters[0][i].title, i, false, false));
+                newFilters.push(await createFilter(filters.attribute[0].filters[0][i].title, filters.attribute[0].filters[0][i].id, false, false));
             }
             store.dispatch(setFilters(newFilters));
         }

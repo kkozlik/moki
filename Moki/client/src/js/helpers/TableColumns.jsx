@@ -483,22 +483,22 @@ export function tableColumns(dashboard, tags, layout) {
             if (isExists) {
                 field = isExists;
                 var width = field.headerStyle && field.headerStyle.width ? field.headerStyle.width : null;
-                var hidden = field.hidden ? field.hidden : null;
+                var hidden = field.hidden ? field.hidden : false;
                 var source = field.text === "ADVANCED" ? "advanced" : field.dataField.slice(8);
-                result.push(getColumn({ source: source, name: field.text, "icons": ["download", "details", "share"] }, tags, tag, width = width, hidden = hidden));
+                result.push(getColumn({ source: source, name: field.text, "icons": ["download", "diagram", "details", "share"] }, tags, tag, width = width, hidden = hidden));
             }
             else {
                 let name = columnsTableDefaultListConcat[i].name ? columnsTableDefaultListConcat[i].name : columnsTableDefaultListConcat[i];
                 let source = columnsTableDefaultListConcat[i].source ? columnsTableDefaultListConcat[i].source : columnsTableDefaultListConcat[i];
-                let hidden = columnsTableDefaultListConcat[i].hasOwnProperty("hidden") ? columnsTableDefaultListConcat[i].hidden : true;
-                result.push(getColumn({ source: source, name: name, "icons": ["download", "details", "share"] }, tags, tag, width = "50px", hidden = hidden));
+                let hidden = columnsTableDefaultListConcat[i].hasOwnProperty("hidden") ? columnsTableDefaultListConcat[i].hidden : false;
+                result.push(getColumn({ source: source, name: name, "icons": ["download", "diagram", "details", "share"] }, tags, tag, width = "50px", hidden = hidden));
             }
         }
         return result;
     }
     else {
-        if (storedColumns && (!storedColumns.version || storedColumns.version !== "1.0")) {
-            window.removeItem("columns");
+        if (window.localStorage.getItem("columns") && (!storedColumns.version || storedColumns.version !== "1.0")) {
+            window.localStorage.removeItem("columns");
         }
         var tag = true;
         //disable tags for end user
@@ -508,7 +508,7 @@ export function tableColumns(dashboard, tags, layout) {
             let name = columnsTableDefaultListConcat[i].name ? columnsTableDefaultListConcat[i].name : columnsTableDefaultListConcat[i];
             let source = columnsTableDefaultListConcat[i].source ? columnsTableDefaultListConcat[i].source : columnsTableDefaultListConcat[i];
             let hidden = columnsTableDefaultListConcat[i].hasOwnProperty("hidden") ? columnsTableDefaultListConcat[i].hidden : true;
-            result.push(getColumn({ source: source, name: name, "icons": ["download", "details", "share"] }, tags, tag, width = "200px", hidden = hidden));
+            result.push(getColumn({ source: source, name: name, "icons": ["download", "diagram", "details", "share"] }, tags, tag, width = "150px", hidden = hidden));
         }
         return result;
     }
