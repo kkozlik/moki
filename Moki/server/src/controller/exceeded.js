@@ -56,6 +56,7 @@ class exceededController extends Controller {
       //TOP SUBNETS /24 EXCEEDED
       { index: "exceeded*", template: agg, params: ["attrs.sourceSubnets"], filter: "*" }
     ], "exceeded");
+
   }
 
   /**
@@ -94,7 +95,7 @@ class exceededController extends Controller {
    *               $ref: '#/definitions/ChartResponseError'
    */
   static getTable(req, res, next) {
-    super.requestTable(req, res, next, { index: "exceeded*", filter: "*", types:"*" });
+    super.requestTable(req, res, next, { index: "exceeded*", filter: "*" });
   }
 }
 
