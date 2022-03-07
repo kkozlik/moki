@@ -11,8 +11,8 @@ class Type extends Component {
             color = getExceededColor(this.props.id);
         }
         this.state = {
-            state: 'enable',
-            color: color,
+            state: this.props.state ? this.props.state : 'enable',
+            color: this.props.state && this.props.state === "disable" ? "gray" : color,
         }
         this.disableType = this.disableType.bind(this);
 
