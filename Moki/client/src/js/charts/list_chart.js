@@ -110,7 +110,7 @@ class TableChart extends Component {
                 return (
                   <tr key={key} style={{ "height": "30px" }}>
                     <td className="listChart filterToggleActiveWhite" id={item.key} style={{ "borderBottom": "none" }} title={item.key}>
-                      {(this.props.name.includes("COUNTRY") || this.props.name.includes("COUNTRIES")) && item.key !== "unknown" && item.key !== "" && storePersistent.getState().profile[0].mode !== "anonymous" ? <CountryFlag  countryCode={item.key} /> : <span />}
+                      {(this.props.name.includes("COUNTRY") || this.props.name.includes("COUNTRIES")) && item.key !== "unknown" && item.key !== "" && (storePersistent.getState().profile[0] && storePersistent.getState().profile[0].mode  && storePersistent.getState().profile[0].mode !== "anonymous") ? <CountryFlag  countryCode={item.key} /> : <span />}
                       {item.key.substring(0, 16)}
                     </td>
                     {(item.doc_count !== "" && this.state.data[1]) && <td className="listChart" style={{ "borderBottom": "none", "color": "grey" }}>{roundNumber(item.doc_count / this.state.data[1] * 100) + "%"}</td>}
