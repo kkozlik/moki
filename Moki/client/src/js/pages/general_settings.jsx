@@ -112,7 +112,7 @@ class Settings extends Component {
             }
 
             if (restriction.type === "ldapIP") {
-                if (/^ldap(s)?:\/\/(((\d{1,3}.){3}\d{1,3}(:\d+)?)|(\w|\d|)+).\w+$/.test(value)) {
+                if (/^(ldap(s)?:\/\/)(((\d{1,3}.){3}\d{1,3}(:\d+)?)|(\w|\d|)+|((\[([a-f0-9]{1,4}:{1,2}){1,4}([a-f0-9]{1,4})\])(:\d+)?)).\w+$/.test(value)) {
                     return true;
                 }
                 else if(value === "") return true;
