@@ -40,8 +40,6 @@ export default class StackedChart extends Component {
 
     async draw(data, id, field, units) {
         const thiss = this;
-        console.log(data);
-
         units = units ? " (" + units + ")" : "";
         //FOR UPDATE: remove chart if it's already there
         var chart = document.getElementById(id + "SVG");
@@ -69,8 +67,6 @@ export default class StackedChart extends Component {
         var legendSpacing = 3;
 
         var radius = Math.min(width, height) / 2 -20;
-        console.log("radius");
-        console.log(radius);
         var color;
         var colorScale = d3.scaleOrdinal(ColorsReds);
         var colorScaleMix = d3.scaleOrdinal(Colors);
@@ -342,7 +338,7 @@ export default class StackedChart extends Component {
                         <div id={this.props.id} />
                     </div >
                     <div className="col-auto">
-                        <div id={"divLegend" + this.props.id} style={{ "height": "170px", "width": "250px", "overflow-x": "auto", "marginTop": "15px" }} />
+                        <div id={"divLegend" + this.props.id} style={{ "height": "170px", "width": "250px", "overflowX": "auto", "marginTop": "15px" }} />
                     </div>
                 </div>
             </div>

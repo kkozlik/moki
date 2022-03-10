@@ -27,6 +27,7 @@ class ExceededCharts extends Dashboard {
             subnets: [],
             ipAddress: [],
             charts: [],
+            exceededBy: [],
             isLoading: true
         };
         this.callBacks = {
@@ -47,7 +48,10 @@ class ExceededCharts extends Dashboard {
                 [{ result: 'ipAddress', func: parseListData, attrs:["attrs.source"]   }],
 
                 //TOP SUBNETS /24 EXCEEDED
-                [{ result: 'subnets', func: parseListData, attrs:["attrs.sourceSubnets"]  }]
+                [{ result: 'subnets', func: parseListData, attrs:["attrs.sourceSubnets"]  }],
+
+                 //EXCEEDED TYPES
+                 [{ result: 'exceededBy', func: parseListData, attrs:["exceeded-by"]  }]
             ]
         };
     }
@@ -79,6 +83,12 @@ class ExceededCharts extends Dashboard {
                         height={170}
                         field="exceeded" />
                 </div>}
+                {this.state.charts["EXCEEDED BY"] && <div className="col-auto" >
+                    <ListChart data={this.state.exceededBy}
+                        name={"EXCEEDED BY"}
+                        field={"exceeded-by"}
+                    />  </div>
+                }
                 {this.state.charts["TOP OFFENDERS"] && <div className="col-auto" >
                     <ListChart data={this.state.topOffenders}
                         name={"TOP OFFENDERS"}

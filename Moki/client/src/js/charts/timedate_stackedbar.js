@@ -60,7 +60,7 @@ export default class StackedChart extends Component {
         var svg = d3.select('#' + id);
         var margin = {
             top: 13,
-            right: 20,
+            right: 70,
             bottom: 30,
             left: 35
         };
@@ -177,17 +177,17 @@ export default class StackedChart extends Component {
                     //compute keys from data
                     keys = [];
                     for (let hit of data) {
-                        for (let key of Object.keys(hit)){
-                            if(!keys.includes(key)){
+                        for (let key of Object.keys(hit)) {
+                            if (!keys.includes(key)) {
                                 keys.push(key);
                             }
 
                         }
                     }
                     ///remove value, sum, time
-                    if(keys.indexOf("value") !== -1) keys.splice(keys.indexOf("value"), 1);
-                    if(keys.indexOf("sum") !== -1) keys.splice(keys.indexOf("sum"), 1);
-                    if(keys.indexOf("time") !== -1) keys.splice(keys.indexOf("time"), 1);
+                    if (keys.indexOf("value") !== -1) keys.splice(keys.indexOf("value"), 1);
+                    if (keys.indexOf("sum") !== -1) keys.splice(keys.indexOf("sum"), 1);
+                    if (keys.indexOf("time") !== -1) keys.splice(keys.indexOf("time"), 1);
                 }
             }
 
@@ -241,7 +241,6 @@ export default class StackedChart extends Component {
 
             layer.selectAll("rect")
                 .data(function (d, i) {
-
                     return d;
                 })
                 .enter().append("rect")
@@ -347,10 +346,10 @@ export default class StackedChart extends Component {
                 // Animation
                 /* Add 'curtain' rectangle to hide entire graph */
                 var curtain = rootsvg.append('rect')
-                    .attr('x', -1 * width)
+                    .attr('x', -1 * width-70)
                     .attr('y', -1 * height)
                     .attr('height', height)
-                    .attr('width', width)
+                    .attr('width', width+100)
                     .attr('class', 'curtain')
                     .attr('transform', 'rotate(180)')
                     .style('fill', '#ffffff');
@@ -359,8 +358,7 @@ export default class StackedChart extends Component {
                 curtain.transition()
                     .duration(1200)
                     .ease(d3.easeLinear)
-                    .attr('x', -2 * width - 50);
-
+                    .attr('x', -2 * width - 300);
             }
 
 
@@ -428,10 +426,11 @@ export default class StackedChart extends Component {
 
     render() {
         var bucket = getTimeBucket();
-        return (<div id={
-            this.props.id
-        } className="chart"> <h3 className="alignLeft title" > {
-            this.props.name
-        } <span className="smallText"> (interval: {bucket})</span></h3></div >)
+        return (
+            <div id={this.props.id} className="chart">
+                <h3 className="alignLeft title" style={{"float": "inherit"}}> {this.props.name}
+                    <span className="smallText"> (interval: {bucket})</span>
+                </h3>
+            </div >)
     }
 }

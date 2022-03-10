@@ -8,6 +8,7 @@ import emptyIcon from "../../styles/icons/empty_small.png";
 import Animation from '../helpers/Animation';
 import CountryFlag from "../helpers/countryFlag";
 import storePersistent from "../store/indexPersistent";
+import store from "../store/index";
 
 class TableChart extends Component {
   constructor(props) {
@@ -101,7 +102,7 @@ class TableChart extends Component {
       }
 
       return (
-        <div className="tableChart chart">
+        <div className="tableChart chart" >
           <h3 className="alignLeft title" style={{ "float": isAnimation ? "left" : "inherit" }}>{this.props.name}</h3>
           <Animation display="none" name={this.props.name} type={this.props.type} setData={this.setData} dataAll={this.state.data} autoplay={this.props.autoplay} />
           {this.state.data[0] && this.state.data[0].length > 0 &&
