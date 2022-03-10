@@ -48,14 +48,15 @@ class exceededController extends Controller {
       //INCIDENT COUNT
       { index: "exceeded*", template: timerange_query, filter: "*"},
       //EXCEEDED TYPE
-      { index: "exceeded*", template: agg, params: ["exceeded"], filter: "*" },
+      { index: "exceeded*", template: agg, params: ["exceeded", "50"], filter: "*" },
       //TOP OFFENDERS BY COUNT
-      { index: "exceeded*", template: agg, params: ["attrs.from.keyword"], filter: "*" },
+      { index: "exceeded*", template: agg, params: ["attrs.from.keyword", "10"], filter: "*" },
       //EVENTS BY IP ADDR EXCEEDED
-      { index: "exceeded*", template: agg, params: ["attrs.source"], filter: "*" },
+      { index: "exceeded*", template: agg, params: ["attrs.source", "10"], filter: "*" },
       //TOP SUBNETS /24 EXCEEDED
-      { index: "exceeded*", template: agg, params: ["attrs.sourceSubnets"], filter: "*" }
+      { index: "exceeded*", template: agg, params: ["attrs.sourceSubnets", "10"], filter: "*" }
     ], "exceeded");
+
   }
 
   /**
@@ -94,7 +95,7 @@ class exceededController extends Controller {
    *               $ref: '#/definitions/ChartResponseError'
    */
   static getTable(req, res, next) {
-    super.requestTable(req, res, next, { index: "exceeded*", filter: "*", types:"*" });
+    super.requestTable(req, res, next, { index: "exceeded*", filter: "*" });
   }
 }
 

@@ -76,9 +76,7 @@ class ExceededCharts extends Dashboard {
                         units={"count"}
                         name={"EXCEEDED TYPE"}
                         id="exceededType"
-                        width={(store.getState().width - 300) / 2}
                         height={170}
-                        legendSize={50}
                         field="exceeded" />
                 </div>}
                 {this.state.charts["TOP OFFENDERS"] && <div className="col-auto" >

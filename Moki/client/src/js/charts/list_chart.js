@@ -110,7 +110,7 @@ class TableChart extends Component {
                 return (
                   <tr key={key} style={{ "height": "30px" }}>
                     <td className="listChart filterToggleActiveWhite" id={item.key} style={{ "borderBottom": "none" }} title={item.key}>
-                      {(this.props.name.includes("COUNTRY") || this.props.name.includes("COUNTRIES")) && item.key !== "unknown" && item.key !== "" && storePersistent.getState().profile[0].mode !== "anonymous" ? <CountryFlag  countryCode={item.key} /> : <span />}
+                      {(this.props.name.includes("COUNTRY") || this.props.name.includes("COUNTRIES")) && item.key !== "unknown" && item.key !== "" && (storePersistent.getState().profile[0] && storePersistent.getState().profile[0].mode  && storePersistent.getState().profile[0].mode !== "anonymous") ? <CountryFlag  countryCode={item.key} /> : <span />}
                       {item.key.substring(0, 16)}
                     </td>
                     {(item.doc_count !== "" && this.state.data[1]) && <td className="listChart" style={{ "borderBottom": "none", "color": "grey" }}>{roundNumber(item.doc_count / this.state.data[1] * 100) + "%"}</td>}
@@ -140,7 +140,7 @@ class TableChart extends Component {
               <tbody>{this.state.data[0].map((item, key) => {
                 return (
                   <tr key={key}>
-                    <td className="filtertd listChart filterToggleActiveWhite" id={item.key} title={item.key} style={{ "width": longestText(this.state.data) * 10 + 80 + "px" }}>
+                    <td className="filtertd listChart filterToggleActiveWhite" id={item.key} title={item.key} style={{ "width": longestText(this.state.data) * 10 + 150 + "px" }}>
                       {(this.props.name.includes("COUNTRY") || this.props.name.includes("COUNTRIES")) && item.key !== "unknown"  && storePersistent.getState().profile[0] && storePersistent.getState().profile[0].mode !== "anonymous" ? <CountryFlag  countryCode={item.key}  /> : <span />}
                       {shortText(item.key)}
                       {this.props.field && <span className="filterToggle">

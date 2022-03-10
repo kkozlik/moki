@@ -52,11 +52,11 @@ class registrationController extends Controller {
       //EVENT REGISTRATIONS  TIMELINE
       { index: "logstash*", template: datehistogram_agg_filter_query, params: ["attrs.type", "timebucket"], filter: "*" },
       //USER-AGENTS IN REG. NEW
-      { index: "logstash*", template: agg_filter, params: ['attrs.from-ua', 10], filter: 'attrs.type:reg-new' },
+      { index: "logstash*", template: agg_filter, params: ['attrs.from-ua', 30], filter: 'attrs.type:reg-new' },
       //TOP REG. EXPIRED
       { index: "logstash*", template: agg_filter, params: ["attrs.from.keyword", 10], filter: "attrs.type:reg-expired" },
       //TRANSPORT PROTOCOL
-      { index: "logstash*", template: agg_filter, params: ['attrs.transport', 10], filter: "*" },
+      { index: "logstash*", template: agg_filter, params: ['attrs.transport', 30], filter: "*" },
       //PARALLEL REGS
       { index: "collectd*", template: distinct_timerange_query_string, params: ["attrs.hostname", "max", "attrs.regs", "timebucket"], filter: "*", exists: "attrs.regs", types: "*" },
       //PARALLEL REGS 1 DAY AGO   
@@ -66,7 +66,7 @@ class registrationController extends Controller {
       //MAP FOR GEOHASH
       { index: "logstash*", template: geoip_hash_query, params: [3], filter: "*" },
       //TYPES DISTRIBUTIONS
-      { index: "logstash*", template: agg_filter, params: ['attrs.type', 10], filter: "*" }
+      { index: "logstash*", template: agg_filter, params: ['attrs.type', 30], filter: "*" }
     ], "registration");
   }
 

@@ -13,7 +13,7 @@ export default class StackedChart extends Component {
             data: []
         }
         this.draw = this.draw.bind(this);
-        storePersistent.subscribe(() => this.draw(this.props.data, this.props.id, this.props.width, this.props.legendSize, this.props.field, this.props.height, this.props.units));
+        storePersistent.subscribe(() => this.draw(this.props.data, this.props.id, this.props.field, this.props.units));
     }
 
     static getDerivedStateFromProps(nextProps, prevState) {
@@ -26,12 +26,22 @@ export default class StackedChart extends Component {
     async componentDidUpdate(prevProps, prevState) {
         if (prevProps.data !== this.props.data) {
             this.setState({ data: this.props.data });
-           await this.draw(this.props.data, this.props.id, this.props.width, this.props.legendSize, this.props.field, this.props.height, this.props.units);
+            await this.draw(this.props.data, this.props.id, this.props.field, this.props.units);
         }
     }
 
+    //d3js can't select element with special chart in ID
+    getArcId(name) {
+        name = name.replace(/ /g, '');
+        return "o"+name.replace(/[&\/\\#,+()$~%.'":*!?<>{}]/g, '');
+    }
 
-    async draw(data, id, width, legendSize, field, height, units) {
+
+
+    async draw(data, id, field, units) {
+        const thiss = this;
+        console.log(data);
+
         units = units ? " (" + units + ")" : "";
         //FOR UPDATE: remove chart if it's already there
         var chart = document.getElementById(id + "SVG");
@@ -39,29 +49,35 @@ export default class StackedChart extends Component {
             chart.remove();
         }
 
+        var legendSVG = document.getElementById("legendSVG" + this.props.id);
+        if (legendSVG) {
+            legendSVG.remove();
+        }
+
         var pie = d3.pie()
             .value(function (d) {
                 return d.doc_count
             })
             .sort(null)
-            .padAngle(.03);
+            .padAngle(.0);
 
-        var w = width - legendSize;
+        var height = 200;
+        var width = 200;
         var h = height;
         var svgWidth = width;
         var legendRectSize = 15;
-        var legendSpacing = 2;
+        var legendSpacing = 3;
 
-        var radius = Math.min(w, h) / 2;
-        var donutWidth = 75;
-        var domain = 4;
+        var radius = Math.min(width, height) / 2 -20;
+        console.log("radius");
+        console.log(radius);
         var color;
-
         var colorScale = d3.scaleOrdinal(ColorsReds);
         var colorScaleMix = d3.scaleOrdinal(Colors);
         var profile = storePersistent.getState().profile;
 
         function color(nmb, i) {
+            nmb = nmb.substring(1);
             if (field === "attrs.rtp-MOScqex-avg") {
                 if (nmb >= 4) {
                     return "#6b9235";
@@ -98,38 +114,63 @@ export default class StackedChart extends Component {
 
         if (data.length === 0) {
             svg.attr('width', 250)
-                .attr('height', 250)
+                .attr('height', 200)
                 .attr('id', id + 'SVG');
 
             svg.append('svg:image')
                 .attr("xlink:href", emptyIcon)
-                .attr('transform', 'translate(' + 70 + ',' + 250 / 2 + ')');
+                .attr('transform', 'translate(' + 150 + ',' + 200 / 2 + ')');
+
+            var legendSVG = document.getElementById("divLegend" + this.props.id);
+            if (legendSVG) {
+                legendSVG.style.height = 0;
+            }
 
         } else {
 
-            var g = svg.attr('width', svgWidth)
-                .attr('height', h)
+            var legendSVG = document.getElementById("divLegend" + this.props.id);
+            if (legendSVG) {
+                legendSVG.style.height = "170px";
+            }
+
+            var g = svg.attr('width', svgWidth + 50)
+                .attr('height', h + 50)
                 .attr('id', id + 'SVG')
-                .attr("style", "margin-top: 25px")
+                .attr("style", "margin-top: 30px")
+                .attr("style", "margin-left: 20px")
                 .append('g')
-                .attr('transform', 'translate(100,' + h / 2 + ')');
+                .attr('transform', 'translate(100,110)');
 
             var tooltip;
 
             var arc = d3.arc()
-                .innerRadius(radius - donutWidth)
+                .innerRadius(10)
                 .outerRadius(radius);
+
+            var arcOver = d3.arc()
+                .innerRadius(10)
+                .outerRadius(radius + 7);
 
             var arcs = g.selectAll('path')
                 .data(pie(data))
                 .enter()
                 .append('path')
                 .attr('d', arc)
+                .attr('class', function (d, i) {
+                    return id;
+                })
+                .attr('id', function (d, i) {
+                    return thiss.getArcId(d.data.key);
+                })
+                .style("stroke-width", "1px") 
+                .style("stroke", "white")
                 .attr('fill', function (d, i) {
-                    return color(d.data.key, i);
+                    return color(thiss.getArcId(d.data.key), i);
                 })
                 .style("cursor", "pointer")
                 .on('mouseover', async (d) => {
+                    mouseOverAnimation(d.data.key);
+
                     tooltip = d3.select('#' + id).append('div')
                         .style("width", "200px")
                         .style("height", "90px")
@@ -143,10 +184,10 @@ export default class StackedChart extends Component {
                         .style('left', `${d3.event.layerX - 10}px`)
                         .style('top', `${(d3.event.layerY - 130)}px`);
                 })
-                .on('mouseout', () =>
-                    tooltip.remove()
-                )
-
+                .on('mouseout', function (d) {
+                    mouseOutAnimation(d.data.key);
+                    tooltip.remove();
+                })
                 .on("click", el => {
                     createFilter(field + ":\"" + el.data.key + "\"");
                     //bug fix: if you click but not move out
@@ -158,12 +199,9 @@ export default class StackedChart extends Component {
                     }
                 });
 
-            d3.arc()
-                .outerRadius(radius * 0.9)
-                .innerRadius(radius * 0.9);
 
             let angleInterpolation = d3.interpolate(pie.startAngle()(), pie.endAngle()());
-            arcs.transition()
+          /*  arcs.transition()
                 .duration(1200)
                 .attrTween("d", d => {
                     let originalEnd = d.endAngle;
@@ -172,33 +210,42 @@ export default class StackedChart extends Component {
                         if (currentAngle < d.startAngle) {
                             return "";
                         }
-
                         d.endAngle = Math.min(currentAngle, originalEnd);
-
                         return arc(d);
                     };
                 });
+*/
+            var divLegend = d3.select("#divLegend" + this.props.id);
+            var legendHeight = data.length * 16;
 
+            divLegend = divLegend.append("svg").attr('height', legendHeight).attr('width', "200px").attr('id', "legendSVG" + this.props.id)
 
-            //define legend
-            var legend = g.selectAll('.legend')
+            var legend = divLegend.selectAll('.legend')
                 .data(data)
                 .enter()
                 .append('g')
                 .attr('class', 'legend')
                 .attr('transform', function (d, i) {
-                    var height = legendRectSize + legendSpacing;
-                    var offset = height * domain / 2;
-                    var horz = -2 * legendRectSize + 200;
-                    var vert = i * height - offset - 50;
+                    var height = legendRectSize;
+                    var horz = -2 * legendRectSize + 50;
+                    var vert = i * height;
                     return 'translate(' + horz + ',' + vert + ')';
+                })
+                .on('mouseover', async (d) => {
+                    //selection animation
+                    mouseOverAnimation(d.key);
+                })
+                .on('mouseout', function (d) {
+                    mouseOutAnimation(d.key);
                 });
 
             legend.append('rect')
                 .attr('width', legendRectSize)
                 .attr('height', legendRectSize)
+                .style("stroke-width", "2px") 
+                .style("stroke", "white")
                 .attr('fill', function (d, i) {
-                    return color(d.key, i);
+                    return color(thiss.getArcId(d.key), i);
                 }).on("click", el => {
                     createFilter(field + ":\"" + el.key + "\"");
                     //bug fix: if you click but not move out
@@ -219,10 +266,10 @@ export default class StackedChart extends Component {
                             if (Types[d.key]) {
                                 return Types[d.key] + " (" + d.doc_count + ")";
                             }
-                            else if(field === "exceeded"){
+                            else if (field === "exceeded") {
                                 return getExceededName(d.key).then(val => {
-                                    this.textContent = val  + " (" + d.doc_count + ")";
-                                  })
+                                    this.textContent = val + " (" + d.doc_count + ")";
+                                })
                             }
                             else {
                                 return d.key + " (" + d.doc_count + ")";
@@ -255,12 +302,50 @@ export default class StackedChart extends Component {
                         }
                     }
                 });
+
+
+            //on mouse over show selected arc
+            function mouseOverAnimation(name) {
+                //selection animation
+                let arcs = document.getElementsByClassName(id);
+                let idArc = thiss.getArcId(name);
+                for (let arc of arcs) {
+                    if (arc.id !== idArc) {
+                        arc.setAttribute("fill", "grey");
+                    }
+                }
+                d3.select('#' + idArc).transition().attr("d", arcOver);
+            }
+
+            //on mouse out reset selected
+            function mouseOutAnimation(name) {
+                let arcs = document.getElementsByClassName(id);
+                let idArc = thiss.getArcId(name);
+                let i = 0;
+                for (let arc of arcs) {
+                    arc.setAttribute("fill", color(arc.id, i));
+                    i++;
+                }
+                d3.select('#' + idArc).transition().attr("d", arc);
+
+            }
+
         }
     }
 
     render() {
-        return (<div id={this.props.id} className="chart chartMinHeight" style={{ "paddingBottom": "10px", "paddingLeft": "10px" }}>
-            <h3 className="alignLeft title" style={{ "float": "inherit" }}> {this.props.name} </h3>
-        </div>)
+        return (
+            <div className="chart chartMinHeight" style={{ "marginLeft": "0px" }}>
+                <h3 className="alignLeft title" style={{ "float": "inherit" }}> {this.props.name} </h3>
+                <div className="row" style={{ "width": "max-content", "marginTop": "10px" }}>
+                    <div className="col-auto" >
+                        <div id={this.props.id} />
+                    </div >
+                    <div className="col-auto">
+                        <div id={"divLegend" + this.props.id} style={{ "height": "170px", "width": "250px", "overflow-x": "auto", "marginTop": "15px" }} />
+                    </div>
+                </div>
+            </div>
+        )
     }
 }
