@@ -1,9 +1,8 @@
 /*
 Class to get data for all charts iin Call dashboard
 */
-import React, {
-    Component
-} from 'react';
+import React from 'react';
+import Dashboard from '../Dashboard.js';
 import ValueChart from '../../charts/value_chart.js';
 import MultipleAreaChart from '../../charts/multipleArea_chart';
 import TimedateStackedChart from '../../charts/timedate_stackedbar.js';
@@ -19,14 +18,14 @@ import {
 import { parseListData, parseBucketData, parseAggCities, parseAggQuerySumValue, parseMultipleLineDataShareAxis, parseStackedbarTimeData } from '@moki-client/es-response-parser';
 
 
-class RegistrationCharts extends Component {
+class RegistrationCharts extends Dashboard {
 
     // Initialize the state
     constructor(props) {
         super(props);
-        this.loadData = this.loadData.bind(this);
-
         this.state = {
+            ...this.state,
+            dashboardName: "registration/charts",
             geoipMap: [],
             eventRegsTimeline: [],
             userAgents: [],
@@ -38,26 +37,23 @@ class RegistrationCharts extends Component {
             types: [],
             isLoading: true
         }
-        store.subscribe(() => this.loadData());
+        /* override Dashboard.loadData() */
+        this.specialLoadData = this.specialLoadData.bind(this);
+       // this.unsubscribe();
+        this.unsubscribe = store.subscribe(() => this.specialLoadData());
 
     }
 
-    componentWillUnmount() {
-        // fix Warning: Can't perform a React state update on an unmounted component
-        this.setState = (state, callback) => {
-            return;
-        };
-    }
-
-    componentDidMount() {
-        this.loadData();
+    async componentDidMount() {
+        await window.dashboard.getIncialData();
+        this.specialLoadData();
     }
 
     /*
     Load data from elasticsearch
     get filters, types and timerange from GUI
     */
-    async loadData() {
+    async specialLoadData() {
         var data = await elasticsearchConnection("registration/charts");
 
         if (typeof data === "string" && data.includes("ERROR:")) {
@@ -169,7 +165,7 @@ class RegistrationCharts extends Component {
                         height={170}
                         legendSize={150}
                     /></div>
-                     <div className="col" >
+                <div className="col" >
                     <DonutChart data={
                         this.state.userAgents
                     }
@@ -177,11 +173,11 @@ class RegistrationCharts extends Component {
                         name={"USER-AGENTS IN REG. NEW"}
                         field={"attrs.from-ua"}
                         id="userAgents"
-                        width={(store.getState().width/2)-100}
+                        width={(store.getState().width / 2) - 100}
                         height={170}
                         legendSize={350}
-                    />  </div> 
-                    <div className="col" >
+                    />  </div>
+                <div className="col" >
                     <DonutChart
                         data={this.state.transportProtocol}
                         name={"TRANSPORT PROTOCOL"}
@@ -191,8 +187,8 @@ class RegistrationCharts extends Component {
                         width={500}
                         height={170}
                         legendSize={50}
-                    />  </div> 
-                    <div className="col" >
+                    />  </div>
+                <div className="col" >
                     <ListChart
                         data={this.state.topRegExpired}
                         name={"TOP REG. EXPIRED"}

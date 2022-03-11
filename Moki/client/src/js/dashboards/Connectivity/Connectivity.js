@@ -4,7 +4,6 @@ import React, {
 
 
 import ConnectivityCharts from './ConnectivityCharts';
-import TypeBar from '../../bars/Typebar';
 import FilterBar from '../../bars/FilterBar';
 
 class Connectivity extends Component {
@@ -21,7 +20,6 @@ class Connectivity extends Component {
         return (
            <div className="container-fluid" style={{"paddingRight": "0"}}>
                 <FilterBar tags={this.props.tags} />
-                <TypeBar/>
                 <ConnectivityCharts  showError={this.showError} />
             </div>
                        

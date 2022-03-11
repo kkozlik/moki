@@ -18,11 +18,12 @@ class Table extends Component {
     this.state = {};
     this.loadData = this.loadData.bind(this);
     this.unsubscribe = store.subscribe(() => this.loadData());
+    window.table = this;
   }
 
   async componentDidMount() {
     //load types and filters before getting data
-    await this.loadData()
+    //await this.loadData()
   }
 
   componentWillUnmount() {
@@ -32,13 +33,13 @@ class Table extends Component {
     };
   }
 
-    /**
+  /**
 * parse table hits with profile attrs
 * @param {ES response}  array ES data
 * @return {} stores data in state
 * */
   async processESData(esResponse) {
-     if (!esResponse) {
+    if (!esResponse) {
       return;
     }
 
@@ -55,8 +56,10 @@ class Table extends Component {
   }
 
   async loadData() {
+    console.log("window.dashboard.finishedLoadingInicialValues false");
+    console.log(window.dashboard.finishedLoadingInicialValues());
     //wait for types to load, it will trigger again
-    //if (window.dashboard.finishedLoadingInicialValues()) {
+    if (window.dashboard.finishedLoadingInicialValues() === false) {
       try {
         var data = await elasticsearchConnection(this.state.dashboardName);
         if (typeof data === "string") {
@@ -71,7 +74,7 @@ class Table extends Component {
       } catch (e) {
         console.error(e);
       }
-   // }
+    }
   }
 }
 

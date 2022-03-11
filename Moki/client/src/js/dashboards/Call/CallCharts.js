@@ -2,7 +2,6 @@
 Class to get data for all charts iin Call dashboard
 */
 import React from 'react';
-
 import Dashboard from '../Dashboard.js';
 import TimedateStackedChart from '../../charts/timedate_stackedbar.js';
 import SunburstChart from '../../charts/sunburst_chart.js';
@@ -13,7 +12,6 @@ import ValueChart from '../../charts/value_chart.js';
 import store from "../../store/index";
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import { parseListData, parseStackedbarTimeData, parseBucketData, parseSunburstData, parseQueryStringData, parseAggData, parseAggSumBucketData } from '@moki-client/es-response-parser';
-
 
 
 class CallCharts extends Dashboard {
@@ -88,14 +86,14 @@ class CallCharts extends Dashboard {
             ]
         };
         /* override Dashboard.loadData() */
-        this.unsubscribe();
+        //this.unsubscribe();
         this.unsubscribe = store.subscribe(() => this.specialLoadData());
     }
 
     async componentDidMount() {
         console.log("component did mount calls");
         //load types and filters before getting data
-        await window.types.loadTypes();
+        await window.dashboard.getIncialData();
         this.specialLoadData();
     }
 

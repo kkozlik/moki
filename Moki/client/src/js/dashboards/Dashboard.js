@@ -9,6 +9,7 @@ import store from "../store/index";
 import storePersistent from "../store/indexPersistent";
 import { elasticsearchConnection } from '@moki-client/gui';
 import { parseTableHits } from '@moki-client/es-response-parser';
+const HAS_TABLE = ["calls", "conference", "diagnostics", "exceeded", "network", "overview", "qos", "registration", "security", "system", "transport"];
 
 class Dashboard extends Component {
 
@@ -26,15 +27,29 @@ class Dashboard extends Component {
     //set empty type array for first time loading
     store.getState().types = [];
     // call 'unsubscribe()' to deregister default loadData change listener
-    this.unsubscribe = store.subscribe(() => this.loadData());
     this.getLayout = this.getLayout.bind(this);
+    this.getIncialData = this.getIncialData.bind(this);
   }
 
   async componentDidMount() {
+    await this.getIncialData();
+  }
+
+  async getIncialData() {
+    console.log("dashboard.js did mount")
     //load types and filters before getting data
-    await window.types.loadTypes();
+    if (window.types) await window.types.loadTypes();
+    let name = this.state.dashboardName.substr(0, this.state.dashboardName.indexOf("/"));
+    console.log(name);
+    console.log(HAS_TABLE.includes(name));
     //await this.loadData();
-    this.setState({ loadingInicialValues: false }, this.loadData);
+    this.setState({ loadingInicialValues: false }, function () {
+      console.log("finish loading types getting data");
+      this.loadData();
+      if (HAS_TABLE.includes(name)) window.table.loadData();
+    });
+    this.unsubscribe = store.subscribe(() => this.loadData());
+
   }
 
   finishedLoadingInicialValues() {
@@ -82,6 +97,8 @@ class Dashboard extends Component {
   }
 
   async loadData() {
+    console.log("222222222222load data dashboard false");
+    console.log(this.state.loadingInicialValues);
     //wait for types to load, it will trigger again
     //calls dashboard has special loader
     let name = window.location.pathname.substring(1);
@@ -99,7 +116,7 @@ class Dashboard extends Component {
           await this.processESData(data);
           this.setState(this.transientState);
           this.setState({ isLoading: false });
-          console.info(new Date() + " MOKI CALLS: finished parsíng data");
+          console.info(new Date() + " MOKI DASHBOARD: finished parsing data");
         }
       } catch (e) {
         this.props.showError("Error: " + e);

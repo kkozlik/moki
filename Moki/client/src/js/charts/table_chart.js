@@ -11,6 +11,7 @@ import paginationFactory from 'react-bootstrap-table2-paginator';
 import ToolkitProvider from 'react-bootstrap-table2-toolkit';
 import filter from "../../styles/icons/filter.png";
 import unfilter from "../../styles/icons/unfilter.png";
+import { Redirect } from 'react-router';
 import { createFilter } from '@moki-client/gui';
 import { getCategory } from '@moki-client/gui';
 import { getSearchableAttributes } from '@moki-client/gui';
@@ -29,6 +30,7 @@ import { downloadPcap } from '../helpers/download/downloadPcap';
 import { downloadSD } from '../helpers/download/downloadSD';
 import { tableColumns } from '../helpers/TableColumns';
 import { getPcap } from '../helpers/getPcap.js';
+import { setFilters } from "../actions/index";
 import { downloadPcapMerged } from '../helpers/download/downloadPcapMerged';
 import { parseTimestamp } from "../helpers/parseTimestamp";
 
@@ -63,6 +65,7 @@ export default class listChart extends Component {
             tags: this.props.tags,
             checkall: false,
             selected: [],
+            redirect: false,
             count: count
         }
 
@@ -75,6 +78,7 @@ export default class listChart extends Component {
         this.handleOnSelectAll = this.handleOnSelectAll.bind(this);
         this.getRecord = this.getRecord.bind(this);
         this.resizableGrid = this.resizableGrid.bind(this);
+        window.tableChart = this;
     }
 
     /*
@@ -96,6 +100,34 @@ export default class listChart extends Component {
             if (table) {
                 this.resizableGrid(table);
             }
+        }
+    }
+
+
+
+    //create exceeded-by filter and redirect to overview
+    createFilterAndRedirect(obj) {
+        if (obj["exceeded-by"] !== "tenant") {
+            //disable old filters
+            var oldFilters = store.getState().filters;
+            if (oldFilters.length > 0) {
+                for (var i = 0; i < oldFilters.length; i++) {
+                    oldFilters[i].state = 'disable';
+                }
+                store.dispatch(setFilters(oldFilters));
+            }
+            //create new filter
+            if (obj["exceeded-by"] === "uri") {
+                createFilter("attrs.from.keyword:\"" + obj.attrs.from + "\"");
+            }
+            else if (obj["exceeded-by"] === "ip") {
+                createFilter("attrs.source:" + obj.attrs.source);
+            }
+            /* else if(obj["exceeded-by"] === "tenant"){
+                 createFilter("attrs.source:" + attrs.source);
+             }*/
+            console.log(obj);
+            this.setState({ redirect: true });
         }
     }
 
@@ -848,7 +880,8 @@ export default class listChart extends Component {
                                         <button type="button" className="btn btn-small btn-primary" onClick={() => this.tags()}>OK</button><button type="button" className="btn btn-small btn-secondary" style={{ "margin": "0" }} onClick={() => this.closePopupTag()}>X</button>
                                     </div>}
 
-                                    {(window.location.pathname === "/calls") && <span><img className="icon" alt="viewIcon" onClick={() => displayPcaps()} src={viewIcon} title="view merge PCAPs" />
+                                    {(window.location.pathname === "/calls") && <span>
+                                        <img className="icon" alt="viewIcon" onClick={() => displayPcaps()} src={viewIcon} title="view merge PCAPs" />
                                         <img className="icon" alt="downloadIcon" src={downloadPcapIcon} onClick={() => getPcaps()} title="download merge PCAP" />
                                     </span>
                                     }
@@ -856,7 +889,7 @@ export default class listChart extends Component {
 
                                     {this.props.id !== "LAST LOGIN EVENTS" && <button className="noFormatButton" onClick={() => this.shareFilters()} >  <img className="icon" alt="shareIcon" src={shareIcon} title="share selected" /><span id="tooltipshareFilters" style={{ "display": "none", "position": "absolute", "backgroundColor": "white" }}>Copied to clipboard</span></button>}
 
-                                    {<button className="noFormatButton" onClick={() => this.resetLayout()} >  <img className="icon" alt="resetLayoutIcon" src={resetIcon} title="reset table layout to default" style={{"height": "15px"}} /></button>}
+                                    {<button className="noFormatButton" onClick={() => this.resetLayout()} >  <img className="icon" alt="resetLayoutIcon" src={resetIcon} title="reset table layout to default" style={{ "height": "15px" }} /></button>}
                                     <span className="smallText"> (total: {this.props.total > 500 ? "500/" + this.props.total.toLocaleString() : this.props.total.toLocaleString()})</span>
                                     <CustomToggleList {...props.columnToggleProps} />
                                     <BootstrapTable {...props.baseProps}
@@ -882,6 +915,7 @@ export default class listChart extends Component {
                         }
                     </ToolkitProvider>
                 }
+                {this.state.redirect && <Redirect push to="/overview" />}
             </div>
         );
     }

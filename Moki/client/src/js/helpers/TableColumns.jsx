@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 import Popup from "reactjs-popup";
 import detailsIcon from "../../styles/icons/details.png";
 import TagRanger from "../bars/TagRanger";
 import filterIcon from "../../styles/icons/filter.png";
 import shareIcon from "../../styles/icons/share_dark.png";
+import overviewIcon from "../../styles/icons/diagnostic_icon.png";
 import unfilterIcon from "../../styles/icons/unfilter.png";
 import alertProfileIcon from "../../styles/icons/alertProfile.png";
 import AlertProfile from "../helpers/alertProfile";
@@ -143,7 +143,6 @@ export const onEnterKeyExclude = (event, ob) => {
         exclude(ob);
     }
 }
-
 // check if column width is stored in local storage
 function getColumnWidth(column, width = 0) {
 
@@ -297,7 +296,7 @@ function getColumn(column_name, tags, tag, width = 0, hidden = false) {
         case 'advanced': return {
             dataField: '_source',
             text: column_name.name.toUpperCase(),
-            headerStyle: { width: "100px" },
+            headerStyle: { width: "150px" },
             editable: false,
             formatter: (cell, obj) => {
 
@@ -333,6 +332,9 @@ function getColumn(column_name, tags, tag, width = 0, hidden = false) {
                             </div>
                         )}
                     </Popup>
+                    }
+                    {(storePersistent.getState().user.aws === true && window.location.pathname === ("/exceeded") && (ob["exceeded-by"] === "ip" || ob["exceeded-by"] === "uri")) &&
+                        <button className="noFormatButton" onClick={() => window.tableChart.createFilterAndRedirect(ob)} data={obj}>  <img className="icon" alt="overview" src={overviewIcon} title="show records in overview" /></button>
                     }
                     {column_name.icons.includes("details") && <Popup trigger={<img className="icon" alt="detailsIcon" src={detailsIcon} title="details" />} modal>
                         {close => (
