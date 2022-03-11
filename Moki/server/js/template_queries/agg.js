@@ -2,7 +2,7 @@
 Properties:
 index, timestamp from, timestamp to, type of aggregation, type filter, search query, types filter
 */
-var getTemplate = function ( agg, queries, supress) {
+var getTemplate = function (agg, size = 10, queries, supress) {
     var template = {
         "size": 0,
         _source: "attrs.from",
@@ -18,11 +18,11 @@ var getTemplate = function ( agg, queries, supress) {
             }
         },
         aggs: {
-            "nested" : { "value_count" : { "field" : agg } },
+            "nested": { "value_count": { "field": agg } },
             agg: {
                 terms: {
                     field: agg,
-                    size: 10,
+                    size: size,
                     order: {
                         "_count": "desc"
                     }
