@@ -16,7 +16,11 @@ class Dashboard extends Component {
   constructor(props) {
     super(props);
     this.loadData = this.loadData.bind(this);
-    this.state = {};
+    this.finishedLoadingInicialValues = this.finishedLoadingInicialValues.bind(this);
+    this.state = {
+      loadingInicialValues: true
+    };
+    window.dashboard = this;
     this.transientState = {};
     this.callBacks = { functors: [] };
     //set empty type array for first time loading
@@ -26,8 +30,15 @@ class Dashboard extends Component {
     this.getLayout = this.getLayout.bind(this);
   }
 
-  componentDidMount() {
-    this.loadData();
+  async componentDidMount() {
+    //load types and filters before getting data
+    await window.types.loadTypes();
+    //await this.loadData();
+    this.setState({ loadingInicialValues: false }, this.loadData);
+  }
+
+  finishedLoadingInicialValues() {
+    return this.state.loadingInicialValues;
   }
 
   componentWillUnmount() {
@@ -71,24 +82,29 @@ class Dashboard extends Component {
   }
 
   async loadData() {
-    try {
-      this.getLayout();
-      this.setState({ isLoading: true });
-      var data = await elasticsearchConnection(this.state.dashboardName);
+    //wait for types to load, it will trigger again
+    //calls dashboard has special loader
+    let name = window.location.pathname.substring(1);
+    if (this.state.loadingInicialValues === false || name === "calls") {
+      try {
+        this.getLayout();
+        this.setState({ isLoading: true });
+        var data = await elasticsearchConnection(this.state.dashboardName);
 
-      if (typeof data === "string") {
-        this.props.showError(data);
+        if (typeof data === "string") {
+          this.props.showError(data);
+          this.setState({ isLoading: false });
+          return;
+        } else if (data) {
+          await this.processESData(data);
+          this.setState(this.transientState);
+          this.setState({ isLoading: false });
+          console.info(new Date() + " MOKI CALLS: finished parsíng data");
+        }
+      } catch (e) {
+        this.props.showError("Error: " + e);
         this.setState({ isLoading: false });
-        return;
-      } else if (data) {
-        await this.processESData(data);
-        this.setState(this.transientState);
-        this.setState({ isLoading: false });
-        console.info(new Date() + " MOKI CALLS: finished parsíng data");
       }
-    } catch (e) {
-      this.props.showError("Error: " + e);
-      this.setState({ isLoading: false });
     }
   }
 }
