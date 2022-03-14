@@ -8,7 +8,7 @@ class AlertProfile extends Component {
         super(props);
         this.state = {
             data: this.props.data,
-            result: {}
+            result: null
         }
         this.renderAlertProfile = this.renderAlertProfile.bind(this);
         this.load = this.load.bind(this);
@@ -122,7 +122,10 @@ class AlertProfile extends Component {
     }
 
     renderAlertProfile(data) {
-        if (Object.keys(data).length === 0) {
+        if (data === null) {
+            return <div>getting data...</div>
+        }
+        else if (Object.keys(data).length === 0) {
             return <div>no data to display</div>
         }
         else {
