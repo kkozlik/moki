@@ -1,4 +1,3 @@
-import store from "../store/index";
 import Filter from '../bars/Filter';
 
 

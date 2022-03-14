@@ -360,7 +360,7 @@ class SequenceDiagram extends Component {
 
           }
           else {
-            var y = MESSAGE_ARROW_Y_OFFSET + (i) * MESSAGE_SPACE;
+             y = MESSAGE_ARROW_Y_OFFSET + (i) * MESSAGE_SPACE;
             svg.append("line")
               .style("stroke", function (d) { return m.color; })
               .attr("x1", XPAD + classes.indexOf(m.src) * VERT_SPACE)

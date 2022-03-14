@@ -1,8 +1,3 @@
-import React, {
-  Component
-} from 'react';
-
-
 import TableChart from '../../charts/table_chart.js';
 import Table from '../Table.js';
 

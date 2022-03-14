@@ -167,7 +167,6 @@ class Autocomplete extends Component {
             onClick,
             onClickInput,
             onKeyDown,
-            onkeyDownSuggestions,
             state: {
                 activeSuggestion,
                 filteredSuggestions,

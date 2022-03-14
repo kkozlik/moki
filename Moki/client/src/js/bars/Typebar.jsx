@@ -28,7 +28,7 @@ class Typebar extends Component {
         window.types = this;
     }
 
-    async loadTypes() {
+    async loadTypes()         {
         var types = [];
         //change types if set in url
         //format: type=XXXXXXX&type=YYYYYYYY
@@ -50,8 +50,6 @@ class Typebar extends Component {
         }
         var jsonData = await getLayoutSettings();
         let name = window.location.pathname.substring(1);
-        console.log("loading types +++++");
-        console.log(name);
 
         //check if stored types, remove old version
         let storedTypes = JSON.parse(window.localStorage.getItem("types"));
@@ -70,10 +68,10 @@ class Typebar extends Component {
                 allTypes = jsonData.types[name]
             }
 
-            for (let allTypes of allTypes) {
+            for (let allType of allTypes) {
                 var typeExists = false;
                 var thisType = null;
-                var id = allTypes.id ? allTypes.id : allTypes;
+                var id = allType.id ? allType.id : allType;
                 for (let type of storedTypes[name]) {
                     if (id === type.id) {
                         typeExists = true;
@@ -90,8 +88,8 @@ class Typebar extends Component {
                 }
                 else {
                     types.push({
-                        id: allTypes.id ? allTypes.id : allTypes,
-                        name: Types[allTypes] ? Types[allTypes] : allTypes.name ? allTypes.name : allTypes.id,
+                        id: allType.id ? allType.id : allType,
+                        name: Types[allType] ? Types[allType] : allType.name ? allType.name : allType.id,
                         state: "enable"
                     });
                 }
@@ -137,7 +135,6 @@ class Typebar extends Component {
     }
 
     componentWillUnmount() {
-        console.log("1111111111111111");
         // fix Warning: Can't perform a React state update on an unmounted component
         this.setState = (state, callback) => {
             return;
@@ -216,7 +213,6 @@ class Typebar extends Component {
 
 
     render() {
-        console.log("2222222222222222");
         if (this.state.types.length !== 0) {
             var types = (
                 <div style={{ "display": "contents" }}>

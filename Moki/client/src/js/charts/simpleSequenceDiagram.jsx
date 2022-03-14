@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import * as d3 from "d3";
 import { parseTimestamp } from "../helpers/parseTimestamp";
 
-const eventDetails = ["attrs.r-uri", "r-uri-shorted", , "attrs.source", "attrs.contact", "attrs.call-id", "attrs.from", "attrs.reason", "attrs.to", "attrs.method", "attrs.transport", "attrs.src-port", "attrs.sip-code", "attrs.from-ua", "server.port", "server.ip", "dbg.fromtag", "dbg.totag", "uas.original"];
+const eventDetails = ["attrs.r-uri", "r-uri-shorted", "attrs.source", "attrs.contact", "attrs.call-id", "attrs.from", "attrs.reason", "attrs.to", "attrs.method", "attrs.transport", "attrs.src-port", "attrs.sip-code", "attrs.from-ua", "server.port", "server.ip", "dbg.fromtag", "dbg.totag", "uas.original"];
 
 
 class SimpleSequenceDiagram extends Component {
@@ -129,7 +129,7 @@ class SimpleSequenceDiagram extends Component {
 
         // Draw vertical lines
         classes.forEach(function (c, i) {
-            var line = svg.append("line")
+             svg.append("line")
                 .style("stroke", "#888")
                 .attr("x1", XPAD + i * VERT_SPACE)
                 .attr("y1", YPAD + 30)

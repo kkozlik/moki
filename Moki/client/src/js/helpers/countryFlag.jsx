@@ -26,7 +26,7 @@ class CountryFlag extends Component {
     render() {
         return (
             <span>
-                {this.state.picture && <img src={this.state.picture} style={{ "width": "20px", "marginBottom": "2px", "marginRight": "2px"}}></img>}
+                {this.state.picture && <img alt="flag" src={this.state.picture} style={{ "width": "20px", "marginBottom": "2px", "marginRight": "2px"}}></img>}
             </span>
         )
     }

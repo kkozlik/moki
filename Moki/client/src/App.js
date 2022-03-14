@@ -476,9 +476,8 @@ class App extends Component {
                     console.info("MOKI: sip user: " + sip.user);
 
                     //get username
-                    var username = "";
                     try {
-                        var response = await fetch("/api/user/username", {
+                        response = await fetch("/api/user/username", {
                             method: "GET",
                             credentials: 'include',
                             headers: {
@@ -492,7 +491,6 @@ class App extends Component {
                     } catch (error) {
                        
                     }
-
 
                     //set user info :  email:email, domainID:domainID, jwt: jwtbit
                     storePersistent.dispatch(setUser(sip));
@@ -631,7 +629,6 @@ class App extends Component {
                         </div>
                         <span className="footer" style={{ "float": "right" }}>
                             <img src={this.state.logo} alt="logo" id="footerlogo" />
-                            <p> {this.state.monitorName} </p>
                         </span>
                     </div>
                 </div>;
@@ -673,14 +670,14 @@ class App extends Component {
         return (
             <span>
                 <span id="decryptpopupplaceholder"></span>
-                <Popup></Popup>  
+                <Popup></Popup>
 
-                {this.state.firstTimeLogin ? <FirstLoginPopup  setFirstTimeLogin={this.setFirstTimeLogin}/> :                
-                (this.state.isLoading) ? loadingScreen :
-                    <Router>
-                        <div className="container-fluid" style={{ "backgroundColor": "white" }}> {sipUserSwitch}
-                        </div>
-                    </Router>
+                {this.state.firstTimeLogin ? <FirstLoginPopup setFirstTimeLogin={this.setFirstTimeLogin} /> :
+                    (this.state.isLoading) ? loadingScreen :
+                        <Router>
+                            <div className="container-fluid" style={{ "backgroundColor": "white" }}> {sipUserSwitch}
+                            </div>
+                        </Router>
                 }
             </span>
         );

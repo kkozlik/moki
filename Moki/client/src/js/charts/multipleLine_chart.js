@@ -150,8 +150,8 @@ export default class MultipleLineChart extends Component {
 
         //max value    
         var max = 0;
-        for (var i = 0; i < data.length; i++) {
-            for (var k = 0; k < data[i].values.length; k++) {
+        for ( i = 0; i < data.length; i++) {
+            for ( k = 0; k < data[i].values.length; k++) {
                 if (data[i].values[k].hasOwnProperty("value")) {
                     if (max < data[i].values[k].value) {
                         max = data[i].values[k].value;

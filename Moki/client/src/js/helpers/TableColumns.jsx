@@ -241,8 +241,8 @@ function getColumn(column_name, tags, tag, width = 0, hidden = false) {
                         notvalue = notvalue + ")";
                     }
                     else {
-                        var value = "exceeded-by: " + ob["exceeded-by"];
-                        var notvalue = "NOT exceeded-by: " + ob["exceeded-by"];
+                         value = "exceeded-by: " + ob["exceeded-by"];
+                         notvalue = "NOT exceeded-by: " + ob["exceeded-by"];
                     }
                     return <span className="filterToggleActive"><span className="filterToggle">
                         <img onClick={doFilterRaw} field="exceeded-by" value={value} className="icon" alt="filterIcon" src={filterIcon} /><img field="exceeded-by" value={notvalue} onClick={doFilterRaw} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span > {ob['exceeded-by'] ? ob['exceeded-by'].toString() : ""}
@@ -477,11 +477,12 @@ export function tableColumns(dashboard, tags, layout) {
     }
 
     if (storedColumns && storedColumns[dashboard] && storedColumns.version && storedColumns.version === "1.0") {
-        var storedColumns = storedColumns[dashboard];
+        storedColumns = storedColumns[dashboard];
         for (let i = 0; i < columnsTableDefaultListConcat.length; i++) {
             //check if this column was stored, if so use the parameraters
             var isExists = false
             var field = null;
+            var tag = null;
             for (var fields of storedColumns) {
                 if ("_source." + columnsTableDefaultListConcat[i].source === fields.dataField) {
                     isExists = true;
@@ -492,13 +493,13 @@ export function tableColumns(dashboard, tags, layout) {
                 var width = field.headerStyle && field.headerStyle.width ? field.headerStyle.width : null;
                 var hidden = field.hidden ? field.hidden : false;
                 var source = field.text === "ADVANCED" ? "advanced" : field.dataField.slice(8);
-                result.push(getColumn({ source: source, name: field.text, "icons": ["download", "diagram", "details", "share"] }, tags, tag, width = width, hidden = hidden));
+                result.push(getColumn({ source: source, name: field.text, "icons": ["download", "diagram", "details", "share"] }, tags, tag, width , hidden));
             }
             else {
                 let name = columnsTableDefaultListConcat[i].name ? columnsTableDefaultListConcat[i].name : columnsTableDefaultListConcat[i];
                 let source = columnsTableDefaultListConcat[i].source ? columnsTableDefaultListConcat[i].source : columnsTableDefaultListConcat[i];
                 let hidden = columnsTableDefaultListConcat[i].hasOwnProperty("hidden") ? columnsTableDefaultListConcat[i].hidden : false;
-                result.push(getColumn({ source: source, name: name, "icons": ["download", "diagram", "details", "share"] }, tags, tag, width = "50px", hidden = hidden));
+                result.push(getColumn({ source: source, name: name, "icons": ["download", "diagram", "details", "share"] }, tags, tag, width = "50px", hidden));
             }
         }
         return result;
@@ -507,7 +508,7 @@ export function tableColumns(dashboard, tags, layout) {
         if (window.localStorage.getItem("columns") && (!storedColumns.version || storedColumns.version !== "1.0")) {
             window.localStorage.removeItem("columns");
         }
-        var tag = true;
+        tag = true;
         //disable tags for end user
         if (storePersistent.getState().user.jwt === "2") { tag = false };
 
@@ -515,7 +516,7 @@ export function tableColumns(dashboard, tags, layout) {
             let name = columnsTableDefaultListConcat[i].name ? columnsTableDefaultListConcat[i].name : columnsTableDefaultListConcat[i];
             let source = columnsTableDefaultListConcat[i].source ? columnsTableDefaultListConcat[i].source : columnsTableDefaultListConcat[i];
             let hidden = columnsTableDefaultListConcat[i].hasOwnProperty("hidden") ? columnsTableDefaultListConcat[i].hidden : true;
-            result.push(getColumn({ source: source, name: name, "icons": ["download", "diagram", "details", "share"] }, tags, tag, width = "150px", hidden = hidden));
+            result.push(getColumn({ source: source, name: name, "icons": ["download", "diagram", "details", "share"] }, tags, tag= null, width = "150px", hidden ));
         }
         return result;
     }

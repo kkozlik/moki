@@ -17,7 +17,6 @@ import { getCategory } from '@moki-client/gui';
 import { getSearchableAttributes } from '@moki-client/gui';
 import { getDisplayedAttributes } from '@moki-client/gui';
 import emptyIcon from "../../styles/icons/empty_small.png";
-import tagIcon from "../../styles/icons/tag.png";
 import downloadIcon from "../../styles/icons/download.png";
 import shareIcon from "../../styles/icons/share_dark.png";
 import downloadPcapIcon from "../../styles/icons/downloadPcap.png";
@@ -42,9 +41,6 @@ export default class listChart extends Component {
         super(props);
         var layout = storePersistent.getState().layout.table;
         const columns = tableColumns(this.props.name, this.props.tags, layout);
-        //get columns name from layout 
-        var name = window.location.pathname.substring(1);
-
         //if there is settings with min pages, use it
         var count = 10;
         var aws = storePersistent.getState().user.aws;
@@ -95,7 +91,6 @@ export default class listChart extends Component {
     componentDidUpdate(prevProps) {
         if (prevProps.data !== this.props.data) {
             this.setState({ data: this.props.data });
-            var thiss = this;
             var table = document.getElementsByClassName('table table-hover')[0];
             if (table) {
                 this.resizableGrid(table);
