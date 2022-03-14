@@ -79,7 +79,7 @@ class HomeCharts extends Component {
             //SUM CALL-ATTEMPT
             var sumCallAttempt = parseQueryStringData(data.responses[1]);
 
-            //DURATION SUM 
+            //DURATION SUM
             var durationSum = parseAggData(data.responses[3]);
 
             //ANSWER-SEIZURE RATIO
@@ -183,36 +183,36 @@ class HomeCharts extends Component {
                     } marginLeft={150} id="dateHeatmap" name={"TYPE DATE HEATMAP"} field={"attrs.type"} width={store.getState().width - 300} units={"count"} />
                 </div>
                 <div className="row no-gutters">
-                    <div className="col">
+                    <div className="col-10 pr-1 mr-0">
                         <MultipleAreaChart data={
                             this.state.parallelCalls
                         } name={"PARALLEL CALLS"} id={"parallelCalls"} width={store.getState().width - 500} units={"count"} />
                     </div>
-                    <div >
+                    <div className="col-2 px-1">
                         <CountUpChart data={
                             this.state.callsActual
                         } name={"ACTUAL CALLS"} biggerFont={"biggerFont"} dataAgo={this.state.callsActualMinuteAgo} />
                     </div>
                 </div>
                 <div className="row no-gutters">
-                    <div className="col">
+                    <div className="col-10 pr-1 mr-0">
                         <MultipleAreaChart data={
                             this.state.parallelRegs
                         } name={"PARALLEL REGS"} id={"parallelRegs"} width={store.getState().width - 500} units={"count"} />
                     </div>
-                    <div >
+                    <div className="col-2 px-1">
                         <CountUpChart data={
                             this.state.regsActual
                         } name={"ACTUAL REGS"} biggerFont={"biggerFont"} dataAgo={this.state.regsActualMinuteAgo} />
                     </div>
                 </div>
                 <div className="row no-gutters">
-                    <div className="col">
+                    <div className="col-10 pr-1 mr-0">
                         <MultipleAreaChart data={
                             this.state.incidentCount
                         } name={"INCIDENTS"} units={"count"} id={"incidentCount"} width={store.getState().width - 500} />
                     </div>
-                    <div>
+                    <div className="col-2 px-1">
                         <CountUpChart data={
                             this.state.incidentActual
                         } name={"INCIDENTS ACTUAL"} biggerFont={"biggerFont"} dataAgo={this.state.incidentActualMinuteAgo} />
