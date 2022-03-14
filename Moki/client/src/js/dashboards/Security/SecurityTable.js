@@ -18,7 +18,7 @@ class SecurityTable extends Table {
         return (
             <div className="row no-gutters" >
                 <TableChart data={
-                        this.state.security
+                        this.state.calls
                     } total={this.state.total}
                     name={
                         "security"

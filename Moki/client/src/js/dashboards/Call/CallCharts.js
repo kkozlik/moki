@@ -19,7 +19,6 @@ class CallCharts extends Dashboard {
     // Initialize the state
     constructor(props) {
         super(props);
-        this.specialLoadData = this.specialLoadData.bind(this);
         this.state = {
             ...this.state,
             dashboardName: "calls/charts",
@@ -85,43 +84,6 @@ class CallCharts extends Dashboard {
                 [{ result: 'asrDurationOverTime', func: parseBucketData }]
             ]
         };
-        /* override Dashboard.loadData() */
-        //this.unsubscribe();
-        this.unsubscribe = store.subscribe(() => this.specialLoadData());
-    }
-
-    async componentDidMount() {
-        console.log("component did mount calls");
-        //load types and filters before getting data
-        await window.dashboard.getIncialData();
-        this.specialLoadData();
-    }
-
-    /* specialLoadData overrides Dashboard.loadData due to sumCallEnd computation */
-    async specialLoadData() {
-
-        // call the superclass loadData()
-        await super.loadData();
-
-        this.setState({
-            isLoading: true
-        });
-
-        //hack - add sum of call end into success ratio
-        // if (this.state.sumCallEnd && this.transientState.callSuccessRatio && this.transientState.callSuccessRatio.children) {
-
-        //TODO removing not working, adding this don't call rerender chart function for some reasons
-        /*   this.transientState.callSuccessRatio.children.push({
-               key: "success",
-               value: this.state.sumCallEnd,
-               children: [{key: "success", value: this.state.sumCallEnd}]
-           });*/
-        //  }
-
-        // this.setState({ callSuccessRatio: this.transientState.callSuccessRatio });
-        this.setState({
-            isLoading: false
-        });
     }
 
 

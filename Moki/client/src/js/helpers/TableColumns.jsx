@@ -6,7 +6,7 @@ import filterIcon from "../../styles/icons/filter.png";
 import shareIcon from "../../styles/icons/share_dark.png";
 import overviewIcon from "../../styles/icons/alertProfile.png";
 import unfilterIcon from "../../styles/icons/unfilter.png";
-import alertProfileIcon from "../../styles/icons/alert_profile.png";  
+import alertProfileIcon from "../../styles/icons/alert_profile.png";
 import AlertProfile from "../helpers/alertProfile";
 import downloadPcapIcon from "../../styles/icons/downloadPcap.png";
 import downloadIcon from "../../styles/icons/download.png";
@@ -446,7 +446,11 @@ export function tableColumns(dashboard, tags, layout) {
     var storedColumns = JSON.parse(window.localStorage.getItem("columns"));
     var result = [];
     var name = window.location.pathname.substring(1);
-
+    //user case fix - has two table in one dashboard
+    if (!name) {
+        if (dashboard === "homeLoginCalls") name = "calls";
+        if (dashboard === "exceeded") name = "exceeded";
+    }
     //get also layout and compare it
     var columnsTableDefault = layout.columns[name] ? layout.columns[name] : layout.columns.default;
     var toggleListDefault = layout.toggleList[name] ? layout.toggleList[name] : layout.toggleList.default;

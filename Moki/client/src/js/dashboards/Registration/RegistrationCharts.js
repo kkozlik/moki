@@ -11,10 +11,6 @@ import Geoipchart from '../../charts/geoip_map.js';
 import DonutChart from '../../charts/donut_chart.js';
 import ListChart from '../../charts/list_chart.js';
 import store from "../../store/index";
-import storePersistent from "../../store/indexPersistent";
-import {
-    elasticsearchConnection
-} from '@moki-client/gui';
 import { parseListData, parseBucketData, parseAggCities, parseAggQuerySumValue, parseMultipleLineDataShareAxis, parseStackedbarTimeData } from '@moki-client/es-response-parser';
 
 
@@ -37,86 +33,112 @@ class RegistrationCharts extends Dashboard {
             types: [],
             isLoading: true
         }
-        /* override Dashboard.loadData() */
-        this.specialLoadData = this.specialLoadData.bind(this);
-       // this.unsubscribe();
-        this.unsubscribe = store.subscribe(() => this.specialLoadData());
 
-    }
+        this.callBacks = {
+            functors: [
+                //GEOIP MAP 0
+                [{ result: "geoipMap", func:parseAggCities}],
+                //EVENT REGS TIMELINE 1
+                [{ result: 'eventRegsTimeline', func: parseStackedbarTimeData, attrs: ["attrs.type"] }],
+                //USER-AGENTS IN REG. NEW 2
+                [{ result: 'userAgents', func: parseBucketData, attrs: ["attrs.from-ua"] }],
+                //TOP REG. EXPIRED 3
+                [{ result: 'topRegExpired', func: parseListData, attrs: ["attrs.from"] }],
+                //TRANSPORT PROTOCOL 4
+                [{ result: 'transportProtocol', func: parseBucketData, attrs: ["attrs.transport"] }],
+                //PARALLEL REGS 5+6
+                [{ result: 'parallelRegs', attrs: ["attrs.hostname"], func: parseMultipleLineDataShareAxis, type: "multipleLineData", details: ["Regs", "Regs-1d"] }],
+                [],
+                //ACTUALL REGS 7
+                [{ result: 'regsActual', func: parseAggQuerySumValue, attrs: ["attrs.hostname"] }],
+                //DISTRIBUTION HASH GEOIP MAP 8
+                [{ result: 'geoipHashMap', func: parseAggCities }],
+                //TYPES DISTRIBUTIONS
+                [{ result: 'types', func: parseBucketData, attrs: ["attrs.type"] }]
+            ]
+        }
 
-    async componentDidMount() {
-        await window.dashboard.getIncialData();
-        this.specialLoadData();
+
+
+
+        //PARALLEL REGS
+        //     var parallelRegs = parseMultipleLineDataShareAxis("Regs", data.responses[5], "Regs-1d", data.responses[6]);
     }
+    
+     /*   async componentDidMount() {
+            await window.dashboard.getIncialData();
+            this.specialLoadData();
+        }
 
     /*
     Load data from elasticsearch
     get filters, types and timerange from GUI
     */
-    async specialLoadData() {
-        var data = await elasticsearchConnection("registration/charts");
-
-        if (typeof data === "string" && data.includes("ERROR:")) {
-            this.props.showError(data);
-            this.setState({
-                isLoading: false
-            });
-            return;
-
-        } else if (data) {
-
-            //parse data
-            //DISTRIBUTION GEOIP MAP
-            var geoipMap = [];
-            const profile = storePersistent.getState().profile;
-
-            if (data.responses[0].aggregations && data.responses[0].aggregations.cities && data.responses[0].aggregations.cities.buckets) {
-                geoipMap = data.responses[0].aggregations.cities.buckets;
-            }
-
-            //EVENT REGS TIMELINE
-            var eventRegsTimeline = parseStackedbarTimeData(data.responses[1]);
-
-            //USER-AGENTS IN REG. NEW
-            var userAgents = parseBucketData(data.responses[2]);
-
-            //TOP REG. EXPIRED
-            var topRegExpired = await parseListData(data.responses[3], profile, ["attrs.from"]);
-
-            //TRANSPORT PROTOCOL
-            var transportProtocol = parseBucketData(data.responses[4]);
-
-            //PARALLEL REGS
-            var parallelRegs = parseMultipleLineDataShareAxis("Regs", data.responses[5], "Regs-1d", data.responses[6]);
-
-            //ACTUALL REGS
-            var regsActual = parseAggQuerySumValue(data.responses[7]);
-
-            //DISTRIBUTION HASH GEOIP MAP
-            var geoipHashMap = parseAggCities(data.responses[8]);
-
-            //TYPES DISTRIBUTIONS
-            var types = parseBucketData(data.responses[9]);
-
-            console.info(new Date() + " MOKI REGISTRATION: finished parsing data");
-
-            this.setState({
-                geoipMap: geoipMap,
-                eventRegsTimeline: eventRegsTimeline,
-                userAgents: userAgents,
-                topRegExpired: topRegExpired,
-                transportProtocol: transportProtocol,
-                parallelRegs: parallelRegs,
-                regsActual: regsActual,
-                geoipHashMap: geoipHashMap,
-                types: types,
-                isLoading: false
-            });
-
-        }
-    }
-
-
+    /*
+     async specialLoadData() {
+         var data = await elasticsearchConnection("registration/charts");
+ 
+         if (typeof data === "string" && data.includes("ERROR:")) {
+             this.props.showError(data);
+             this.setState({
+                 isLoading: false
+             });
+             return;
+ 
+         } else if (data) {
+ 
+             //parse data
+             //DISTRIBUTION GEOIP MAP
+             var geoipMap = [];
+             const profile = storePersistent.getState().profile;
+ 
+             if (data.responses[0].aggregations && data.responses[0].aggregations.cities && data.responses[0].aggregations.cities.buckets) {
+                 geoipMap = data.responses[0].aggregations.cities.buckets;
+             }
+ 
+             //EVENT REGS TIMELINE 
+             var eventRegsTimeline = parseStackedbarTimeData(data.responses[1]);
+ 
+             //USER-AGENTS IN REG. NEW
+             var userAgents = parseBucketData(data.responses[2]);
+ 
+             //TOP REG. EXPIRED
+             var topRegExpired = await parseListData(data.responses[3], profile, ["attrs.from"]);
+ 
+             //TRANSPORT PROTOCOL
+             var transportProtocol = parseBucketData(data.responses[4]);
+ 
+             //PARALLEL REGS
+             var parallelRegs = parseMultipleLineDataShareAxis("Regs", data.responses[5], "Regs-1d", data.responses[6]);
+ 
+             //ACTUALL REGS
+             var regsActual = parseAggQuerySumValue(data.responses[7]);
+ 
+             //DISTRIBUTION HASH GEOIP MAP
+             var geoipHashMap = parseAggCities(data.responses[8]);
+ 
+             //TYPES DISTRIBUTIONS
+             var types = parseBucketData(data.responses[9]);
+ 
+             console.info(new Date() + " MOKI REGISTRATION: finished parsing data");
+ 
+             this.setState({
+                 geoipMap: geoipMap,
+                 eventRegsTimeline: eventRegsTimeline,
+                 userAgents: userAgents,
+                 topRegExpired: topRegExpired,
+                 transportProtocol: transportProtocol,
+                 parallelRegs: parallelRegs,
+                 regsActual: regsActual,
+                 geoipHashMap: geoipHashMap,
+                 types: types,
+                 isLoading: false
+             });
+ 
+         }
+     }
+ 
+ */
 
     //render GUI
     render() {
