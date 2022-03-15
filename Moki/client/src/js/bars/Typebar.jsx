@@ -28,7 +28,7 @@ class Typebar extends Component {
         window.types = this;
     }
 
-    async loadTypes()         {
+    async loadTypes() {
         var types = [];
         //change types if set in url
         //format: type=XXXXXXX&type=YYYYYYYY
@@ -127,9 +127,21 @@ class Typebar extends Component {
                 }
             }
         }
-        //set new types in state, don't dispatch it
-        //this.setState({ types: types });
         store.dispatch(assignType(types));
+
+        //check if all types are disabled - change checkAll icon
+        let isAllDisabled = true;
+        for (let type of types) {
+            if (type.state !== "disable") {
+                isAllDisabled = false;
+                return;
+            }
+        }
+        if(isAllDisabled){
+            this.setState({
+                icon: checkAll,
+            })
+        }
         return types;
 
     }
@@ -164,23 +176,20 @@ class Typebar extends Component {
 
     //check/uncheck all types
     checkAll() {
+        let state = "enable";
         if (this.state.icon === checkAll) {
             this.setState({ icon: uncheckAll });
-            var oldTypes = this.state.types;
-            for (var i = 0; i < oldTypes.length; i++) {
-                oldTypes[i].state = 'enable';
-            }
-
-            this.setState({ types: oldTypes });
         }
         else {
             this.setState({ icon: checkAll });
-            oldTypes = this.state.types;
-            for (i = 0; i < oldTypes.length; i++) {
-                oldTypes[i].state = 'disable';
-            }
-            this.setState({ types: oldTypes });
+            state = "disable";
         }
+
+        let oldTypes = this.state.types;
+        for (let i = 0; i < oldTypes.length; i++) {
+            oldTypes[i].state = state
+        }
+        this.setState({ types: oldTypes });
         this.storeTypesInLocalStorage(oldTypes);
         store.dispatch(assignType(oldTypes));
     }
