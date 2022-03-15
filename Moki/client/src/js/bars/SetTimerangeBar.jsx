@@ -14,6 +14,7 @@ import historyIconGrey from "../../styles/icons/reload_time_grey.png";
 import refreshIcon from "../../styles/icons/refresh.png";
 import refreshStopIcon from "../../styles/icons/refreshStop.png";
 import Export from "./Export";
+import moment from 'moment';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { parseTimestamp } from "../helpers/parseTimestamp";
@@ -26,15 +27,27 @@ class timerangeBar extends Component {
 
         var timeFormat = "hh:mm:ss";
         var dateFormat = "MM-DD-YYYY";
-        if (storePersistent.getState().settings && storePersistent.getState().settings.length > 0) {
-            for (var i = 0; i < storePersistent.getState().settings[0].attrs.length; i++) {
-                if (storePersistent.getState().settings[0].attrs[i].attribute === "timeFormat") {
-                    timeFormat = storePersistent.getState().settings[0].attrs[i].value;
-                }
-                if (storePersistent.getState().settings[0].attrs[i].attribute === "dateFormat") {
-                    dateFormat = storePersistent.getState().settings[0].attrs[i].value;
+
+        //no aws - settings from json
+        if (!storePersistent.getState().user.aws) {
+            if (storePersistent.getState().settings && storePersistent.getState().settings.length > 0) {
+                for (var i = 0; i < storePersistent.getState().settings[0].attrs.length; i++) {
+                    if (storePersistent.getState().settings[0].attrs[i].attribute === "timeFormat") {
+                        timeFormat = storePersistent.getState().settings[0].attrs[i].value;
+                    }
+                    if (storePersistent.getState().settings[0].attrs[i].attribute === "dateFormat") {
+                        dateFormat = storePersistent.getState().settings[0].attrs[i].value;
+                    }
                 }
             }
+        }
+        //aws settings from profile
+        else {
+            if (storePersistent.getState().profile && storePersistent.getState().profile[0] && storePersistent.getState().profile[0].userprefs) {
+                timeFormat = storePersistent.getState().profile[0].userprefs.time_format;
+                dateFormat = storePersistent.getState().profile[0].userprefs.date_format;
+            }
+
         }
 
         this.state = {
@@ -110,6 +123,7 @@ class timerangeBar extends Component {
 
         }
     }
+
 
     //add to time history
     addHistory(timerange, timestamp_gte, timestamp_lte) {
@@ -274,8 +288,8 @@ class timerangeBar extends Component {
     }
     focousOutGte(value) {
         this.setState({ timestamp_gte: value });
-
     }
+
     //set to current timestamp
     setToNow(e) {
         if (e) {
@@ -389,13 +403,17 @@ class timerangeBar extends Component {
         store.dispatch(setTimerange([timestamp_gte, timestamp_lte, timerange]));
     }
 
+
     //compute and set timerange in UNIX timestamp
-    setTimerange(event) {
+    setTimerange(event, fromState = false) {
         //set timestamp fron datepicker
         if (event.target.className === "setTimerange btn btn-primary") {
-            const timestamp_lte = document.getElementsByClassName("timestamp_lteInput")[0].childNodes[0].value;
-
-            const timestamp_gte = document.getElementsByClassName("timestamp_gteInput")[0].childNodes[0].value;
+            var timestamp_lte = document.getElementsByClassName("timestamp_lteInput")[0].childNodes[0].value;
+            var timestamp_gte = document.getElementsByClassName("timestamp_gteInput")[0].childNodes[0].value;
+            if (fromState) {
+                timestamp_lte = this.state.timestamp_lte;
+                timestamp_gte = this.state.timestamp_gte;
+            }
 
             if (new Date(timestamp_gte).getTime() < 0) {
                 alert("Error: Timestamp 'FROM' is not valid date.");
@@ -414,7 +432,7 @@ class timerangeBar extends Component {
                 alert("Error: Timestamp 'FROM' has to be lower than 'TO'.");
                 return;
             }
-            var timestamp_readiable = timestamp_gte + " - " + timestamp_lte;
+            var timestamp_readiable = moment(timestamp_gte).format(this.state.dateFormat + " " + this.state.timeFormat) + " - " + moment(timestamp_lte).format(this.state.dateFormat + " " + this.state.timeFormat);
 
             console.info("Timerange is changed to " + timestamp_readiable + " " + gte + " " + lte);
 
@@ -422,6 +440,7 @@ class timerangeBar extends Component {
                 isHistory: false,
                 click: false
             });
+
             store.dispatch(setTimerange([gte, lte, timestamp_readiable]));
         }
         //set timestamp from dropdown menu
@@ -550,7 +569,7 @@ class timerangeBar extends Component {
                                     </form>
 
                                 </div>
-                                <button style={{ "marginLeft": "10%", "marginTop": "60px" }} onClick={this.close} className="setTimerange btn btn-secondary">Cancel</button>  <button style={{ "marginTop": "60px" }} onClick={this.setTimerange} className="setTimerange btn btn-primary">Set</button>
+                                <button style={{ "marginLeft": "10%", "marginTop": "60px" }} onClick={this.close} className="setTimerange btn btn-secondary">Cancel</button>  <button style={{ "marginTop": "60px" }} onClick={(e) => this.setTimerange(e, true)} className="setTimerange btn btn-primary">Set</button>
                             </div>
                             <hr></hr>
                             {this.state.autoRefresh && <div className="row" style={{ "marginLeft": "15px" }}>
