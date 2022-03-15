@@ -116,7 +116,7 @@ export default class listChart extends Component {
                 createFilter("attrs.from.keyword:\"" + obj.attrs.from + "\"");
             }
             else if (obj["exceeded-by"] === "ip") {
-                createFilter("attrs.source:" + obj.attrs.source);
+                createFilter("attrs.source:\"" + obj.attrs.source+ "\"");
             }
             /* else if(obj["exceeded-by"] === "tenant"){
                  createFilter("attrs.source:" + attrs.source);
