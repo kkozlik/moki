@@ -8,9 +8,10 @@ class AlertProfile extends Component {
         super(props);
         this.state = {
             data: this.props.data,
-            result: {}
+            result: null
         }
         this.renderAlertProfile = this.renderAlertProfile.bind(this);
+        this.resetProfile = this.resetProfile.bind(this);
         this.load = this.load.bind(this);
     }
 
@@ -43,17 +44,45 @@ class AlertProfile extends Component {
         }
     }
 
+    async resetProfile() {
+        let hmac = this.state.data.encrypt;
+        if (hmac && hmac !== "plain") hmac = hmac.substring(0, hmac.indexOf(":"));
+
+        let list = "";
+        let key = "";
+        if (this.state.data["exceeded-by"] === "ip") {
+            list = "ipprofile";
+            key = this.state.data.attrs.source;
+            
+        }
+        else if (this.state.data["exceeded-by"] === "uri") {
+            list = "uriprofile";
+            key = this.state.data.attrs.from;
+        }
+        else if (this.state.data["exceeded-by"] === "tenant") {
+            list = "tenantprofile";
+            key = storePersistent.getState().user.domainID;
+            hmac="plain";
+        }
+
+        await this.get("api/bw/delete?key="+key+"&list="+list+"&hmac="+hmac);
+        this.setState({
+            data: [],
+            result: []
+        })
+    }
+
     async load() {
         let result = [];
         //let hmac = window.localStorage.HMAC_SHA_256_KEY ? window.localStorage.HMAC_SHA_256_KEY : "plain";
         //if (hmac !== "plain") hmac = hmac.substring(0, hmac.indexOf(":"));
         let hmac = this.state.data.encrypt;
-        if (hmac !== "plain") hmac = hmac.substring(0, hmac.indexOf(":"));
+        if (hmac && hmac !== "plain") hmac = hmac.substring(0, hmac.indexOf(":"));
 
         if (this.state.data["exceeded-by"] === "ip") {
             result = await this.get("api/bw/getip?key=" + this.state.data.attrs.source + "&list=ipprofile&hmac=" + hmac + "&pretty=true");
         }
-        else if  (this.state.data["exceeded-by"] === "uri"){
+        else if (this.state.data["exceeded-by"] === "uri") {
             result = await this.get("api/bw/geturi?key=" + this.state.data.attrs.from + "&list=uriprofile&hmac=" + hmac + "&pretty=true");
         }
         else {
@@ -121,8 +150,15 @@ class AlertProfile extends Component {
         })
     }
 
+    close() {
+        document.getElementsByClassName("popup-overlay ")[0].click();
+    }
+
     renderAlertProfile(data) {
-        if (Object.keys(data).length === 0) {
+        if (data === null) {
+            return <div>getting data...</div>
+        }
+        else if (Object.keys(data).length === 0) {
             return <div>no data to display</div>
         }
         else {
@@ -139,30 +175,30 @@ class AlertProfile extends Component {
                             result.push(<div key={row2} ><b style={{ "display": "inline", "marginLeft": "15px" }}>{row2}</b></div>)
                             for (let row3 of Object.keys(data[row][row2])) {
                                 if (DATEFORMATS.includes(row3)) {
-                                    result.push(<div key={row + row3} ><b style={{ "display": "inline", "marginLeft": "30px" }}>{row3}:</b><p style={{ "display": "inline", "marginLeft": "10px" }}>{parseTimestamp(data[row][row2][row3] * 1000)}</p></div>)
+                                    result.push(<div key={Math.random()} ><b style={{ "display": "inline", "marginLeft": "30px" }}>{row3}:</b><p style={{ "display": "inline", "marginLeft": "10px" }}>{parseTimestamp(data[row][row2][row3] * 1000)}</p></div>)
                                 }
                                 else {
-                                    result.push(<div key={row + row3} ><b style={{ "display": "inline", "marginLeft": "30px" }}>{row3}:</b><p style={{ "display": "inline", "marginLeft": "10px" }}>{data[row][row2][row3]}</p></div>)
+                                    result.push(<div key={Math.random()} ><b style={{ "display": "inline", "marginLeft": "30px" }}>{row3}:</b><p style={{ "display": "inline", "marginLeft": "10px" }}>{data[row][row2][row3]}</p></div>)
 
                                 }
                             }
                         }
                         else {
                             if (DATEFORMATS.includes(row2)) {
-                                result.push(<div key={row + row2} ><b style={{ "display": "inline", "marginLeft": "15px" }}>{row2}:</b><p style={{ "display": "inline", "marginLeft": "10px" }}>{parseTimestamp(data[row][row2] * 1000)}</p></div>)
+                                result.push(<div key={Math.random()} ><b style={{ "display": "inline", "marginLeft": "15px" }}>{row2}:</b><p style={{ "display": "inline", "marginLeft": "10px" }}>{parseTimestamp(data[row][row2] * 1000)}</p></div>)
                             }
                             else {
-                                result.push(<div key={row + row2} ><b style={{ "display": "inline", "marginLeft": "15px" }}>{row2}:</b><p style={{ "display": "inline", "marginLeft": "10px" }}>{data[row][row2]}</p></div>)
+                                result.push(<div key={Math.random()} ><b style={{ "display": "inline", "marginLeft": "15px" }}>{row2}:</b><p style={{ "display": "inline", "marginLeft": "10px" }}>{data[row][row2]}</p></div>)
 
                             }
                         }
                     }
                 } else {
                     if (DATEFORMATS.includes(row)) {
-                        result.push(<div key={row} ><b style={{ "display": "inline" }}>{row}:</b><p style={{ "display": "inline", "marginLeft": "10px" }}>{parseTimestamp(data[row] * 1000)}</p></div>);
+                        result.push(<div key={Math.random()} ><b style={{ "display": "inline" }}>{row}:</b><p style={{ "display": "inline", "marginLeft": "10px" }}>{parseTimestamp(data[row] * 1000)}</p></div>);
                     }
                     else {
-                        result.push(<div key={row} ><b style={{ "display": "inline" }}>{row}:</b><p style={{ "display": "inline", "marginLeft": "10px" }}>{data[row]}</p></div>);
+                        result.push(<div key={Math.random()} ><b style={{ "display": "inline" }}>{row}:</b><p style={{ "display": "inline", "marginLeft": "10px" }}>{data[row]}</p></div>);
 
                     }
                 }
@@ -178,7 +214,9 @@ class AlertProfile extends Component {
             <div className="row no-gutters" >
                 <div style={{ "marginRight": "5px", "marginTop": "20px" }} className="preStyle">
                     {this.renderAlertProfile(this.state.result)}
+                    {(this.state.result !== null && Object.keys(this.state.result).length !== 0) && <button className="btn btn-secondary" style={{ "float": "right" }} onClick={() => this.resetProfile()}>Reset</button>}
                 </div>
+                <div onClick={() => this.close()} style={{ "cursor": "pointer" }}>X</div>
             </div>
         )
     }

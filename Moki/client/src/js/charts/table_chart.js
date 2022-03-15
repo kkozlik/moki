@@ -11,12 +11,12 @@ import paginationFactory from 'react-bootstrap-table2-paginator';
 import ToolkitProvider from 'react-bootstrap-table2-toolkit';
 import filter from "../../styles/icons/filter.png";
 import unfilter from "../../styles/icons/unfilter.png";
+import { Redirect } from 'react-router';
 import { createFilter } from '@moki-client/gui';
 import { getCategory } from '@moki-client/gui';
 import { getSearchableAttributes } from '@moki-client/gui';
 import { getDisplayedAttributes } from '@moki-client/gui';
 import emptyIcon from "../../styles/icons/empty_small.png";
-import tagIcon from "../../styles/icons/tag.png";
 import downloadIcon from "../../styles/icons/download.png";
 import shareIcon from "../../styles/icons/share_dark.png";
 import downloadPcapIcon from "../../styles/icons/downloadPcap.png";
@@ -29,6 +29,7 @@ import { downloadPcap } from '../helpers/download/downloadPcap';
 import { downloadSD } from '../helpers/download/downloadSD';
 import { tableColumns } from '../helpers/TableColumns';
 import { getPcap } from '../helpers/getPcap.js';
+import { setFilters } from "../actions/index";
 import { downloadPcapMerged } from '../helpers/download/downloadPcapMerged';
 import { parseTimestamp } from "../helpers/parseTimestamp";
 
@@ -40,9 +41,6 @@ export default class listChart extends Component {
         super(props);
         var layout = storePersistent.getState().layout.table;
         const columns = tableColumns(this.props.name, this.props.tags, layout);
-        //get columns name from layout 
-        var name = window.location.pathname.substring(1);
-
         //if there is settings with min pages, use it
         var count = 10;
         var aws = storePersistent.getState().user.aws;
@@ -63,6 +61,7 @@ export default class listChart extends Component {
             tags: this.props.tags,
             checkall: false,
             selected: [],
+            redirect: false,
             count: count
         }
 
@@ -75,6 +74,7 @@ export default class listChart extends Component {
         this.handleOnSelectAll = this.handleOnSelectAll.bind(this);
         this.getRecord = this.getRecord.bind(this);
         this.resizableGrid = this.resizableGrid.bind(this);
+        window.tableChart = this;
     }
 
     /*
@@ -91,11 +91,38 @@ export default class listChart extends Component {
     componentDidUpdate(prevProps) {
         if (prevProps.data !== this.props.data) {
             this.setState({ data: this.props.data });
-            var thiss = this;
             var table = document.getElementsByClassName('table table-hover')[0];
             if (table) {
                 this.resizableGrid(table);
             }
+        }
+    }
+
+
+
+    //create exceeded-by filter and redirect to overview
+    createFilterAndRedirect(obj) {
+        if (obj["exceeded-by"] !== "tenant") {
+            //disable old filters
+            var oldFilters = store.getState().filters;
+            if (oldFilters.length > 0) {
+                for (var i = 0; i < oldFilters.length; i++) {
+                    oldFilters[i].state = 'disable';
+                }
+                store.dispatch(setFilters(oldFilters));
+            }
+            //create new filter
+            if (obj["exceeded-by"] === "uri") {
+                createFilter("attrs.from.keyword:\"" + obj.attrs.from + "\"");
+            }
+            else if (obj["exceeded-by"] === "ip") {
+                createFilter("attrs.source:" + obj.attrs.source);
+            }
+            /* else if(obj["exceeded-by"] === "tenant"){
+                 createFilter("attrs.source:" + attrs.source);
+             }*/
+            console.log(obj);
+            this.setState({ redirect: true });
         }
     }
 
@@ -841,14 +868,13 @@ export default class listChart extends Component {
                             props => (
                                 <div key={"tablechart"}>
                                     <h3 className="alignLeft title inline" style={{ "float": "inherit" }} >{this.props.id}</h3>
-                                    {this.props.id !== "LAST LOGIN EVENTS" && <img className="icon" alt="tagIcon" src={tagIcon} title="add tag to selected" onClick={() => this.openPopupTag()} />}
-
                                     {this.props.id !== "LAST LOGIN EVENTS" && <div id="popupTag" className="popupTag" style={{ "display": "none" }}>
                                         <input type="text" id="tag" name="name" className="form-control" onKeyUp={(event) => this.onEnterKey(event)} style={{ "display": "inline-table", "height": "30px" }} />
                                         <button type="button" className="btn btn-small btn-primary" onClick={() => this.tags()}>OK</button><button type="button" className="btn btn-small btn-secondary" style={{ "margin": "0" }} onClick={() => this.closePopupTag()}>X</button>
                                     </div>}
 
-                                    {(window.location.pathname === "/calls") && <span><img className="icon" alt="viewIcon" onClick={() => displayPcaps()} src={viewIcon} title="view merge PCAPs" />
+                                    {(window.location.pathname === "/calls") && <span>
+                                        <img className="icon" alt="viewIcon" onClick={() => displayPcaps()} src={viewIcon} title="view merge PCAPs" />
                                         <img className="icon" alt="downloadIcon" src={downloadPcapIcon} onClick={() => getPcaps()} title="download merge PCAP" />
                                     </span>
                                     }
@@ -856,7 +882,7 @@ export default class listChart extends Component {
 
                                     {this.props.id !== "LAST LOGIN EVENTS" && <button className="noFormatButton" onClick={() => this.shareFilters()} >  <img className="icon" alt="shareIcon" src={shareIcon} title="share selected" /><span id="tooltipshareFilters" style={{ "display": "none", "position": "absolute", "backgroundColor": "white" }}>Copied to clipboard</span></button>}
 
-                                    {<button className="noFormatButton" onClick={() => this.resetLayout()} >  <img className="icon" alt="resetLayoutIcon" src={resetIcon} title="reset table layout to default" style={{"height": "15px"}} /></button>}
+                                    {<button className="noFormatButton" onClick={() => this.resetLayout()} >  <img className="icon" alt="resetLayoutIcon" src={resetIcon} title="reset table layout to default" style={{ "height": "15px" }} /></button>}
                                     <span className="smallText"> (total: {this.props.total > 500 ? "500/" + this.props.total.toLocaleString() : this.props.total.toLocaleString()})</span>
                                     <CustomToggleList {...props.columnToggleProps} />
                                     <BootstrapTable {...props.baseProps}
@@ -882,6 +908,7 @@ export default class listChart extends Component {
                         }
                     </ToolkitProvider>
                 }
+                {this.state.redirect && <Redirect push to="/overview" />}
             </div>
         );
     }

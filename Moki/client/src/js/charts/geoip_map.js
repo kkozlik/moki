@@ -116,7 +116,7 @@ export default class geoIpMap extends Component {
         // var  colorScale =d3.scaleLinear().range(["white", "blue"]);
 
         if (data.length === 0 && dataNotShown.length === 0) {
-            var chart = document.getElementById("geoIpMapSVG");
+            chart = document.getElementById("geoIpMapSVG");
             if (chart) {
                 chart.remove();
             }
@@ -312,8 +312,6 @@ export default class geoIpMap extends Component {
 
     //draw only data
     drawOnlyPins(g, name, data, dataNotShown, units, svg) {
-        var width = this.props.width;
-        var height = 400;
         var projection = d3.geoMercator();
 
         if (!this.state.animation) {
@@ -415,13 +413,13 @@ export default class geoIpMap extends Component {
             pin.on("mouseover", function (d) {
                 var types;
                 if (d.aggs && d.aggs.buckets) {
-                    var types = d.aggs.buckets.map(type =>
+                    types = d.aggs.buckets.map(type =>
                         " <br/><strong>" + type.key + ": </strong> " + type.doc_count
                     );
                     types = "<strong>City: </strong>" + d.key + " <br/>" + types;
                 }
                 else {
-                    var types = " <strong>" + d.key + ": </strong> " + d.doc_count;
+                    types = " <strong>" + d.key + ": </strong> " + d.doc_count;
                 }
 
                 tooltip.style("visibility", "visible");
@@ -462,7 +460,7 @@ export default class geoIpMap extends Component {
 
         //draw missing part of data 
         if (dataNotShown.length > 0) {
-            var pin = g.selectAll(".pin")
+            pin = g.selectAll(".pin")
                 .data(dataNotShown)
                 .enter().append("circle")
                 .attr("r", function (d) {
@@ -496,7 +494,7 @@ export default class geoIpMap extends Component {
                         );
                     }
                     else {
-                        var types = " <strong>" + d.country + ": </strong> " + d.doc_count;
+                        types = " <strong>" + d.country + ": </strong> " + d.doc_count;
                     }
 
                     tooltip.style("visibility", "visible");

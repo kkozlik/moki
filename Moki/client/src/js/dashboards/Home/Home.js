@@ -2,7 +2,6 @@ import React, {
     Component
 } from 'react';
 import HomeCharts from './HomeCharts';
-import TypeBar from '../../bars/Typebar';
 import FilterBar from '../../bars/FilterBar';
 
 class Home extends Component {
@@ -20,7 +19,6 @@ class Home extends Component {
         return (
             <div className="container-fluid" style={{"paddingRight": "0"}}>
                 <FilterBar tags={this.props.tags} />
-                <TypeBar/>
                 <HomeCharts  showError={this.showError}/>
             </div>
      

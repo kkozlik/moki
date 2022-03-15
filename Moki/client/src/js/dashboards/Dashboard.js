@@ -8,7 +8,7 @@ import {
 import store from "../store/index";
 import storePersistent from "../store/indexPersistent";
 import { elasticsearchConnection } from '@moki-client/gui';
-import { parseTableHits } from '@moki-client/es-response-parser';
+const HAS_TABLE = ["calls", "conference", "diagnostics", "exceeded", "network", "overview", "qos", "registration", "security", "system", "transport"];
 
 class Dashboard extends Component {
 
@@ -16,18 +16,40 @@ class Dashboard extends Component {
   constructor(props) {
     super(props);
     this.loadData = this.loadData.bind(this);
-    this.state = {};
+    this.finishedLoadingInicialValues = this.finishedLoadingInicialValues.bind(this);
+    this.state = {
+      loadingInicialValues: true
+    };
+    window.dashboard = this;
     this.transientState = {};
     this.callBacks = { functors: [] };
     //set empty type array for first time loading
     store.getState().types = [];
     // call 'unsubscribe()' to deregister default loadData change listener
-    this.unsubscribe = store.subscribe(() => this.loadData());
     this.getLayout = this.getLayout.bind(this);
+    this.getIncialData = this.getIncialData.bind(this);
   }
 
-  componentDidMount() {
-    this.loadData();
+  async componentDidMount() {
+    await this.getIncialData();
+  }
+
+  async getIncialData() {
+    console.log("dashboard.js did mount")
+    //load types and filters before getting data
+    if (window.types) await window.types.loadTypes();
+    let name = this.state.dashboardName.substr(0, this.state.dashboardName.indexOf("/"));
+    //await this.loadData();
+    this.setState({ loadingInicialValues: false }, function () {
+      this.loadData();
+      if (HAS_TABLE.includes(name)) window.table.loadData();
+    });
+    this.unsubscribe = store.subscribe(() => this.loadData());
+
+  }
+
+  finishedLoadingInicialValues() {
+    return this.state.loadingInicialValues;
   }
 
   componentWillUnmount() {
@@ -64,46 +86,44 @@ class Dashboard extends Component {
         let attrs = [];
         if (functors[j].attrs) attrs = functors[j].attrs;
 
-        this.transientState[functors[j].result] =
-          await functors[j].func(data.responses[i], profile, attrs);
+        //special loader
+        //multi parser "Regs", "data.responses[5]", "Regs-1d", "data.responses[6]"
+        if (functors[j].type === "multipleLineData") {
+          this.transientState[functors[j].result] = await functors[j].func(functors[j].details[0], data.responses[i], functors[j].details[1], data.responses[i + 1], profile, attrs);
+        }
+        else {
+          this.transientState[functors[j].result] =
+            await functors[j].func(data.responses[i], profile, attrs);
+        }
       }
     }
   }
 
   async loadData() {
-    try {
-      this.getLayout();
-      this.setState({ isLoading: true });
-      var data = await elasticsearchConnection(this.state.dashboardName);
+    //wait for types to load, it will trigger again
+    //calls dashboard has special loader
+    let name = window.location.pathname.substring(1);
+    if (this.state.loadingInicialValues === false || name === "calls") {
+      try {
+        this.getLayout();
+        this.setState({ isLoading: true });
+        var data = await elasticsearchConnection(this.state.dashboardName);
 
-      if (typeof data === "string") {
-        this.props.showError(data);
+        if (typeof data === "string") {
+          this.props.showError(data);
+          this.setState({ isLoading: false });
+          return;
+        } else if (data) {
+          await this.processESData(data);
+          this.setState(this.transientState);
+          this.setState({ isLoading: false });
+          console.info(new Date() + " MOKI DASHBOARD: finished parsing data");
+        }
+      } catch (e) {
+        this.props.showError("Error: " + e);
         this.setState({ isLoading: false });
-        return;
-      } else if (data) {
-        await this.processESData(data);
-        this.setState(this.transientState);
-        this.setState({ isLoading: false });
-        console.info(new Date() + " MOKI CALLS: finished parsíng data");
       }
-    } catch (e) {
-      this.props.showError("Error: " + e);
-      this.setState({ isLoading: false });
     }
-  }
-}
-
-/**
-* parse table hits with profile attrs
-* @param {hits}  array ES data
-* @return {array} format changed data
-* */
-export async function parseTable(hits) {
-  try {
-    const profile = storePersistent.getState().profile;
-    return await parseTableHits(hits, profile);
-  } catch (e) {
-    console.log("Error: " + e);
   }
 }
 

@@ -208,9 +208,9 @@ export default class topology extends Component {
                         y1 = d.source.y,
                         x2 = d.target.x,
                         y2 = d.target.y,
-                        dx = x2 - x1,
-                        dy = y2 - y1,
-                        dr = Math.sqrt(dx * dx + dy * dy),
+                       // dx = x2 - x1,
+                       // dy = y2 - y1,
+                       // dr = Math.sqrt(dx * dx + dy * dy),
 
                         // Defaults for normal edge.
                         drx = 0,

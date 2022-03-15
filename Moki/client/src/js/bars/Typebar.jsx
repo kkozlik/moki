@@ -9,6 +9,7 @@ import uncheckAll from "../../styles/icons/uncheckAll.png";
 import store from "../store/index";
 import { assignType } from "../actions/index";
 import { getLayoutSettings } from '../helpers/getLayout';
+const STORED_TYPES_VERSION = "1.0";
 
 class Typebar extends Component {
     constructor(props) {
@@ -22,10 +23,12 @@ class Typebar extends Component {
         this.enableType = this.enableType.bind(this);
         this.disableType = this.disableType.bind(this);
         this.checkAll = this.checkAll.bind(this);
+        this.loadTypes = this.loadTypes.bind(this);
         store.subscribe(() => this.rerenderTypes());
+        window.types = this;
     }
 
-    async componentDidMount() {
+    async loadTypes()         {
         var types = [];
         //change types if set in url
         //format: type=XXXXXXX&type=YYYYYYYY
@@ -46,14 +49,58 @@ class Typebar extends Component {
             }
         }
         var jsonData = await getLayoutSettings();
-        var pathname = window.location.pathname.substring(1);
+        let name = window.location.pathname.substring(1);
 
-        if (pathname === "exceeded") {
+        //check if stored types, remove old version
+        let storedTypes = JSON.parse(window.localStorage.getItem("types"));
+        if (window.localStorage.getItem("types") && (!storedTypes.version || storedTypes.version !== STORED_TYPES_VERSION)) {
+            window.localStorage.removeItem("types");
+        }
+
+        if (storedTypes && storedTypes[name]) {
+
+            //get types from template to keep it update it
+            var allTypes = [];
+            if (name === "exceeded") {
+                allTypes = await getExceededTypes();
+            }
+            else if (jsonData.types[name]) {
+                allTypes = jsonData.types[name]
+            }
+
+            for (let allType of allTypes) {
+                var typeExists = false;
+                var thisType = null;
+                var id = allType.id ? allType.id : allType;
+                for (let type of storedTypes[name]) {
+                    if (id === type.id) {
+                        typeExists = true;
+                        thisType = type;
+                    }
+                }
+
+                if (typeExists) {
+                    types.push({
+                        id: thisType.id,
+                        name: Types[thisType.id] ? Types[thisType.id] : thisType.name,
+                        state: thisType.state
+                    });
+                }
+                else {
+                    types.push({
+                        id: allType.id ? allType.id : allType,
+                        name: Types[allType] ? Types[allType] : allType.name ? allType.name : allType.id,
+                        state: "enable"
+                    });
+                }
+            }
+        }
+        else if (name === "exceeded") {
             types = await getExceededTypes();
         }
-        else if (jsonData.types[pathname]) {
-            for (var i = 0; i < jsonData.types[pathname].length; i++) {
-                var dashboardTypes = jsonData.types[pathname];
+        else if (jsonData.types[name]) {
+            for (var i = 0; i < jsonData.types[name].length; i++) {
+                var dashboardTypes = jsonData.types[name];
                 //is in url
                 if (result.length > 0 && result.includes(dashboardTypes[i])) {
                     types.push({
@@ -81,8 +128,10 @@ class Typebar extends Component {
             }
         }
         //set new types in state, don't dispatch it
-        this.setState({ types: types });
-        //store.dispatch(assignType(types));
+        //this.setState({ types: types });
+        store.dispatch(assignType(types));
+        return types;
+
     }
 
     componentWillUnmount() {
@@ -92,6 +141,18 @@ class Typebar extends Component {
         };
     }
 
+    //store types in localstorage
+    storeTypesInLocalStorage(types) {
+        let storedTypes = JSON.parse(window.localStorage.getItem("types"));
+
+        if (!storedTypes) {
+            storedTypes = { "version": STORED_TYPES_VERSION };
+        }
+        let name = window.location.pathname.substring(1);
+        storedTypes[name] = types;
+
+        window.localStorage.setItem("types", JSON.stringify(storedTypes));
+    }
 
     //when you load stored filters and types, you need to rerender GUI
     rerenderTypes() {
@@ -120,6 +181,7 @@ class Typebar extends Component {
             }
             this.setState({ types: oldTypes });
         }
+        this.storeTypesInLocalStorage(oldTypes);
         store.dispatch(assignType(oldTypes));
     }
 
@@ -133,6 +195,7 @@ class Typebar extends Component {
 
 
         console.info("Type is enabled:" + JSON.stringify(oldTypes));
+        this.storeTypesInLocalStorage(oldTypes);
         store.dispatch(assignType(oldTypes));
     }
 
@@ -144,6 +207,7 @@ class Typebar extends Component {
             }
         }
         console.info("Type is disabled:" + JSON.stringify(oldTypes));
+        this.storeTypesInLocalStorage(oldTypes);
         store.dispatch(assignType(oldTypes));
     }
 

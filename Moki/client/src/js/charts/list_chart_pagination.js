@@ -144,7 +144,7 @@ class TableChart extends Component {
           </table>
         }
         {this.createPaggination()}
-        { ((!this.state.data || this.state.data[0] && this.state.data[0].length === 0) || this.state.data[0] === "") &&
+        { ((!this.state.data || (this.state.data[0] && this.state.data[0].length === 0)) || this.state.data[0] === "") &&
           <table style={{ "minWidth": "17em" }}>
             <tbody>
               <tr><td><span></span></td></tr>

@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
 import Popup from "reactjs-popup";
 import detailsIcon from "../../styles/icons/details.png";
 import TagRanger from "../bars/TagRanger";
 import filterIcon from "../../styles/icons/filter.png";
 import shareIcon from "../../styles/icons/share_dark.png";
+import overviewIcon from "../../styles/icons/alertProfile.png";
 import unfilterIcon from "../../styles/icons/unfilter.png";
-import alertProfileIcon from "../../styles/icons/alertProfile.png";
+import alertProfileIcon from "../../styles/icons/alert_profile.png";
 import AlertProfile from "../helpers/alertProfile";
 import downloadPcapIcon from "../../styles/icons/downloadPcap.png";
 import downloadIcon from "../../styles/icons/download.png";
@@ -143,7 +143,6 @@ export const onEnterKeyExclude = (event, ob) => {
         exclude(ob);
     }
 }
-
 // check if column width is stored in local storage
 function getColumnWidth(column, width = 0) {
 
@@ -242,8 +241,8 @@ function getColumn(column_name, tags, tag, width = 0, hidden = false) {
                         notvalue = notvalue + ")";
                     }
                     else {
-                        var value = "exceeded-by: " + ob["exceeded-by"];
-                        var notvalue = "NOT exceeded-by: " + ob["exceeded-by"];
+                         value = "exceeded-by: " + ob["exceeded-by"];
+                         notvalue = "NOT exceeded-by: " + ob["exceeded-by"];
                     }
                     return <span className="filterToggleActive"><span className="filterToggle">
                         <img onClick={doFilterRaw} field="exceeded-by" value={value} className="icon" alt="filterIcon" src={filterIcon} /><img field="exceeded-by" value={notvalue} onClick={doFilterRaw} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span > {ob['exceeded-by'] ? ob['exceeded-by'].toString() : ""}
@@ -297,7 +296,7 @@ function getColumn(column_name, tags, tag, width = 0, hidden = false) {
         case 'advanced': return {
             dataField: '_source',
             text: column_name.name.toUpperCase(),
-            headerStyle: { width: "100px" },
+            headerStyle: { width: "150px" },
             editable: false,
             formatter: (cell, obj) => {
 
@@ -333,6 +332,9 @@ function getColumn(column_name, tags, tag, width = 0, hidden = false) {
                             </div>
                         )}
                     </Popup>
+                    }
+                    {(storePersistent.getState().user.aws === true && window.location.pathname === ("/exceeded") && (ob["exceeded-by"] === "ip" || ob["exceeded-by"] === "uri")) &&
+                        <button className="noFormatButton" onClick={() => window.tableChart.createFilterAndRedirect(ob)} data={obj}>  <img className="icon" alt="overview" src={overviewIcon} title="show records in overview" /></button>
                     }
                     {column_name.icons.includes("details") && <Popup trigger={<img className="icon" alt="detailsIcon" src={detailsIcon} title="details" />} modal>
                         {close => (
@@ -444,7 +446,11 @@ export function tableColumns(dashboard, tags, layout) {
     var storedColumns = JSON.parse(window.localStorage.getItem("columns"));
     var result = [];
     var name = window.location.pathname.substring(1);
-
+    //user case fix - has two table in one dashboard
+    if (!name) {
+        if (dashboard === "homeLoginCalls") name = "calls";
+        if (dashboard === "exceeded") name = "exceeded";
+    }
     //get also layout and compare it
     var columnsTableDefault = layout.columns[name] ? layout.columns[name] : layout.columns.default;
     var toggleListDefault = layout.toggleList[name] ? layout.toggleList[name] : layout.toggleList.default;
@@ -471,11 +477,12 @@ export function tableColumns(dashboard, tags, layout) {
     }
 
     if (storedColumns && storedColumns[dashboard] && storedColumns.version && storedColumns.version === "1.0") {
-        var storedColumns = storedColumns[dashboard];
+        storedColumns = storedColumns[dashboard];
         for (let i = 0; i < columnsTableDefaultListConcat.length; i++) {
             //check if this column was stored, if so use the parameraters
             var isExists = false
             var field = null;
+            var tag = null;
             for (var fields of storedColumns) {
                 if ("_source." + columnsTableDefaultListConcat[i].source === fields.dataField) {
                     isExists = true;
@@ -486,13 +493,13 @@ export function tableColumns(dashboard, tags, layout) {
                 var width = field.headerStyle && field.headerStyle.width ? field.headerStyle.width : null;
                 var hidden = field.hidden ? field.hidden : false;
                 var source = field.text === "ADVANCED" ? "advanced" : field.dataField.slice(8);
-                result.push(getColumn({ source: source, name: field.text, "icons": ["download", "diagram", "details", "share"] }, tags, tag, width = width, hidden = hidden));
+                result.push(getColumn({ source: source, name: field.text, "icons": ["download", "diagram", "details", "share"] }, tags, tag, width , hidden));
             }
             else {
                 let name = columnsTableDefaultListConcat[i].name ? columnsTableDefaultListConcat[i].name : columnsTableDefaultListConcat[i];
                 let source = columnsTableDefaultListConcat[i].source ? columnsTableDefaultListConcat[i].source : columnsTableDefaultListConcat[i];
                 let hidden = columnsTableDefaultListConcat[i].hasOwnProperty("hidden") ? columnsTableDefaultListConcat[i].hidden : false;
-                result.push(getColumn({ source: source, name: name, "icons": ["download", "diagram", "details", "share"] }, tags, tag, width = "50px", hidden = hidden));
+                result.push(getColumn({ source: source, name: name, "icons": ["download", "diagram", "details", "share"] }, tags, tag, width = "50px", hidden));
             }
         }
         return result;
@@ -501,7 +508,7 @@ export function tableColumns(dashboard, tags, layout) {
         if (window.localStorage.getItem("columns") && (!storedColumns.version || storedColumns.version !== "1.0")) {
             window.localStorage.removeItem("columns");
         }
-        var tag = true;
+        tag = true;
         //disable tags for end user
         if (storePersistent.getState().user.jwt === "2") { tag = false };
 
@@ -509,7 +516,7 @@ export function tableColumns(dashboard, tags, layout) {
             let name = columnsTableDefaultListConcat[i].name ? columnsTableDefaultListConcat[i].name : columnsTableDefaultListConcat[i];
             let source = columnsTableDefaultListConcat[i].source ? columnsTableDefaultListConcat[i].source : columnsTableDefaultListConcat[i];
             let hidden = columnsTableDefaultListConcat[i].hasOwnProperty("hidden") ? columnsTableDefaultListConcat[i].hidden : true;
-            result.push(getColumn({ source: source, name: name, "icons": ["download", "diagram", "details", "share"] }, tags, tag, width = "150px", hidden = hidden));
+            result.push(getColumn({ source: source, name: name, "icons": ["download", "diagram", "details", "share"] }, tags, tag= null, width = "150px", hidden ));
         }
         return result;
     }

@@ -117,14 +117,14 @@ export default class StackedChart extends Component {
                 .attr("xlink:href", emptyIcon)
                 .attr('transform', 'translate(' + 150 + ',' + 200 / 2 + ')');
 
-            var legendSVG = document.getElementById("divLegend" + this.props.id);
+            legendSVG = document.getElementById("divLegend" + this.props.id);
             if (legendSVG) {
                 legendSVG.style.height = 0;
             }
 
         } else {
 
-            var legendSVG = document.getElementById("divLegend" + this.props.id);
+            legendSVG = document.getElementById("divLegend" + this.props.id);
             if (legendSVG) {
                 legendSVG.style.height = "170px";
             }
@@ -197,7 +197,7 @@ export default class StackedChart extends Component {
 
 
             let angleInterpolation = d3.interpolate(pie.startAngle()(), pie.endAngle()());
-          /*  arcs.transition()
+           arcs.transition()
                 .duration(1200)
                 .attrTween("d", d => {
                     let originalEnd = d.endAngle;
@@ -210,7 +210,7 @@ export default class StackedChart extends Component {
                         return arc(d);
                     };
                 });
-*/
+
             var divLegend = d3.select("#divLegend" + this.props.id);
             var legendHeight = data.length * 16;
 
@@ -272,7 +272,7 @@ export default class StackedChart extends Component {
                             }
                         }
                         else {
-                            return d.key.substring(0, 20) + '...' + " (" + d.doc_count + ")";
+                            return d.key.substring(0, 20) + "... (" + d.doc_count + ")";
                         }
                     }
                 })

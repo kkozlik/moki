@@ -1,9 +1,8 @@
 /*
 Class to get data for all charts iin Call dashboard
 */
-import React, {
-    Component
-} from 'react';
+import React from 'react';
+import Dashboard from '../Dashboard.js';
 import ValueChart from '../../charts/value_chart.js';
 import MultipleAreaChart from '../../charts/multipleArea_chart';
 import TimedateStackedChart from '../../charts/timedate_stackedbar.js';
@@ -12,21 +11,17 @@ import Geoipchart from '../../charts/geoip_map.js';
 import DonutChart from '../../charts/donut_chart.js';
 import ListChart from '../../charts/list_chart.js';
 import store from "../../store/index";
-import storePersistent from "../../store/indexPersistent";
-import {
-    elasticsearchConnection
-} from '@moki-client/gui';
 import { parseListData, parseBucketData, parseAggCities, parseAggQuerySumValue, parseMultipleLineDataShareAxis, parseStackedbarTimeData } from '@moki-client/es-response-parser';
 
 
-class RegistrationCharts extends Component {
+class RegistrationCharts extends Dashboard {
 
     // Initialize the state
     constructor(props) {
         super(props);
-        this.loadData = this.loadData.bind(this);
-
         this.state = {
+            ...this.state,
+            dashboardName: "registration/charts",
             geoipMap: [],
             eventRegsTimeline: [],
             userAgents: [],
@@ -38,88 +33,31 @@ class RegistrationCharts extends Component {
             types: [],
             isLoading: true
         }
-        store.subscribe(() => this.loadData());
 
-    }
-
-    componentWillUnmount() {
-        // fix Warning: Can't perform a React state update on an unmounted component
-        this.setState = (state, callback) => {
-            return;
-        };
-    }
-
-    componentDidMount() {
-        this.loadData();
-    }
-
-    /*
-    Load data from elasticsearch
-    get filters, types and timerange from GUI
-    */
-    async loadData() {
-        var data = await elasticsearchConnection("registration/charts");
-
-        if (typeof data === "string" && data.includes("ERROR:")) {
-            this.props.showError(data);
-            this.setState({
-                isLoading: false
-            });
-            return;
-
-        } else if (data) {
-
-            //parse data
-            //DISTRIBUTION GEOIP MAP
-            var geoipMap = [];
-            const profile = storePersistent.getState().profile;
-
-            if (data.responses[0].aggregations && data.responses[0].aggregations.cities && data.responses[0].aggregations.cities.buckets) {
-                geoipMap = data.responses[0].aggregations.cities.buckets;
-            }
-
-            //EVENT REGS TIMELINE
-            var eventRegsTimeline = parseStackedbarTimeData(data.responses[1]);
-
-            //USER-AGENTS IN REG. NEW
-            var userAgents = parseBucketData(data.responses[2]);
-
-            //TOP REG. EXPIRED
-            var topRegExpired = await parseListData(data.responses[3], profile, ["attrs.from"]);
-
-            //TRANSPORT PROTOCOL
-            var transportProtocol = parseBucketData(data.responses[4]);
-
-            //PARALLEL REGS
-            var parallelRegs = parseMultipleLineDataShareAxis("Regs", data.responses[5], "Regs-1d", data.responses[6]);
-
-            //ACTUALL REGS
-            var regsActual = parseAggQuerySumValue(data.responses[7]);
-
-            //DISTRIBUTION HASH GEOIP MAP
-            var geoipHashMap = parseAggCities(data.responses[8]);
-
-            //TYPES DISTRIBUTIONS
-            var types = parseBucketData(data.responses[9]);
-
-            console.info(new Date() + " MOKI REGISTRATION: finished parsing data");
-
-            this.setState({
-                geoipMap: geoipMap,
-                eventRegsTimeline: eventRegsTimeline,
-                userAgents: userAgents,
-                topRegExpired: topRegExpired,
-                transportProtocol: transportProtocol,
-                parallelRegs: parallelRegs,
-                regsActual: regsActual,
-                geoipHashMap: geoipHashMap,
-                types: types,
-                isLoading: false
-            });
-
+        this.callBacks = {
+            functors: [
+                //GEOIP MAP 0
+                [{ result: "geoipMap", func:parseAggCities}],
+                //EVENT REGS TIMELINE 1
+                [{ result: 'eventRegsTimeline', func: parseStackedbarTimeData, attrs: ["attrs.type"] }],
+                //USER-AGENTS IN REG. NEW 2
+                [{ result: 'userAgents', func: parseBucketData, attrs: ["attrs.from-ua"] }],
+                //TOP REG. EXPIRED 3
+                [{ result: 'topRegExpired', func: parseListData, attrs: ["attrs.from"] }],
+                //TRANSPORT PROTOCOL 4
+                [{ result: 'transportProtocol', func: parseBucketData, attrs: ["attrs.transport"] }],
+                //PARALLEL REGS 5+6
+                [{ result: 'parallelRegs', attrs: ["attrs.hostname"], func: parseMultipleLineDataShareAxis, type: "multipleLineData", details: ["Regs", "Regs-1d"] }],
+                [],
+                //ACTUALL REGS 7
+                [{ result: 'regsActual', func: parseAggQuerySumValue, attrs: ["attrs.hostname"] }],
+                //DISTRIBUTION HASH GEOIP MAP 8
+                [{ result: 'geoipHashMap', func: parseAggCities }],
+                //TYPES DISTRIBUTIONS
+                [{ result: 'types', func: parseBucketData, attrs: ["attrs.type"] }]
+            ]
         }
     }
-
 
 
     //render GUI
@@ -169,7 +107,7 @@ class RegistrationCharts extends Component {
                         height={170}
                         legendSize={150}
                     /></div>
-                     <div className="col" >
+                <div className="col" >
                     <DonutChart data={
                         this.state.userAgents
                     }
@@ -177,11 +115,11 @@ class RegistrationCharts extends Component {
                         name={"USER-AGENTS IN REG. NEW"}
                         field={"attrs.from-ua"}
                         id="userAgents"
-                        width={(store.getState().width/2)-100}
+                        width={(store.getState().width / 2) - 100}
                         height={170}
                         legendSize={350}
-                    />  </div> 
-                    <div className="col" >
+                    />  </div>
+                <div className="col" >
                     <DonutChart
                         data={this.state.transportProtocol}
                         name={"TRANSPORT PROTOCOL"}
@@ -191,8 +129,8 @@ class RegistrationCharts extends Component {
                         width={500}
                         height={170}
                         legendSize={50}
-                    />  </div> 
-                    <div className="col" >
+                    />  </div>
+                <div className="col" >
                     <ListChart
                         data={this.state.topRegExpired}
                         name={"TOP REG. EXPIRED"}

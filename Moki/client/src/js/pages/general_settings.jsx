@@ -190,8 +190,8 @@ class Settings extends Component {
             }
 
 
-            for (var i = 0; i < jsonData.length; i++) {
-                var data = document.getElementById(jsonData[i].attribute);
+            for (i = 0; i < jsonData.length; i++) {
+                 data = document.getElementById(jsonData[i].attribute);
                 if (data.type === "checkbox") {
                     jsonData[i].value = data.checked;
                 }

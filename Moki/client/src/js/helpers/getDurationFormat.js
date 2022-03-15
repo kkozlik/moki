@@ -18,7 +18,7 @@ export const formatDuration = (duration) => {
     }
 
     //rounding up removed real value
-    if (sec_num == 0) {
+    if (sec_num === 0) {
         return "less than 0.01 ms";
     }
 

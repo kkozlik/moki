@@ -2,7 +2,6 @@
 Class to get data for all charts iin Call dashboard
 */
 import React from 'react';
-
 import Dashboard from '../Dashboard.js';
 import TimedateStackedChart from '../../charts/timedate_stackedbar.js';
 import SunburstChart from '../../charts/sunburst_chart.js';
@@ -15,13 +14,11 @@ import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import { parseListData, parseStackedbarTimeData, parseBucketData, parseSunburstData, parseQueryStringData, parseAggData, parseAggSumBucketData } from '@moki-client/es-response-parser';
 
 
-
 class CallCharts extends Dashboard {
 
     // Initialize the state
     constructor(props) {
         super(props);
-        this.specialLoadData = this.specialLoadData.bind(this);
         this.state = {
             ...this.state,
             dashboardName: "calls/charts",
@@ -48,79 +45,45 @@ class CallCharts extends Dashboard {
         this.callBacks = {
             functors: [
                 //CALL TERMINATED 0
-                [{ result: 'callTerminated', func: parseBucketData, attrs:["attrs.originator"] }],
+                [{ result: 'callTerminated', func: parseBucketData, attrs: ["attrs.originator"] }],
                 //CALL SUCCESS RATIO 1
-                [{ result: 'callSuccessRatio', func: parseSunburstData, attrs:["attrs.sip-code"] }],
+                [{ result: 'callSuccessRatio', func: parseSunburstData, attrs: ["attrs.sip-code"] }],
                 //SUM CALL-ATTEMPT 2
-                [{ result: 'sumCallAttempt', func: parseQueryStringData, attrs:["attrs.type"]}],
+                [{ result: 'sumCallAttempt', func: parseQueryStringData, attrs: ["attrs.type"] }],
                 //SUM CALL-END 3
-                [{ result: 'sumCallEnd', func: parseQueryStringData, attrs:["attrs.type"] }],
+                [{ result: 'sumCallEnd', func: parseQueryStringData, attrs: ["attrs.type"] }],
                 //SUM CALL-START 4
-                [{ result: 'sumCallStart', func: parseQueryStringData, attrs:["attrs.type"] }],
+                [{ result: 'sumCallStart', func: parseQueryStringData, attrs: ["attrs.type"] }],
                 //DURATION SUM 5
-                [{ result: 'durationSum', func: parseAggData, attrs:["attrs.duration"] }],
+                [{ result: 'durationSum', func: parseAggData, attrs: ["attrs.duration"] }],
                 //NOT USED 6
                 [],
                 //AVG MoS 7
-                [{ result: 'avgMoS', func: parseAggData, attrs:["attrs.rtp-MOScqex-avg"] }],
+                [{ result: 'avgMoS', func: parseAggData, attrs: ["attrs.rtp-MOScqex-avg"] }],
                 //ANSWER-SEIZURE RATIO 8
-                [{ result: 'answerSeizureRatio', func: parseAggSumBucketData}],
+                [{ result: 'answerSeizureRatio', func: parseAggSumBucketData }],
                 //CALLING COUNTRIES 9
                 [{ result: 'callingCountries', func: parseListData, attrs: ["geoip.src.iso_code"] }],
                 //SUM DURATION OVER TIME 10
-                [{ result: 'sumDurationOverTime', func: parseBucketData, attrs:["attrs.duration"] }],
+                [{ result: 'sumDurationOverTime', func: parseBucketData, attrs: ["attrs.duration"] }],
                 //MAX DURATION 11
-                [{ result: 'maxDuration', func: parseAggData, attrs:["attrs.duration"] }],
+                [{ result: 'maxDuration', func: parseAggData, attrs: ["attrs.duration"] }],
                 //NOT USED 12
                 [],
                 //AVG DURATION 13
-                [{ result: 'avgDuration', func: parseAggData, attrs:["attrs.duration"] }],
+                [{ result: 'avgDuration', func: parseAggData, attrs: ["attrs.duration"] }],
                 //DURATION GROUP 14
-                [{ result: 'durationGroup', func: parseListData, attrs:["attrs.durationGroup"] }],
+                [{ result: 'durationGroup', func: parseListData, attrs: ["attrs.durationGroup"] }],
                 //SIP-CODE COUNT 15
-                [{ result: 'sipcodeCount', func: parseListData,  attrs:["attrs.sip-code"] }],
+                [{ result: 'sipcodeCount', func: parseListData, attrs: ["attrs.sip-code"] }],
                 //CALLED COUNTRIES 16
-                [{ result: 'calledCountries', func: parseListData,  attrs:["attrs.tst_cc"] }],
+                [{ result: 'calledCountries', func: parseListData, attrs: ["attrs.tst_cc"] }],
                 //EVENT CALLS TIMELINE 17
-                [{ result: 'eventCallsTimeline', func: parseStackedbarTimeData, attrs:["attrs.type"] }],
+                [{ result: 'eventCallsTimeline', func: parseStackedbarTimeData, attrs: ["attrs.type"] }],
                 //ASR OVER TIME 18
                 [{ result: 'asrDurationOverTime', func: parseBucketData }]
             ]
         };
-        /* override Dashboard.loadData() */
-        this.unsubscribe();
-        this.unsubscribe = store.subscribe(() => this.specialLoadData());
-    }
-
-    componentDidMount() {
-        this.specialLoadData();
-    }
-
-    /* specialLoadData overrides Dashboard.loadData due to sumCallEnd computation */
-    async specialLoadData() {
-
-        // call the superclass loadData()
-        await super.loadData();
-
-        this.setState({
-            isLoading: true
-        });
-
-        //hack - add sum of call end into success ratio
-        // if (this.state.sumCallEnd && this.transientState.callSuccessRatio && this.transientState.callSuccessRatio.children) {
-
-        //TODO removing not working, adding this don't call rerender chart function for some reasons
-        /*   this.transientState.callSuccessRatio.children.push({
-               key: "success",
-               value: this.state.sumCallEnd,
-               children: [{key: "success", value: this.state.sumCallEnd}]
-           });*/
-        //  }
-
-        // this.setState({ callSuccessRatio: this.transientState.callSuccessRatio });
-        this.setState({
-            isLoading: false
-        });
     }
 
 
@@ -129,7 +92,7 @@ class CallCharts extends Dashboard {
 
         return (
             <div>
-                { this.state.isLoading && <LoadingScreenCharts />}
+                {this.state.isLoading && <LoadingScreenCharts />}
 
                 <div className="row no-gutters">
                     {this.state.charts["ATTEMPTs"] && <div className="col-auto">
@@ -192,7 +155,7 @@ class CallCharts extends Dashboard {
                         name={"ASR OVER TIME"} width={store.getState().width - 300} units={"%"} />
                 </div>}
                 <div className="row no-gutters" >
-                    {this.state.charts["CALL SUCCESS RATIO"] && <div className="col-auto" style={{"marginRight": "5px"}}>
+                    {this.state.charts["CALL SUCCESS RATIO"] && <div className="col-auto" style={{ "marginRight": "5px" }}>
                         <SunburstChart data={
                             this.state.callSuccessRatio
                         } name={"CALL SUCCESS RATIO"} width={((store.getState().width - 300) / 2)} ends={this.state.sumCallEnd} units={"count"} />
@@ -202,7 +165,7 @@ class CallCharts extends Dashboard {
                             this.state.sipcodeCount
                         } name={"SIP-CODE COUNT"} field={"attrs.sip-code"} />
                     </div>}
-                    {this.state.charts["CALL TERMINATED"] && <div className="col-auto" style={{"marginRight": "5px"}}>
+                    {this.state.charts["CALL TERMINATED"] && <div className="col-auto" style={{ "marginRight": "5px" }}>
                         <DonutChart data={
                             this.state.callTerminated
                         } name={"CALL TERMINATED"} id="callTerminated" width={(store.getState().width - 300) / 2} height={170} field={"attrs.originator"} legendSize={120} units={"count"} />

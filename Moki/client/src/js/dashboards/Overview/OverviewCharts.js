@@ -9,9 +9,8 @@ import TimedateStackedChart from '../../charts/timedate_stackedbar.js';
 import StackedChart from '../../charts/stackedbar.js';
 import store from "../../store/index";
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
-import ListChart from '../../charts/list_chart.js';
 import ValueChart from '../../charts/value_chart.js';
-import { parseListData, parseDateHeatmap, parseStackedbarData, parseStackedbarTimeData, parseAggDistinct, parseQueryStringData } from '@moki-client/es-response-parser';
+import {  parseDateHeatmap, parseStackedbarData, parseStackedbarTimeData, parseAggDistinct, parseQueryStringData } from '@moki-client/es-response-parser';
 
 class OverviewCharts extends Dashboard {
 

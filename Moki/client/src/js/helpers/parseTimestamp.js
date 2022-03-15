@@ -25,11 +25,11 @@ export const parseTimestamp = (timestamp, ms = false) => {
         else {
                 if (storePersistent.getState().profile[0] && storePersistent.getState().profile[0].userprefs) {
                         var userprefs = storePersistent.getState().profile[0].userprefs;
-                        var format = userprefs.date_format + " " + userprefs.time_format;
+                        format = userprefs.date_format + " " + userprefs.time_format;
 
                         if (ms === true) {
                                 if (userprefs.time_format === "hh:mm:ss A") {
-                                        format = userprefs.date_format + " " + "hh:mm:ss.SSS A";
+                                        format = userprefs.date_format + " hh:mm:ss.SSS A";
                                 }
                                 else {
                                         format = userprefs.date_format + " " + userprefs.time_format + ".SSS";
