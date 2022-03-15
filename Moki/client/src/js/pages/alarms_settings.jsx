@@ -38,7 +38,7 @@ class Settings extends Component {
     }
 
     /*
-       Load data 
+       Load data
        */
     async load(url) {
         var jsonData;
@@ -76,11 +76,11 @@ class Settings extends Component {
 
             }
 
-            /*translate exludes data to different format: 
+            /*translate exludes data to different format:
             id: id,
             value: IP/URI,
             comment: [comments],
-            alarms: [alarms] 
+            alarms: [alarms]
             */
 
             var dataChangeFormat = [];
@@ -124,7 +124,7 @@ class Settings extends Component {
 
 
 
-    //save data   
+    //save data
     save() {
         if (this.state.wait !== true) {
             var jsonData = this.state.data;
@@ -153,7 +153,7 @@ class Settings extends Component {
     }
 
 
-    //save exclude data 
+    //save exclude data
     async saveExclude(type) {
         if (type === "IP") {
             var label = document.getElementById("labelExcludeIP").value;
@@ -348,10 +348,10 @@ class Settings extends Component {
         document.getElementById("popupExcludeURI").style.display = "none";
     }
 
-    /*showAllPopup(){   
+    /*showAllPopup(){
         document.getElementById("excludeAllPopup").style.display = "block";
     }
-     
+
     closeAllPopup(){
     document.getElementById("excludeAllPopup").style.display = "none";
     }
@@ -523,7 +523,7 @@ class Settings extends Component {
                     alarms.push(<div key={
                         data[i].attribute + "key"
                     }
-                        className="tab" > < span className="form-inline" >
+                        className="tab pb-2" > < span className="form-inline" >
                             < input className={
                                 data[i].category
                             }
@@ -654,60 +654,82 @@ class Settings extends Component {
             <button className="btn  btn-primary" alt="ipexclude" title="add IP exclude" id="addExcludeIP" onClick={this.showPopupIP} >Add IP</button>
             <button className="btn  btn-primary" alt="uriexclude" title="add URI exclude" id="addExcludeURI" onClick={this.showPopupURI} >Add URI</button>
 
-            <span className="form-inline settingsH form-horizontal" >
-                <input type="checkbox"
-                    id="checkboxURIall"
-                    className="form-check-input"
-                    defaultChecked={
-                        this.state.checkboxURIall
-                    }
-                    onClick={
-                        () => this.checkAll("URI")
-                    }
-                /> <div> URI TYPE ALARMS</div> </span> <div key="URI"
-                    className="top chart" > {
-                    URIdata
-                } </div> <span className="form-inline settingsH form-horizontal" > < input type="checkbox"
-                    id="checkboxIPall"
-                    className="form-check-input"
-                    defaultChecked={
-                        this.state.checkboxIPall
-                    }
-                    onClick={
-                        () => this.checkAll("IP")
-                    }
-                /><div>IP TYPE ALARMS</div> </span> <div key="IP"
-                    className="top chart" > {
-                    IPdata
-                } </div>
 
-            <span className="form-inline settingsH form-horizontal" > <input type="checkbox"
-                id="checkboxSYSTEMall"
-                className="form-check-input"
-                defaultChecked={
-                    this.state.checkboxSYSTEMall
-                }
-                onClick={
-                    () => this.checkAll("SYSTEM")
-                } /><div>  SYSTEM TYPE ALARMS</div> </span>
+            <div key="URI"
+                 className="top chart" >
+
+                <span className="form-inline settingsH form-horizontal mb-2" >
+                    <input type="checkbox"
+                        id="checkboxURIall"
+                        className="form-check-input mb-0"
+                        defaultChecked={
+                            this.state.checkboxURIall
+                        }
+                        onClick={
+                            () => this.checkAll("URI")
+                        }
+                    /> <div> URI TYPE ALARMS</div>
+                </span>
+
+                { URIdata }
+            </div>
+
+
+            <div key="IP"
+                 className="top chart" >
+
+                <span className="form-inline settingsH form-horizontal mb-2" > < input type="checkbox"
+                        id="checkboxIPall"
+                        className="form-check-input mb-0"
+                        defaultChecked={
+                            this.state.checkboxIPall
+                        }
+                        onClick={
+                            () => this.checkAll("IP")
+                        }
+                    /><div>IP TYPE ALARMS</div>
+                </span>
+
+                { IPdata }
+            </div>
+
+
             <div key="System"
-                className="top chart" > {
-                    Systemdata
-                } </div>
-            <span className="form-inline settingsH form-horizontal" > <input type="checkbox"
-                id="checkboxCAall"
-                className="form-check-input"
-                defaultChecked={
-                    this.state.checkboxCAall
-                }
-                onClick={
-                    () => this.checkAll("CA")
-                }
-            /><div>  CA TYPE ALARMS</div> </span>
+                 className="top chart" >
+
+                <span className="form-inline settingsH form-horizontal mb-2" > <input type="checkbox"
+                    id="checkboxSYSTEMall"
+                    className="form-check-input mb-0"
+                    defaultChecked={
+                        this.state.checkboxSYSTEMall
+                    }
+                    onClick={
+                        () => this.checkAll("SYSTEM")
+                    } /><div>  SYSTEM TYPE ALARMS</div>
+                </span>
+
+                { Systemdata }
+            </div>
+
             <div key="CA"
-                className="top chart" > {
-                    CAdata
-                } </div>
+                 className="top chart" >
+
+                <span className="form-inline settingsH form-horizontal mb-2" > <input type="checkbox"
+                    id="checkboxCAall"
+                    className="form-check-input mb-0"
+                    defaultChecked={
+                        this.state.checkboxCAall
+                    }
+                    onClick={
+                        () => this.checkAll("CA")
+                    }
+                    /><div>  CA TYPE ALARMS</div>
+                </span>
+
+                { CAdata }
+            </div>
+
+
 
             <div className="btn-group rightButton" >
                 <button type="button"
