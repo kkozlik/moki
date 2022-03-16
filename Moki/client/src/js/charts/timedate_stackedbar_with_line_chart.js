@@ -49,7 +49,7 @@ export default class StackedChart extends Component {
         var height = 200 - margin.top - margin.bottom;
 
         var colorScale = d3.scaleOrdinal(Colors);
-        var parseDate = d3.timeFormat(timestampBucket(store.getState().timerange[0], store.getState().timerange[1]));
+        var parseDate = d3.utcFormat(timestampBucket(store.getState().timerange[0], store.getState().timerange[1]));
 
         // var bucketSize = d3.timeFormat(timestampBucketSizeWidth(store.getState().timerange[0], store.getState().timerange[1]));
 

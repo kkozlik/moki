@@ -27,6 +27,7 @@ class timerangeBar extends Component {
 
         var timeFormat = "hh:mm:ss";
         var dateFormat = "MM-DD-YYYY";
+        var timezone = "Etc/GMT+0";
 
         //no aws - settings from json
         if (!storePersistent.getState().user.aws) {
@@ -38,6 +39,10 @@ class timerangeBar extends Component {
                     if (storePersistent.getState().settings[0].attrs[i].attribute === "dateFormat") {
                         dateFormat = storePersistent.getState().settings[0].attrs[i].value;
                     }
+
+                    if (storePersistent.getState().settings[0].attrs[i].attribute === "timezone") {
+                        timezone = storePersistent.getState().settings[0].attrs[i].value;
+                    }
                 }
             }
         }
@@ -46,6 +51,7 @@ class timerangeBar extends Component {
             if (storePersistent.getState().profile && storePersistent.getState().profile[0] && storePersistent.getState().profile[0].userprefs) {
                 timeFormat = storePersistent.getState().profile[0].userprefs.time_format;
                 dateFormat = storePersistent.getState().profile[0].userprefs.date_format;
+                timezone = storePersistent.getState().profile[0].userprefs.timezone;
             }
 
         }
@@ -432,7 +438,7 @@ class timerangeBar extends Component {
                 alert("Error: Timestamp 'FROM' has to be lower than 'TO'.");
                 return;
             }
-            var timestamp_readiable = moment(timestamp_gte).format(this.state.dateFormat + " " + this.state.timeFormat) + " - " + moment(timestamp_lte).format(this.state.dateFormat + " " + this.state.timeFormat);
+            var timestamp_readiable =parseTimestamp(timestamp_gte)+ " - " + parseTimestamp(timestamp_lte);
 
             console.info("Timerange is changed to " + timestamp_readiable + " " + gte + " " + lte);
 

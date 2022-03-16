@@ -82,7 +82,7 @@ export default class datebarChart extends Component {
             .range([height, 0])
             .domain([0, domain]);
 
-        var parseDate = d3.timeFormat(timestampBucket(store.getState().timerange[0], store.getState().timerange[1]));
+        var parseDate = d3.utcFormat(timestampBucket(store.getState().timerange[0], store.getState().timerange[1]));
 
 
         // gridlines in y axis function

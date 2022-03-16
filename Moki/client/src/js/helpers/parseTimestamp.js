@@ -2,6 +2,27 @@ import storePersistent from "../store/indexPersistent";
 import moment from 'moment-timezone';
 
 export const parseTimestamp = (timestamp, ms = false) => {
+
+        
+        var format = getTimeSetings(ms);
+
+        if (format === "") {
+                return moment.utc(timestamp);
+        }
+       /* else if (Array.isArray(format)) {
+                console.log("oooooooooooooooo");
+                console.log(timestamp);
+                console.log(format[1]);
+                console.log(moment.tz(timestamp, format[1]).format(format[0]));
+                return moment.tz(timestamp, format[1]).format(format[0]);
+        }*/
+        else {
+                return moment.utc(timestamp).format(format);
+        }
+
+}
+
+function getTimeSetings(ms) {
         var aws = storePersistent.getState().user.aws;
         //format is stored in json file
         if (aws !== true) {
@@ -19,7 +40,7 @@ export const parseTimestamp = (timestamp, ms = false) => {
                 }
 
                 var format = dateFormat + " " + timeFormat;
-                return moment(timestamp).format(format);
+                return format
         }
         //format is stored in user profile
         else {
@@ -35,13 +56,14 @@ export const parseTimestamp = (timestamp, ms = false) => {
                                         format = userprefs.date_format + " " + userprefs.time_format + ".SSS";
                                 }
                         }
-
                         //return moment(timestamp).format(format);
-                        return moment.tz(timestamp, userprefs.timezone).format(format);
+                        return format;
                 }
                 else {
-                        return new Date(timestamp).toLocaleString();
+                        return "";
                 }
 
         }
+
 }
+

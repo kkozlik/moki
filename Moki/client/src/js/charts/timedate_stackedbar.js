@@ -70,7 +70,7 @@ export default class StackedChart extends Component {
 
         var colorScale = d3.scaleOrdinal(Colors);
 
-        var parseDate = d3.timeFormat(timestampBucket(store.getState().timerange[0], store.getState().timerange[1]));
+        var parseDate = d3.utcFormat(timestampBucket(store.getState().timerange[0], store.getState().timerange[1]));
 
         var rootsvg = svg.append("svg")
             .attr('width', width + margin.left + margin.right)
