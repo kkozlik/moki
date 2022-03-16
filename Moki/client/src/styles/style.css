@@ -73,6 +73,7 @@ a {
     margin-top: 10px;
     width: 100%;
     margin-right: 0.25rem;
+    position: relative;     /* calculate tooltip position relative to this element */
 }
 
 .chartMinHeight {

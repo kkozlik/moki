@@ -177,10 +177,20 @@ export default class topology extends Component {
                         .style("box-shadow", "0px 0px 6px black")
                         .style("padding", "10px")
                         .style('opacity', 0.9)
-                        .html(`<span><strong>${d.ip}</strong>: ${d.value + units}</span>`)
-                        .style('left', `${d3.event.layerX - 10}px`)
-                        .style('top', `${(d3.event.layerY - 100)}px`);
+                        .html(`<span><strong>${d.ip}</strong>: ${d.value + units}</span>`);
 
+                    var tooltipDim = tooltip.node().getBoundingClientRect();
+                    var chartRect = d3.select('#topologyChart').node().getBoundingClientRect();
+                    tooltip
+                        .style("left", (d3.event.clientX - chartRect.left + document.body.scrollLeft - (tooltipDim.width / 2)) + "px")
+                        .style("top", (d3.event.clientY - chartRect.top + document.body.scrollTop + 15) + "px");
+                })
+                .on("mousemove", function (d) {
+                    var tooltipDim = tooltip.node().getBoundingClientRect();
+                    var chartRect = d3.select('#topologyChart').node().getBoundingClientRect();
+                    tooltip
+                        .style("left", (d3.event.clientX - chartRect.left + document.body.scrollLeft - (tooltipDim.width / 2)) + "px")
+                        .style("top", (d3.event.clientY - chartRect.top + document.body.scrollTop + 15) + "px");
                 })
                 .on('mouseout', () => tooltip.remove());
 
@@ -227,7 +237,7 @@ export default class topology extends Component {
                         // Needs to be 1.
                         largeArc = 1;
 
-                        // Change sweep to change orientation of loop. 
+                        // Change sweep to change orientation of loop.
                         //sweep = 0;
 
                         // Make drx and dry different to get an ellipse
@@ -268,7 +278,7 @@ export default class topology extends Component {
                 d.fy = null;
             }
         }
-        
+
     }
 
     render() {

@@ -210,7 +210,7 @@ export default class geoIpMap extends Component {
                                 }
                             })
 
-                            //display names 
+                            //display names
                             if (d3.event.transform.k >= 4 && first) {
                                 first = false;
                                 d3.csv(cities).then(function (city) {
@@ -284,15 +284,22 @@ export default class geoIpMap extends Component {
                         cit.on("mouseover", function (d) {
                             tooltip.style("visibility", "visible");
                             tooltip.select("div").html(d.city_ascii);
+
+                            var tooltipDim = tooltip.node().getBoundingClientRect();
+                            var chartRect = d3.select('#geoIpMap').node().getBoundingClientRect();
+                            tooltip
+                                .style("left", (d3.event.clientX - chartRect.left + document.body.scrollLeft - (tooltipDim.width / 2)) + "px")
+                                .style("top", (d3.event.clientY - chartRect.top + document.body.scrollTop + 15) + "px");
                         })
                             .on("mouseout", function (d) {
                                 tooltip.style("visibility", "hidden")
                             })
                             .on("mousemove", function (d) {
+                                var tooltipDim = tooltip.node().getBoundingClientRect();
+                                var chartRect = d3.select('#geoIpMap').node().getBoundingClientRect();
                                 tooltip
-                                    .style("left", (d3.event.layerX - 20) + "px")
-                                    .style("top", (d3.event.layerY) + "px");
-
+                                    .style("left", (d3.event.clientX - chartRect.left + document.body.scrollLeft - (tooltipDim.width / 2)) + "px")
+                                    .style("top", (d3.event.clientY - chartRect.top + document.body.scrollTop + 15) + "px");
                             });
                     }
                     thiss.drawOnlyPins(g, name, data, dataNotShown, units, svg)
@@ -426,6 +433,11 @@ export default class geoIpMap extends Component {
                 d3.select(this).style("cursor", "pointer");
                 tooltip.select("div").html(types);
 
+                var tooltipDim = tooltip.node().getBoundingClientRect();
+                var chartRect = d3.select('#geoIpMap').node().getBoundingClientRect();
+                tooltip
+                    .style("left", (d3.event.clientX - chartRect.left + document.body.scrollLeft - (tooltipDim.width / 2)) + "px")
+                    .style("top", (d3.event.clientY - chartRect.top + document.body.scrollTop + 15) + "px");
             })
                 .on("mouseout", function (d) {
 
@@ -434,16 +446,16 @@ export default class geoIpMap extends Component {
                 })
                 .on("mousemove", function (d) {
                     //position tooltip based on count of cities
-                    if (d.aggs && d.aggs.buckets) {
-                        tooltip
-                            .style("left", (d3.event.layerX - 20) + "px")
-                            .style("top", (d3.event.layerY - (d.aggs.buckets.length * 20) - 100) + "px");
-                    }
-                    else {
-                        tooltip
-                            .style("left", (d3.event.layerX - 20) + "px")
-                            .style("top", (d3.event.layerY - 100) + "px");
-                    }
+                    // if (d.aggs && d.aggs.buckets) {
+                    //     tooltip
+                    //         .style("left", (d3.event.layerX - 20) + "px")
+                    //         .style("top", (d3.event.layerY - (d.aggs.buckets.length * 20) - 100) + "px");
+                    // }
+                    // else {
+                    //     tooltip
+                    //         .style("left", (d3.event.layerX - 20) + "px")
+                    //         .style("top", (d3.event.layerY - 100) + "px");
+                    // }
                 })
                 .on("click", el => {
                     if (storePersistent.getState().user.aws && storePersistent.getState().profile[0] && storePersistent.getState().profile[0].userprefs && storePersistent.getState().profile[0].userprefs.mode === "encrypt") {
@@ -458,7 +470,7 @@ export default class geoIpMap extends Component {
                 });
         }
 
-        //draw missing part of data 
+        //draw missing part of data
         if (dataNotShown.length > 0) {
             pin = g.selectAll(".pin")
                 .data(dataNotShown)
@@ -500,27 +512,33 @@ export default class geoIpMap extends Component {
                     tooltip.style("visibility", "visible");
                     d3.select(this).style("cursor", "pointer");
                     tooltip.select("div").html("<strong>AVG longitude: </strong>" + geohash.decode(d.key).longitude + " <br/><strong>AVG latitude: </strong>" + geohash.decode(d.key).latitude + " <br/>" + types);
+
+                    var tooltipDim = tooltip.node().getBoundingClientRect();
+                    var chartRect = d3.select('#geoIpMap').node().getBoundingClientRect();
+                    tooltip
+                        .style("left", (d3.event.clientX - chartRect.left + document.body.scrollLeft - (tooltipDim.width / 2)) + "px")
+                        .style("top", (d3.event.clientY - chartRect.top + document.body.scrollTop + 15) + "px");
                 })
                     .on("mouseout", function (d) {
                         tooltip.style("visibility", "hidden")
                     })
                     .on("mousemove", function (d) {
                         //position tooltip based on count of cities
-                        if (d.aggs && d.aggs.buckets) {
-                            tooltip
-                                .style("left", (d3.event.layerX - 20) + "px")
-                                .style("top", (d3.event.layerY - (d.aggs.buckets.length * 20) - 100) + "px");
-                        }
-                        else if (d.types && d.types.buckets) {
-                            tooltip
-                                .style("left", (d3.event.layerX - 20) + "px")
-                                .style("top", (d3.event.layerY - (d.types.buckets.length * 20) - 100) + "px");
-                        }
-                        else {
-                            tooltip
-                                .style("left", (d3.event.layerX - 20) + "px")
-                                .style("top", (d3.event.layerY - 100) + "px");
-                        }
+                        // if (d.aggs && d.aggs.buckets) {
+                        //     tooltip
+                        //         .style("left", (d3.event.layerX - 20) + "px")
+                        //         .style("top", (d3.event.layerY - (d.aggs.buckets.length * 20) - 100) + "px");
+                        // }
+                        // else if (d.types && d.types.buckets) {
+                        //     tooltip
+                        //         .style("left", (d3.event.layerX - 20) + "px")
+                        //         .style("top", (d3.event.layerY - (d.types.buckets.length * 20) - 100) + "px");
+                        // }
+                        // else {
+                        //     tooltip
+                        //         .style("left", (d3.event.layerX - 20) + "px")
+                        //         .style("top", (d3.event.layerY - 100) + "px");
+                        // }
                     })
             }
         }

@@ -219,17 +219,21 @@ export default class datebarChart extends Component {
                         value = durationFormat(d.agg.value);
                     }
                     tooltip.select("div").html("<strong>Value:</strong> " + value + units + "</br><strong>Time: </strong>" + parseTimestamp(timestamp)+ " + "+getTimeBucket());
+
+                    var tooltipDim = tooltip.node().getBoundingClientRect();
+                    var chartRect = d3.select('#' + id).node().getBoundingClientRect();
+                    tooltip
+                        .style("left", (d3.event.clientX - chartRect.left + document.body.scrollLeft - (tooltipDim.width / 2)) + "px")
+                        .style("top", (d3.event.clientY - chartRect.top + document.body.scrollTop + 15) + "px");
                 })
                 .on('mouseout', () => //tooltip.transition().style('opacity', 0));
                     tooltip.style("visibility", "hidden"))
                 .on("mousemove", function (d) {
+                    var tooltipDim = tooltip.node().getBoundingClientRect();
+                    var chartRect = d3.select('#' + id).node().getBoundingClientRect();
                     tooltip
-                        .style("left", (d3.event.pageX - 200) + "px")
-                        .style("top", (d3.event.pageY - 90) + "px");
-                    if (d3.mouse(d3.event.target)[0] > window.innerWidth - 600) {
-                        tooltip
-                            .style("left", (d3.event.pageX - 350) + "px")
-                    }
+                        .style("left", (d3.event.clientX - chartRect.left + document.body.scrollLeft - (tooltipDim.width / 2)) + "px")
+                        .style("top", (d3.event.clientY - chartRect.top + document.body.scrollTop + 15) + "px");
                 });
 
 

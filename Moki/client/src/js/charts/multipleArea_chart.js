@@ -1,5 +1,5 @@
 /*
-data: 
+data:
 
 name: name,
 values: timestamp, value1
@@ -135,7 +135,7 @@ export default class MultipleAreaChart extends Component {
 
 
         if (data.length >= 1) {
-            //max value    
+            //max value
             var max = 0;
             var min = 0;
             if (data[1].values.length > 0) {
@@ -164,7 +164,7 @@ export default class MultipleAreaChart extends Component {
         var domain = 0;
         var yScale = d3.scaleLinear();
 
-        //get minimum y axis only for parallel registration 
+        //get minimum y axis only for parallel registration
         if (id === "parallelRegs") {
             domain = max === 0 ? domain = 1 : domain = max + (max - min);
 
@@ -300,19 +300,22 @@ export default class MultipleAreaChart extends Component {
                 .on("mouseover", function (d) {
                     tooltip.style("visibility", "visible");
                     tooltip.select("div").html("<strong>Time: </strong>" + parseTimestamp(d.date) + " + "+getTimeBucket()+"<br/><strong>Value: </strong>" + d3.format(',')(d.value) + units + "<br/> ");
+
+                    var tooltipDim = tooltip.node().getBoundingClientRect();
+                    var chartRect = d3.select('#' + id).node().getBoundingClientRect();
+                    tooltip
+                        .style("left", (d3.event.clientX - chartRect.left + document.body.scrollLeft - (tooltipDim.width / 2)) + "px")
+                        .style("top", (d3.event.clientY - chartRect.top + document.body.scrollTop + 15) + "px");
                 })
                 .on("mouseout", function (d) {
                     tooltip.style("visibility", "hidden")
                 })
                 .on("mousemove", function (d) {
+                    var tooltipDim = tooltip.node().getBoundingClientRect();
+                    var chartRect = d3.select('#' + id).node().getBoundingClientRect();
                     tooltip
-                        .style("left", (d3.event.layerX - 125) + "px")
-                        .style("top", (d3.event.layerY - 90) + "px");
-                    if (id === "parallelCalls") tooltip.style("top", (d3.event.layerY + 350) + "px");
-                    if (id === "parallelRegs") tooltip.style("top", (d3.event.layerY + 570) + "px");
-                    if (id === "incidentCount") tooltip.style("top", (d3.event.layerY + 820) + "px");
-                    if (id === "parallelRegsR") tooltip.style("top", (d3.event.layerY + 300) + "px");
-
+                        .style("left", (d3.event.clientX - chartRect.left + document.body.scrollLeft - (tooltipDim.width / 2)) + "px")
+                        .style("top", (d3.event.clientY - chartRect.top + document.body.scrollTop + 15) + "px");
                 })
                 .append("circle")
                 .attr("cx", d => xScale(d.date))

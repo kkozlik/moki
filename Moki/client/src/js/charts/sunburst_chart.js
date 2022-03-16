@@ -149,11 +149,22 @@ export default class sunburst extends Component {
                         .style("position", "absolute")
                         .style("box-shadow", "0px 0px 6px black")
                         .style("padding", "10px")
-                        .html(`<strong><span>${d.data.key}:</strong> ${d3.format(',')(d.data.value) + units}</span></strong>`)
-                        .style('left', `${d3.event.layerX - 10}px`)
-                        .style('top', `${(d3.event.layerY - 130)}px`);
+                        .html(`<strong><span>${d.data.key}:</strong> ${d3.format(',')(d.data.value) + units}</span></strong>`);
+
+                    var tooltipDim = tooltip.node().getBoundingClientRect();
+                    var chartRect = d3.select('#sunburstChart').node().getBoundingClientRect();
+                    tooltip
+                        .style("left", (d3.event.clientX - chartRect.left + document.body.scrollLeft - (tooltipDim.width / 2)) + "px")
+                        .style("top", (d3.event.clientY - chartRect.top + document.body.scrollTop + 15) + "px");
                 })
                 .on('mouseout', () => tooltip.remove())
+                .on("mousemove", function (d) {
+                    var tooltipDim = tooltip.node().getBoundingClientRect();
+                    var chartRect = d3.select('#sunburstChart').node().getBoundingClientRect();
+                    tooltip
+                        .style("left", (d3.event.clientX - chartRect.left + document.body.scrollLeft - (tooltipDim.width / 2)) + "px")
+                        .style("top", (d3.event.clientY - chartRect.top + document.body.scrollTop + 15) + "px");
+                })
                 .on("click", el => {
                     if (parseInt(el.data.key, 10)) {
                         createFilter("attrs.sip-code: \"" + el.data.key + "\"");
@@ -207,7 +218,7 @@ export default class sunburst extends Component {
 
                         var c = 2;   // number of columns
                         var h = 20;  // legend entry height
-                        var w = 100; // legend entry width (so we can position the next column) 
+                        var w = 100; // legend entry width (so we can position the next column)
                         var tx = 150; // tx/ty are essentially margin values
                         var ty = -50;
                         var x = i % c * w + tx;
@@ -243,7 +254,7 @@ export default class sunburst extends Component {
 
                         var c = 1;   // number of columns
                         var h = 20;  // legend entry height
-                        var w = 100; // legend entry width (so we can position the next column) 
+                        var w = 100; // legend entry width (so we can position the next column)
                         var tx = 350; // tx/ty are essentially margin values
                         var ty = -50;
                         var x = i % c * w + tx;

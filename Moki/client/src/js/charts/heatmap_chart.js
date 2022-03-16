@@ -202,9 +202,7 @@ export default class heatmap extends Component {
                 .attr('transform', 'translate(' + cellSize / 2 + ',0)')
                 .on("mouseover", function (d) {
                     d3.select(this).style("stroke", "orange");
-                    tooltip.style("visibility", "visible")
-                        .style('left', `${d3.event.layerX}px`)
-                        .style('top', `${(d3.event.layerY - 50)}px`);
+                    tooltip.style("visibility", "visible");
 
                     if (d3.mouse(d3.event.target)[0] > window.innerWidth - 600) {
                         tooltip
@@ -220,6 +218,12 @@ export default class heatmap extends Component {
                     else {
                         tooltip.select("div").html("<strong>SRC:</strong> " + d.attr2 + "<br/> <strong>DST: </strong>" + d.attr1 + "<br/> <strong>Value: </strong>" + (+d.value).toFixed(2) + units);
                     }
+
+                    var tooltipDim = tooltip.node().getBoundingClientRect();
+                    var chartRect = d3.select('#' + id).node().getBoundingClientRect();
+                    tooltip
+                        .style("left", (d3.event.clientX - chartRect.left + document.body.scrollLeft - (tooltipDim.width / 2)) + "px")
+                        .style("top", (d3.event.clientY - chartRect.top + document.body.scrollTop + 15) + "px");
                 })
                 .on("mouseout", function () {
                     d3.select(this).style("stroke", "none");

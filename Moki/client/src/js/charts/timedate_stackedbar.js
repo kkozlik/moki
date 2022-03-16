@@ -64,7 +64,7 @@ export default class StackedChart extends Component {
             bottom: 30,
             left: 35
         };
-        //window.innerWidth -200 
+        //window.innerWidth -200
         width = width - margin.left - margin.right - 30;
         var height = 200 - margin.top - margin.bottom;
 
@@ -238,7 +238,6 @@ export default class StackedChart extends Component {
                     .ticks(5)
             }
 
-
             layer.selectAll("rect")
                 .data(function (d, i) {
                     return d;
@@ -257,7 +256,7 @@ export default class StackedChart extends Component {
                          return yScale(d[1]);
                      })
                      .attr("height", function (d) {
-                     var height = yScale(d[0]) - yScale(d[1]); 
+                     var height = yScale(d[0]) - yScale(d[1]);
                          if(height){
                              return height
                          }
@@ -297,33 +296,27 @@ export default class StackedChart extends Component {
                 })
                 .on("mouseover", function (d, i) {
                     //d3.select(this).style("stroke","orange");
-                    if (d3.mouse(d3.event.target)[0] > window.innerWidth - 600) {
-                        tooltip.style.left = d3.mouse(d3.event.target)[1] - 200 + 'px';
-                    }
-
-
-                    tooltip.style("visibility", "visible");
-                    // .style("left", this.getAttribute("x") + 300 + "px")
-                    //   .style("top", this.getAttribute("y") + 300 + "px");
 
                     tooltip.select("div").html("<strong>Time: </strong> " + parseTimestamp(d.data.time) + " + " + getTimeBucket() + "<br/><strong>Value:</strong> " + d3.format(',')(d[1] - d[0]) + units + "<br/><strong>Type: </strong>" + this.parentNode.getAttribute("type") + "<br/> ");
                     d3.select(this).style("cursor", "pointer");
 
-
+                    var tooltipDim = tooltip.node().getBoundingClientRect();
+                    var chartRect = d3.select('#' + id).node().getBoundingClientRect();
+                    tooltip
+                        .style("visibility", "visible")
+                        .style("left", (d3.event.clientX - chartRect.left + document.body.scrollLeft - (tooltipDim.width / 2)) + "px")
+                        .style("top", (d3.event.clientY - chartRect.top + document.body.scrollTop + 15) + "px");
                 })
                 .on("mouseout", function () {
                     //  d3.select(this).style("stroke","none");
                     tooltip.style("visibility", "hidden");
                 })
                 .on("mousemove", function (d) {
+                    var tooltipDim = tooltip.node().getBoundingClientRect();
+                    var chartRect = d3.select('#' + id).node().getBoundingClientRect();
                     tooltip
-                        .style("left", (d3.event.pageX - 200) + "px")
-                        .style("top", (d3.event.pageY - 130) + "px");
-
-                    if (d3.mouse(d3.event.target)[0] > window.innerWidth - 600) {
-                        tooltip
-                            .style("left", (d3.event.pageX - 500) + "px")
-                    }
+                        .style("left", (d3.event.clientX - chartRect.left + document.body.scrollLeft - (tooltipDim.width / 2)) + "px")
+                        .style("top", (d3.event.clientY - chartRect.top + document.body.scrollTop + 15) + "px");
                 });
 
             //filter type onClick
