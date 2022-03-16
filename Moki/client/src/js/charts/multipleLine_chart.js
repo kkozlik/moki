@@ -1,5 +1,5 @@
 /*
-data: 
+data:
 
 name: name,
 values: timestamp, value1
@@ -53,7 +53,7 @@ export default class MultipleLineChart extends Component {
 
 
     draw(data, id, width, ticks, hostnames) {
-        var field = this.props.field ? this.props.field : "attrs.hostname"; 
+        var field = this.props.field ? this.props.field : "attrs.hostname";
 
         //make div values if necessary
         if (window.location.pathname === "/stats" || CUMULATIVE_SUM.includes(this.props.name)) {
@@ -148,7 +148,7 @@ export default class MultipleLineChart extends Component {
             }
         }
 
-        //max value    
+        //max value
         var max = 0;
         for (var i = 0; i < data.length; i++) {
             for (var k = 0; k < data[i].values.length; k++) {
@@ -293,15 +293,22 @@ export default class MultipleLineChart extends Component {
                 .on("mouseover", function (d) {
                     tooltip.style("visibility", "visible");
                     tooltip.select("div").html("<strong>Time: </strong>" + parseTimestamp(d.date) + " + " + getTimeBucket() + "<strong><br/>Value: </strong>" + d3.format(',')(d.value) + "<br/> ");
+
+                    var tooltipDim = tooltip.node().getBoundingClientRect();
+                    var chartRect = d3.select('#' + id).node().getBoundingClientRect();
+                    tooltip
+                        .style("left", (d3.event.clientX - chartRect.left + document.body.scrollLeft - (tooltipDim.width / 2)) + "px")
+                        .style("top", (d3.event.clientY - chartRect.top + document.body.scrollTop + 15) + "px");
                 })
                 .on("mouseout", function (d) {
                     tooltip.style("visibility", "hidden")
                 })
                 .on("mousemove", function (d) {
+                    var tooltipDim = tooltip.node().getBoundingClientRect();
+                    var chartRect = d3.select('#' + id).node().getBoundingClientRect();
                     tooltip
-                        .style("left", (d3.event.layerX - 100) + "px")
-                        .style("top", (d3.event.layerY - 70) + "px");
-
+                        .style("left", (d3.event.clientX - chartRect.left + document.body.scrollLeft - (tooltipDim.width / 2)) + "px")
+                        .style("top", (d3.event.clientY - chartRect.top + document.body.scrollTop + 15) + "px");
                 })
                 .append("circle")
                 .attr("cx", d => xScale(d.date))

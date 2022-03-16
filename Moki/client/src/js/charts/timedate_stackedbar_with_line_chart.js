@@ -51,7 +51,7 @@ export default class StackedChart extends Component {
         var colorScale = d3.scaleOrdinal(Colors);
         var parseDate = d3.timeFormat(timestampBucket(store.getState().timerange[0], store.getState().timerange[1]));
 
-        // var bucketSize = d3.timeFormat(timestampBucketSizeWidth(store.getState().timerange[0], store.getState().timerange[1])); 
+        // var bucketSize = d3.timeFormat(timestampBucketSizeWidth(store.getState().timerange[0], store.getState().timerange[1]));
 
         var rootsvg = svg.append("svg")
             .attr('width', width)
@@ -212,26 +212,26 @@ export default class StackedChart extends Component {
                     //d3.select(this).style("stroke","orange");
 
                     tooltip.style("visibility", "visible");
-                    // .style("left", this.getAttribute("x") + 300 + "px")
-                    //   .style("top", this.getAttribute("y") + 300 + "px");
 
                     tooltip.select("div").html("<strong>Time: </strong> " + parseDate(d.data.time) + "<br/><strong>Value:</strong> " + d3.format(',')(d[1] - d[0]) + "<br/><strong>Type: </strong>" + this.parentNode.getAttribute("type") + "<br/> ");
                     d3.select(this).style("cursor", "pointer");
 
-
+                    var tooltipDim = tooltip.node().getBoundingClientRect();
+                    var chartRect = d3.select('#' + id).node().getBoundingClientRect();
+                    tooltip
+                        .style("left", (d3.event.clientX - chartRect.left + document.body.scrollLeft - (tooltipDim.width / 2)) + "px")
+                        .style("top", (d3.event.clientY - chartRect.top + document.body.scrollTop + 15) + "px");
                 })
                 .on("mouseout", function () {
                     //  d3.select(this).style("stroke","none");
                     tooltip.style("visibility", "hidden");
                 })
                 .on("mousemove", function (d) {
+                    var tooltipDim = tooltip.node().getBoundingClientRect();
+                    var chartRect = d3.select('#' + id).node().getBoundingClientRect();
                     tooltip
-                        .style("left", (d3.event.pageX - 200) + "px")
-                        .style("top", (d3.event.pageY - 100) + "px");
-                    if (d3.mouse(d3.event.target)[0] > window.innerWidth - 600) {
-                        tooltip
-                            .style("left", (d3.event.pageX - 500) + "px")
-                    }
+                        .style("left", (d3.event.clientX - chartRect.left + document.body.scrollLeft - (tooltipDim.width / 2)) + "px")
+                        .style("top", (d3.event.clientY - chartRect.top + document.body.scrollTop + 15) + "px");
                 });
 
             //filter type onClick
@@ -362,21 +362,21 @@ export default class StackedChart extends Component {
 
 
 
-                /*      
-                      
+                /*
+
                // define legend box size and space
                   var legend_keys = ["duration"]
-          
+
                   var lineLegend = g.selectAll(".lineLegend").data(legend_keys)
                       .enter().append("g")
                       .attr("class","lineLegend")
                       .attr("transform", function (d,i) {
                               return "translate(" + width + "," + (i*20)+")";
                           });
-          
+
                   lineLegend.append("text").text(function (d) {return d;})
                       .attr("transform", "translate(15,9)"); //align texts with boxes
-          
+
                   lineLegend.append("rect")
                       .attr("fill", "indigo")
                       .attr("width", 10).attr("height", 10);

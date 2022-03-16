@@ -158,7 +158,7 @@ export default class StackedChart extends Component {
                 .attr('id', function (d, i) {
                     return thiss.getArcId(d.data.key);
                 })
-                .style("stroke-width", "1px") 
+                .style("stroke-width", "1px")
                 .style("stroke", "white")
                 .attr('fill', function (d, i) {
                     return color(thiss.getArcId(d.data.key), i);
@@ -176,13 +176,24 @@ export default class StackedChart extends Component {
                         .style("position", "absolute")
                         .style("box-shadow", "0px 0px 6px black")
                         .style("padding", "10px")
-                        .html(`<span><strong>${d.data.key}</strong>: ${d3.format(',')(d.data.doc_count) + units}</span>`)
-                        .style('left', `${d3.event.layerX - 10}px`)
-                        .style('top', `${(d3.event.layerY - 130)}px`);
+                        .html(`<span><strong>${d.data.key}</strong>: ${d3.format(',')(d.data.doc_count) + units}</span>`);
+
+                    var tooltipDim = tooltip.node().getBoundingClientRect();
+                    var chartRect = d3.select('#' + id).node().getBoundingClientRect();
+                    tooltip
+                        .style("left", (d3.event.clientX - chartRect.left + document.body.scrollLeft - (tooltipDim.width / 2)) + "px")
+                        .style("top", (d3.event.clientY - chartRect.top + document.body.scrollTop + 15) + "px");
                 })
                 .on('mouseout', function (d) {
                     mouseOutAnimation(d.data.key);
                     tooltip.remove();
+                })
+                .on("mousemove", function (d) {
+                    var tooltipDim = tooltip.node().getBoundingClientRect();
+                    var chartRect = d3.select('#' + id).node().getBoundingClientRect();
+                    tooltip
+                        .style("left", (d3.event.clientX - chartRect.left + document.body.scrollLeft - (tooltipDim.width / 2)) + "px")
+                        .style("top", (d3.event.clientY - chartRect.top + document.body.scrollTop + 15) + "px");
                 })
                 .on("click", el => {
                     createFilter(field + ":\"" + el.data.key + "\"");
@@ -238,7 +249,7 @@ export default class StackedChart extends Component {
             legend.append('rect')
                 .attr('width', legendRectSize)
                 .attr('height', legendRectSize)
-                .style("stroke-width", "2px") 
+                .style("stroke-width", "2px")
                 .style("stroke", "white")
                 .attr('fill', function (d, i) {
                     return color(thiss.getArcId(d.key), i);

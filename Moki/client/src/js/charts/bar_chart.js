@@ -212,22 +212,24 @@ export default class barChart extends Component {
                         .attr("class", "tooltipCharts");
 
                     tooltip.style('opacity', 0.9);
-                    tooltip.html(`<strong>Key: </strong>${d.key}<br/><strong>Value: </strong>${d.doc_count + units}`)
-                        .style('left', `${d3.event.layerX}px`)
-                        .style('top', `${d3.event.layerY}px`);
+                    tooltip.style("visibility", "visible");
+                    tooltip.html(`<strong>Key: </strong>${d.key}<br/><strong>Value: </strong>${d.doc_count + units}`);
+
+                    var tooltipDim = tooltip.node().getBoundingClientRect();
+                    var chartRect = d3.select('#barChart').node().getBoundingClientRect();
+                    tooltip
+                        .style("left", (d3.event.clientX - chartRect.left + document.body.scrollLeft - (tooltipDim.width / 2)) + "px")
+                        .style("top", (d3.event.clientY - chartRect.top + document.body.scrollTop + 15) + "px");
 
                     // d3.select(this).style("cursor", "pointer");
                 })
                 .on('mouseout', () => tooltip.style('visibility', "hidden"))
                 .on("mousemove", function (d) {
+                    var tooltipDim = tooltip.node().getBoundingClientRect();
+                    var chartRect = d3.select('#barChart').node().getBoundingClientRect();
                     tooltip
-                        .style("left", (d3.event.layerX + 180) + "px")
-                        .style("top", (d3.event.layerY - 80) + "px");
-
-                    if (d3.mouse(d3.event.target)[0] > window.innerWidth - 600) {
-                        tooltip
-                            .style("left", (d3.event.layerX - 350) + "px")
-                    }
+                        .style("left", (d3.event.clientX - chartRect.left + document.body.scrollLeft - (tooltipDim.width / 2)) + "px")
+                        .style("top", (d3.event.clientY - chartRect.top + document.body.scrollTop + 15) + "px");
                 });
 
 
