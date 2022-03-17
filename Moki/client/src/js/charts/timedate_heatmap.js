@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import * as d3 from "d3";
-import { timestampBucket } from '../bars/TimestampBucket.js';
 import store from "../store/index";
 import { setTimerange } from "../actions/index";
 import { createFilter} from '@moki-client/gui';
@@ -8,7 +7,7 @@ import emptyIcon from "../../styles/icons/empty_small.png";
 import { getTimeBucket, getTimeBucketInt} from "../helpers/getTimeBucket";
 import {ColorsRedGreen} from "@moki-client/gui";
 import { ColorsGreen} from "@moki-client/gui";
-import {parseTimestamp} from "../helpers/parseTimestamp";
+import {parseTimestamp, parseTimestampD3js} from "../helpers/parseTimestamp";
 
 export default class timedateHeatmap extends Component {
     constructor(props) {
@@ -24,7 +23,7 @@ export default class timedateHeatmap extends Component {
        }
        else return null;
      }
-
+     
      componentDidUpdate(prevProps, prevState) {
        if(prevProps.data!==this.props.data){
         this.setState({ data: this.props.data });
@@ -76,7 +75,7 @@ export default class timedateHeatmap extends Component {
             .range([0, width])
             .domain([minTime, maxTime]);
 
-        var parseDate = d3.utcFormat(timestampBucket(store.getState().timerange[0], store.getState().timerange[1]));
+        var parseDate = parseTimestampD3js(store.getState().timerange[0], store.getState().timerange[1]);
 
         const buckets = 5;
         colorScale = d3.scaleQuantile()
@@ -236,6 +235,16 @@ export default class timedateHeatmap extends Component {
                 .style("opacity", 1)
                 .attr('transform', 'translate(' + cellSize / 2 + ',0)')
                 .on("mouseover", function (d) {
+                    tooltip.style("visibility", "visible")
+                    .style('left', (d3.event.x -400)+ 'px')  
+                    .style("top", (d3.event.y -300) +"px");
+
+                    if (id === "avgMoS") tooltip.style("top", (d3.event.y - 400) + "px");
+                    if (id === "ratioHistory") tooltip.style("top", (d3.event.y - 550) + "px");
+                    if (id === "caAvailability") tooltip.style("top", (d3.event.y -650) + "px");
+                    if (id === "dateHeatmap") tooltip.style("top", (d3.event.y - 100) + "px");
+                    if (id === "activitySBC") tooltip.style("top", (d3.event.pageY - 100) + "px");
+                    if (id === "keepAlive") tooltip.style("top", (d3.event.pageY - 80) + "px");
 
                     var value = (d.value).toFixed(2);
                     if (name === "CA AVAILABILITY") {
@@ -254,14 +263,6 @@ export default class timedateHeatmap extends Component {
                     }
 
                     tooltip.select("div").html("<strong>" + d.attr2.charAt(0).toUpperCase() + d.attr2.slice(1) + ": </strong>" + value + units + "<br/><strong>Time: </strong>" + parseTimestamp(new Date(d.attr1))+ " + "+getTimeBucket());
-
-                    var tooltipDim = tooltip.node().getBoundingClientRect();
-                    var chartRect = d3.select('#' + id).node().getBoundingClientRect();
-
-                    tooltip
-                        .style("visibility", "visible")
-                        .style("left", (d3.event.clientX - chartRect.left + document.body.scrollLeft - (tooltipDim.width / 2)) + "px")
-                        .style("top", (d3.event.clientY - chartRect.top + document.body.scrollTop + 15) + "px");
 
 
                   /*  if (d3.mouse(d3.event.target)[0] > window.innerWidth - 600) {
@@ -300,7 +301,7 @@ export default class timedateHeatmap extends Component {
                .duration(1200)
                .ease(d3.easeLinear)
                .attr('x', -2 * width - 50);
-
+               
 
             svg.append("g")
                 .attr("class", "y axis")
@@ -311,8 +312,8 @@ export default class timedateHeatmap extends Component {
                     if(d.length > 20)
                         return d.substring(0,20)+'...';
                     else
-                        return d;
-                })
+                        return d;                       
+                })         
                 .attr('font-weight', 'normal')
                 .style('cursor', 'pointer')
                 .on("click", el => {

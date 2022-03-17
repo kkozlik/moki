@@ -2,22 +2,13 @@ import React, {
     Component
 } from 'react';
 import * as d3 from "d3";
-import {
-    timestampBucket
-} from '../bars/TimestampBucket.js';
 import store from "../store/index";
-import {
-    setTimerange
-} from "../actions/index";
+import { setTimerange} from "../actions/index";
 import {Colors} from '@moki-client/gui';
 import emptyIcon from "../../styles/icons/empty_small.png";
-import {
-    getTimeBucket, getTimeBucketInt
-} from "../helpers/getTimeBucket";
-import {
-    durationFormat
-} from "../helpers/durationFormat";
-import {parseTimestamp} from "../helpers/parseTimestamp";
+import {getTimeBucket, getTimeBucketInt } from "../helpers/getTimeBucket";
+import { durationFormat} from "../helpers/durationFormat";
+import {parseTimestamp, parseTimestampD3js} from "../helpers/parseTimestamp";
 
 export default class datebarChart extends Component {
     constructor(props) {
@@ -82,7 +73,7 @@ export default class datebarChart extends Component {
             .range([height, 0])
             .domain([0, domain]);
 
-        var parseDate = d3.utcFormat(timestampBucket(store.getState().timerange[0], store.getState().timerange[1]));
+        var parseDate = parseTimestampD3js(store.getState().timerange[0], store.getState().timerange[1]);
 
 
         // gridlines in y axis function
@@ -219,21 +210,17 @@ export default class datebarChart extends Component {
                         value = durationFormat(d.agg.value);
                     }
                     tooltip.select("div").html("<strong>Value:</strong> " + value + units + "</br><strong>Time: </strong>" + parseTimestamp(timestamp)+ " + "+getTimeBucket());
-
-                    var tooltipDim = tooltip.node().getBoundingClientRect();
-                    var chartRect = d3.select('#' + id).node().getBoundingClientRect();
-                    tooltip
-                        .style("left", (d3.event.clientX - chartRect.left + document.body.scrollLeft - (tooltipDim.width / 2)) + "px")
-                        .style("top", (d3.event.clientY - chartRect.top + document.body.scrollTop + 15) + "px");
                 })
                 .on('mouseout', () => //tooltip.transition().style('opacity', 0));
                     tooltip.style("visibility", "hidden"))
                 .on("mousemove", function (d) {
-                    var tooltipDim = tooltip.node().getBoundingClientRect();
-                    var chartRect = d3.select('#' + id).node().getBoundingClientRect();
                     tooltip
-                        .style("left", (d3.event.clientX - chartRect.left + document.body.scrollLeft - (tooltipDim.width / 2)) + "px")
-                        .style("top", (d3.event.clientY - chartRect.top + document.body.scrollTop + 15) + "px");
+                        .style("left", (d3.event.pageX - 200) + "px")
+                        .style("top", (d3.event.pageY - 90) + "px");
+                    if (d3.mouse(d3.event.target)[0] > window.innerWidth - 600) {
+                        tooltip
+                            .style("left", (d3.event.pageX - 350) + "px")
+                    }
                 });
 
 
