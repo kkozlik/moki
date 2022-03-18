@@ -3,12 +3,12 @@ import React, {
 } from 'react';
 import * as d3 from "d3";
 import store from "../store/index";
-import { setTimerange} from "../actions/index";
-import {Colors} from '@moki-client/gui';
+import { setTimerange } from "../actions/index";
+import { Colors } from '@moki-client/gui';
 import emptyIcon from "../../styles/icons/empty_small.png";
-import {getTimeBucket, getTimeBucketInt } from "../helpers/getTimeBucket";
-import { durationFormat} from "../helpers/durationFormat";
-import {parseTimestamp, parseTimestampD3js, parseTimeData, parseTimestampUTC } from "../helpers/parseTimestamp";
+import { getTimeBucket, getTimeBucketInt } from "../helpers/getTimeBucket";
+import { durationFormat } from "../helpers/durationFormat";
+import { parseTimestamp, parseTimestampD3js, parseTimeData, parseTimestampUTC } from "../helpers/parseTimestamp";
 
 export default class datebarChart extends Component {
     constructor(props) {
@@ -59,7 +59,7 @@ export default class datebarChart extends Component {
         };
         width = width - margin.left - margin.right;
         var height = heightTotal - margin.top - margin.bottom;
-        var colorScale = d3.scaleOrdinal(Colors);            
+        var colorScale = d3.scaleOrdinal(Colors);
 
         //max and min date
         var maxTime = parseTimeData(store.getState().timerange[1]) + getTimeBucketInt();
@@ -118,19 +118,19 @@ export default class datebarChart extends Component {
         } else {
 
             svg.append('g')
-            .attr('class', 'x axis')
-            .attr('transform', `translate(0, ${height})`)
-            .call(xAxis);
+                .attr('class', 'x axis')
+                .attr('transform', `translate(0, ${height})`)
+                .call(xAxis);
 
-        svg.append('g')
-            .attr('class', 'y axis')
-            .call(yAxis)
-            .append('text')
-            .attr('transform', 'rotate(-90)')
-            .attr('y', 6)
-            .attr('dy', '.71em')
-            .style('text-anchor', 'end')
-            .text('Count');
+            svg.append('g')
+                .attr('class', 'y axis')
+                .call(yAxis)
+                .append('text')
+                .attr('transform', 'rotate(-90)')
+                .attr('y', 6)
+                .attr('dy', '.71em')
+                .style('text-anchor', 'end')
+                .text('Count');
 
             svg.append("g")
                 .attr("class", "brush")
@@ -213,18 +213,22 @@ export default class datebarChart extends Component {
                     if (name.includes("DURATION")) {
                         value = durationFormat(d.agg.value);
                     }
-                    tooltip.select("div").html("<strong>Value:</strong> " + value + units + "</br><strong>Time: </strong>" + parseTimestampUTC(timestamp)+ " + "+getTimeBucket());
+                    tooltip.select("div").html("<strong>Value:</strong> " + value + units + "</br><strong>Time: </strong>" + parseTimestamp(timestamp) + " + " + getTimeBucket());
+
+                    var tooltipDim = tooltip.node().getBoundingClientRect();
+                    var chartRect = d3.select('#' + id).node().getBoundingClientRect();
+                    tooltip
+                        .style("left", (d3.event.clientX - chartRect.left + document.body.scrollLeft - (tooltipDim.width / 2)) + "px")
+                        .style("top", (d3.event.clientY - chartRect.top + document.body.scrollTop + 15) + "px");
                 })
                 .on('mouseout', () => //tooltip.transition().style('opacity', 0));
                     tooltip.style("visibility", "hidden"))
                 .on("mousemove", function (d) {
+                    var tooltipDim = tooltip.node().getBoundingClientRect();
+                    var chartRect = d3.select('#' + id).node().getBoundingClientRect();
                     tooltip
-                        .style("left", (d3.event.pageX - 200) + "px")
-                        .style("top", (d3.event.pageY - 90) + "px");
-                    if (d3.mouse(d3.event.target)[0] > window.innerWidth - 600) {
-                        tooltip
-                            .style("left", (d3.event.pageX - 350) + "px")
-                    }
+                        .style("left", (d3.event.clientX - chartRect.left + document.body.scrollLeft - (tooltipDim.width / 2)) + "px")
+                        .style("top", (d3.event.clientY - chartRect.top + document.body.scrollTop + 15) + "px");
                 });
 
 
@@ -260,7 +264,7 @@ export default class datebarChart extends Component {
         var bucket = getTimeBucket();
         return (<div id={
             this.props.id
-        }  className="chart"> <h3 className="alignLeft title" > {
+        } className="chart"> <h3 className="alignLeft title" > {
             this.props.name
         } <span className="smallText"> (interval: {bucket})</span></h3></div >)
     }
