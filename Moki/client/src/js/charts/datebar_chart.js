@@ -8,7 +8,7 @@ import {Colors} from '@moki-client/gui';
 import emptyIcon from "../../styles/icons/empty_small.png";
 import {getTimeBucket, getTimeBucketInt } from "../helpers/getTimeBucket";
 import { durationFormat} from "../helpers/durationFormat";
-import {parseTimestamp, parseTimestampD3js} from "../helpers/parseTimestamp";
+import {parseTimestamp, parseTimestampD3js, parseTimeData, parseTimestampUTC } from "../helpers/parseTimestamp";
 
 export default class datebarChart extends Component {
     constructor(props) {
@@ -47,6 +47,10 @@ export default class datebarChart extends Component {
             elements.parentNode.removeChild(elements);
         }
 
+        for (let hit of data) {
+            hit.time = parseTimeData(hit.time);
+        }
+
         var margin = {
             top: 10,
             right: 20,
@@ -55,11 +59,11 @@ export default class datebarChart extends Component {
         };
         width = width - margin.left - margin.right;
         var height = heightTotal - margin.top - margin.bottom;
-        var colorScale = d3.scaleOrdinal(Colors);
+        var colorScale = d3.scaleOrdinal(Colors);            
 
         //max and min date
-        var maxTime = store.getState().timerange[1] + getTimeBucketInt();
-        var minTime = store.getState().timerange[0] - (60 * 1000); //minus one minute fix for round up
+        var maxTime = parseTimeData(store.getState().timerange[1]) + getTimeBucketInt();
+        var minTime = parseTimeData(store.getState().timerange[0]) - (60 * 1000); //minus one minute fix for round up
 
 
         var xScale = d3.scaleLinear()
@@ -209,7 +213,7 @@ export default class datebarChart extends Component {
                     if (name.includes("DURATION")) {
                         value = durationFormat(d.agg.value);
                     }
-                    tooltip.select("div").html("<strong>Value:</strong> " + value + units + "</br><strong>Time: </strong>" + parseTimestamp(timestamp)+ " + "+getTimeBucket());
+                    tooltip.select("div").html("<strong>Value:</strong> " + value + units + "</br><strong>Time: </strong>" + parseTimestampUTC(timestamp)+ " + "+getTimeBucket());
                 })
                 .on('mouseout', () => //tooltip.transition().style('opacity', 0));
                     tooltip.style("visibility", "hidden"))

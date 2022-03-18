@@ -7,7 +7,7 @@ import emptyIcon from "../../styles/icons/empty_small.png";
 import { getTimeBucket, getTimeBucketInt} from "../helpers/getTimeBucket";
 import {ColorsRedGreen} from "@moki-client/gui";
 import { ColorsGreen} from "@moki-client/gui";
-import {parseTimestamp, parseTimestampD3js} from "../helpers/parseTimestamp";
+import {parseTimestamp, parseTimestampD3js, parseTimeData, parseTimestampUTC } from "../helpers/parseTimestamp";
 
 export default class timedateHeatmap extends Component {
     constructor(props) {
@@ -61,14 +61,18 @@ export default class timedateHeatmap extends Component {
         width = width - margin.right - margin.left;
         var colorScale;
 
+        for (let hit of data) {
+            hit.time = parseTimeData(hit.time);
+        }
+
         var colorOneShade = ColorsGreen;
         //special color scale
         if ((name.includes("RATIO") && !name.includes("DURATION")) || name.includes("CALL-ATTEMPS") || name.includes("ERROR")) {
             colorOneShade = ColorsRedGreen;
         }
         //max and min date
-        var maxTime = store.getState().timerange[1]+getTimeBucketInt();
-        var minTime = store.getState().timerange[0] - (60 * 1000); //minus one minute fix for round up
+        var maxTime = parseTimeData(store.getState().timerange[1])+getTimeBucketInt();
+        var minTime = parseTimeData(store.getState().timerange[0]) - (60 * 1000); //minus one minute fix for round up
 
         //scale for brush function
         var xScale = d3.scaleLinear()
@@ -262,7 +266,7 @@ export default class timedateHeatmap extends Component {
                         if (d.value === 5) value = "Partially Available";
                     }
 
-                    tooltip.select("div").html("<strong>" + d.attr2.charAt(0).toUpperCase() + d.attr2.slice(1) + ": </strong>" + value + units + "<br/><strong>Time: </strong>" + parseTimestamp(new Date(d.attr1))+ " + "+getTimeBucket());
+                    tooltip.select("div").html("<strong>" + d.attr2.charAt(0).toUpperCase() + d.attr2.slice(1) + ": </strong>" + value + units + "<br/><strong>Time: </strong>" + parseTimestampUTC(d.attr1)+ " + "+getTimeBucket());
 
 
                   /*  if (d3.mouse(d3.event.target)[0] > window.innerWidth - 600) {
