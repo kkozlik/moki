@@ -156,8 +156,9 @@ class AdminController {
 
     //store login to ES
     if (oldJti !== jti) {
-      storeLoginInES(domainID, subId, jwtbit, email, sourceIP);
+      storeLoginInES(subId, domainID, jwtbit, email, sourceIP);
     }
+
     oldJti = jti;
 
     // subscriber id and admin level must be always set
