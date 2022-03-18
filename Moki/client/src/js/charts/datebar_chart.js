@@ -2,22 +2,13 @@ import React, {
     Component
 } from 'react';
 import * as d3 from "d3";
-import {
-    timestampBucket
-} from '../bars/TimestampBucket.js';
 import store from "../store/index";
-import {
-    setTimerange
-} from "../actions/index";
-import {Colors} from '@moki-client/gui';
+import { setTimerange } from "../actions/index";
+import { Colors } from '@moki-client/gui';
 import emptyIcon from "../../styles/icons/empty_small.png";
-import {
-    getTimeBucket, getTimeBucketInt
-} from "../helpers/getTimeBucket";
-import {
-    durationFormat
-} from "../helpers/durationFormat";
-import {parseTimestamp} from "../helpers/parseTimestamp";
+import { getTimeBucket, getTimeBucketInt } from "../helpers/getTimeBucket";
+import { durationFormat } from "../helpers/durationFormat";
+import { parseTimestamp, parseTimestampD3js, parseTimeData, parseTimestampUTC } from "../helpers/parseTimestamp";
 
 export default class datebarChart extends Component {
     constructor(props) {
@@ -56,6 +47,10 @@ export default class datebarChart extends Component {
             elements.parentNode.removeChild(elements);
         }
 
+        for (let hit of data) {
+            hit.time = parseTimeData(hit.time);
+        }
+
         var margin = {
             top: 10,
             right: 20,
@@ -67,8 +62,8 @@ export default class datebarChart extends Component {
         var colorScale = d3.scaleOrdinal(Colors);
 
         //max and min date
-        var maxTime = store.getState().timerange[1] + getTimeBucketInt();
-        var minTime = store.getState().timerange[0] - (60 * 1000); //minus one minute fix for round up
+        var maxTime = parseTimeData(store.getState().timerange[1]) + getTimeBucketInt();
+        var minTime = parseTimeData(store.getState().timerange[0]) - (60 * 1000); //minus one minute fix for round up
 
 
         var xScale = d3.scaleLinear()
@@ -82,7 +77,7 @@ export default class datebarChart extends Component {
             .range([height, 0])
             .domain([0, domain]);
 
-        var parseDate = d3.timeFormat(timestampBucket(store.getState().timerange[0], store.getState().timerange[1]));
+        var parseDate = parseTimestampD3js(store.getState().timerange[0], store.getState().timerange[1]);
 
 
         // gridlines in y axis function
@@ -123,19 +118,19 @@ export default class datebarChart extends Component {
         } else {
 
             svg.append('g')
-            .attr('class', 'x axis')
-            .attr('transform', `translate(0, ${height})`)
-            .call(xAxis);
+                .attr('class', 'x axis')
+                .attr('transform', `translate(0, ${height})`)
+                .call(xAxis);
 
-        svg.append('g')
-            .attr('class', 'y axis')
-            .call(yAxis)
-            .append('text')
-            .attr('transform', 'rotate(-90)')
-            .attr('y', 6)
-            .attr('dy', '.71em')
-            .style('text-anchor', 'end')
-            .text('Count');
+            svg.append('g')
+                .attr('class', 'y axis')
+                .call(yAxis)
+                .append('text')
+                .attr('transform', 'rotate(-90)')
+                .attr('y', 6)
+                .attr('dy', '.71em')
+                .style('text-anchor', 'end')
+                .text('Count');
 
             svg.append("g")
                 .attr("class", "brush")
@@ -218,7 +213,7 @@ export default class datebarChart extends Component {
                     if (name.includes("DURATION")) {
                         value = durationFormat(d.agg.value);
                     }
-                    tooltip.select("div").html("<strong>Value:</strong> " + value + units + "</br><strong>Time: </strong>" + parseTimestamp(timestamp)+ " + "+getTimeBucket());
+                    tooltip.select("div").html("<strong>Value:</strong> " + value + units + "</br><strong>Time: </strong>" + parseTimestamp(timestamp) + " + " + getTimeBucket());
 
                     var tooltipDim = tooltip.node().getBoundingClientRect();
                     var chartRect = d3.select('#' + id).node().getBoundingClientRect();
@@ -269,7 +264,7 @@ export default class datebarChart extends Component {
         var bucket = getTimeBucket();
         return (<div id={
             this.props.id
-        }  className="chart"> <h3 className="alignLeft title" > {
+        } className="chart"> <h3 className="alignLeft title" > {
             this.props.name
         } <span className="smallText"> (interval: {bucket})</span></h3></div >)
     }

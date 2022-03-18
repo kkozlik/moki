@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import * as d3 from "d3";
-import { timestampBucket } from '../bars/TimestampBucket.js';
 import store from "../store/index";
 import { setTimerange } from "../actions/index";
 import { createFilter} from '@moki-client/gui';
@@ -8,7 +7,7 @@ import emptyIcon from "../../styles/icons/empty_small.png";
 import { getTimeBucket, getTimeBucketInt} from "../helpers/getTimeBucket";
 import {ColorsRedGreen} from "@moki-client/gui";
 import { ColorsGreen} from "@moki-client/gui";
-import {parseTimestamp} from "../helpers/parseTimestamp";
+import {parseTimestamp, parseTimestampD3js, parseTimeData, parseTimestampUTC } from "../helpers/parseTimestamp";
 
 export default class timedateHeatmap extends Component {
     constructor(props) {
@@ -24,7 +23,7 @@ export default class timedateHeatmap extends Component {
        }
        else return null;
      }
-
+     
      componentDidUpdate(prevProps, prevState) {
        if(prevProps.data!==this.props.data){
         this.setState({ data: this.props.data });
@@ -62,21 +61,25 @@ export default class timedateHeatmap extends Component {
         width = width - margin.right - margin.left;
         var colorScale;
 
+        for (let hit of data) {
+            hit.time = parseTimeData(hit.time);
+        }
+
         var colorOneShade = ColorsGreen;
         //special color scale
         if ((name.includes("RATIO") && !name.includes("DURATION")) || name.includes("CALL-ATTEMPS") || name.includes("ERROR")) {
             colorOneShade = ColorsRedGreen;
         }
         //max and min date
-        var maxTime = store.getState().timerange[1]+getTimeBucketInt();
-        var minTime = store.getState().timerange[0] - (60 * 1000); //minus one minute fix for round up
+        var maxTime = parseTimeData(store.getState().timerange[1])+getTimeBucketInt();
+        var minTime = parseTimeData(store.getState().timerange[0]) - (60 * 1000); //minus one minute fix for round up
 
         //scale for brush function
         var xScale = d3.scaleLinear()
             .range([0, width])
             .domain([minTime, maxTime]);
 
-        var parseDate = d3.timeFormat(timestampBucket(store.getState().timerange[0], store.getState().timerange[1]));
+        var parseDate = parseTimestampD3js(store.getState().timerange[0], store.getState().timerange[1]);
 
         const buckets = 5;
         colorScale = d3.scaleQuantile()
@@ -253,7 +256,8 @@ export default class timedateHeatmap extends Component {
                         if (d.value === 5) value = "Partially Available";
                     }
 
-                    tooltip.select("div").html("<strong>" + d.attr2.charAt(0).toUpperCase() + d.attr2.slice(1) + ": </strong>" + value + units + "<br/><strong>Time: </strong>" + parseTimestamp(new Date(d.attr1))+ " + "+getTimeBucket());
+                    tooltip.select("div").html("<strong>" + d.attr2.charAt(0).toUpperCase() + d.attr2.slice(1) + ": </strong>" + value + units + "<br/><strong>Time: </strong>" + parseTimestampUTC(d.attr1)+ " + "+getTimeBucket());
+
 
                     var tooltipDim = tooltip.node().getBoundingClientRect();
                     var chartRect = d3.select('#' + id).node().getBoundingClientRect();
@@ -262,12 +266,6 @@ export default class timedateHeatmap extends Component {
                         .style("visibility", "visible")
                         .style("left", (d3.event.clientX - chartRect.left + document.body.scrollLeft - (tooltipDim.width / 2)) + "px")
                         .style("top", (d3.event.clientY - chartRect.top + document.body.scrollTop + 15) + "px");
-
-
-                  /*  if (d3.mouse(d3.event.target)[0] > window.innerWidth - 600) {
-                        tooltip
-                            .style("left", (d3.event.x - 350) + "px")
-                    }*/
 
                 })
                 .on("mouseout", function () {
@@ -300,7 +298,7 @@ export default class timedateHeatmap extends Component {
                .duration(1200)
                .ease(d3.easeLinear)
                .attr('x', -2 * width - 50);
-
+               
 
             svg.append("g")
                 .attr("class", "y axis")
@@ -311,8 +309,8 @@ export default class timedateHeatmap extends Component {
                     if(d.length > 20)
                         return d.substring(0,20)+'...';
                     else
-                        return d;
-                })
+                        return d;                       
+                })         
                 .attr('font-weight', 'normal')
                 .style('cursor', 'pointer')
                 .on("click", el => {

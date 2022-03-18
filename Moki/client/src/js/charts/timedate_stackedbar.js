@@ -1,14 +1,13 @@
 import React, { Component } from 'react';
 import * as d3 from "d3";
 import { ColorType, getExceededColor, Colors } from '@moki-client/gui';
-import { timestampBucket } from '../bars/TimestampBucket.js';
 import store from "../store/index";
 import storePersistent from "../store/indexPersistent";
 import { setTimerange } from "../actions/index";
 import { createFilter, getExceededTypes } from '@moki-client/gui';
 import { getTimeBucket, getTimeBucketInt } from "../helpers/getTimeBucket";
 import emptyIcon from "../../styles/icons/empty_small.png";
-import { parseTimestamp } from "../helpers/parseTimestamp";
+import { parseTimestamp, parseTimestampD3js, parseTimeData, parseTimestampUTC } from "../helpers/parseTimestamp";
 
 /*
 format:
@@ -26,18 +25,11 @@ export default class StackedChart extends Component {
         this.draw = this.draw.bind(this);
     }
 
-    static getDerivedStateFromProps(nextProps, prevState) {
-        if (nextProps !== prevState) {
-            return { data: nextProps.data };
-        }
-        else return null;
-    }
 
-    async componentDidUpdate(prevProps, prevState) {
-        if (prevProps !== this.props) {
+    async  componentWillReceiveProps(nextProps) {
+        if (this.state.data !== nextProps.data) {
             //var isFirst = this.state.data && this.state.data.length === 0 ? true : false;
             var isFirst = true;
-
             this.setState({ data: this.props.data });
             await this.draw(this.props.data, this.props.id, this.props.width, this.props.name, this.props.units, isFirst);
         }
@@ -64,13 +56,18 @@ export default class StackedChart extends Component {
             bottom: 30,
             left: 35
         };
-        //window.innerWidth -200
+
+        for (let hit of data) {
+            hit.time = parseTimeData(hit.time);
+        }
+
+        //window.innerWidth -200 
         width = width - margin.left - margin.right - 30;
         var height = 200 - margin.top - margin.bottom;
 
         var colorScale = d3.scaleOrdinal(Colors);
 
-        var parseDate = d3.timeFormat(timestampBucket(store.getState().timerange[0], store.getState().timerange[1]));
+        var parseDate = parseTimestampD3js(store.getState().timerange[0], store.getState().timerange[1]);
 
         var rootsvg = svg.append("svg")
             .attr('width', width + margin.left + margin.right)
@@ -79,8 +76,8 @@ export default class StackedChart extends Component {
         //  .append('g');
 
         //max and min date
-        var maxTime = store.getState().timerange[1] + getTimeBucketInt();
-        var minTime = store.getState().timerange[0] - (60 * 1000); //minus one minute fix for round up
+        var maxTime = parseTimeData(store.getState().timerange[1]) + getTimeBucketInt();
+        var minTime = parseTimeData(store.getState().timerange[0]) - (60 * 1000); //minus one minute fix for round up
 
         var x = d3.scaleBand().range([0, width]).padding(0.1);
 
@@ -238,6 +235,7 @@ export default class StackedChart extends Component {
                     .ticks(5)
             }
 
+
             layer.selectAll("rect")
                 .data(function (d, i) {
                     return d;
@@ -256,7 +254,7 @@ export default class StackedChart extends Component {
                          return yScale(d[1]);
                      })
                      .attr("height", function (d) {
-                     var height = yScale(d[0]) - yScale(d[1]);
+                     var height = yScale(d[0]) - yScale(d[1]); 
                          if(height){
                              return height
                          }
@@ -296,7 +294,7 @@ export default class StackedChart extends Component {
                 })
                 .on("mouseover", function (d, i) {
                     //d3.select(this).style("stroke","orange");
-
+                    
                     tooltip.select("div").html("<strong>Time: </strong> " + parseTimestamp(d.data.time) + " + " + getTimeBucket() + "<br/><strong>Value:</strong> " + d3.format(',')(d[1] - d[0]) + units + "<br/><strong>Type: </strong>" + this.parentNode.getAttribute("type") + "<br/> ");
                     d3.select(this).style("cursor", "pointer");
 
@@ -339,10 +337,10 @@ export default class StackedChart extends Component {
                 // Animation
                 /* Add 'curtain' rectangle to hide entire graph */
                 var curtain = rootsvg.append('rect')
-                    .attr('x', -1 * width-70)
+                    .attr('x', -1 * width - 70)
                     .attr('y', -1 * height)
                     .attr('height', height)
-                    .attr('width', width+100)
+                    .attr('width', width + 100)
                     .attr('class', 'curtain')
                     .attr('transform', 'rotate(180)')
                     .style('fill', '#ffffff');
@@ -421,7 +419,7 @@ export default class StackedChart extends Component {
         var bucket = getTimeBucket();
         return (
             <div id={this.props.id} className="chart">
-                <h3 className="alignLeft title" style={{"float": "inherit"}}> {this.props.name}
+                <h3 className="alignLeft title" style={{ "float": "inherit" }}> {this.props.name}
                     <span className="smallText"> (interval: {bucket})</span>
                 </h3>
             </div >)
