@@ -88,10 +88,11 @@ export default class StackedChart extends Component {
             } else if (field === "attrs.type") {
                 return ColorType[nmb];
             } else if (field === "encrypt") {
-
                 var hmac = profile[0] ? profile[0].userprefs.validation_code : "";
                 var mode = profile[0] ? profile[0].userprefs.mode : "";
-
+                //fix: value has remove spec char
+                hmac = thiss.getArcId(hmac);
+                hmac = hmac.substring(1);
                 if ((mode === "anonymous" && nmb !== "plain") || (nmb === "plain" && mode === "plain") || (mode === "encrypt" && nmb === hmac)) {
                     return "green";
                 }
