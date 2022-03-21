@@ -32,6 +32,7 @@ import { getPcap } from '../helpers/getPcap.js';
 import { setFilters } from "../actions/index";
 import { downloadPcapMerged } from '../helpers/download/downloadPcapMerged';
 import { parseTimestamp } from "../helpers/parseTimestamp";
+import { decryptTableHits } from '@moki-client/es-response-parser';
 
 var FileSaver = require('file-saver');
 var JSZip = require("jszip");
@@ -62,7 +63,9 @@ export default class listChart extends Component {
             checkall: false,
             selected: [],
             redirect: false,
-            count: count
+            count: count,
+            page: 1,
+            seenPages: []
         }
 
         this.filter = this.filter.bind(this);
@@ -77,20 +80,14 @@ export default class listChart extends Component {
         window.tableChart = this;
     }
 
-    /*
-    static getDerivedStateFromProps(nextProps, prevState) {
-        if (nextProps.data !== prevState.data) {
-            return { data: nextProps.data };
-        }
-        if (nextProps.tags !== prevState.tags) {
-            return { tags: nextProps.tags };
-        }
-        else return null;
-    }*/
-
-    componentDidUpdate(prevProps) {
+    async componentDidUpdate(prevProps) {
         if (prevProps.data !== this.props.data) {
-            this.setState({ data: this.props.data });
+            let parseData = await decryptTableHits(this.props.data, storePersistent.getState().profile, this.state.count, this.state.page);
+            this.setState({
+                data: parseData,
+                seenPages: [1]
+            });
+
             var table = document.getElementsByClassName('table table-hover')[0];
             if (table) {
                 this.resizableGrid(table);
@@ -116,12 +113,12 @@ export default class listChart extends Component {
                 createFilter("attrs.from.keyword:\"" + obj.attrs.from + "\"");
             }
             else if (obj["exceeded-by"] === "ip") {
-                createFilter("attrs.source:\"" + obj.attrs.source+ "\"");
+                createFilter("attrs.source:\"" + obj.attrs.source + "\"");
             }
             /* else if(obj["exceeded-by"] === "tenant"){
                  createFilter("attrs.source:" + attrs.source);
              }*/
-            console.log(obj);
+
             this.setState({ redirect: true });
         }
     }
@@ -821,13 +818,28 @@ export default class listChart extends Component {
             title,
             onPageChange
         }) => {
-            const handleClick = (e) => {
+            const handleClick = async (e) => {
                 e.preventDefault();
                 //if allcheck button is active, check everything
                 //if(this.state.checkall){
                 // this.rowCheckAll(true);
                 // }
-                onPageChange(page);
+                let actualpage = page;
+                if (page === "<<") page = 1;
+                if (page === ">>") page = Math.ceil(this.state.data.length / this.state.count);
+                if (page === ">") page = this.state.page + 1;
+                if (page === "<") page = this.state.page - 1;
+
+                //decrypt only not seen data
+                if (!this.state.seenPages.includes(page)) {
+                    let parseData = await decryptTableHits(this.state.data, storePersistent.getState().profile, this.state.count, page);
+                    this.setState({
+                        data: parseData,
+                        page: page,
+                        seenPages: [...this.state.seenPages, page]
+                    });
+                }
+                onPageChange(actualpage);
             }
             const activeStyle = {};
             if (active) {
