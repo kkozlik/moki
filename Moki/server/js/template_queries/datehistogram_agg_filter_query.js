@@ -16,7 +16,7 @@ var getTemplate = function (field, timebucket, queries, supress) {
             "agg": {
                 "date_histogram": {
                     "field": "@timestamp",
-                    "interval": timebucket
+                    "fixed_interval": timebucket
                 },
                 "aggs": {
                     "agg": {

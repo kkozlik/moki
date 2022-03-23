@@ -16,7 +16,7 @@ var getTemplate = function (fieldTerm, agg_type, field, timebucket, queries, sup
             "agg": {
                 "date_histogram": {
                     "field": "@timestamp",
-                    "interval": timebucket,
+                    "fixed_interval": timebucket,
                     "time_zone": "Europe/Berlin",
                     "min_doc_count": 1
                 },

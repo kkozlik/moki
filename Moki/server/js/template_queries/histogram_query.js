@@ -21,7 +21,7 @@ var getTemplate = function (histogram_field, field, queries, supress) {
             "agg": {
                 "histogram": {
                     "field": histogram_field,
-                    "interval": 0.5,
+                    "fixed_interval": 0.5,
                     "min_doc_count": 1
                 },
                 "aggs": {
