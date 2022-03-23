@@ -30,7 +30,7 @@ class SequenceDiagram extends Component {
   }
 
   /*
-     Load data 
+     Load data
      */
   async load() {
     var thiss = this;
@@ -233,10 +233,10 @@ class SequenceDiagram extends Component {
         var margin = { top: 0, right: 20, bottom: 20, left: 0 };
         var width = 1200 - margin.left - margin.right;
 
-        /*change data format 
-        
+        /*change data format
+
          id, time, src, dst, msg, color, details
-        
+
         */
         var dataNew = [];
         var calls = data.querySelectorAll('call');
@@ -331,7 +331,7 @@ class SequenceDiagram extends Component {
 
         });
 
-        // Draw class labels 
+        // Draw class labels
         classes.forEach(function (c, i) {
           var x = XPAD + i * VERT_SPACE;
           svg.append("g")
@@ -420,21 +420,21 @@ class SequenceDiagram extends Component {
             .style("cursor", "grab")
             .style("font-size", "10px")
             .text(function (d) { return m.msg; })
-            /*   .on("mouseover", function(d) {		
-                  d3.select("#tooltip"+i).transition()		
-                       .duration(200)		
+            /*   .on("mouseover", function(d) {
+                  d3.select("#tooltip"+i).transition()
+                       .duration(200)
                        .style("opacity", 1)
                    .style("display", "inline-block");
-                   d3.select("#tooltip"+i).html("<div class='tooltipDiagramHeader'>"+m.msg+"<span style='cursor: default; float: right;' onclick=getElementById('tooltip"+i+"').style.display='none'>X</span></div><div class='tooltipDiagramBody'>"+syntaxHighlight(m)+"</div>")  
-                       .style("left", (d3.event.pageX-120) + "px")		
-                       .style("top", (d3.event.pageY +20) + "px");	
-                   })					
-               .on("mouseout", function(d) {	
+                   d3.select("#tooltip"+i).html("<div class='tooltipDiagramHeader'>"+m.msg+"<span style='cursor: default; float: right;' onclick=getElementById('tooltip"+i+"').style.display='none'>X</span></div><div class='tooltipDiagramBody'>"+syntaxHighlight(m)+"</div>")
+                       .style("left", (d3.event.pageX-120) + "px")
+                       .style("top", (d3.event.pageY +20) + "px");
+                   })
+               .on("mouseout", function(d) {
                    if(d3.select("#tooltip"+i)._groups[0][0].getAttribute('clicked') !== "true"){
-                       d3.select("#tooltip"+i).transition()		
-                       .duration(500)	
+                       d3.select("#tooltip"+i).transition()
+                       .duration(500)
                            .style("display", "none")
-                       .style("opacity", 0);	
+                       .style("opacity", 0);
                    }
                })*/
             .on("click", function (d) {
@@ -476,7 +476,9 @@ class SequenceDiagram extends Component {
 
 
         function dragElement(elmnt) {
-          var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+          var mouseOffsetX = 0;
+          var mouseOffsetY = 0;
+
           if (document.getElementById(elmnt.id + "Header")) {
             // if present, the header is where you move the DIV from:
             document.getElementById(elmnt.id + "Header").onmousedown = dragMouseDown;
@@ -491,9 +493,13 @@ class SequenceDiagram extends Component {
 
               e = e || window.event;
               e.preventDefault();
-              // get the mouse cursor position at startup:
-              pos3 = e.clientX;
-              pos4 = e.clientY;
+
+              var elRect = elmnt.getBoundingClientRect();
+
+              // get the mouse cursor offset to the element at startup:
+              mouseOffsetX = e.clientX - elRect.x;
+              mouseOffsetY = e.clientY - elRect.y;
+
               document.onmouseup = closeDragElement;
               // call a function whenever the cursor moves:
               document.onmousemove = elementDrag;
@@ -510,14 +516,24 @@ class SequenceDiagram extends Component {
             function elementDrag(e) {
               e = e || window.event;
               e.preventDefault();
-              // calculate the new cursor position:
-              pos1 = pos3 - e.clientX;
-              pos2 = pos4 - e.clientY;
-              pos3 = e.clientX;
-              pos4 = e.clientY;
+
+              var elRect = elmnt.getBoundingClientRect();
+              var maxX = document.documentElement.scrollWidth;
+              var maxY = document.documentElement.scrollHeight;
+
+              // calculate the new element position:
+              var elTop = e.clientY - mouseOffsetY;
+              var elLeft = e.clientX - mouseOffsetX;
+
+              if (elTop < 0) elTop = 0;
+              if (elLeft < 0) elLeft = 0;
+
+              if ((elTop + elRect.height) > maxY) elTop  = maxY - elRect.height;
+              if ((elLeft + elRect.width) > maxX) elLeft = maxX - elRect.width;
+
               // set the element's new position:
-              elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
-              elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+              elmnt.style.top  = elTop + "px";
+              elmnt.style.left = elLeft + "px";
             }
           }
 
