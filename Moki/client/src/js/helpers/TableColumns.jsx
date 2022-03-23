@@ -432,7 +432,7 @@ function getColumn(column_name, tags, tag, width = 0, hidden = false) {
                 let profile = storePersistent.getState().profile;
                 if (profile && profile[0] && profile[0].userprefs.mode === "encrypt") {
                     col.onSort = (field, order) => {
-                        window.tableChart.resetDecrypt(field, order);
+                        window.tableChart.orderDecrypt(field, order);
                     };
 
                     col.sortFunc = (a, b, order, dataField, rowA, rowB) => {
@@ -458,7 +458,7 @@ function getColumn(column_name, tags, tag, width = 0, hidden = false) {
                 let profile = storePersistent.getState().profile;
                 if (profile && profile[0] && profile[0].userprefs.mode === "encrypt") {
                     col.onSort = (field, order) => {
-                        window.tableChart.resetDecrypt(field, order);
+                        window.tableChart.orderDecrypt(field, order);
                     };
 
                     col.sortFunc = (a, b, order, dataField, rowA, rowB) => {

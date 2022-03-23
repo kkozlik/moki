@@ -79,7 +79,7 @@ export default class listChart extends Component {
         this.handleOnSelectAll = this.handleOnSelectAll.bind(this);
         this.getRecord = this.getRecord.bind(this);
         this.resizableGrid = this.resizableGrid.bind(this);
-        this.resetDecrypt = this.resetDecrypt.bind(this);
+        this.orderDecrypt = this.orderDecrypt.bind(this);
         window.tableChart = this;
     }
 
@@ -89,10 +89,9 @@ export default class listChart extends Component {
             let parseData = await decryptTableHits(copy, storePersistent.getState().profile, this.state.count, this.state.page);
             this.setState({
                 data: parseData,
-                seenPages: [],
+                seenPages: [this.state.page],
                 dataEncrypted: this.props.data
             });
-
             var table = document.getElementsByClassName('table table-hover')[0];
             if (table) {
                 this.resizableGrid(table);
@@ -100,7 +99,7 @@ export default class listChart extends Component {
         }
     }
 
-    resetDecrypt(field, order) {
+    orderDecrypt(field, order) {
         function compareStrings(field, order) {
             return function (a, b) {
                 a = eval("a." + field);
@@ -872,15 +871,21 @@ export default class listChart extends Component {
                 if (page === ">") page = this.state.page + 1;
                 if (page === "<") page = this.state.page - 1;
 
-                //decrypt only not seen data
-                if (!this.state.seenPages.includes(page)) {
-                    let parseData = await decryptTableHits(this.state.data, storePersistent.getState().profile, this.state.count, page, this.state.decryptAttrs);
-                    this.setState({
-                        data: parseData,
-                        page: page,
-                        seenPages: [...this.state.seenPages, page]
-                    });
+                let profile = storePersistent.getState().profile;
+                if (profile && profile[0] && profile[0].userprefs.mode === "encrypt") {
+                    //decrypt only not seen data
+                    if (!this.state.seenPages.includes(page)) {
+                        let parseData = await decryptTableHits(this.state.data, storePersistent.getState().profile, this.state.count, page, this.state.decryptAttrs);
+                        this.setState({
+                            data: parseData,
+                            seenPages: [...this.state.seenPages, page]
+                        });
+                    }
                 }
+
+                this.setState({
+                    page: page
+                });
                 onPageChange(actualpage);
             }
             const activeStyle = {};
