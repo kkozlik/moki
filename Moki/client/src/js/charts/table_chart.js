@@ -32,6 +32,7 @@ import { getPcap } from '../helpers/getPcap.js';
 import { setFilters } from "../actions/index";
 import { downloadPcapMerged } from '../helpers/download/downloadPcapMerged';
 import { parseTimestamp } from "../helpers/parseTimestamp";
+import { decryptTableHits, decryptAttr } from '@moki-client/es-response-parser';
 
 var FileSaver = require('file-saver');
 var JSZip = require("jszip");
@@ -56,13 +57,17 @@ export default class listChart extends Component {
         this.state = {
             columns: columns,
             data: [],
+            dataEncrypted: [],
             excludeList: [],
             selectedRowsList: [],
             tags: this.props.tags,
             checkall: false,
             selected: [],
             redirect: false,
-            count: count
+            count: count,
+            page: 1,
+            decryptAttrs: [],
+            seenPages: [1]
         }
 
         this.filter = this.filter.bind(this);
@@ -74,28 +79,61 @@ export default class listChart extends Component {
         this.handleOnSelectAll = this.handleOnSelectAll.bind(this);
         this.getRecord = this.getRecord.bind(this);
         this.resizableGrid = this.resizableGrid.bind(this);
+        this.orderDecrypt = this.orderDecrypt.bind(this);
         window.tableChart = this;
     }
 
-    /*
-    static getDerivedStateFromProps(nextProps, prevState) {
-        if (nextProps.data !== prevState.data) {
-            return { data: nextProps.data };
-        }
-        if (nextProps.tags !== prevState.tags) {
-            return { tags: nextProps.tags };
-        }
-        else return null;
-    }*/
-
-    componentDidUpdate(prevProps) {
+    async componentDidUpdate(prevProps) {
         if (prevProps.data !== this.props.data) {
-            this.setState({ data: this.props.data });
+            let copy = JSON.parse(JSON.stringify(this.props.data));
+            let parseData = await decryptTableHits(copy, storePersistent.getState().profile, this.state.count, this.state.page);
+            this.setState({
+                data: parseData,
+                seenPages: [this.state.page],
+                dataEncrypted: this.props.data
+            });
             var table = document.getElementsByClassName('table table-hover')[0];
             if (table) {
                 this.resizableGrid(table);
             }
         }
+    }
+
+    orderDecrypt(field, order) {
+        function compareStrings(field, order) {
+            return function (a, b) {
+                a = eval("a." + field);
+                b = eval("b." + field);
+                // Assuming you want case-insensitive comparison
+                if (!a) return -1;
+                if (!b) return -1;
+
+                a = a.toLowerCase();
+                b = b.toLowerCase();
+
+                if (order === "desc") {
+                    return (a < b) ? -1 : (a > b) ? 1 : 0;
+                }
+                else {
+                    return (a > b) ? -1 : (a < b) ? 1 : 0;
+                }
+            }
+        }
+        this.setState({
+            decryptAttrs: [field.replace('_source.', '')],
+            seenPages: []
+        }, async function () {
+            let copy = JSON.parse(JSON.stringify(this.state.dataEncrypted));
+            let decryptAttrData = await decryptAttr(copy, storePersistent.getState().profile, field);
+            decryptAttrData.sort(compareStrings(field, order));
+            let parseData = await decryptTableHits(decryptAttrData, storePersistent.getState().profile, this.state.count, this.state.page, this.state.decryptAttrs);
+            this.setState({
+                data: parseData,
+                seenPages: [this.state.page]
+            });
+
+        });
+
     }
 
 
@@ -116,12 +154,12 @@ export default class listChart extends Component {
                 createFilter("attrs.from.keyword:\"" + obj.attrs.from + "\"");
             }
             else if (obj["exceeded-by"] === "ip") {
-                createFilter("attrs.source:\"" + obj.attrs.source+ "\"");
+                createFilter("attrs.source:\"" + obj.attrs.source + "\"");
             }
             /* else if(obj["exceeded-by"] === "tenant"){
                  createFilter("attrs.source:" + attrs.source);
              }*/
-            console.log(obj);
+
             this.setState({ redirect: true });
         }
     }
@@ -821,13 +859,34 @@ export default class listChart extends Component {
             title,
             onPageChange
         }) => {
-            const handleClick = (e) => {
+            const handleClick = async (e) => {
                 e.preventDefault();
                 //if allcheck button is active, check everything
                 //if(this.state.checkall){
                 // this.rowCheckAll(true);
                 // }
-                onPageChange(page);
+                let actualpage = page;
+                if (page === "<<") page = 1;
+                if (page === ">>") page = Math.ceil(this.state.data.length / this.state.count);
+                if (page === ">") page = this.state.page + 1;
+                if (page === "<") page = this.state.page - 1;
+
+                let profile = storePersistent.getState().profile;
+                if (profile && profile[0] && profile[0].userprefs.mode === "encrypt") {
+                    //decrypt only not seen data
+                    if (!this.state.seenPages.includes(page)) {
+                        let parseData = await decryptTableHits(this.state.data, storePersistent.getState().profile, this.state.count, page, this.state.decryptAttrs);
+                        this.setState({
+                            data: parseData,
+                            seenPages: [...this.state.seenPages, page]
+                        });
+                    }
+                }
+
+                this.setState({
+                    page: page
+                });
+                onPageChange(actualpage);
             }
             const activeStyle = {};
             if (active) {
