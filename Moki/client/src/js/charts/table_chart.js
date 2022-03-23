@@ -32,7 +32,7 @@ import { getPcap } from '../helpers/getPcap.js';
 import { setFilters } from "../actions/index";
 import { downloadPcapMerged } from '../helpers/download/downloadPcapMerged';
 import { parseTimestamp } from "../helpers/parseTimestamp";
-import { decryptTableHits } from '@moki-client/es-response-parser';
+import { decryptTableHits, decryptAttr } from '@moki-client/es-response-parser';
 
 var FileSaver = require('file-saver');
 var JSZip = require("jszip");
@@ -57,6 +57,7 @@ export default class listChart extends Component {
         this.state = {
             columns: columns,
             data: [],
+            dataEncrypted: [],
             excludeList: [],
             selectedRowsList: [],
             tags: this.props.tags,
@@ -65,7 +66,8 @@ export default class listChart extends Component {
             redirect: false,
             count: count,
             page: 1,
-            seenPages: []
+            decryptAttrs: [],
+            seenPages: [1]
         }
 
         this.filter = this.filter.bind(this);
@@ -77,15 +79,18 @@ export default class listChart extends Component {
         this.handleOnSelectAll = this.handleOnSelectAll.bind(this);
         this.getRecord = this.getRecord.bind(this);
         this.resizableGrid = this.resizableGrid.bind(this);
+        this.resetDecrypt = this.resetDecrypt.bind(this);
         window.tableChart = this;
     }
 
     async componentDidUpdate(prevProps) {
         if (prevProps.data !== this.props.data) {
-            let parseData = await decryptTableHits(this.props.data, storePersistent.getState().profile, this.state.count, this.state.page);
+            let copy = JSON.parse(JSON.stringify(this.props.data));
+            let parseData = await decryptTableHits(copy, storePersistent.getState().profile, this.state.count, this.state.page);
             this.setState({
                 data: parseData,
-                seenPages: [1]
+                seenPages: [],
+                dataEncrypted: this.props.data
             });
 
             var table = document.getElementsByClassName('table table-hover')[0];
@@ -93,6 +98,43 @@ export default class listChart extends Component {
                 this.resizableGrid(table);
             }
         }
+    }
+
+    resetDecrypt(field, order) {
+        function compareStrings(field, order) {
+            return function (a, b) {
+                a = eval("a." + field);
+                b = eval("b." + field);
+                // Assuming you want case-insensitive comparison
+                if (!a) return -1;
+                if (!b) return -1;
+
+                a = a.toLowerCase();
+                b = b.toLowerCase();
+
+                if (order === "desc") {
+                    return (a < b) ? -1 : (a > b) ? 1 : 0;
+                }
+                else {
+                    return (a > b) ? -1 : (a < b) ? 1 : 0;
+                }
+            }
+        }
+        this.setState({
+            decryptAttrs: [field.replace('_source.', '')],
+            seenPages: []
+        }, async function () {
+            let copy = JSON.parse(JSON.stringify(this.state.dataEncrypted));
+            let decryptAttrData = await decryptAttr(copy, storePersistent.getState().profile, field);
+            decryptAttrData.sort(compareStrings(field, order));
+            let parseData = await decryptTableHits(decryptAttrData, storePersistent.getState().profile, this.state.count, this.state.page, this.state.decryptAttrs);
+            this.setState({
+                data: parseData,
+                seenPages: [this.state.page]
+            });
+
+        });
+
     }
 
 
@@ -832,7 +874,7 @@ export default class listChart extends Component {
 
                 //decrypt only not seen data
                 if (!this.state.seenPages.includes(page)) {
-                    let parseData = await decryptTableHits(this.state.data, storePersistent.getState().profile, this.state.count, page);
+                    let parseData = await decryptTableHits(this.state.data, storePersistent.getState().profile, this.state.count, page, this.state.decryptAttrs);
                     this.setState({
                         data: parseData,
                         page: page,

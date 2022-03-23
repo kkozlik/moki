@@ -241,8 +241,8 @@ function getColumn(column_name, tags, tag, width = 0, hidden = false) {
                         notvalue = notvalue + ")";
                     }
                     else {
-                         value = "exceeded-by: " + ob["exceeded-by"];
-                         notvalue = "NOT exceeded-by: " + ob["exceeded-by"];
+                        value = "exceeded-by: " + ob["exceeded-by"];
+                        notvalue = "NOT exceeded-by: " + ob["exceeded-by"];
                     }
                     return <span className="filterToggleActive"><span className="filterToggle">
                         <img onClick={doFilterRaw} field="exceeded-by" value={value} className="icon" alt="filterIcon" src={filterIcon} /><img field="exceeded-by" value={notvalue} onClick={doFilterRaw} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span > {ob['exceeded-by'] ? ob['exceeded-by'].toString() : ""}
@@ -400,7 +400,7 @@ function getColumn(column_name, tags, tag, width = 0, hidden = false) {
                 }
             }
             else if (getSearchableAttributes().includes(column_name.source)) {
-                return {
+                let col = {
                     dataField: '_source.' + column_name.source,
                     text: column_name ? column_name.name.toUpperCase() : "",
                     editable: false,
@@ -427,15 +427,48 @@ function getColumn(column_name, tags, tag, width = 0, hidden = false) {
                         }
                     }
                 }
+
+                //encrypt state 
+                let profile = storePersistent.getState().profile;
+                if (profile && profile[0] && profile[0].userprefs.mode === "encrypt") {
+                    col.onSort = (field, order) => {
+                        window.tableChart.resetDecrypt(field, order);
+                    };
+
+                    col.sortFunc = (a, b, order, dataField, rowA, rowB) => {
+                        return true;
+                    }
+
+                    return col;
+                }
+                else {
+                    return col;
+                }
             }
             else {
-                return {
+                let col = {
                     dataField: '_source.' + column_name.source,
                     text: column_name ? column_name.name.toUpperCase() : "",
                     editable: false,
                     sort: true,
                     hidden: hidden,
                     headerStyle: { width: getColumnWidth(column_name.source, width) }
+                }
+                //encrypt state 
+                let profile = storePersistent.getState().profile;
+                if (profile && profile[0] && profile[0].userprefs.mode === "encrypt") {
+                    col.onSort = (field, order) => {
+                        window.tableChart.resetDecrypt(field, order);
+                    };
+
+                    col.sortFunc = (a, b, order, dataField, rowA, rowB) => {
+                        return true;
+                    }
+
+                    return col;
+                }
+                else {
+                    return col;
                 }
             }
     }
@@ -493,7 +526,7 @@ export function tableColumns(dashboard, tags, layout) {
                 var width = field.headerStyle && field.headerStyle.width ? field.headerStyle.width : null;
                 var hidden = field.hidden ? field.hidden : false;
                 var source = field.text === "ADVANCED" ? "advanced" : field.dataField.slice(8);
-                result.push(getColumn({ source: source, name: field.text, "icons": ["download", "diagram", "details", "share"] }, tags, tag, width , hidden));
+                result.push(getColumn({ source: source, name: field.text, "icons": ["download", "diagram", "details", "share"] }, tags, tag, width, hidden));
             }
             else {
                 let name = columnsTableDefaultListConcat[i].name ? columnsTableDefaultListConcat[i].name : columnsTableDefaultListConcat[i];
@@ -516,7 +549,7 @@ export function tableColumns(dashboard, tags, layout) {
             let name = columnsTableDefaultListConcat[i].name ? columnsTableDefaultListConcat[i].name : columnsTableDefaultListConcat[i];
             let source = columnsTableDefaultListConcat[i].source ? columnsTableDefaultListConcat[i].source : columnsTableDefaultListConcat[i];
             let hidden = columnsTableDefaultListConcat[i].hasOwnProperty("hidden") ? columnsTableDefaultListConcat[i].hidden : true;
-            result.push(getColumn({ source: source, name: name, "icons": ["download", "diagram", "details", "share"] }, tags, tag= null, width = "150px", hidden ));
+            result.push(getColumn({ source: source, name: name, "icons": ["download", "diagram", "details", "share"] }, tags, tag = null, width = "150px", hidden));
         }
         return result;
     }
