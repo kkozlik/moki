@@ -62,10 +62,10 @@ export default class heatmap extends Component {
         var marginBottom = 50;
         var marginLeft = 100;
         if (data && data.length > 0) {
-            var maxTextWidth = d3.max(data.map(n => n.attr1.length));
-            maxTextWidth = d3.max(data.map(n => n.attr2.length));
-            marginBottom = maxTextWidth > 23 ? 150 : maxTextWidth > 15 ? maxTextWidth * 8 : maxTextWidth * 13;
-            marginLeft = maxTextWidth > 23 ? 150 : maxTextWidth > 15 ? maxTextWidth * 8 : maxTextWidth * 13;
+            var maxTextWidthX = d3.max(data.map(n => n.attr1.length));
+            var maxTextWidthY = d3.max(data.map(n => n.attr2.length));
+            marginBottom = (maxTextWidthX > 23 ? 150 : maxTextWidthX * 5.5) + 20 ;
+            marginLeft   = (maxTextWidthY > 23 ? 150 : maxTextWidthY > 15 ? maxTextWidthY * 6 : maxTextWidthY * 8) + 15 ;
         }
 
         var margin = {
@@ -119,8 +119,6 @@ export default class heatmap extends Component {
             })).values();
 
             var itemHeight = 16 - 3;
-            var itemSize = (width - marginLeft) / x_elements.length;
-            var cellSize = itemSize - 3;
             height = (itemHeight * y_elements.length) + margin.top;
 
 
@@ -128,7 +126,7 @@ export default class heatmap extends Component {
             var xScale = d3.scaleBand()
                 .domain(x_elements)
                 .range([0, width])
-                .paddingInner(.2).paddingOuter(.2);
+                .paddingInner(.08).paddingOuter(.08);
 
 
             var xAxis = d3.axisBottom()
@@ -148,6 +146,7 @@ export default class heatmap extends Component {
                     return d;
                 });
 
+            var cellSize = xScale.bandwidth();
 
             rootsvg.attr("height", height + margin.top + margin.bottom);
             var svg = rootsvg.append("g")
@@ -169,7 +168,7 @@ export default class heatmap extends Component {
                 // .style("opacity", "0")
                 .attr('width', function (d) {
                     if (d.value === -1) return 0;
-                    return cellSize + 5;
+                    return cellSize;
                 })
                 .attr('height', function (d) {
                     if (d.value === -1) return 0;
@@ -179,7 +178,7 @@ export default class heatmap extends Component {
                     return yScale(d.attr2);
                 })
                 .attr('x', function (d) {
-                    return xScale(d.attr1) - cellSize / 2;
+                    return xScale(d.attr1);
                 })
                 .attr('fill', function (d) {
                     if (name === "CONNECTION FAILURE RATIO CA") {
@@ -199,7 +198,6 @@ export default class heatmap extends Component {
                 })
                 .attr("rx", 2)
                 .attr("ry", 2)
-                .attr('transform', 'translate(' + cellSize / 2 + ',0)')
                 .on("mouseover", function (d) {
                     d3.select(this).style("stroke", "orange");
                     tooltip.style("visibility", "visible");
