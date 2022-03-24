@@ -1,4 +1,4 @@
-const elasticsearch = require('elasticsearch');
+const { connectToES } = require('../modules/elastic');
 const { parseBase64 } = require('../modules/jwt');
 const { isRequireJWT } = require('../modules/config');
 const { exec } = require("child_process");
@@ -50,7 +50,7 @@ class AdminController {
      * events: {timestamp, userID, domain, level} type=login
      */
     async function storeLoginInES(domain, userID, jwtbit, email, sourceIP) {
-      const client = new elasticsearch.Client({ host: process.env.ES, requestTimeout: 60000 });
+      const client = connectToES();
       const now = new Date();
       const index = "lastlog-" + now.getFullYear() + "." + (now.getMonth() + 1);
       const existIndex = await client.indices.exists({ index: index });
