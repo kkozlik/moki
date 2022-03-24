@@ -8,11 +8,11 @@ module.exports = {
     let client = {};
 
     try {
-      console.info("Connectiong to ES " + es);
+      console.info("Connecting to ES " + es);
       client = new Client({
         node: es,
-        requestTimeout: 60000,
-        headers: { "Content-Type": "application/json" }
+        //requestTimeout: 60000
+        requestTimeout: 5000
       });
     } catch (error) {
       console.error('es client error: ', error.msg);

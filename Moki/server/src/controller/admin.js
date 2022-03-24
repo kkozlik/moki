@@ -78,7 +78,6 @@ class AdminController {
       await client.index({
         index: index,
         refresh: true,
-        type: "_doc",
         body: {
           "@timestamp": now,
           "tls-cn": userID,

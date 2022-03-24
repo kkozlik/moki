@@ -129,28 +129,36 @@ class ProfileController {
       //if not, create new one
       if (!existIndex) {
         //mode: encrypt, plain, anonymous
-        let response = await newIndexES(indexName, {
-          "properties": {
-            "event": {
-              "properties": {
-                "tls-cn": { "type": "keyword", "index": "true" },
-                "domain": { "type": "keyword", "index": "true" },
-                "profile": { "type": "keyword", "index": "true" },
-                "userprefs": {
-                  "properties": {
-                    "monitor_name": { "type": "text", "index": "false" },
-                    "timezone": { "type": "text", "index": "false" },
-                    "time_format": { "type": "text", "index": "false" },
-                    "date_format": { "type": "text", "index": "false" },
-                    "mode": { "type": "text", "index": "false" },
-                    "validation_code": { "type": "text", "index": "false" },
-                    "anonymizableAttrs": { "type": "nested", "enabled": "false" }
+        try {
+          var response = await newIndexES(indexName, {
+            "properties": {
+              "event": {
+                "properties": {
+                  "tls-cn": { "type": "keyword", "index": "true" },
+                  "domain": { "type": "keyword", "index": "true" },
+                  "profile": { "type": "keyword", "index": "true" },
+                  "userprefs": {
+                    "properties": {
+                      "monitor_name": { "type": "text", "index": "false" },
+                      "timezone": { "type": "text", "index": "false" },
+                      "time_format": { "type": "text", "index": "false" },
+                      "date_format": { "type": "text", "index": "false" },
+                      "mode": { "type": "text", "index": "false" },
+                      "validation_code": { "type": "text", "index": "false" },
+                      "anonymizableAttrs": { "type": "nested", "enabled": "false" }
+                    }
                   }
                 }
               }
             }
-          }
-        }, res);
+          }, res);
+        }
+        catch (error) {
+          console.error(error);
+          res.status(400).send({
+            "msg": "Problem with getting user profile."
+          });
+        }
 
         if (response !== "ok") {
           res.status(400).send({
@@ -163,9 +171,16 @@ class ProfileController {
         }
       }
       if (existIndex || newIndex) {
-        //search for user settings
-        let userProfile = await searchES(indexName, [{ query_string: { "query": "event.tls-cn:" + tls } }], res);
-
+        try {
+          //search for user settings
+          var userProfile = await searchES(indexName, [{ query_string: { "query": "event.tls-cn:" + tls } }], res);
+        }
+        catch (error) {
+          console.error(error);
+          res.status(400).send({
+            "msg": "Problem with getting user profile."
+          });
+        }
         //default user profile
         //get timezone from server
         var tz = new Date().getTimezoneOffset() === 0 ? "Etc/GMT+" + new Date().getTimezoneOffset() : "Etc/GMT" + new Date().getTimezoneOffset();
@@ -190,9 +205,9 @@ class ProfileController {
           for (let i = 0; i < keys.length; i++) {
             //check if object type, parse it 
             if (typeof userProfileDefault.userprefs[keys[i]] === 'object') {
-              let innerKeys =Object.keys(userProfileDefault.userprefs[keys[i]]);
+              let innerKeys = Object.keys(userProfileDefault.userprefs[keys[i]]);
               for (let j = 0; j < innerKeys.length; j++) {
-                if(!userProfile.userprefs[keys[i]]) userProfile.userprefs[keys[i]] = {};
+                if (!userProfile.userprefs[keys[i]]) userProfile.userprefs[keys[i]] = {};
                 if (!userProfile.userprefs[keys[i]][innerKeys[j]]) {
                   userProfile.userprefs[keys[i]][innerKeys[j]] = userProfileDefault.userprefs[keys[i]][innerKeys[j]];
                 }
