@@ -47,12 +47,57 @@ export default class MultipleLineChart extends Component {
     componentDidUpdate(prevProps, prevState) {
         if (prevProps.data !== this.props.data) {
             this.setState({ data: this.props.data });
-            this.draw(this.props.data, this.props.id, this.props.width, this.props.ticks, this.props.hostnames);
+            this.draw(this.props.data, this.props.id, this.props.ticks, this.props.hostnames);
         }
     }
 
 
-    draw(data, id, width, ticks, hostnames) {
+    drawLegend(svg, data, field, hostnames, color){
+
+        var legendGroup = svg.append('g');
+        var legend = legendGroup.selectAll('.legend')
+            .data(data)
+            .enter().append('g')
+            .attr('class', 'legend');
+
+        legend.append('rect')
+            .attr('x', function (d, i) {
+                if (i < 7) return 0;
+            })
+            .attr('y', function (d, i) {
+                if (i < 7) return i * 17;
+            })
+            .attr('width', function (d, i) {
+                if (i < 7) return 10;
+            })
+            .attr('height', function (d, i) {
+                if (i < 7) return 10;
+            })
+            .style('fill', function (d, i) {
+                if (i < 7) {
+                    return hostnames && hostnames[d.name] ? hostnames[d.name] : color(i);
+                }
+            })
+            .on("click", el => {
+                createFilter(field + ":\"" + el.name + "\"");
+            });
+
+        legend.append('text')
+            .attr('x', 20)
+            .attr('y', function (d, i) {
+                if (i < 7) return (i * 17) + 5;
+            })
+            .text(function (d, i) {
+                if (i < 7) return d.name;
+            })
+            .on("click", el => {
+                createFilter(field + ":\"" + el.name + "\"");
+            });
+
+        return legendGroup;
+    }
+
+    draw(data, id, ticks, hostnames) {
         var field = this.props.field ? this.props.field : "attrs.hostname";
 
         //make div values if necessary
@@ -104,12 +149,6 @@ export default class MultipleLineChart extends Component {
             left: 70
         };
 
-        var legendWidth = 110;
-        if (data.length > 0) {
-            var maxTextWidth = d3.max(data.map(n => n.name.length));
-            legendWidth = maxTextWidth > 100 ? 100 : maxTextWidth * 13;
-        }
-
         var height = 100;
         var duration = 250;
 
@@ -125,15 +164,29 @@ export default class MultipleLineChart extends Component {
         var circleRadiusHover = 6;
         var parseDate = d3.timeFormat(timestampBucket(store.getState().timerange[0], store.getState().timerange[1]));
 
-
         var svg = d3.select('#' + id)
             .append("svg")
-            .attr('width', width + margin.left + margin.right + legendWidth)
+            .attr('width', '100%')
             .attr('height', height + margin.top + margin.bottom)
             .attr('id', id + "SVG")
             .append('g');
 
         var color = d3.scaleOrdinal().range(Colors);
+
+        var svgWidth = d3.select('#' + id).node().clientWidth;
+
+        var legendWidth = 110;
+        var legendSpacer = 10;
+        var legendPadding = 5;
+
+        if (data.length > 0) {
+            // create legend and get it's width
+            var legend = this.drawLegend(svg, data, field, hostnames, color);
+            legendWidth = legend.node().getBBox().width + legendPadding;
+        }
+
+        var width = svgWidth - (margin.left + margin.right + legendSpacer + legendWidth);
+        if (width < 100) width = 100;
 
         var xScale = d3.scaleLinear()
             .range([0, width])
@@ -346,60 +399,8 @@ export default class MultipleLineChart extends Component {
                 .ease(d3.easeLinear)
                 .attr('x', -2 * width - 50);
 
-
-            var translateLegend = (width / 5) + 20;
-            var legend = svg.selectAll('.legend')
-                .data(data)
-                .enter().append('g')
-                .attr('transform', 'translate(' + translateLegend + ',0)')
-                .attr('class', 'legend');
-            legend.append('rect')
-                .attr('x', function (d, i) {
-                    if (i < 7) {
-                        return width - 80;
-                    }
-                })
-                .attr('y', function (d, i) {
-                    if (i < 7) {
-                        return i * 17;
-                    }
-                })
-                .attr('width', function (d, i) {
-                    if (i < 7) {
-                        return 10;
-                    }
-                })
-                .attr('height', function (d, i) {
-                    if (i < 7) {
-                        return 10;
-                    }
-                })
-                .style('fill', function (d, i) {
-                    if (i < 7) {
-                        return hostnames && hostnames[d.name] ? hostnames[d.name] : color(i);
-                    }
-                })
-                .on("click", el => {
-                    createFilter(field + ":\"" + el.name + "\"");
-                });
-
-            legend.append('text')
-                .attr('x', width - 60)
-                .attr('y', function (d, i) {
-                    if (i < 7) {
-                        return (i * 17) + 5;
-                    }
-                })
-                .text(function (d, i) {
-                    if (i < 7) {
-                        return d.name;
-                    }
-                })
-                .on("click", el => {
-                    createFilter(field + ":\"" + el.name + "\"");
-                });
-
-
+            legend.raise();
+            legend.attr('transform', 'translate(' + (svgWidth - legendWidth - margin.left - margin.right + legendSpacer) + ',0)');
         }
     }
 

@@ -98,7 +98,7 @@ class SystemCharts extends Dashboard {
             <
             div className="row no-gutters" >
                 <
-            div className="col" >
+            div className="col-6 pr-1" >
                     <
                         MultipleLineChart id="shortterm"
                         data={
@@ -107,18 +107,13 @@ class SystemCharts extends Dashboard {
                         name={
                             "LOAD-SHORTTERM"
                         }
-                        width={
-                            (store.getState().width - 350) / 3
-                        }
-
                         hostnames={this.state.hostnames}
-
                         ticks={
                             3
                         }
                     />                            <
             /div> <
-            div className="col" >
+            div className="col-6 px-1" >
                         <
                             MultipleLineChart id="midterm"
                             data={
@@ -128,15 +123,12 @@ class SystemCharts extends Dashboard {
                                 "LOAD-MIDTERM"
                             }
                             hostnames={this.state.hostnames}
-                            width={
-                                (store.getState().width - 350) / 3
-                            }
                             ticks={
                                 3
                             }
                         />                            <
             /div> <
-            div className="col" >
+            div className="col-6 pr-1" >
                             <
                                 MultipleLineChart id="longterm"
                                 data={
@@ -146,15 +138,12 @@ class SystemCharts extends Dashboard {
                                     "LOAD-LONGTERM"
                                 }
                                 hostnames={this.state.hostnames}
-                                width={
-                                    (store.getState().width - 350) / 3
-                                }
                                 ticks={
                                     3
                                 }
                             />                            <
             /div> <
-            div className="col" >
+            div className="col-6 px-1" >
                                 <
                                     MultipleLineChart id="memoryFree"
                                     data={
@@ -164,9 +153,6 @@ class SystemCharts extends Dashboard {
                                     name={
                                         "MEMORY-FREE"
                                     }
-                                    width={
-                                        (store.getState().width - 350) / 3
-                                    }
                                     ticks={
                                         3
                                     }
@@ -174,7 +160,7 @@ class SystemCharts extends Dashboard {
             /div>
 
             <
-            div className="col" >
+            div className="col-6 pr-1" >
                                     <
                                         MultipleLineChart id="memoryUsed"
                                         data={
@@ -184,9 +170,6 @@ class SystemCharts extends Dashboard {
                                         name={
                                             "MEMORY-USED"
                                         }
-                                        width={
-                                            (store.getState().width - 350) / 3
-                                        }
                                         ticks={
                                             3
                                         }
@@ -194,7 +177,7 @@ class SystemCharts extends Dashboard {
             /div>
 
             <
-            div className="col" >
+            div className="col-6 px-1" >
                                         <
                                             MultipleLineChart id="memoryCached"
                                             hostnames={this.state.hostnames}
@@ -204,9 +187,6 @@ class SystemCharts extends Dashboard {
                                             name={
                                                 "MEMORY-CACHED"
                                             }
-                                            width={
-                                                (store.getState().width - 350) / 3
-                                            }
                                             ticks={
                                                 3
                                             }
@@ -214,7 +194,7 @@ class SystemCharts extends Dashboard {
             /div>
 
             <
-            div className="col" >
+            div className="col-6 pr-1" >
                                             <
                                                 MultipleLineChart id="memoryBuffered"
                                                 data={
@@ -224,9 +204,6 @@ class SystemCharts extends Dashboard {
                                                 name={
                                                     "MEMORY-BUFFERED"
                                                 }
-                                                width={
-                                                    (store.getState().width - 350) / 3
-                                                }
                                                 ticks={
                                                     3
                                                 }
@@ -234,7 +211,7 @@ class SystemCharts extends Dashboard {
             /div>
 
             <
-            div className="col" >
+            div className="col-6 px-1" >
                                                 <
                                                     MultipleLineChart id="uas"
                                                     data={
@@ -244,9 +221,6 @@ class SystemCharts extends Dashboard {
                                                         "UAS SIP trans."
                                                     }
                                                     hostnames={this.state.hostnames}
-                                                    width={
-                                                        (store.getState().width - 350) / 3
-                                                    }
                                                     ticks={
                                                         3
                                                     }
@@ -254,7 +228,7 @@ class SystemCharts extends Dashboard {
             /div>
 
             <
-            div className="col" >
+            div className="col-6 pr-1" >
                                                     <
                                                         MultipleLineChart id="uac"
                                                         data={
@@ -264,9 +238,6 @@ class SystemCharts extends Dashboard {
                                                             "UAC SIP trans."
                                                         }
                                                         hostnames={this.state.hostnames}
-                                                        width={
-                                                            (store.getState().width - 350) / 3
-                                                        }
                                                         ticks={
                                                             3
                                                         }
@@ -274,7 +245,7 @@ class SystemCharts extends Dashboard {
             /div>
 
             <
-            div className="col" >
+            div className="col-6 px-1" >
                                                         <
                                                             MultipleLineChart id="cpuUser"
                                                             data={
@@ -284,9 +255,6 @@ class SystemCharts extends Dashboard {
                                                             name={
                                                                 "CPU-USER"
                                                             }
-                                                            width={
-                                                                (store.getState().width - 350) / 3
-                                                            }
                                                             ticks={
                                                                 3
                                                             }
@@ -294,7 +262,7 @@ class SystemCharts extends Dashboard {
             /div>
 
             <
-            div className="col" >
+            div className="col-6 pr-1" >
                                                             <
                                                                 MultipleLineChart id="cpuSystem"
                                                                 data={
@@ -304,15 +272,12 @@ class SystemCharts extends Dashboard {
                                                                 name={
                                                                     "CPU-SYSTEM"
                                                                 }
-                                                                width={
-                                                                    (store.getState().width - 350) / 3
-                                                                }
                                                                 ticks={
                                                                     3
                                                                 }
                                                             />                            <
             /div> <
-            div className="col" >
+            div className="col-6 px-1" >
                                                                 <
                                                                     MultipleLineChart id="cpuIdle"
                                                                     data={
@@ -321,9 +286,6 @@ class SystemCharts extends Dashboard {
                                                                     hostnames={this.state.hostnames}
                                                                     name={
                                                                         "CPU-IDLE"
-                                                                    }
-                                                                    width={
-                                                                        (store.getState().width - 350) / 3
                                                                     }
                                                                     ticks={
                                                                         3

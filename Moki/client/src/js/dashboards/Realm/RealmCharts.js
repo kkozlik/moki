@@ -92,7 +92,7 @@ class RealmCharts extends Dashboard {
         return (<div> {
             this.state.isLoading && < LoadingScreenCharts />
         } <div className="row no-gutters" >
-                <div className="col" >
+                <div className="col-6 pr-1" >
                     <MultipleLineChart id="maxCallsFromByHost"
                         hostnames={this.state.hostnames}
                         data={
@@ -101,14 +101,11 @@ class RealmCharts extends Dashboard {
                         name={
                             "MAX CALLS FROM BY HOST"
                         }
-                        width={
-                            (store.getState().width - 300) / 3
-                        }
                         ticks={
                             3
                         }
                     />                            </div>
-                <div className="col" >
+                <div className="col-6 px-1" >
                     <MultipleLineChart id="maxCallsToByHost"
                         data={
                             this.state.maxCallsToByHost
@@ -116,15 +113,12 @@ class RealmCharts extends Dashboard {
                         name={
                             "MAX CALLS TO BY HOST"
                         }
-                        width={
-                            (store.getState().width - 300) / 3
-                        }
                         hostnames={this.state.hostnames}
                         ticks={
                             3
                         }
                     />                            </div>
-                <div className="col" >
+                <div className="col-6 pr-1" >
                     <MultipleLineChart id="maxCallsFromByrealm"
                         data={
                             this.state.maxCallsFromByrealm
@@ -134,14 +128,11 @@ class RealmCharts extends Dashboard {
                             "MAX CALLS FROM BY REALM"
                         }
                         field={"attrs.realm"}
-                        width={
-                            (store.getState().width - 300) / 3
-                        }
                         ticks={
                             3
                         }
                     />                            </div>
-                <div className="col" >
+                <div className="col-6 px-1" >
                     <MultipleLineChart id="maxCallsToByrealm"
                         data={
                             this.state.maxCallsToByrealm
@@ -151,15 +142,12 @@ class RealmCharts extends Dashboard {
                         }
                         field={"attrs.realm"}
                         hostnames={this.state.hostnames}
-                        width={
-                            (store.getState().width - 300) / 3
-                        }
                         ticks={
                             3
                         }
                     />                            </div>
 
-                <div className="col" >
+                <div className="col-6 pr-1" >
                     <MultipleLineChart id="maxStartCallsFromByHost"
                         data={
                             this.state.maxStartCallsFromByHost
@@ -168,15 +156,12 @@ class RealmCharts extends Dashboard {
                         name={
                             "MAX START CALLS FROM BY HOST"
                         }
-                        width={
-                            (store.getState().width - 300) / 3
-                        }
                         ticks={
                             3
                         }
                     />                            </div>
 
-                <div className="col" >
+                <div className="col-6 px-1" >
                     <MultipleLineChart id="maxStartCallsToByHost"
                         data={
                             this.state.maxStartCallsToByHost
@@ -185,15 +170,12 @@ class RealmCharts extends Dashboard {
                         name={
                             "MAX START CALLS TO BY HOST"
                         }
-                        width={
-                            (store.getState().width - 300) / 3
-                        }
                         ticks={
                             3
                         }
                     />                            </div>
 
-                <div className="col" >
+                <div className="col-6 pr-1" >
                     <MultipleLineChart id="maxStartCallsFromByrealm"
                         data={
                             this.state.maxStartCallsFromByrealm
@@ -203,15 +185,12 @@ class RealmCharts extends Dashboard {
                             "MAX START CALLS FROM BY REALM"
                         }
                         field={"attrs.realm"}
-                        width={
-                            (store.getState().width - 300) / 3
-                        }
                         ticks={
                             3
                         }
                     />                            </div >
 
-                <div className="col" >
+                <div className="col-6 px-1" >
                     <MultipleLineChart id="maxStartCallsToByrealm"
                         data={
                             this.state.maxStartCallsToByrealm
@@ -221,15 +200,12 @@ class RealmCharts extends Dashboard {
                             "MAX START CALLS TO BY REALM"
                         }
                         field={"attrs.realm"}
-                        width={
-                            (store.getState().width - 300) / 3
-                        }
                         ticks={
                             3
                         }
                     />                            </div >
 
-                <div className="col" >
+                <div className="col-6 pr-1" >
                     <MultipleLineChart id="rtpToByHost"
                         data={
                             this.state.rtpToByHost
@@ -238,15 +214,12 @@ class RealmCharts extends Dashboard {
                         name={
                             "RTP RELAYED TO BY HOST"
                         }
-                        width={
-                            (store.getState().width - 300) / 3
-                        }
                         ticks={
                             3
                         }
                     />                            </div >
 
-                < div className="col" >
+                < div className="col-6 px-1" >
                     <MultipleLineChart id="rtpFromByHost"
                         data={
                             this.state.rtpFromByHost
@@ -255,15 +228,12 @@ class RealmCharts extends Dashboard {
                             "RTP RELAYED FROM BY HOST"
                         }
                         hostnames={this.state.hostnames}
-                        width={
-                            (store.getState().width - 300) / 3
-                        }
                         ticks={
                             3
                         }
                     />                            </div >
 
-                <div className="col" >
+                <div className="col-6 pr-1" >
                     <MultipleLineChart id="rtpToByRealm"
                         data={
                             this.state.rtpToByRealm
@@ -273,15 +243,12 @@ class RealmCharts extends Dashboard {
                         }
                         field={"attrs.realm"}
                         hostnames={this.state.hostnames}
-                        width={
-                            (store.getState().width - 300) / 3
-                        }
                         ticks={
                             3
                         }
                     />                            </div>
 
-                <div className="col" >
+                <div className="col-6 px-1" >
                     <MultipleLineChart id="rtpFromByRealm"
                         data={
                             this.state.rtpFromByRealm
@@ -291,9 +258,6 @@ class RealmCharts extends Dashboard {
                         }
                         field={"attrs.realm"}
                         hostnames={this.state.hostnames}
-                        width={
-                            (store.getState().width - 300) / 3
-                        }
                         ticks={
                             3
                         }
