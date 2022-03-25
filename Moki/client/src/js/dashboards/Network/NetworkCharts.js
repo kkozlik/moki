@@ -112,67 +112,67 @@ class NetworkCharts extends Dashboard {
             <div>
                 { this.state.isLoading && <LoadingScreenCharts />}
                 <div className="row no-gutters">
-                    <div className="col">
-                        <MultipleLineChart id="callsByHost" hostnames={this.state.hostnames} data={this.state.callsByHost} name={"CALLS BY HOST"} width={(store.getState().width - 300) / 3} ticks={3}
+                    <div className="col-6 pr-1">
+                        <MultipleLineChart id="callsByHost" hostnames={this.state.hostnames} data={this.state.callsByHost} name={"CALLS BY HOST"} ticks={3}
                         />
                     </div>
-                    <div className="col">
-                        <MultipleLineChart id="regsByHost" hostnames={this.state.hostnames} data={this.state.regsByHost} name={"REGS BY HOST"} width={(store.getState().width - 300) / 3} ticks={3}
+                    <div className="col-6 px-1">
+                        <MultipleLineChart id="regsByHost" hostnames={this.state.hostnames} data={this.state.regsByHost} name={"REGS BY HOST"} ticks={3}
                         />
                     </div>
-                    <div className="col">
-                        <MultipleLineChart id="callStartsByHost" hostnames={this.state.hostnames} data={this.state.callStartsByHost} name={"CALL STARTS BY HOST"} width={(store.getState().width - 300) / 3} ticks={3}
+                    <div className="col-6 pr-1">
+                        <MultipleLineChart id="callStartsByHost" hostnames={this.state.hostnames} data={this.state.callStartsByHost} name={"CALL STARTS BY HOST"} ticks={3}
                         />
                     </div>
-                    <div className="col">
-                        <MultipleLineChart id="relayedRtpByHost" hostnames={this.state.hostnames} data={this.state.relayedRtpByHost} name={"RELAYED RTP BY HOST"} width={(store.getState().width - 300) / 3} ticks={3}
-                        />
-                    </div>
-
-                    <div className="col">
-                        <MultipleLineChart id="txBytesByHost" hostnames={this.state.hostnames} data={this.state.txBytesByHost} name={"TX BYTES BY HOST"} width={(store.getState().width - 300) / 3} ticks={3}
+                    <div className="col-6 px-1">
+                        <MultipleLineChart id="relayedRtpByHost" hostnames={this.state.hostnames} data={this.state.relayedRtpByHost} name={"RELAYED RTP BY HOST"} ticks={3}
                         />
                     </div>
 
-                    <div className="col">
-                        <MultipleLineChart id="rxPacketByHost" hostnames={this.state.hostnames} data={this.state.rxPacketByHost} name={"RX PACKET BY HOST"} width={(store.getState().width - 300) / 3} ticks={3}
+                    <div className="col-6 pr-1">
+                        <MultipleLineChart id="txBytesByHost" hostnames={this.state.hostnames} data={this.state.txBytesByHost} name={"TX BYTES BY HOST"} ticks={3}
                         />
                     </div>
 
-                    <div className="col">
-                        <MultipleLineChart id="txPacketByHost" hostnames={this.state.hostnames} data={this.state.txPacketByHost} name={"TX PACKET BY HOST"} width={(store.getState().width - 300) / 3} ticks={3}
+                    <div className="col-6 px-1">
+                        <MultipleLineChart id="rxPacketByHost" hostnames={this.state.hostnames} data={this.state.rxPacketByHost} name={"RX PACKET BY HOST"} ticks={3}
                         />
                     </div>
 
-                    <div className="col">
-                        <MultipleLineChart id="rxBytesByInterface" field="type_instance" hostnames={this.state.hostnames} data={this.state.rxBytesByInterface} name={"RX BYTES BY INTERFACE"} width={(store.getState().width - 300) / 3} ticks={3}
+                    <div className="col-6 pr-1">
+                        <MultipleLineChart id="txPacketByHost" hostnames={this.state.hostnames} data={this.state.txPacketByHost} name={"TX PACKET BY HOST"} ticks={3}
                         />
                     </div>
 
-                    <div className="col">
-                        <MultipleLineChart id="txBytesByInterface" field="type_instance" hostnames={this.state.hostnames} data={this.state.txBytesByInterface} name={"TX BYTES BY INTERFACE"} width={(store.getState().width - 300) / 3} ticks={3}
+                    <div className="col-6 px-1">
+                        <MultipleLineChart id="rxBytesByInterface" field="type_instance" hostnames={this.state.hostnames} data={this.state.rxBytesByInterface} name={"RX BYTES BY INTERFACE"} ticks={3}
                         />
                     </div>
 
-                    <div className="col">
-                        <MultipleLineChart id="rxPacketByInterface" field="type_instance" hostnames={this.state.hostnames} data={this.state.rxPacketByInterface} name={"RX PACKETS BY INTERFACE"} width={(store.getState().width - 300) / 3} ticks={3}
+                    <div className="col-6 pr-1">
+                        <MultipleLineChart id="txBytesByInterface" field="type_instance" hostnames={this.state.hostnames} data={this.state.txBytesByInterface} name={"TX BYTES BY INTERFACE"} ticks={3}
                         />
                     </div>
 
-                    <div className="col">
-                        <MultipleLineChart id="txPacketByInterface" field="type_instance" hostnames={this.state.hostnames} data={this.state.txPacketByInterface} name={"TX PACKETS BY INTERFACE"} width={(store.getState().width - 300) / 3} ticks={3}
+                    <div className="col-6 px-1">
+                        <MultipleLineChart id="rxPacketByInterface" field="type_instance" hostnames={this.state.hostnames} data={this.state.rxPacketByInterface} name={"RX PACKETS BY INTERFACE"} ticks={3}
                         />
                     </div>
-                    <div className="col">
-                        <MultipleLineChart id="blacklist" hostnames={this.state.hostnames} data={this.state.blacklist} name={"IPS ON FW BLACKLIST BY HOST"} width={(store.getState().width - 300) / 3} ticks={3}
+
+                    <div className="col-6 pr-1">
+                        <MultipleLineChart id="txPacketByInterface" field="type_instance" hostnames={this.state.hostnames} data={this.state.txPacketByInterface} name={"TX PACKETS BY INTERFACE"} ticks={3}
                         />
                     </div>
-                    <div className="col">
-                        <MultipleLineChart id="greylist" hostnames={this.state.hostnames} data={this.state.greylist} name={"IPS ON FW GREYLIST BY HOST"} width={(store.getState().width - 300) / 3} ticks={3}
+                    <div className="col-6 px-1">
+                        <MultipleLineChart id="blacklist" hostnames={this.state.hostnames} data={this.state.blacklist} name={"IPS ON FW BLACKLIST BY HOST"} ticks={3}
                         />
                     </div>
-                    <div className="col">
-                        <MultipleLineChart id="whitelist" hostnames={this.state.hostnames} data={this.state.whitelist} name={"IPS ON FW WHITELIST BY HOST"} width={(store.getState().width - 300) / 3} ticks={3}
+                    <div className="col-6 pr-1">
+                        <MultipleLineChart id="greylist" hostnames={this.state.hostnames} data={this.state.greylist} name={"IPS ON FW GREYLIST BY HOST"} ticks={3}
+                        />
+                    </div>
+                    <div className="col-6 px-1">
+                        <MultipleLineChart id="whitelist" hostnames={this.state.hostnames} data={this.state.whitelist} name={"IPS ON FW WHITELIST BY HOST"} ticks={3}
                         />
                     </div>
 
