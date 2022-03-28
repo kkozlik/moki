@@ -2,12 +2,15 @@
 
 const elasticsearch = require('elasticsearch');
 const { es } = require('./config').cfg;
+const { cfg } = require('../modules/config');
 
 module.exports = {
   connectToES: () => {
     let client = {};
 
     try {
+      if(cfg.debug) console.info("Connecting to ES "+es);
+
       client = new elasticsearch.Client({ host: es, requestTimeout: 60000 });
     } catch (error) {
       console.error('es client error: ', error.msg);
