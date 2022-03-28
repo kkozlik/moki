@@ -1,5 +1,6 @@
 // jwt.js hold the json web token implementation
 const { isRequireJWT } = require('./config');
+const { cfg } = require('../modules/config');
 
 const hfName = 'x-amzn-oidc-data';
 
@@ -36,6 +37,7 @@ async function getJWTsipUserFilter(req) {
 
   //check if web access - allow it without user logins
   if (req.originalUrl.startsWith("/api/web")) {
+    if (cfg.debug) console.info("web access no need fot user filter");
     return "*";
   }
   // check config if JWT required

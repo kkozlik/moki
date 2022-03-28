@@ -10,6 +10,7 @@ function getFiltersConcat(filters) {
   if (filters && filters.length !== 0) {
     const filtersList = [];
     for (let i = 0; i < filters.length; i++) {
+      if (cfg.debug) console.info(filters[i].title);
       let tit = filters[i].title;
       //replace double shash with ASCII - ES had a problem to parse it
       if (tit.includes("\\")) {
@@ -18,6 +19,8 @@ function getFiltersConcat(filters) {
 
       //wildcard search - special ES query
       if ((tit.includes("*") || tit.includes("?")) && !tit.includes("/")) {
+        if (cfg.debug) console.info("Creating wildcard query - it constains *?/");
+
         //is field name?
         if (tit.includes(":")) {
           filtersList.push({
@@ -85,7 +88,7 @@ async function checkSelectedTypes(types, dashboardName) {
 
 //concat all enable types (if exceeded use field exceeded, otherwise attrs.type)
 function getTypesConcat(value, type = "attrs.type") {
-  console.info(value);
+  if (cfg.debug) console.info("Concatine types "+JSON.stringify(value));
   // concat types with OR
   let types = '*';
   if (value && value.length !== 0) {
@@ -101,6 +104,8 @@ function getTypesConcat(value, type = "attrs.type") {
 }
 
 function getQueries(filter, types, timestamp_gte, timestamp_lte, userFilter, chartFilter, domain, isEncryptChecksumFilter, exists) {
+  if (cfg.debug) console.info("--queries--");
+
   const queries = [];
   if (isEncryptChecksumFilter !== "*") {
     //anonymous mode,  see everything encrypted
@@ -110,9 +115,12 @@ function getQueries(filter, types, timestamp_gte, timestamp_lte, userFilter, cha
           "query": "NOT encrypt: plain"
         }
       });
+      if (cfg.debug) console.info("Adding NOT PLAIN  encrypt filter");
 
     }
     else {
+      if (cfg.debug) console.info("Adding encrypt filter "+isEncryptChecksumFilter);
+
       queries.push({
         "match": {
           "encrypt": isEncryptChecksumFilter
@@ -122,6 +130,8 @@ function getQueries(filter, types, timestamp_gte, timestamp_lte, userFilter, cha
   }
 
   if (domain !== "*") {
+    if (cfg.debug) console.info("Adding domain filter "+domain);
+
     queries.push({
       "match": {
         "tls-cn": domain

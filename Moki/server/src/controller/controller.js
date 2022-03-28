@@ -7,6 +7,7 @@ let { timestamp_gte, timestamp_lte } = require('../utils/ts');
 const { getTimestampBucket } = require('../utils/ts');
 const { getJWTsipUserFilter, getEncryptChecksumFilter } = require('../modules/jwt');
 const timerange_query = require('../../js/template_queries/timerange_query');
+const { cfg } = require('../modules/config');
 
 const supress = "nofield";
 let userFilter = "*";
@@ -31,10 +32,11 @@ class Controller {
         timestamp_gte = Math.round(req.body.timerange_gte);
       }
 
-
+      if (cfg.debug) console.info("--------------------------ES DATA SEARCH---------------------");
       //check if encrypt filter should be used
       let isEncryptChecksumFilter = await getEncryptChecksumFilter(req);
       if (isEncryptChecksumFilter.encryptChecksum) {
+        if (cfg.debug) console.info("Using encrypt checksum filter " + isEncryptChecksumFilter.encryptChecksum);
         isEncryptChecksumFilter = isEncryptChecksumFilter.encryptChecksum;
       }
 
@@ -57,9 +59,12 @@ class Controller {
         }
       }
 
+      if (cfg.debug) console.info("Using types " + types);
       //disable types for network dashboard
       if (req.url.includes("network") || req.url.includes("system") || req.url.includes("realm")) {
         types = "*";
+        if (cfg.debug) console.info("Removed types for network, system and realm dahsboard");
+
       }
       const oldtypes = types;
 
@@ -68,6 +73,7 @@ class Controller {
         //disable types for specific requests (e.g. different index in dashboard)
         if (requests[i].types) {
           types = "*";
+          if (cfg.debug) console.info("Removed types for this chart");
         }
 
 
@@ -201,6 +207,9 @@ class Controller {
       console.log(new Date() + " send msearch");
       const requestList = [];
       for (let j = 0; j < requests.length; j++) {
+        if (cfg.debug) console.info(requests[j].index);
+        if (cfg.debug) console.info(JSON.stringify(requests[j].query));
+
         // console.log(JSON.stringify(requests[j].query));
         requestList.push(
           {
@@ -228,9 +237,12 @@ class Controller {
       client.close();
       let resp = res.json(response);
       if (typeof resp === "string") {
-        console.error("Failed msearch: "+resp);
-        console.error("Failed msearch query: "+JSON.stringify(requestList));
+        if(cfg.debug) console.info("-----ES response----- "+ resp);
+        console.error("Failed msearch: " + resp);
+        console.error("Failed msearch query: " + JSON.stringify(requestList));
       }
+
+      if(cfg.debug) console.info("ES response: "+JSON.stringify(response));
       return resp;
     }
 
@@ -246,6 +258,7 @@ class Controller {
       const filters = getFiltersConcat(req.body.filters);
       let types = req.body.types;
       const querySize = req.body.params && req.body.params.size ? req.body.params.size : 500;
+      if(cfg.debug) console.info("----------------------TABLE DATA SEARCH-------------------------");
 
       //if no types from client, get types from monitor_layout
       if (!types || types.length === 0) {
@@ -299,6 +312,7 @@ class Controller {
       //check if encrypt filter should be used
       let isEncryptChecksumFilter = await getEncryptChecksumFilter(req);
       if (isEncryptChecksumFilter.encryptChecksum) {
+        if(cfg.debug) console.info("Encrypt checksum filter applied "+ isEncryptChecksumFilter.encryptChecksum);
         isEncryptChecksumFilter = isEncryptChecksumFilter.encryptChecksum;
       }
 
@@ -307,10 +321,11 @@ class Controller {
         isEncryptChecksumFilter = "*";
       }
 
-
       console.info("SERVER search with filters: " + filters + " types: " + types + " timerange: " + timestamp_gte + "-" + timestamp_lte + " timebucket: " + timebucket + " userFilter: " + userFilter + " domainFilter: " + domainFilter + " encrypt checksum filter: " + isEncryptChecksumFilter);
       //always timerange_query
       requests.query = timerange_query.getTemplate(getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, requests.filter, domainFilter, isEncryptChecksumFilter), supress, querySize);
+      if (cfg.debug) console.info(requests.index);
+      if(cfg.debug) console.info(JSON.stringify(requests.query));
 
       if (querySize > 500) {
         var response = await client.search({
@@ -343,14 +358,16 @@ class Controller {
         });
       }
 
+      if(cfg.debug) console.info("------ES response---------- "+ JSON.stringify(response));
+
       userFilter = "*";
       console.info(new Date() + " got elastic data");
       let resp = res.json(response);
 
-      client.close(); 
+      client.close();
       if (typeof resp === "string") {
-        console.error("Failed msearch: "+resp);
-        console.error("Failed msearch query: "+JSON.stringify(requests.query));
+        console.error("Failed msearch: " + resp);
+        console.error("Failed msearch query: " + JSON.stringify(requests.query));
       }
       return resp;
     }

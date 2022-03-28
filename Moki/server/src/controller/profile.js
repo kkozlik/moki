@@ -11,6 +11,7 @@ const moment = require('moment-timezone');
 const AdminController = require('./admin');
 const { getDefaults } = require('../modules/config');
 const indexName = "profiles";
+const { cfg } = require('../modules/config');
 
 class ProfileController {
   //store setings by user in ES
@@ -19,6 +20,7 @@ class ProfileController {
   ///profile/save
   static storeUserSettings(req, res, next) {
     async function search() {
+      if(cfg.debug) console.info("Storing settings in user profile in ES");
       const user = AdminController.getUser(req);
       let keys = Object.keys(req.body.userprefs);
       const field = req.body.userprefs[Object.keys(req.body.userprefs)[0]];
@@ -52,6 +54,7 @@ class ProfileController {
         }
       }
 
+      if(cfg.debug) console.info("Update script "+JSON.stringify(script));
       // keys.splice(keys.indexOf("anonymizableAttrs"), 1);
       //check if event with same tls-cn/domain exists, if so update it
       const update = await updateES(indexName, [
@@ -67,6 +70,7 @@ class ProfileController {
       }
       //no such event create new one
       else {
+        if(cfg.debug) console.info("No profile found, creating new one");
         const insert = await insertES(indexName, {
           [secretField]: secret,
           "userprefs": req.body.userprefs
@@ -83,6 +87,7 @@ class ProfileController {
       }
     }
 
+    if(cfg.debug) console.info("Profile with secret "+secret + " created");
     return search().catch((e) => {
       return next(e);
     });
@@ -93,6 +98,7 @@ class ProfileController {
   ///profile/delete
   static deleteUserSettings(req, res, next) {
     async function search() {
+      if(cfg.debug) console.info("Deleting user profile "+secret);
       const user = AdminController.getUser(req);
       const secret = user["tls-cn"];
       const deleted = await deleteES(indexName, { "query": { "match": { "event.tls-cn": secret } } }, res);
@@ -122,12 +128,17 @@ class ProfileController {
       const user = AdminController.getUser(req);
       const tls = user["tls-cn"];
       const domain = user["domain"];
+      if(cfg.debug) console.info("--------------------------GETING USER PROFILE---------------------");
+      if(cfg.debug) console.info("Getting user profile tls: "+tls + " domain: "+domain);
+
       let newIndex = false;
       let jsonDefaults = await getDefaults();
       //check if it is neccesary to create new index
       const existIndex = await existsIndexES(indexName, res);
       //if not, create new one
       if (!existIndex) {
+        if(cfg.debug) console.info("Profile doesn't exists, creating new one with defaults values");
+
         //mode: encrypt, plain, anonymous
         let response = await newIndexES(indexName, {
           "properties": {
@@ -165,6 +176,7 @@ class ProfileController {
       if (existIndex || newIndex) {
         //search for user settings
         let userProfile = await searchES(indexName, [{ query_string: { "query": "event.tls-cn:" + tls } }], res);
+        if(cfg.debug) console.info("Got profile from ES: "+JSON.stringify(userProfile));
 
         //default user profile
         //get timezone from server
@@ -204,8 +216,10 @@ class ProfileController {
               }
             }
           }
+          if(cfg.debug) console.info("Updating user profile values from defauls. "+JSON.stringify(userProfile));
         }
 
+        if(cfg.debug) console.info("Getting domain profile");
         let domainProfile;
         //domain is undefined for admin
         if (domain !== "N/A") {
@@ -220,6 +234,8 @@ class ProfileController {
         //if nothing, return default where domain and tls-cn == "default"
         if (domain === "N/A" || domainProfile.hits.hits.length === 0) {
           domainProfile = defaultDomainProfile;
+          if(cfg.debug) console.info("Domain profile not stored in ES, using default one");
+
         } //check if all parameters in default profile are also in user profile
         else {
           domainProfile = domainProfile.hits.hits[0]._source.event;
@@ -230,8 +246,9 @@ class ProfileController {
             }
           }
         }
+        if(cfg.debug) console.info("Got domain profile stored in ES "+JSON.stringify(domainProfile));
 
-        res.json(200, [userProfile, domainProfile]);
+        res.status(200).send([userProfile, domainProfile]);
       }
       else {
         res.status(400).send({

@@ -50,12 +50,14 @@ class AdminController {
      * events: {timestamp, userID, domain, level} type=login
      */
     async function storeLoginInES(domain, userID, jwtbit, email, sourceIP) {
+      if(cfg.debug) console.info("Storing login in lastlog index");
       const client = new elasticsearch.Client({ host: process.env.ES, requestTimeout: 60000 });
       const now = new Date();
       const index = "lastlog-" + now.getFullYear() + "." + (now.getMonth() + 1);
       const existIndex = await client.indices.exists({ index: index });
 
       if (!existIndex) {
+        if(cfg.debug) console.info(index+" index doesn't exists. Creating new one.");
         await client.indices.create({
           index: index,
           body: {
@@ -91,7 +93,7 @@ class AdminController {
         if (err) {
           console.error(resp);
         } else {
-          console.info("Inserted new login: " + userID + " " + domain);
+          if(cfg.debug) console.info("Inserted new login: " + userID + " " + domain);
         }
       });
     }
@@ -150,7 +152,8 @@ class AdminController {
     const sourceIP = IPs[0];
 
     if (jwtbit === undefined) {
-      //default user for web dashboard
+      //default user for web dashboard          
+      console.info("ACCESS web user - jwtbit undefined");
       return res.json({ user: `DEFAULT`, aws: true });
     }
 
