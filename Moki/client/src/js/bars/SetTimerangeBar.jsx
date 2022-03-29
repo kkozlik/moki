@@ -515,7 +515,6 @@ class timerangeBar extends Component {
                         </button>
                         <div className="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuExportButton">
                             <div id="exportMenu">
-                                <button className="dropdown-item tabletd" onClick={this.exportCSV}>CSV</button>
                                 <button className="dropdown-item tabletd" onClick={this.exportJSON}>JSON</button>
                             </div>
                         </div>

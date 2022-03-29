@@ -44,30 +44,38 @@ class Export extends Component {
             }
 
             // Retrieves the list of calls
-            var calls = await elasticsearchConnection(name + "/table", { "size": "10000" });
+            var calls = await elasticsearchConnection(name + "/table", { "size": "10000", "type": "export" });
             //parse data
-            console.log(calls);
             if (calls && calls.hits && calls.hits.hits && calls.hits.hits.length > 0) {
-                var data = await parseTableHits(calls.hits.hits);
+                var data = await parseTableHits(calls.hits.hits, storePersistent.getState().profile, "export");
 
                 this.setState({
                     data: data
                 });
 
-                //attributes attrs+, @timestamp   
-                if (data[0]) {
-                    var attributes = Object.keys(data[0]._source.attrs);
-                    attributes.push("@timestamp");
-                    //get list of attributes from all data (can be different attributes)
-                    for (var i = 1; i < data.length; i++) {
-                        var keys = Object.keys(data[i]._source.attrs);
-                        for (var j = 0; j < keys.length; j++) {
-                            if (!attributes.includes(keys[j])) {
-                                attributes.push(keys[j]);
-                            }
 
+                const visitNodes = (obj, visitor, stack = []) => {
+                    if (typeof obj === 'object') {
+                        for (let key in obj) {
+                            visitNodes(obj[key], visitor, [...stack, key]);
                         }
+                    } else {
+                        visitor(stack.join('.'), obj);
                     }
+                }
+
+                //list of all attrs  
+                if (data[0]) {
+                    var attributes = [];
+                    for (let hit of data) {
+                        visitNodes(hit._source, (path, value) => {
+                            if (!attributes.includes(path)) {
+                                attributes.push(path)
+                            }
+                        });
+                    }
+                    console.log(attributes);
+                    attributes.sort();
                     this.setState({ attributes: attributes });
                 }
             }
@@ -108,7 +116,7 @@ class Export extends Component {
     }
 
     export() {
-        this.setState({attributes: [] });
+        this.setState({ attributes: [] });
         const attributesState = this.state.attributes;
         var attributes = [];
         //get rid of uncheck columns
@@ -198,13 +206,14 @@ class Export extends Component {
                     <hr />
                 </div>
                 <div className="row">
-                    {this.state.attributes.length === 0 && <span style={{ "color": "grey", "fontSize": "large", "marginLeft": "40%" }} id="loadingExport">Getting all data, it can take a while!</span>}
+                    {this.state.attributes.length === 0 &&  <span style={{ "color": "grey", "fontSize": "large", "marginLeft": "40%" }} id="loadingExport">Getting all data, it can take a while!</span>}
                     {this.state.attributes.map((attribute, i) => {
-                        return (<div className="col-3" key={i}><input type="checkbox" id={attribute} className="exportCheckbox" defaultChecked={isSearchable("attrs." + attribute) ? true : false} /><label key={i}>{attribute}</label></div>)
+                        return (<div className="col-3" key={i}><input type="checkbox" id={attribute} className="exportCheckbox" defaultChecked={isSearchable(attribute) ? true : false} /><label key={i}>{attribute}</label></div>)
                     })}
 
                 </div>
                 <div className="row">
+                {this.state.attributes.length !== 0 &&  storePersistent.getState().profile && storePersistent.getState().profile[0] && storePersistent.getState().profile[0].userprefs.mode === "encrypt" && <span><input type="checkbox" id="decryptCheckbox" className="decryptCheckbox" defaultChecked={false} /><label style={{"paddingBottom": "11px"}}>Decrypt data. Warning, it can take a few minutes.</label></span>  }
                     {this.state.attributes.length !== 0 && <button className="btn btn-default rightButton" onClick={this.export}>{"Export " + this.props.type} </button>}
                 </div>
             </span>

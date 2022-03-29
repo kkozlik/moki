@@ -297,6 +297,7 @@ label {
     vertical-align: -webkit-baseline-middle;
     vertical-align: -moz-middle-with-baseline;
     color: black;
+    padding-left: 2px;
 }
 
 .activeDashboard {
@@ -967,65 +968,6 @@ input[type=text] {
     stroke-width: 1.5px;
 }
 
-/* countchart */
-
-@media only screen and (max-width: 840px) {
-    .count-chart-counter {
-        font-size:1em;
-        font-weight: bold !important;
-    }
-    .count-chart-counter.count-chart-counter-sm {
-        font-size:.85em;
-    }
-    .count-chart-counter.count-chart-counter-xs {
-        font-size:.65em;
-    }
-}
-@media only screen and (min-width: 840px) {
-    .count-chart-counter {
-        font-size:1.5em;
-        font-weight: bold !important;
-    }
-    .count-chart-counter.count-chart-counter-sm {
-        font-size:1em;
-    }
-    .count-chart-counter.count-chart-counter-xs {
-        font-size:.75em;
-    }
-}
-@media only screen and (min-width: 970px) {
-    .count-chart-counter {
-        font-size:2em;
-    }
-    .count-chart-counter.count-chart-counter-sm {
-        font-size:1.2em;
-    }
-    .count-chart-counter.count-chart-counter-xs {
-        font-size:1em;
-    }
-}
-@media only screen and (min-width: 1250px) {
-    .count-chart-counter {
-        font-size:3em;
-    }
-    .count-chart-counter.count-chart-counter-sm {
-        font-size:1.8em;
-    }
-    .count-chart-counter.count-chart-counter-xs {
-        font-size:1.4em;
-    }
-}
-@media only screen and (min-width: 1650px) {
-    .count-chart-counter {
-        font-size:4em;
-    }
-    .count-chart-counter.count-chart-counter-sm {
-        font-size:2.8em;
-    }
-    .count-chart-counter.count-chart-counter-xs {
-        font-size:2.2em;
-    }
-}
 
 /*-------------------navigation bar-------------*/
 
