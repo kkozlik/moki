@@ -166,44 +166,32 @@ class HomeController extends Controller {
    */
   static getCharts(req, res, next) {
     super.request(req, res, next, [
-      //SUM CALL END
+      //1 SUM CALL END
       { index: "logstash*", template: query_string, filter: "attrs.type:call-end" },
-      //SUM CALL ATTEMPT
+      //2 SUM CALL ATTEMPT
       { index: "logstash*", template: query_string, filter: "attrs.type:call-attempt" },
-      //AVG FAILURE RATIO
+      //3 AVG FAILURE RATIO
       { index: "logstash*", template: agg_sum_bucket_query, params: ["SumFailureSuccess", "failure"], filter: "*" },
-      //DURATION SUM
+      //4 DURATION SUM
       { index: "logstash*", template: agg_query, params: ["sum", "attrs.duration"], filter: "*" },
-      //ASR
+      //5 ASR
       { index: "logstash*", template: agg_sum_bucket_query, params: ["CallEnd", "AnsweredCalls"], filter: "*" },
-      //AVG DURATION
+      //6 AVG DURATION
       { index: "logstash*", template: agg_query, params: ["avg", "attrs.duration"], filter: "*" },
-      //TYPE HEATMAP
+      //7 TYPE HEATMAP
       { index: "logstash*", template: datehistogram_agg_query, params: ["attrs.type", "terms", "timebucket"], filter: "*" },
       //7 PARALLEL CALLS
-      { index: "collectd*", template: distinct_timerange_query_string, params: ["attrs.hostname", "max", "attrs.calls", "timebucket"], types: "*", filter: "*", exists: "attrs.calls" },
-      //PARALLEL CALLS day ago
-      { index: "collectd*", template: distinct_timerange_query_string, params: ["attrs.hostname", "max", "attrs.calls", "timebucket"], types: "*", filter: "*", timestamp_gte: "- 60 * 60 * 24 * 1000", timestamp_lte: "- 60 * 60 * 24 * 1000", exists: "attrs.calls" },
+      { index: "collectd*", template: distinct_timerange_query_string, params: ["attrs.hostname", "max", "attrs.calls", "timebucket", "timestamp_gte", "timestamp_lte"], types: "*", filter: "*", exists: "attrs.calls" },
+      //8 PARALLEL CALLS day ago
+      { index: "collectd*", template: distinct_timerange_query_string, params: ["attrs.hostname", "max", "attrs.calls", "timebucket", "timestamp_gte", "timestamp_lte"], types: "*", filter: "*", timestamp_gte: "- 60 * 60 * 24 * 1000", timestamp_lte: "- 60 * 60 * 24 * 1000", exists: "attrs.calls" },
       //9 PARALLEL REGS
-      { index: "collectd*", template: distinct_timerange_query_string, params: ["attrs.hostname", "max", "attrs.regs", "timebucket"], types: "*", filter: "*", exists: "attrs.regs" },
-      //PARALLEL REGS day ago
-      { index: "collectd*", template: distinct_timerange_query_string, params: ["attrs.hostname", "max", "attrs.regs", "timebucket"], types: "*", filter: "*", timestamp_gte: "- 60 * 60 * 24 * 1000", timestamp_lte: "- 60 * 60 * 24 * 1000", exists: "attrs.regs" },
-      //REGS ACTUAL (last time bucket)
-      { index: "collectd*", template: two_agg_query, params: ["attrs.hostname", "max", "attrs.regs"], types: "*", filter: "*", timestamp_gte: "lastTimebucket", exists: "attrs.regs" },
-      //CALL ACTUAL (last time bucket)
-      { index: "collectd*", template: two_agg_query, params: ["attrs.hostname", "max", "attrs.calls"], types: "*", filter: "*", timestamp_gte: "lastTimebucket", exists: "attrs.calls" },
-      //INCIDENT COUNT
-      { index: "exceeded*", template: datehistogram_query, params: ["timebucket"], types: "*", filter: "*" },
-      //INCIDENT COUNT DAY AGO
-      { index: "exceeded*", template: datehistogram_query, params: ["timebucket"], types: "*", filter: "*", timestamp_gte: "- 60 * 60 * 24 * 1000", timestamp_lte: "- 60 * 60 * 24 * 1000" },
-      //INCIDENT ACTUAL
-      { index: "exceeded*", template: timerange_query, filter: "*", types: "*", timestamp_gte: "lastTimebucket" },
-      //CALLS LAST LAST TIMERANGE
-      { index: "collectd*", template: two_agg_query, params: ["attrs.hostname", "max", "attrs.calls"], types: "*", filter: "*", timestamp_gte: "lastlastTimebucket", exists: "attrs.calls" },
-      //REGS LAST LAST TIMERANGE
-      { index: "collectd*", template: two_agg_query, params: ["attrs.hostname", "max", "attrs.regs"], types: "*", filter: "*", timestamp_gte: "lastlastTimebucket", exists: "attrs.regs" },
-      //18 INCIDENT LAST LAST TIMERANGE
-      { index: "exceeded*", template: timerange_query, filter: "*", timestamp_gte: "lastlastTimebucket", types: "*" }
+      { index: "collectd*", template: distinct_timerange_query_string, params: ["attrs.hostname", "max", "attrs.regs", "timebucket", "timestamp_gte", "timestamp_lte"], types: "*", filter: "*", exists: "attrs.regs" },
+      //10 PARALLEL REGS day ago
+      { index: "collectd*", template: distinct_timerange_query_string, params: ["attrs.hostname", "max", "attrs.regs", "timebucket", "timestamp_gte", "timestamp_lte"], types: "*", filter: "*", timestamp_gte: "- 60 * 60 * 24 * 1000", timestamp_lte: "- 60 * 60 * 24 * 1000", exists: "attrs.regs" },
+      //11 INCIDENT COUNT
+      { index: "exceeded*", template: datehistogram_query, params: ["timebucket", "timestamp_gte", "timestamp_lte"], types: "*", filter: "*" },
+      //12 INCIDENT COUNT DAY AGO
+      { index: "exceeded*", template: datehistogram_query, params: ["timebucket", "timestamp_gte", "timestamp_lte"], types: "*", filter: "*", timestamp_gte: "- 60 * 60 * 24 * 1000", timestamp_lte: "- 60 * 60 * 24 * 1000" }
     ]);
   }
 }

@@ -30,10 +30,6 @@ class HomeCharts extends Dashboard {
             parallelRegs: [],
             callsActual: [],
             regsActuall: [],
-            callsActualMinuteAgo: [],
-            regsActualMinuteAgo: [],
-            incidentActual: [],
-            incidentActualMinuteAgo: [],
             incidentCount: [],
             isLoading: true
         }
@@ -55,29 +51,44 @@ class HomeCharts extends Dashboard {
                 [{ result: 'typeDateHeatmap', func: parseDateHeatmap, attrs: ["attrs.type", "attrs.type"] }],
                 //PARALLEL CALLS 7+8
                 [{ result: 'parallelCalls', func: parseMultipleLineDataShareAxis, type: "multipleLineData", details: ["Calls", "Calls-1d"] }],
-                [],
+                [], //don't delete
                 //PARALLEL REGS 9+10
                 [{ result: 'parallelRegs', func: parseMultipleLineDataShareAxis, type: "multipleLineData", details: ["Regs", "Regs-1d"] }],
-                [],
-                //ACTUALL REGS 11
-                [{ result: 'regsActual', func: parseAggQuerySumValue }],
-                //ACTUALL CALLS 12
-                [{ result: 'callsActual', func: parseAggQuerySumValue }],
+                [], //don't delete
                 //PARALLEL INCIDENT 13+14
                 [{ result: 'incidentCount', func: parseMultipleLineDataShareAxisWithoutAgg, type: "multipleLineData", details: ["Incident", "Incident-1d"] }],
-                [],
-                //ACTUALL INCIDENT 15
-                [{ result: 'incidentActual', func: parseQueryStringData }],
-                //ACTUALL REGS MINUTE AGO 16
-                [{ result: 'callsActualMinuteAgo', func: parseAggQuerySumValue }],
-                //ACTUALL CALLS MINUTE AGO 17
-                [{ result: 'regsActualMinuteAgo', func: parseAggQuerySumValue }],
-                //ACTUALL INCIDENT MINUTE AGO 18
-                [{ result: 'incidentActualMinuteAgo', func: parseQueryStringData }],
+                [] //don't delete
+
             ]
         }
     }
 
+    //special parsing data - last bucket from different parsing function
+    //i = 0 - time interval ago;   i = 1 actual
+    getLastValueInInterval(data, i) {
+        if (data && data.length > 0 && data[1].values.length > 0) {
+            //get last time interval
+            if (i === 0) {
+                var lastValue = data[1].values[data[1].values.length - 2];
+                if (lastValue) {
+                   return lastValue.value;
+                }
+                else {
+                    return 0;
+                }
+            }
+            else {
+                var lastValue = data[1].values[data[1].values.length - 1];
+                if (lastValue) {
+                    return lastValue.value
+                }
+                else {
+                    return 0;
+                }
+            }
+        }
+        return 0;
+    }
 
     render() {
         return (
@@ -122,9 +133,7 @@ class HomeCharts extends Dashboard {
                         } name={"PARALLEL CALLS"} id={"parallelCalls"} width={store.getState().width - 500} units={"count"} />
                     </div>
                     <div className="col-2 px-1">
-                        <CountUpChart data={
-                            this.state.callsActual
-                        } name={"ACTUAL CALLS"} biggerFont={"biggerFont"} dataAgo={this.state.callsActualMinuteAgo} />
+                        <CountUpChart data={this.getLastValueInInterval(this.state.parallelCalls, 1)} name={"ACTUAL CALLS"} biggerFont={"biggerFont"} dataAgo={this.getLastValueInInterval(this.state.parallelCalls, 0)} />
                     </div>
                 </div>
                 <div className="row no-gutters">
@@ -134,9 +143,7 @@ class HomeCharts extends Dashboard {
                         } name={"PARALLEL REGS"} id={"parallelRegs"} width={store.getState().width - 500} units={"count"} />
                     </div>
                     <div className="col-2 px-1">
-                        <CountUpChart data={
-                            this.state.regsActual
-                        } name={"ACTUAL REGS"} biggerFont={"biggerFont"} dataAgo={this.state.regsActualMinuteAgo} />
+                        <CountUpChart data={this.getLastValueInInterval(this.state.parallelRegs, 1)} name={"ACTUAL REGS"} biggerFont={"biggerFont"} dataAgo={this.getLastValueInInterval(this.state.parallelRegs, 0)} />
                     </div>
                 </div>
                 <div className="row no-gutters">
@@ -146,9 +153,7 @@ class HomeCharts extends Dashboard {
                         } name={"INCIDENTS"} units={"count"} id={"incidentCount"} width={store.getState().width - 500} />
                     </div>
                     <div className="col-2 px-1">
-                        <CountUpChart data={
-                            this.state.incidentActual
-                        } name={"INCIDENTS ACTUAL"} biggerFont={"biggerFont"} dataAgo={this.state.incidentActualMinuteAgo} />
+                        <CountUpChart data={this.getLastValueInInterval(this.state.incidentCount, 1)} name={"INCIDENTS ACTUAL"} biggerFont={"biggerFont"} dataAgo={this.getLastValueInInterval(this.state.incidentCount, 0)} />
                     </div>
                 </div>
             </div>
