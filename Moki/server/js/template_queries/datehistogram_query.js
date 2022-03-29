@@ -1,4 +1,4 @@
-var getTemplate = function ( timebucket, queries,supress) {
+var getTemplate = function ( timebucket, timestamp_gte, timestamp_lte, queries,supress) {
     var template = {
         "size": 0,
         track_total_hits: true,
@@ -18,7 +18,11 @@ var getTemplate = function ( timebucket, queries,supress) {
                     "field": "@timestamp",
                     "fixed_interval": timebucket,
                     "time_zone": "Europe/Berlin",
-                    "min_doc_count": 1,
+                    "min_doc_count": 0,
+                    "extended_bounds": {
+                        "min": timestamp_gte,
+                        "max": timestamp_lte
+                      }
                 }
             }
         }

@@ -28,7 +28,6 @@ class RegistrationCharts extends Dashboard {
             topRegExpired: [],
             transportProtocol: [],
             parallelRegs: [],
-            regsActual: [],
             geoipHashMap: [],
             types: [],
             isLoading: true
@@ -50,7 +49,7 @@ class RegistrationCharts extends Dashboard {
                 [{ result: 'parallelRegs', attrs: ["attrs.hostname"], func: parseMultipleLineDataShareAxis, type: "multipleLineData", details: ["Regs", "Regs-1d"] }],
                 [],
                 //ACTUALL REGS 7
-                [{ result: 'regsActual', func: parseAggQuerySumValue, attrs: ["attrs.hostname"] }],
+                [],
                 //DISTRIBUTION HASH GEOIP MAP 8
                 [{ result: 'geoipHashMap', func: parseAggCities }],
                 //TYPES DISTRIBUTIONS
@@ -59,6 +58,32 @@ class RegistrationCharts extends Dashboard {
         }
     }
 
+    //special parsing data - last bucket from different parsing function
+    //i = 0 - time interval ago;   i = 1 actual
+    getLastValueInInterval(data, i) {
+        if (data && data.length > 0 && data[1].values.length > 0) {
+            //get last time interval
+            if (i === 0) {
+                var lastValue = data[1].values[data[1].values.length - 2];
+                if (lastValue) {
+                   return lastValue.value;
+                }
+                else {
+                    return 0;
+                }
+            }
+            else {
+                var lastValue = data[1].values[data[1].values.length - 1];
+                if (lastValue) {
+                    return lastValue.value
+                }
+                else {
+                    return 0;
+                }
+            }
+        }
+        return 0;
+    }
 
     //render GUI
     render() {
@@ -79,9 +104,7 @@ class RegistrationCharts extends Dashboard {
                     } name={"PARALLEL REGS"} id={"parallelRegs"} width={store.getState().width - 600} />
                 </div>
                 <div className="col-1">
-                    <ValueChart data={
-                        this.state.regsActual
-                    } name={"ACTUAL REGS"} biggerFont={"biggerFont"} />
+                    <ValueChart data={this.getLastValueInInterval(this.state.parallelRegs, 1)} name={"ACTUAL REGS"} biggerFont={"biggerFont"} />
                 </div>
             </div>
 
