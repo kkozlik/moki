@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { getSearchableFields } from "../helpers/SearchableFields.js";
 import { elasticsearchConnection } from '@moki-client/gui';
-import { parseTableHits } from '@moki-client/es-response-parser';
+import { parseTableHits, decrypt } from '@moki-client/es-response-parser';
 import storePersistent from "../store/indexPersistent";
 
 class Export extends Component {
@@ -12,10 +12,14 @@ class Export extends Component {
             //attributes attrs+, @timestamp   
             attributes: [],
             exportOpen: false,
-            error: ""
+            error: "",
+            progressValue: 0,
+            showProgressBar: false,
+            progressText: ""
         }
         this.loadData = this.loadData.bind(this);
         this.export = this.export.bind(this);
+        this.updateProgressBar = this.updateProgressBar.bind(this);
     }
 
     static getDerivedStateFromProps(nextProps, prevState) {
@@ -34,8 +38,12 @@ class Export extends Component {
         }
     }
 
+    updateProgressBar(value) {
+        this.setState({ progressValue: Math.round((value / this.state.data.length) * 100) })
+    }
+
     async loadData() {
-        document.getElementById("loadingExport").innerHTML = "Getting all data, it can take a while!";
+        document.getElementById("loadingExport").innerHTML = "Downloading data, it can take a while!";
         try {
 
             var name = window.location.pathname.substr(1);
@@ -53,36 +61,43 @@ class Export extends Component {
                     data: data
                 });
 
-
-                const visitNodes = (obj, visitor, stack = []) => {
-                    if (typeof obj === 'object') {
-                        for (let key in obj) {
-                            visitNodes(obj[key], visitor, [...stack, key]);
-                        }
-                    } else {
-                        visitor(stack.join('.'), obj);
-                    }
+                //if not encrypt mode, download directly
+                if (!(storePersistent.getState().profile && storePersistent.getState().profile[0] && storePersistent.getState().profile[0].userprefs.mode === "encrypt")) {
+                    this.export();
                 }
 
-                //list of all attrs  
-                if (data[0]) {
-                    var attributes = [];
-                    for (let hit of data) {
-                        visitNodes(hit._source, (path, value) => {
-                            if (!attributes.includes(path)) {
-                                attributes.push(path)
-                            }
-                        });
-                    }
-                    console.log(attributes);
-                    attributes.sort();
-                    this.setState({ attributes: attributes });
-                }
+                /*
+                                const visitNodes = (obj, visitor, stack = []) => {
+                                    if (typeof obj === 'object') {
+                                        for (let key in obj) {
+                                            visitNodes(obj[key], visitor, [...stack, key]);
+                                        }
+                                    } else {
+                                        let path = stack.map(i => "['" + i + "']");
+                                        visitor(stack.join('.'), obj, path.join(''));
+                                    }
+                                }
+                
+                                //list of all attrs  
+                                if (data[0]) {
+                                    var attributes = [];
+                                    for (let hit of data) {
+                                        visitNodes(hit._source, (attr, value, path) => {
+                                            if (!attributes.filter(e => e.attr === attr).length > 0) {
+                                                attributes.push({
+                                                    attr: attr,
+                                                    path: path
+                                                })
+                                            }
+                                        });
+                                    }
+                                    this.setState({ attributes: attributes });
+                                }*/
             }
             else {
-                this.setState({
-                    error: "No column list from elasticsearch"
-                })
+                /* this.setState({
+                     error: "Problem to get data from elasticsearch"
+                 })*/
                 document.getElementById("loadingExport").innerHTML = "No data in elasticsearch";
 
             }
@@ -115,66 +130,121 @@ class Export extends Component {
         return str;
     }
 
-    export() {
-        this.setState({ attributes: [] });
-        const attributesState = this.state.attributes;
-        var attributes = [];
-        //get rid of uncheck columns
-        for (var i = 0; i < attributesState.length; i++) {
-            var el = document.getElementById(attributesState[i]);
-            if (el && el.checked) {
-                attributes.push(attributesState[i]);
-            }
+    async export() {
+        /*  const attributesState = this.state.attributes;
+          var attributes = [];
+          //get rid of uncheck columns
+          for (var i = 0; i < attributesState.length; i++) {
+              var el = document.getElementById(attributesState[i].attr);
+              if (el && el.checked) {
+                  attributes.push(attributesState[i]);
+              }
+          }
+  
+          //progressText
+          this.setState({
+              showProgressBar: true,
+              progressText: "Adding only selected columns ....",
+              progressValue: 10
+          }, () => continueFce(attributes, this));
+  
+          async function continueFce(attributes, thiss){
+              console.log(new Date());
+              console.log(thiss.state.showProgressBar);
+              var result = data;
+              var data = thiss.state.data;
+              */
+        //       var event = {};
+        //         result = data;
+        /*
+                    function set(path, value) {
+                        var schema = event;  // a moving reference to internal objects within obj
+                        var pList = path.split('.');
+                        var len = pList.length;
+                        for (var i = 0; i < len - 1; i++) {
+                            var elem = pList[i];
+                            if (!schema[elem]) schema[elem] = {}
+                            schema = schema[elem];
+                        }
+            
+                        schema[pList[len - 1]] = value;
+                    }
+        
+                    for (i = 0; i < data.length; i++) {
+                        if (i % 10 === 0) {
+                            thiss.updateProgressBar(i);
+                            console.log(i);
+                        }
+        
+                        for (let hit of attributes) {
+                            try {
+                                if (eval("data[i]._source" + hit.path)) {
+                                    let value = eval("data[i]._source" + hit.path) ? eval("data[i]._source" + hit.path) : " ";
+                                    set(hit.attr, value);
+                                }
+                            } catch (e) {
+        
+                            }
+                        }
+                        result.push(event);
+                        event = {};
+                    }
+                    console.log(new Date());
+        
+                    console.log("4444");
+        
+                    thiss.setState({
+                        showProgressBar: false,
+                        progressText: "",
+                        progressValue: 0
+                    });
+        
+        */
+
+        var result = this.state.data;
+        //check if should be decrypted
+        var isDecrypt = document.getElementById("decryptCheckbox").checked;
+        if (isDecrypt) {
+            //show progress bar
+            this.setState({ showProgressBar: true, progressText: "Decrypting...." });
+            result = await decrypt(storePersistent.getState().profile, result, [], this.updateProgressBar);
+            this.setState({ showProgressBar: false });
         }
 
-        //create new data structure
-        var result = [attributes];
-        var event = {};
-        var data = this.state.data;
 
+        /* if (attributes.length === 0) {
+             alert("No data selected");
+         } else {
+             */
+        const element = document.createElement("a");
+        var file = "";
+        //no csv export anymore, if so, need to add column list to result
+        /* if (this.props.type === "CSV") {
+             var jsonObject = JSON.stringify(result);
+             result = this.convertToCSV(jsonObject);
+             element.download = "data.csv";
+             if (storePersistent.getState().profile && storePersistent.getState().profile[0] && storePersistent.getState().profile[0].userprefs.mode === "encrypt") {
+                 element.download = "data_decrypted.csv"
+             }
+             file = new Blob([result], { type: 'text/plain' });
+         }
+         else {*/
+        //JSON
 
-        for (i = 0; i < data.length; i++) {
-            for (var j = 0; j < attributes.length; j++) {
-                if (attributes[j] === "@timestamp") {
-                    event[attributes[j]] = data[i]._source[attributes[j]] ? data[i]._source[attributes[j]] : " ";
-                }
-                else {
-                    event[attributes[j]] = data[i]._source.attrs[attributes[j]] ? data[i]._source.attrs[attributes[j]] : " ";
-                }
-            }
-            result.push(event);
-            event = {};
+        element.download = "data.json";
+        if (isDecrypt) {
+            element.download = "data_decrypted.json"
         }
+        file = new Blob([JSON.stringify(result, null, 1)], { type: 'text/plain' });
+        // }
+        element.href = URL.createObjectURL(file);
+        document.body.appendChild(element); // Required for this to work in FireFox
+        element.click();
+        //close export window
+        this.props.close();
 
-        if (attributes.length === 0) {
-            alert("No data selected");
-        } else {
-            const element = document.createElement("a");
-            var file = "";
-            if (this.props.type === "CSV") {
-                var jsonObject = JSON.stringify(result);
-                result = this.convertToCSV(jsonObject);
-                element.download = "data.csv";
-                if (storePersistent.getState().profile && storePersistent.getState().profile[0] && storePersistent.getState().profile[0].userprefs.mode === "encrypt") {
-                    element.download = "data_decrypted.csv"
-                }
-                file = new Blob([result], { type: 'text/plain' });
-            }
-            else {
-                //JSON
-                element.download = "data.json";
-                if (storePersistent.getState().profile && storePersistent.getState().profile[0] && storePersistent.getState().profile[0].userprefs.mode === "encrypt") {
-                    element.download = "data_decrypted.json"
-                }
-                file = new Blob([JSON.stringify(result)], { type: 'text/plain' });
-            }
-            element.href = URL.createObjectURL(file);
-            document.body.appendChild(element); // Required for this to work in FireFox
-            element.click();
-            //close export window
-            this.props.close();
-        }
     }
+
 
     checkAll() {
         let checkboxes = document.getElementsByClassName("exportCheckbox");
@@ -201,20 +271,12 @@ class Export extends Component {
         return (
             <span className="exportBody">
                 <div className="row">
-                    {this.state.attributes.length !== 0 && <h3 className="tab"> Select columns</h3>}
-                    {this.state.attributes.length !== 0 && <span> <input type="checkbox" id="allCheckExport" className="exportCheckbox" onClick={this.checkAll} /><span>all</span></span>}
-                    <hr />
+                    {this.state.data.length === 0 && <span style={{"width": "100%"}}><i class="fa fa-circle-o-notch fa-spin" style={{"color": "grey", "width" : "10px", "marginLeft": "5%"}}></i><span style={{ "color": "grey", "fontSize": "large", "marginLeft": "1%" }} id="loadingExport"> Downloading data, it can take a while!</span></span>}
                 </div>
                 <div className="row">
-                    {this.state.attributes.length === 0 &&  <span style={{ "color": "grey", "fontSize": "large", "marginLeft": "40%" }} id="loadingExport">Getting all data, it can take a while!</span>}
-                    {this.state.attributes.map((attribute, i) => {
-                        return (<div className="col-3" key={i}><input type="checkbox" id={attribute} className="exportCheckbox" defaultChecked={isSearchable(attribute) ? true : false} /><label key={i}>{attribute}</label></div>)
-                    })}
-
-                </div>
-                <div className="row">
-                {this.state.attributes.length !== 0 &&  storePersistent.getState().profile && storePersistent.getState().profile[0] && storePersistent.getState().profile[0].userprefs.mode === "encrypt" && <span><input type="checkbox" id="decryptCheckbox" className="decryptCheckbox" defaultChecked={false} /><label style={{"paddingBottom": "11px"}}>Decrypt data. Warning, it can take a few minutes.</label></span>  }
-                    {this.state.attributes.length !== 0 && <button className="btn btn-default rightButton" onClick={this.export}>{"Export " + this.props.type} </button>}
+                    {this.state.data.length !== 0 && storePersistent.getState().profile && storePersistent.getState().profile[0] && storePersistent.getState().profile[0].userprefs.mode === "encrypt" && <span style={{ "marginTop": "10px", "marginLeft": "2px" }}><input type="checkbox" id="decryptCheckbox" className="decryptCheckbox" defaultChecked={false} /><label style={{ "paddingBottom": "11px" }}>Decrypt data. It could take a few minutes.</label></span>}
+                    {this.state.data.length !== 0 && storePersistent.getState().profile && storePersistent.getState().profile[0] && storePersistent.getState().profile[0].userprefs.mode === "encrypt" && <button className="btn btn-default rightButton" onClick={this.export}>{"Export"} </button>}
+                    {this.state.showProgressBar && <div className="row" style={{ "color": "grey", "width": "40%", "marginLeft": "15px",  "fontSize": "large"}}><div id="Progress_Status" className="col">  <div id="myprogressBar" style={{ "width": this.state.progressValue + "%" }}></div>  </div>{this.state.progressValue + "%"}<div>{this.state.progressText}</div></div>}
                 </div>
             </span>
 

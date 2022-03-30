@@ -11,6 +11,20 @@ a {
     background-color: white !important;
 }
 
+/* progress bar */
+#Progress_Status {
+    background-color: var(--second);
+    height: 15px;
+  }
+    
+  #myprogressBar {
+    width: 1%;
+    background-color: #4CAF50;
+    text-align: center;
+    line-height: 32px;
+    color: black;
+    height: 15px;
+  }
 
 /* popup */
 
@@ -517,8 +531,8 @@ h5 {
     position: absolute;
     z-index: 1000;
     background: white;
-    left: 210px;
-    width: 80%;
+    left: 38%;
+    width: 35%;
     padding: 20px;
     border: 1px solid #ced4da;
     border-radius: .25rem;

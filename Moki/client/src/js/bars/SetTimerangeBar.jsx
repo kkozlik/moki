@@ -14,7 +14,6 @@ import historyIconGrey from "../../styles/icons/reload_time_grey.png";
 import refreshIcon from "../../styles/icons/refresh.png";
 import refreshStopIcon from "../../styles/icons/refreshStop.png";
 import Export from "./Export";
-import moment from 'moment';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { parseTimestamp } from "../helpers/parseTimestamp";
@@ -73,7 +72,6 @@ class timerangeBar extends Component {
             history: [],
             timeFormat: timeFormat,
             dateFormat: dateFormat,
-            exportCSVOpen: false,
             exportJSONOpen: false
         }
 
@@ -101,9 +99,7 @@ class timerangeBar extends Component {
         this.addHistory = this.addHistory.bind(this);
         this.loadHistory = this.loadHistory.bind(this);
         this.exportJSON = this.exportJSON.bind(this);
-        this.exportCSV = this.exportCSV.bind(this);
         this.exportJSONclose = this.exportJSONclose.bind(this);
-        this.exportCSVclose = this.exportCSVclose.bind(this);
         this.toggleMenu = this.toggleMenu.bind(this);
         store.subscribe(() => this.rerenderTimerange());
 
@@ -510,14 +506,9 @@ class timerangeBar extends Component {
                 <div className="d-flex justify-content-between">
                     {sipUserSwitch}
                     {!hiddenExport.includes(name) && <div className="dropdown float-right text-right">
-                        <button className="btn dropdown-toggle" type="button" id="dropdownMenuExportButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <button className="btn" type="button" id="dropdownMenuExportButton" onClick={this.exportJSON} aria-haspopup="true" aria-expanded="false">
                             Export
                         </button>
-                        <div className="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuExportButton">
-                            <div id="exportMenu">
-                                <button className="dropdown-item tabletd" onClick={this.exportJSON}>JSON</button>
-                            </div>
-                        </div>
                     </div>
                     }
 
@@ -596,13 +587,6 @@ class timerangeBar extends Component {
 
 
                 </div>
-                {name !== "web" && <div className="export" id="CSVexport">
-                    <button className="close" onClick={this.exportCSVclose}>
-                        &times;
-                    </button>
-                    <Export type="CSV" exportOpen={this.state.exportCSVOpen} close={this.exportCSVclose} />
-                </div>
-                }
                 {name !== "web" && <div className="export" id="JSONexport">
                     <button className="close" onClick={this.exportJSONclose}>
                         &times;
