@@ -9,9 +9,10 @@ class Export extends Component {
         super(props);
         this.state = {
             data: "",
-            //attributes attrs+, @timestamp   
+            //attributes attrs+, @timestamp
             attributes: [],
             exportOpen: false,
+            dialogMsg: null,
             error: ""
         }
         this.loadData = this.loadData.bind(this);
@@ -35,7 +36,8 @@ class Export extends Component {
     }
 
     async loadData() {
-        document.getElementById("loadingExport").innerHTML = "Getting all data, it can take a while!";
+        if (!this.state.attributes.length) this.setState({ dialogMsg: "Getting all data, it can take a while!" });
+
         try {
 
             var name = window.location.pathname.substr(1);
@@ -54,7 +56,7 @@ class Export extends Component {
                     data: data
                 });
 
-                //attributes attrs+, @timestamp   
+                //attributes attrs+, @timestamp
                 if (data[0]) {
                     var attributes = Object.keys(data[0]._source.attrs);
                     attributes.push("@timestamp");
@@ -68,22 +70,27 @@ class Export extends Component {
 
                         }
                     }
-                    this.setState({ attributes: attributes });
+                    this.setState({
+                        attributes: attributes,
+                        dialogMsg: null
+                    });
                 }
             }
             else {
                 this.setState({
-                    error: "No column list from elasticsearch"
+                    error: "No column list from elasticsearch",
+                    attributes: [],
+                    dialogMsg: "No data in elasticsearch"
                 })
-                document.getElementById("loadingExport").innerHTML = "No data in elasticsearch";
 
             }
 
         } catch (error) {
             this.setState({
-                error: error
+                error: error,
+                attributes: [],
+                dialogMsg: "Problem to get data from elasticsearch"
             })
-            document.getElementById("loadingExport").innerHTML = "Problem to get data from elasticsearch";
             console.error(error);
         }
 
@@ -198,7 +205,7 @@ class Export extends Component {
                     <hr />
                 </div>
                 <div className="row">
-                    {this.state.attributes.length === 0 && <span style={{ "color": "grey", "fontSize": "large", "marginLeft": "40%" }} id="loadingExport">Getting all data, it can take a while!</span>}
+                    {this.state.dialogMsg && <span style={{ "color": "grey", "fontSize": "large", "marginLeft": "40%" }}>{this.state.dialogMsg}</span>}
                     {this.state.attributes.map((attribute, i) => {
                         return (<div className="col-3" key={i}><input type="checkbox" id={attribute} className="exportCheckbox" defaultChecked={isSearchable("attrs." + attribute) ? true : false} /><label key={i}>{attribute}</label></div>)
                     })}
