@@ -50,7 +50,6 @@ class AdminController {
      * events: {timestamp, userID, domain, level} type=login
      */
     async function storeLoginInES(domain, userID, jwtbit, email, sourceIP) {
-      if(cfg.debug) console.info("Storing login in lastlog index");
       const client = connectToES();
       const now = new Date();
       const index = "lastlog-" + now.getFullYear() + "." + (now.getMonth() + 1);
