@@ -70,6 +70,8 @@ export default class listChart extends Component {
             seenPages: [1]
         }
 
+        this.chartRef = React.createRef();
+
         this.filter = this.filter.bind(this);
         this.unfilter = this.unfilter.bind(this);
         this.tags = this.tags.bind(this);
@@ -92,10 +94,11 @@ export default class listChart extends Component {
                 seenPages: [this.state.page],
                 dataEncrypted: this.props.data
             });
-            var table = document.getElementsByClassName('table table-hover')[0];
-            if (table) {
-                this.resizableGrid(table);
-            }
+        }
+
+        var table = this.chartRef.current.getElementsByClassName('table table-hover')[0];
+        if (table) {
+            this.resizableGrid(table);
         }
     }
 
@@ -175,6 +178,10 @@ export default class listChart extends Component {
 
         var tableHeight = table.offsetHeight;
         for (var i = 0; i < cols.length; i++) {
+            if (cols[i].querySelector(':scope > div')) continue;                // do not add the resizable element if the column already contains it
+            if (cols[i].classList.contains('expand-cell-header')) continue;     // do not add the resizable element to expand column
+            if (cols[i].classList.contains('selection-cell-header')) continue;  // do not add the resizable element to selection column
+
             var div = createDiv(tableHeight);
             cols[i].appendChild(div);
             cols[i].style.position = 'relative';
@@ -305,6 +312,11 @@ export default class listChart extends Component {
                 alert("Problem with receiving alarms data. " + error);
             }
         }
+
+        var table = this.chartRef.current.getElementsByClassName('table table-hover')[0];
+        if (table) {
+            this.resizableGrid(table);
+        }
     }
 
     //check if alarms is already exclude -> don't display exclude icon
@@ -397,7 +409,7 @@ export default class listChart extends Component {
             //get rid of race condition by waiting before getting new data again
             if (result.result && result.result === "updated") {
                 setTimeout(function () {
-                    //alert("Tag has been saved."); 
+                    //alert("Tag has been saved.");
                     document.getElementById("popupTag").style.display = "none";
                     document.getElementById("tag").value = "";
                     document.getElementsByClassName("iconReload")[0].click();
@@ -674,7 +686,7 @@ export default class listChart extends Component {
 
         }
 
-        //download all with check        
+        //download all with check
         async function downloadAllCheck() {
             var selectedData = thiss.state.selected;
             if (selectedData.length === 0) {
@@ -744,7 +756,7 @@ export default class listChart extends Component {
 
         }
 
-        //this.isAdmin() || isDisplay("attrs."+cell) ?   
+        //this.isAdmin() || isDisplay("attrs."+cell) ?
         //what render if user click on row
         const expandRow = {
             onExpand: (row, isExpand, rowIndex, e) => {
@@ -814,7 +826,8 @@ export default class listChart extends Component {
                                 data-toggle="button"
                                 aria-pressed={column.toggle ? 'true' : 'false'}
                                 onClick={() => {
-                                    onColumnToggle(column.dataField); if (document.getElementById(column.dataField).classList.contains('green')) {
+                                    onColumnToggle(column.dataField);
+                                    if (document.getElementById(column.dataField).classList.contains('green')) {
                                         document.getElementById(column.dataField).classList.remove('green');
                                     }
                                     else {
@@ -837,11 +850,6 @@ export default class listChart extends Component {
                                     }
                                     storedColumns[dashboard] = columns;
                                     window.localStorage.setItem("columns", JSON.stringify(storedColumns));
-
-                                    var table = document.getElementsByClassName('table table-hover')[0];
-                                    if (table) {
-                                        this.resizableGrid(table);
-                                    }
                                 }
                                 }>
                                 {column.text}
@@ -925,7 +933,7 @@ export default class listChart extends Component {
 
                         {
                             props => (
-                                <div key={"tablechart"}>
+                                <div key={"tablechart"} ref={this.chartRef}>
                                     <h3 className="alignLeft title inline" style={{ "float": "inherit" }} >{this.props.id}</h3>
                                     {this.props.id !== "LAST LOGIN EVENTS" && <div id="popupTag" className="popupTag" style={{ "display": "none" }}>
                                         <input type="text" id="tag" name="name" className="form-control" onKeyUp={(event) => this.onEnterKey(event)} style={{ "display": "inline-table", "height": "30px" }} />
