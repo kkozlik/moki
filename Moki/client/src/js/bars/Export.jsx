@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { getSearchableFields } from "../helpers/SearchableFields.js";
 import { elasticsearchConnection } from '@moki-client/gui';
-import { parseTableHits } from '@moki-client/es-response-parser';
+import { parseTableHits, decrypt } from '@moki-client/es-response-parser';
 import storePersistent from "../store/indexPersistent";
 
 class Export extends Component {
@@ -12,10 +12,17 @@ class Export extends Component {
             //attributes attrs+, @timestamp   
             attributes: [],
             exportOpen: false,
-            error: ""
+            error: "",
+            progressValue: 0,
+            showProgressBar: false,
+            progressText: "",
+            downloadValue: 0,
+            dialogMsg: ""
         }
         this.loadData = this.loadData.bind(this);
         this.export = this.export.bind(this);
+        this.showDownloadingSize = this.showDownloadingSize.bind(this);
+        this.updateProgressBar = this.updateProgressBar.bind(this);
     }
 
     static getDerivedStateFromProps(nextProps, prevState) {
@@ -34,8 +41,21 @@ class Export extends Component {
         }
     }
 
+    updateProgressBar(value) {
+        this.setState({ progressValue: Math.round((value / this.state.data.length) * 100) })
+    }
+
+    showDownloadingSize(value) {
+        this.setState({ downloadValue: Math.round(value / 1000000) + "MB" })
+    }
+
     async loadData() {
-        document.getElementById("loadingExport").innerHTML = "Getting all data, it can take a while!";
+        this.setState({
+            dialogMsg: "Downloading data, it can take a while!",
+            data: [],
+            downloadValue: 0
+        });
+
         try {
 
             var name = window.location.pathname.substr(1);
@@ -44,168 +64,231 @@ class Export extends Component {
             }
 
             // Retrieves the list of calls
-            var calls = await elasticsearchConnection(name + "/table", { "size": "10000" });
+            var calls = await elasticsearchConnection(name + "/table", { "size": "10000", "type": "export", "fce": this.showDownloadingSize });
             //parse data
-            console.log(calls);
             if (calls && calls.hits && calls.hits.hits && calls.hits.hits.length > 0) {
-                var data = await parseTableHits(calls.hits.hits);
+                var data = await parseTableHits(calls.hits.hits, storePersistent.getState().profile, "export");
 
                 this.setState({
                     data: data
                 });
 
-                //attributes attrs+, @timestamp   
-                if (data[0]) {
-                    var attributes = Object.keys(data[0]._source.attrs);
-                    attributes.push("@timestamp");
-                    //get list of attributes from all data (can be different attributes)
-                    for (var i = 1; i < data.length; i++) {
-                        var keys = Object.keys(data[i]._source.attrs);
-                        for (var j = 0; j < keys.length; j++) {
-                            if (!attributes.includes(keys[j])) {
-                                attributes.push(keys[j]);
-                            }
-
-                        }
-                    }
-                    this.setState({ attributes: attributes });
+                //if not encrypt mode, download directly
+                if (!(storePersistent.getState().profile && storePersistent.getState().profile[0] && storePersistent.getState().profile[0].userprefs.mode === "encrypt")) {
+                    this.export();
                 }
+
+                /*
+                                const visitNodes = (obj, visitor, stack = []) => {
+                                    if (typeof obj === 'object') {
+                                        for (let key in obj) {
+                                            visitNodes(obj[key], visitor, [...stack, key]);
+                                        }
+                                    } else {
+                                        let path = stack.map(i => "['" + i + "']");
+                                        visitor(stack.join('.'), obj, path.join(''));
+                                    }
+                                }
+                
+                                //list of all attrs  
+                                if (data[0]) {
+                                    var attributes = [];
+                                    for (let hit of data) {
+                                        visitNodes(hit._source, (attr, value, path) => {
+                                            if (!attributes.filter(e => e.attr === attr).length > 0) {
+                                                attributes.push({
+                                                    attr: attr,
+                                                    path: path
+                                                })
+                                            }
+                                        });
+                                    }
+                                    this.setState({ attributes: attributes });
+                                }*/
             }
             else {
+                /* this.setState({
+                     error: "Problem to get data from elasticsearch"
+                 })*/
                 this.setState({
-                    error: "No column list from elasticsearch"
-                })
-                document.getElementById("loadingExport").innerHTML = "No data in elasticsearch";
+                    data: null,
+                    dialogMsg: "No data in elasticsearch"
+                });
 
             }
 
         } catch (error) {
             this.setState({
-                error: error
+                error: error,
+                data: null,
+                dialogMsg: "Problem to get data from elasticsearch"
             })
-            document.getElementById("loadingExport").innerHTML = "Problem to get data from elasticsearch";
             console.error(error);
         }
 
     }
-
-    convertToCSV(objArray) {
-        var array = typeof objArray !== 'object' ? JSON.parse(objArray) : objArray;
-        var str = '';
-
-        for (var i = 0; i < array.length; i++) {
-            var line = '';
-            for (var index in array[i]) {
-                if (line !== '') line += ','
-
-                line += array[i][index];
+    /*
+        convertToCSV(objArray) {
+            var array = typeof objArray !== 'object' ? JSON.parse(objArray) : objArray;
+            var str = '';
+    
+            for (var i = 0; i < array.length; i++) {
+                var line = '';
+                for (var index in array[i]) {
+                    if (line !== '') line += ','
+    
+                    line += array[i][index];
+                }
+    
+                str += line + '\r\n';
             }
+    
+            return str;
+        }
+    */
+    async export() {
+        /*  const attributesState = this.state.attributes;
+          var attributes = [];
+          //get rid of uncheck columns
+          for (var i = 0; i < attributesState.length; i++) {
+              var el = document.getElementById(attributesState[i].attr);
+              if (el && el.checked) {
+                  attributes.push(attributesState[i]);
+              }
+          }
+  
+          //progressText
+          this.setState({
+              showProgressBar: true,
+              progressText: "Adding only selected columns ....",
+              progressValue: 10
+          }, () => continueFce(attributes, this));
+  
+          async function continueFce(attributes, thiss){
+              var result = data;
+              var data = thiss.state.data;
+              */
+        //       var event = {};
+        //         result = data;
+        /*
+                    function set(path, value) {
+                        var schema = event;  // a moving reference to internal objects within obj
+                        var pList = path.split('.');
+                        var len = pList.length;
+                        for (var i = 0; i < len - 1; i++) {
+                            var elem = pList[i];
+                            if (!schema[elem]) schema[elem] = {}
+                            schema = schema[elem];
+                        }
+            
+                        schema[pList[len - 1]] = value;
+                    }
+        
+                    for (i = 0; i < data.length; i++) {
+                        if (i % 10 === 0) {
+                            thiss.updateProgressBar(i);
+                        }
+        
+                        for (let hit of attributes) {
+                            try {
+                                if (eval("data[i]._source" + hit.path)) {
+                                    let value = eval("data[i]._source" + hit.path) ? eval("data[i]._source" + hit.path) : " ";
+                                    set(hit.attr, value);
+                                }
+                            } catch (e) {
+        
+                            }
+                        }
+                        result.push(event);
+                        event = {};
+                    }
+            
+                    thiss.setState({
+                        showProgressBar: false,
+                        progressText: "",
+                        progressValue: 0
+                    });
+        
+        */
 
-            str += line + '\r\n';
+        var result = this.state.data;
+        //check if should be decrypted
+        var isDecrypt = document.getElementById("decryptCheckbox") ? document.getElementById("decryptCheckbox").checked : false;
+        if (isDecrypt) {
+            //show progress bar
+            this.setState({ showProgressBar: true, progressText: "Decrypting...." });
+            result = await decrypt(storePersistent.getState().profile, result, [], this.updateProgressBar);
+            this.setState({ showProgressBar: false });
         }
 
-        return str;
+
+        /* if (attributes.length === 0) {
+             alert("No data selected");
+         } else {
+             */
+        const element = document.createElement("a");
+        var file = "";
+        //no csv export anymore, if so, need to add column list to result
+        /* if (this.props.type === "CSV") {
+             var jsonObject = JSON.stringify(result);
+             result = this.convertToCSV(jsonObject);
+             element.download = "data.csv";
+             if (storePersistent.getState().profile && storePersistent.getState().profile[0] && storePersistent.getState().profile[0].userprefs.mode === "encrypt") {
+                 element.download = "data_decrypted.csv"
+             }
+             file = new Blob([result], { type: 'text/plain' });
+         }
+         else {*/
+        //JSON
+
+        element.download = "data.json";
+        if (isDecrypt) {
+            element.download = "data_decrypted.json"
+        }
+        file = new Blob([JSON.stringify(result, null, 1)], { type: 'text/plain' });
+        // }
+        element.href = URL.createObjectURL(file);
+        document.body.appendChild(element); // Required for this to work in FireFox
+        element.click();
+        //close export window
+        this.props.close();
+
     }
 
-    export() {
-        this.setState({attributes: [] });
-        const attributesState = this.state.attributes;
-        var attributes = [];
-        //get rid of uncheck columns
-        for (var i = 0; i < attributesState.length; i++) {
-            var el = document.getElementById(attributesState[i]);
-            if (el && el.checked) {
-                attributes.push(attributesState[i]);
+    /*
+        checkAll() {
+            let checkboxes = document.getElementsByClassName("exportCheckbox");
+            let isChecked = document.getElementById("allCheckExport").checked;
+            for (let hit of checkboxes) {
+                hit.checked = isChecked;
             }
         }
-
-        //create new data structure
-        var result = [attributes];
-        var event = {};
-        var data = this.state.data;
-
-
-        for (i = 0; i < data.length; i++) {
-            for (var j = 0; j < attributes.length; j++) {
-                if (attributes[j] === "@timestamp") {
-                    event[attributes[j]] = data[i]._source[attributes[j]] ? data[i]._source[attributes[j]] : " ";
-                }
-                else {
-                    event[attributes[j]] = data[i]._source.attrs[attributes[j]] ? data[i]._source.attrs[attributes[j]] : " ";
-                }
-            }
-            result.push(event);
-            event = {};
-        }
-
-        if (attributes.length === 0) {
-            alert("No data selected");
-        } else {
-            const element = document.createElement("a");
-            var file = "";
-            if (this.props.type === "CSV") {
-                var jsonObject = JSON.stringify(result);
-                result = this.convertToCSV(jsonObject);
-                element.download = "data.csv";
-                if (storePersistent.getState().profile && storePersistent.getState().profile[0] && storePersistent.getState().profile[0].userprefs.mode === "encrypt") {
-                    element.download = "data_decrypted.csv"
-                }
-                file = new Blob([result], { type: 'text/plain' });
-            }
-            else {
-                //JSON
-                element.download = "data.json";
-                if (storePersistent.getState().profile && storePersistent.getState().profile[0] && storePersistent.getState().profile[0].userprefs.mode === "encrypt") {
-                    element.download = "data_decrypted.json"
-                }
-                file = new Blob([JSON.stringify(result)], { type: 'text/plain' });
-            }
-            element.href = URL.createObjectURL(file);
-            document.body.appendChild(element); // Required for this to work in FireFox
-            element.click();
-            //close export window
-            this.props.close();
-        }
-    }
-
-    checkAll() {
-        let checkboxes = document.getElementsByClassName("exportCheckbox");
-        let isChecked = document.getElementById("allCheckExport").checked;
-        for (let hit of checkboxes) {
-            hit.checked = isChecked;
-        }
-    }
-
+    */
     render() {
-
-        function isSearchable(field) {
-
-            var searchable = getSearchableFields();
-            searchable.push("@timestamp");
-            for (var j = 0; j < searchable.length; j++) {
-                if (searchable[j] === field) {
-                    return true;
+        /*
+                function isSearchable(field) {
+        
+                    var searchable = getSearchableFields();
+                    searchable.push("@timestamp");
+                    for (var j = 0; j < searchable.length; j++) {
+                        if (searchable[j] === field) {
+                            return true;
+                        }
+                    }
+                    return false;
                 }
-            }
-            return false;
-        }
+                */
 
         return (
             <span className="exportBody">
                 <div className="row">
-                    {this.state.attributes.length !== 0 && <h3 className="tab"> Select columns</h3>}
-                    {this.state.attributes.length !== 0 && <span> <input type="checkbox" id="allCheckExport" className="exportCheckbox" onClick={this.checkAll} /><span>all</span></span>}
-                    <hr />
+                    {!this.state.data && <span style={{ "width": "100%" }}><span style={{ "color": "grey", "fontSize": "larger", "marginLeft": "1%" }} id="loadingExport"> {this.state.dialogMsg}</span></span>}
+                    {(this.state.data && this.state.data.length === 0) && <span style={{ "width": "100%" }}><i class="fa fa-circle-o-notch fa-spin" style={{ "color": "grey", "width": "10px", "height": "10px", "marginLeft": "5%" }}></i><span style={{ "color": "grey", "fontSize": "larger", "marginLeft": "1%" }} id="loadingExport"> {this.state.dialogMsg}</span><span style={{ "color": "grey", "fontSize": "larger" }}>{this.state.downloadValue !== 0 ? " Downloading data size: " + this.state.downloadValue : ""}</span></span>}
                 </div>
                 <div className="row">
-                    {this.state.attributes.length === 0 && <span style={{ "color": "grey", "fontSize": "large", "marginLeft": "40%" }} id="loadingExport">Getting all data, it can take a while!</span>}
-                    {this.state.attributes.map((attribute, i) => {
-                        return (<div className="col-3" key={i}><input type="checkbox" id={attribute} className="exportCheckbox" defaultChecked={isSearchable("attrs." + attribute) ? true : false} /><label key={i}>{attribute}</label></div>)
-                    })}
-
-                </div>
-                <div className="row">
-                    {this.state.attributes.length !== 0 && <button className="btn btn-default rightButton" onClick={this.export}>{"Export " + this.props.type} </button>}
+                    {(this.state.data && this.state.data.length !== 0) && storePersistent.getState().profile && storePersistent.getState().profile[0] && storePersistent.getState().profile[0].userprefs.mode === "encrypt" && <span style={{ "marginTop": "10px", "marginLeft": "2px" }}><input type="checkbox" id="decryptCheckbox" className="decryptCheckbox" defaultChecked={false} /><label style={{ "paddingBottom": "11px", "color": "grey", "fontSize": "larger" }}>Decrypt data. It could take a few minutes.</label></span>}
+                    {this.state.showProgressBar && <div className="row" style={{ "width": "65%", "marginLeft": "2px", "color": "grey", "fontSize": "larger" }}><div id="Progress_Status" className="col">  <div id="myprogressBar" style={{ "width": this.state.progressValue + "%" }}></div>  </div>{this.state.progressValue + "%"}<div>{this.state.progressText}</div></div>}
+                    {(this.state.data && this.state.data.length !== 0) && storePersistent.getState().profile && storePersistent.getState().profile[0] && storePersistent.getState().profile[0].userprefs.mode === "encrypt" && <button className="btn btn-default rightButton" onClick={this.export}>{"Export"} </button>}
                 </div>
             </span>
 

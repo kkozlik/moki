@@ -11,6 +11,20 @@ a {
     background-color: white !important;
 }
 
+/* progress bar */
+#Progress_Status {
+    background-color: var(--second);
+    height: 15px;
+  }
+    
+  #myprogressBar {
+    width: 1%;
+    background-color: #4CAF50;
+    text-align: center;
+    line-height: 32px;
+    color: black;
+    height: 15px;
+  }
 
 /* popup */
 
@@ -297,6 +311,7 @@ label {
     vertical-align: -webkit-baseline-middle;
     vertical-align: -moz-middle-with-baseline;
     color: black;
+    padding-left: 2px;
 }
 
 .activeDashboard {
@@ -396,6 +411,30 @@ h4 {
 
 p {
     margin-bottom: 8px !important;
+}
+
+/* This class works similar way as .text-truncate from bootstrap, but for table
+   cells, while it preserve table auto-layout. For description how it works check:
+   https://stackoverflow.com/a/44452722
+ */
+.table-text-truncate{
+    display: block;
+    position: relative;
+    max-height: 1.1em;
+    overflow: hidden;
+    color: transparent;
+}
+.table-text-truncate:after{
+    content: attr(title);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    color: black;
+    pointer-events: none;
 }
 
 .listChart {
@@ -516,8 +555,8 @@ h5 {
     position: absolute;
     z-index: 1000;
     background: white;
-    left: 210px;
-    width: 80%;
+    left: 35%;
+    width: 40%;
     padding: 20px;
     border: 1px solid #ced4da;
     border-radius: .25rem;
@@ -590,8 +629,72 @@ h6 {
     font-size: 14px !important;
 }
 
+.fa {
+    display: inline-table;
+}
+
 .expanding-row {
     background-color: white !important;
+}
+
+/* countchart */
+
+@media only screen and (max-width: 840px) {
+    .count-chart-counter {
+        font-size:1em;
+        font-weight: bold !important;
+    }
+    .count-chart-counter.count-chart-counter-sm {
+        font-size:.85em;
+    }
+    .count-chart-counter.count-chart-counter-xs {
+        font-size:.65em;
+    }
+}
+@media only screen and (min-width: 840px) {
+    .count-chart-counter {
+        font-size:1.5em;
+        font-weight: bold !important;
+    }
+    .count-chart-counter.count-chart-counter-sm {
+        font-size:1em;
+    }
+    .count-chart-counter.count-chart-counter-xs {
+        font-size:.75em;
+    }
+}
+@media only screen and (min-width: 970px) {
+    .count-chart-counter {
+        font-size:2em;
+    }
+    .count-chart-counter.count-chart-counter-sm {
+        font-size:1.2em;
+    }
+    .count-chart-counter.count-chart-counter-xs {
+        font-size:1em;
+    }
+}
+@media only screen and (min-width: 1250px) {
+    .count-chart-counter {
+        font-size:3em;
+    }
+    .count-chart-counter.count-chart-counter-sm {
+        font-size:1.8em;
+    }
+    .count-chart-counter.count-chart-counter-xs {
+        font-size:1.4em;
+    }
+}
+@media only screen and (min-width: 1650px) {
+    .count-chart-counter {
+        font-size:4em;
+    }
+    .count-chart-counter.count-chart-counter-sm {
+        font-size:2.8em;
+    }
+    .count-chart-counter.count-chart-counter-xs {
+        font-size:2.2em;
+    }
 }
 
 .loader {
@@ -833,6 +936,11 @@ table {
     min-width: 200px;
 }
 
+.table-margins {
+    margin-left: 20px;
+    margin-bottom: 20px;
+}
+
 th {
     padding-top: 5px;
     padding-right: 5px;
@@ -967,65 +1075,6 @@ input[type=text] {
     stroke-width: 1.5px;
 }
 
-/* countchart */
-
-@media only screen and (max-width: 840px) {
-    .count-chart-counter {
-        font-size:1em;
-        font-weight: bold !important;
-    }
-    .count-chart-counter.count-chart-counter-sm {
-        font-size:.85em;
-    }
-    .count-chart-counter.count-chart-counter-xs {
-        font-size:.65em;
-    }
-}
-@media only screen and (min-width: 840px) {
-    .count-chart-counter {
-        font-size:1.5em;
-        font-weight: bold !important;
-    }
-    .count-chart-counter.count-chart-counter-sm {
-        font-size:1em;
-    }
-    .count-chart-counter.count-chart-counter-xs {
-        font-size:.75em;
-    }
-}
-@media only screen and (min-width: 970px) {
-    .count-chart-counter {
-        font-size:2em;
-    }
-    .count-chart-counter.count-chart-counter-sm {
-        font-size:1.2em;
-    }
-    .count-chart-counter.count-chart-counter-xs {
-        font-size:1em;
-    }
-}
-@media only screen and (min-width: 1250px) {
-    .count-chart-counter {
-        font-size:3em;
-    }
-    .count-chart-counter.count-chart-counter-sm {
-        font-size:1.8em;
-    }
-    .count-chart-counter.count-chart-counter-xs {
-        font-size:1.4em;
-    }
-}
-@media only screen and (min-width: 1650px) {
-    .count-chart-counter {
-        font-size:4em;
-    }
-    .count-chart-counter.count-chart-counter-sm {
-        font-size:2.8em;
-    }
-    .count-chart-counter.count-chart-counter-xs {
-        font-size:2.2em;
-    }
-}
 
 /*-------------------navigation bar-------------*/
 
