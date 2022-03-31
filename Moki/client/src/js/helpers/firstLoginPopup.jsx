@@ -24,7 +24,7 @@ export default class FirstLoginPopup extends Component {
             document.getElementById("create").style.display = "none";
 
         }
-        else if (str.indexOf('\'') >= 0 && str.indexOf('"') >= 0) {
+        else if (password.indexOf('\'') >= 0 && password.indexOf('"') >= 0) {
             this.setState({ "error": "Passwords can't contains quotes." });
             document.getElementById("createR").style.display = "block";
             document.getElementById("create").style.display = "none";
