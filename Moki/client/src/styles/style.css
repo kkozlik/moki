@@ -398,6 +398,30 @@ p {
     margin-bottom: 8px !important;
 }
 
+/* This class works similar way as .text-truncate from bootstrap, but for table
+   cells, while it preserve table auto-layout. For description how it works check:
+   https://stackoverflow.com/a/44452722
+ */
+.table-text-truncate{
+    display: block;
+    position: relative;
+    max-height: 1.1em;
+    overflow: hidden;
+    color: transparent;
+}
+.table-text-truncate:after{
+    content: attr(title);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    color: black;
+    pointer-events: none;
+}
+
 .listChart {
     font-size: 0.9rem !important;
     font-weight: 350;
@@ -833,6 +857,11 @@ table {
     margin-left: 20px;
     margin-bottom: 20px;
     min-width: 200px;
+}
+
+.table-margins {
+    margin-left: 20px;
+    margin-bottom: 20px;
 }
 
 th {

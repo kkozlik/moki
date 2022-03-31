@@ -53,13 +53,6 @@ export default class multivalueChart extends Component {
         createFilter("NOT " + event.currentTarget.getAttribute('field') + ":\"" + event.currentTarget.getAttribute('value') + "\"");
     }
 
-    wrapText(text) {
-        if (text.length > 40)
-            return text.substring(0, 40) + '...';
-        else
-            return text;
-    }
-
     sortByKey(array, key, direction) {
         if (direction === "desc") {
             return array.sort(function (a, b) {
@@ -135,17 +128,20 @@ export default class multivalueChart extends Component {
         var items = [];
         if (data) {
             for (var i = 0; i < data.length; i++) {
-                items.push(<tr key={i}><td className="filterToggleActiveWhite">  <span className="filterToggle">
-                    <img onClick={this.filter} field={this.props.field} value={data[i].name} className="icon" alt="filterIcon" src={filter} />
-                    <img field={this.props.field} value={data[i].name} onClick={this.unfilter} className="icon" alt="unfilterIcon" src={unfilter} />
-                </span>
-                    <span title={data[i].name}>{this.wrapText(data[i].name)}</span>
+                items.push(<tr key={i}><td className="filterToggleActiveWhite">
+                    <div className='d-flex'>
+                        <span className="filterToggle">
+                            <img onClick={this.filter} field={this.props.field} value={data[i].name} className="icon" alt="filterIcon" src={filter} />
+                            <img field={this.props.field} value={data[i].name} onClick={this.unfilter} className="icon" alt="unfilterIcon" src={unfilter} />
+                        </span>
+                        <div title={data[i].name} className="table-text-truncate">{data[i].name}</div>
+                    </div>
                 </td>
-                    <td className="filtertd" key={"value0" + i}> {niceNumber(data[i].value0)}</td>
-                    <td className="filtertd" key={"value1" + i}>{durationFormat(data[i].value1)}</td>
-                    <td className="filtertd" key={"value2" + i}>{niceNumber(data[i].value2)}</td>
-                    <td className="filtertd" key={"value3" + i}>{niceNumber(data[i].value3)}</td>
-                    <td className="filtertd" key={"value4" + i}>{niceNumber(data[i].value4)}</td>
+                    <td className="filtertd text-nowrap" key={"value0" + i}> {niceNumber(data[i].value0)}</td>
+                    <td className="filtertd text-nowrap" key={"value1" + i}>{durationFormat(data[i].value1)}</td>
+                    <td className="filtertd text-nowrap" key={"value2" + i}>{niceNumber(data[i].value2)}</td>
+                    <td className="filtertd text-nowrap" key={"value3" + i}>{niceNumber(data[i].value3)}</td>
+                    <td className="filtertd text-nowrap" key={"value4" + i}>{niceNumber(data[i].value4)}</td>
                 </tr>
                 )
             }
@@ -165,21 +161,23 @@ export default class multivalueChart extends Component {
         return (
             <div id={this.props.id} style={{ "width": "100%" }} className="chart">
                 <h3 className="alignLeft title">{this.props.name}</h3>
-                <table style={{ "width": "100%" }}>
-                    <tbody>
-                        <tr>
-                            <th><h3>{this.props.name1}<img onClick={this.order} field="name" className="icon" alt="filterIcon" src={sortIcon} /></h3>
-                            </th>
-                            <th><h3>{this.props.name2}<img onClick={this.order} field="value0" className="icon" alt="filterIcon" src={sortIcon} /></h3></th>
-                            <th><h3>{this.props.name3} <img onClick={this.order} field="value1" className="icon" alt="filterIcon" src={sortIcon} /></h3> </th>
-                            <th><h3>{this.props.name4} <img onClick={this.order} field="value2" className="icon" alt="filterIcon" src={sortIcon} /></h3> </th>
-                            <th><h3>{this.props.name5} <img onClick={this.order} field="value3" className="icon" alt="filterIcon" src={sortIcon} /></h3></th>
-                            <th><h3>{this.props.name6} <img onClick={this.order} field="value4" className="icon" alt="filterIcon" src={sortIcon} /></h3></th>
-                        </tr>
-                        {items}
-                        { this.state.data && this.state.data.length > 10 && this.createPaggination()}
-                    </tbody>
-                </table>
+                <div className="table-margins">
+                    <table style={{ "width": "100%" }} className="m-0">
+                        <tbody>
+                            <tr>
+                                <th><h3 className="text-nowrap">{this.props.name1}<img onClick={this.order} field="name" className="icon" alt="filterIcon" src={sortIcon} /></h3>
+                                </th>
+                                <th><h3 className="text-nowrap">{this.props.name2}<img onClick={this.order} field="value0" className="icon" alt="filterIcon" src={sortIcon} /></h3></th>
+                                <th><h3 className="text-nowrap">{this.props.name3} <img onClick={this.order} field="value1" className="icon" alt="filterIcon" src={sortIcon} /></h3> </th>
+                                <th><h3 className="text-nowrap">{this.props.name4} <img onClick={this.order} field="value2" className="icon" alt="filterIcon" src={sortIcon} /></h3> </th>
+                                <th><h3 className="text-nowrap">{this.props.name5} <img onClick={this.order} field="value3" className="icon" alt="filterIcon" src={sortIcon} /></h3></th>
+                                <th><h3 className="text-nowrap">{this.props.name6} <img onClick={this.order} field="value4" className="icon" alt="filterIcon" src={sortIcon} /></h3></th>
+                            </tr>
+                            {items}
+                            { this.state.data && this.state.data.length > 10 && this.createPaggination()}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         )
     }
