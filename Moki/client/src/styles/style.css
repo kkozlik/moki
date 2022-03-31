@@ -531,8 +531,8 @@ h5 {
     position: absolute;
     z-index: 1000;
     background: white;
-    left: 38%;
-    width: 35%;
+    left: 35%;
+    width: 40%;
     padding: 20px;
     border: 1px solid #ced4da;
     border-radius: .25rem;
@@ -603,6 +603,10 @@ button.export {
 h6 {
     color: gray !important;
     font-size: 14px !important;
+}
+
+.fa {
+    display: inline-table;
 }
 
 .expanding-row {

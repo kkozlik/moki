@@ -15,10 +15,13 @@ class Export extends Component {
             error: "",
             progressValue: 0,
             showProgressBar: false,
-            progressText: ""
+            progressText: "",
+            downloadValue: 0,
+            dialogMsg: ""
         }
         this.loadData = this.loadData.bind(this);
         this.export = this.export.bind(this);
+        this.showDownloadingSize = this.showDownloadingSize.bind(this);
         this.updateProgressBar = this.updateProgressBar.bind(this);
     }
 
@@ -42,8 +45,17 @@ class Export extends Component {
         this.setState({ progressValue: Math.round((value / this.state.data.length) * 100) })
     }
 
+    showDownloadingSize(value) {
+        this.setState({ downloadValue: Math.round(value / 1000000) + "MB" })
+    }
+
     async loadData() {
-        document.getElementById("loadingExport").innerHTML = "Downloading data, it can take a while!";
+        this.setState({
+            dialogMsg: "Downloading data, it can take a while!",
+            data: [],
+            downloadValue: 0
+        });
+
         try {
 
             var name = window.location.pathname.substr(1);
@@ -52,7 +64,7 @@ class Export extends Component {
             }
 
             // Retrieves the list of calls
-            var calls = await elasticsearchConnection(name + "/table", { "size": "10000", "type": "export" });
+            var calls = await elasticsearchConnection(name + "/table", { "size": "10000", "type": "export", "fce": this.showDownloadingSize });
             //parse data
             if (calls && calls.hits && calls.hits.hits && calls.hits.hits.length > 0) {
                 var data = await parseTableHits(calls.hits.hits, storePersistent.getState().profile, "export");
@@ -98,38 +110,42 @@ class Export extends Component {
                 /* this.setState({
                      error: "Problem to get data from elasticsearch"
                  })*/
-                document.getElementById("loadingExport").innerHTML = "No data in elasticsearch";
+                this.setState({
+                    data: null,
+                    dialogMsg: "No data in elasticsearch"
+                });
 
             }
 
         } catch (error) {
             this.setState({
-                error: error
+                error: error,
+                data: null,
+                dialogMsg: "Problem to get data from elasticsearch"
             })
-            document.getElementById("loadingExport").innerHTML = "Problem to get data from elasticsearch";
             console.error(error);
         }
 
     }
-
-    convertToCSV(objArray) {
-        var array = typeof objArray !== 'object' ? JSON.parse(objArray) : objArray;
-        var str = '';
-
-        for (var i = 0; i < array.length; i++) {
-            var line = '';
-            for (var index in array[i]) {
-                if (line !== '') line += ','
-
-                line += array[i][index];
+    /*
+        convertToCSV(objArray) {
+            var array = typeof objArray !== 'object' ? JSON.parse(objArray) : objArray;
+            var str = '';
+    
+            for (var i = 0; i < array.length; i++) {
+                var line = '';
+                for (var index in array[i]) {
+                    if (line !== '') line += ','
+    
+                    line += array[i][index];
+                }
+    
+                str += line + '\r\n';
             }
-
-            str += line + '\r\n';
+    
+            return str;
         }
-
-        return str;
-    }
-
+    */
     async export() {
         /*  const attributesState = this.state.attributes;
           var attributes = [];
@@ -149,8 +165,6 @@ class Export extends Component {
           }, () => continueFce(attributes, this));
   
           async function continueFce(attributes, thiss){
-              console.log(new Date());
-              console.log(thiss.state.showProgressBar);
               var result = data;
               var data = thiss.state.data;
               */
@@ -173,7 +187,6 @@ class Export extends Component {
                     for (i = 0; i < data.length; i++) {
                         if (i % 10 === 0) {
                             thiss.updateProgressBar(i);
-                            console.log(i);
                         }
         
                         for (let hit of attributes) {
@@ -189,10 +202,7 @@ class Export extends Component {
                         result.push(event);
                         event = {};
                     }
-                    console.log(new Date());
-        
-                    console.log("4444");
-        
+            
                     thiss.setState({
                         showProgressBar: false,
                         progressText: "",
@@ -203,7 +213,7 @@ class Export extends Component {
 
         var result = this.state.data;
         //check if should be decrypted
-        var isDecrypt = document.getElementById("decryptCheckbox").checked;
+        var isDecrypt = document.getElementById("decryptCheckbox") ? document.getElementById("decryptCheckbox").checked : false;
         if (isDecrypt) {
             //show progress bar
             this.setState({ showProgressBar: true, progressText: "Decrypting...." });
@@ -245,38 +255,40 @@ class Export extends Component {
 
     }
 
-
-    checkAll() {
-        let checkboxes = document.getElementsByClassName("exportCheckbox");
-        let isChecked = document.getElementById("allCheckExport").checked;
-        for (let hit of checkboxes) {
-            hit.checked = isChecked;
-        }
-    }
-
-    render() {
-
-        function isSearchable(field) {
-
-            var searchable = getSearchableFields();
-            searchable.push("@timestamp");
-            for (var j = 0; j < searchable.length; j++) {
-                if (searchable[j] === field) {
-                    return true;
-                }
+    /*
+        checkAll() {
+            let checkboxes = document.getElementsByClassName("exportCheckbox");
+            let isChecked = document.getElementById("allCheckExport").checked;
+            for (let hit of checkboxes) {
+                hit.checked = isChecked;
             }
-            return false;
         }
+    */
+    render() {
+        /*
+                function isSearchable(field) {
+        
+                    var searchable = getSearchableFields();
+                    searchable.push("@timestamp");
+                    for (var j = 0; j < searchable.length; j++) {
+                        if (searchable[j] === field) {
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+                */
 
         return (
             <span className="exportBody">
                 <div className="row">
-                    {this.state.data.length === 0 && <span style={{"width": "100%"}}><i class="fa fa-circle-o-notch fa-spin" style={{"color": "grey", "width" : "10px", "marginLeft": "5%"}}></i><span style={{ "color": "grey", "fontSize": "large", "marginLeft": "1%" }} id="loadingExport"> Downloading data, it can take a while!</span></span>}
+                    {!this.state.data && <span style={{ "width": "100%" }}><span style={{ "color": "grey", "fontSize": "larger", "marginLeft": "1%" }} id="loadingExport"> {this.state.dialogMsg}</span></span>}
+                    {(this.state.data && this.state.data.length === 0) && <span style={{ "width": "100%" }}><i class="fa fa-circle-o-notch fa-spin" style={{ "color": "grey", "width": "10px", "height": "10px", "marginLeft": "5%" }}></i><span style={{ "color": "grey", "fontSize": "larger", "marginLeft": "1%" }} id="loadingExport"> {this.state.dialogMsg}</span><span style={{ "color": "grey", "fontSize": "larger" }}>{this.state.downloadValue !== 0 ? " Downloading data size: " + this.state.downloadValue : ""}</span></span>}
                 </div>
                 <div className="row">
-                    {this.state.data.length !== 0 && storePersistent.getState().profile && storePersistent.getState().profile[0] && storePersistent.getState().profile[0].userprefs.mode === "encrypt" && <span style={{ "marginTop": "10px", "marginLeft": "2px" }}><input type="checkbox" id="decryptCheckbox" className="decryptCheckbox" defaultChecked={false} /><label style={{ "paddingBottom": "11px" }}>Decrypt data. It could take a few minutes.</label></span>}
-                    {this.state.data.length !== 0 && storePersistent.getState().profile && storePersistent.getState().profile[0] && storePersistent.getState().profile[0].userprefs.mode === "encrypt" && <button className="btn btn-default rightButton" onClick={this.export}>{"Export"} </button>}
-                    {this.state.showProgressBar && <div className="row" style={{ "color": "grey", "width": "40%", "marginLeft": "15px",  "fontSize": "large"}}><div id="Progress_Status" className="col">  <div id="myprogressBar" style={{ "width": this.state.progressValue + "%" }}></div>  </div>{this.state.progressValue + "%"}<div>{this.state.progressText}</div></div>}
+                    {(this.state.data && this.state.data.length !== 0) && storePersistent.getState().profile && storePersistent.getState().profile[0] && storePersistent.getState().profile[0].userprefs.mode === "encrypt" && <span style={{ "marginTop": "10px", "marginLeft": "2px" }}><input type="checkbox" id="decryptCheckbox" className="decryptCheckbox" defaultChecked={false} /><label style={{ "paddingBottom": "11px", "color": "grey", "fontSize": "larger" }}>Decrypt data. It could take a few minutes.</label></span>}
+                    {this.state.showProgressBar && <div className="row" style={{ "width": "65%", "marginLeft": "2px", "color": "grey", "fontSize": "larger" }}><div id="Progress_Status" className="col">  <div id="myprogressBar" style={{ "width": this.state.progressValue + "%" }}></div>  </div>{this.state.progressValue + "%"}<div>{this.state.progressText}</div></div>}
+                    {(this.state.data && this.state.data.length !== 0) && storePersistent.getState().profile && storePersistent.getState().profile[0] && storePersistent.getState().profile[0].userprefs.mode === "encrypt" && <button className="btn btn-default rightButton" onClick={this.export}>{"Export"} </button>}
                 </div>
             </span>
 
