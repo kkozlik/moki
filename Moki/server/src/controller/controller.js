@@ -324,7 +324,7 @@ class Controller {
 
       //for export return only some attr, list is stored in layout
       var source = "*";
-      if (req.body.params.type === "export") {
+      if (req.body.params && req.body.params.type === "export") {
         try{
         let layout = fs.readFileSync(cfg.fileGUILayout);
         source = JSON.parse(layout.toString('utf8')).export;
