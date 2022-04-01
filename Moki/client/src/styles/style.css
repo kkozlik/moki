@@ -1942,8 +1942,8 @@ td.rdtYear:hover {
 }
 
 .loaderr {
-    height: 2px;
-    width: 20%;
+    width: 30%;
+    margin-left: 20%;
 }
 
 .loaderr .bar {
