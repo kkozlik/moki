@@ -10,11 +10,11 @@
       "url": "http://www.apache.org/licenses/LICENSE-2.0"
     }
   ],
-  "homepage": "." ,
+  "homepage": ".",
   "dependencies": {
-    "@moki-client/es-response-parser": "git+https://git@github.com/intuitivelabs/es-response-parser.git#master",
-    "@moki-client/gui": "git+https://git@github.com/intuitivelabs/moki-gui.git#master",
-    "@moki-client/react-bootstrap-table-next": "git+https://git@github.com/intuitivelabs/react-bootstrap-table2-1.git#master",
+    "@moki-client/es-response-parser": "git+https://git@github.com/intuitivelabs/es-response-parser.git#v0.0.1",
+    "@moki-client/gui": "git+https://git@github.com/intuitivelabs/moki-gui.git#v0.0.1",
+    "@moki-client/react-bootstrap-table-next": "git+https://git@github.com/intuitivelabs/react-bootstrap-table2-1.git#v0.0.1",
     "bootstrap": "^4.6.0",
     "classnames": "^2.2.6",
     "d3": "^5.7.0",
