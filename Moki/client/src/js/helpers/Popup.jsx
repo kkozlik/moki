@@ -41,7 +41,7 @@ class Popup extends Component {
             <div style={{ "visibility": this.state.visible, "left": 0 }} className="row align-items-center justify-content-center overlay">
                 <div id="popupsmall" style={{ "maxWidth": "550px" }}>
                     {this.state.text}
-                    {this.state.error ? <p className="error" style={{"marginTop": "10px"}}>{this.state.error}</p> : ""}
+                    {this.state.error ? <h3 className="error" style={{"marginTop": "10px", "color": "red"}}>{this.state.error}</h3> : ""}
                 </div>
             </div>
         )
