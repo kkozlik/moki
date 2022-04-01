@@ -20,7 +20,7 @@ import store from "../store/index";
 import {
     setTimerange
 } from "../actions/index";
-import {Colors} from '@moki-client/gui';
+import { Colors } from '@moki-client/gui';
 import emptyIcon from "../../styles/icons/empty_small.png";
 import {
     getTimeBucketInt, getTimeBucket
@@ -52,7 +52,7 @@ export default class MultipleLineChart extends Component {
     }
 
 
-    drawLegend(svg, data, field, hostnames, color){
+    drawLegend(svg, data, field, hostnames, color) {
 
         var legendGroup = svg.append('g');
         var legend = legendGroup.selectAll('.legend')
@@ -108,8 +108,8 @@ export default class MultipleLineChart extends Component {
                     name: data[k].name,
                     values: []
                 })
-                for (var l = 0; l < data[k].values.length-1; l++) {
-                    if(data[k].values[l + 1].value === null || data[k].values[l].value === null){
+                for (var l = 0; l < data[k].values.length - 1; l++) {
+                    if (data[k].values[l + 1].value === null || data[k].values[l].value === null) {
                         divData[k].values.push({
                             date: data[k].values[l].date,
                             value: null
@@ -193,18 +193,18 @@ export default class MultipleLineChart extends Component {
             .domain([minTime, maxTime]);
 
         //if idle, do minus 100 for all values
-        if (id.includes("Idle")) {
-            for (var i = 0; i < data.length; i++) {
-                for (var j = 0; j < data[i].values.length; j++) {
-                    data[i].values[j].value = 100 - data[i].values[j].value;
-                }
-            }
-        }
-
+        /*  if (id.includes("Idle") && id !== "CPU-IDLE") {
+              for (var i = 0; i < data.length; i++) {
+                  for (var j = 0; j < data[i].values.length; j++) {
+                      data[i].values[j].value = 100 - data[i].values[j].value;
+                  }
+              }
+          }
+        */
         //max value
         var max = 0;
-        for ( i = 0; i < data.length; i++) {
-            for ( k = 0; k < data[i].values.length; k++) {
+        for (i = 0; i < data.length; i++) {
+            for (k = 0; k < data[i].values.length; k++) {
                 if (data[i].values[k].hasOwnProperty("value")) {
                     if (max < data[i].values[k].value) {
                         max = data[i].values[k].value;
