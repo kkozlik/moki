@@ -487,13 +487,15 @@ export function tableColumns(dashboard, tags, layout) {
     //get also layout and compare it
     var columnsTableDefault = layout.columns[name] ? layout.columns[name] : layout.columns.default;
     var toggleListDefault = layout.toggleList[name] ? layout.toggleList[name] : layout.toggleList.default;
-    var columnsTableDefaultListConcat = columnsTableDefault;
+    var columnsTableDefaultListConcat = JSON.parse(JSON.stringify(columnsTableDefault));
+
     //everything from table is visible
     if (columnsTableDefaultListConcat) {
         for (let hit of columnsTableDefaultListConcat) {
             hit.hidden = false;
         }
     }
+
 
     if (toggleListDefault) {
         for (let toggleHit of toggleListDefault) {
