@@ -25,7 +25,7 @@
     "ncu": "ncu"
   },
   "dependencies": {
-    "@moki-server/server": "git+https://git@github.com/intuitivelabs/moki-server.git#v0.0.1",
+    "@moki-server/server": "git+https://git@github.com/intuitivelabs/moki-server.git#master",
     "body-parser": "^1.18.3",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
