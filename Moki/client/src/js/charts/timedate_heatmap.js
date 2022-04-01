@@ -48,7 +48,7 @@ export default class timedateHeatmap extends Component {
         var marginLeft = 100;
         if (data.length > 0) {
             var maxTextWidth = d3.max(data.map(n => n.attr2.length));
-            marginLeft = maxTextWidth > 23 ? 150 : maxTextWidth > 15 ? maxTextWidth * 8 :  maxTextWidth * 13;
+            marginLeft = maxTextWidth > 23 ? 150 : maxTextWidth > 15 ? maxTextWidth * 8 :  maxTextWidth * 17;
         }
         var margin = {
             top: 10,
