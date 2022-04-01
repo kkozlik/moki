@@ -251,7 +251,7 @@ class Settings extends Component {
                     }
                     return response.json();
                 }).then(function (responseData) {
-                    if (responseData.msg) {
+                    if (responseData.msg && responseData.msg !== "Data has been saved.") {
                         alert(JSON.stringify(responseData.msg));
                     }
 
