@@ -643,6 +643,7 @@ h6 {
     .count-chart-counter {
         font-size:1em;
         font-weight: bold !important;
+        color: grey;
     }
     .count-chart-counter.count-chart-counter-sm {
         font-size:.85em;
@@ -655,6 +656,7 @@ h6 {
     .count-chart-counter {
         font-size:1.5em;
         font-weight: bold !important;
+        color: grey;
     }
     .count-chart-counter.count-chart-counter-sm {
         font-size:1em;
@@ -666,6 +668,7 @@ h6 {
 @media only screen and (min-width: 970px) {
     .count-chart-counter {
         font-size:2em;
+        color: grey;
     }
     .count-chart-counter.count-chart-counter-sm {
         font-size:1.2em;
@@ -677,6 +680,7 @@ h6 {
 @media only screen and (min-width: 1250px) {
     .count-chart-counter {
         font-size:3em;
+        color: grey;
     }
     .count-chart-counter.count-chart-counter-sm {
         font-size:1.8em;
@@ -688,6 +692,7 @@ h6 {
 @media only screen and (min-width: 1650px) {
     .count-chart-counter {
         font-size:4em;
+        color: grey;
     }
     .count-chart-counter.count-chart-counter-sm {
         font-size:2.8em;

@@ -46,7 +46,7 @@ export default class CountUpChart extends Component {
             //too long duration - got stuck
             // var duration = 120;
             //var increment = end <= duration ? Math.abs(Math.floor(duration / end)) : Math.abs(Math.floor(end / duration));
-            var increment = Math.abs(Math.floor(data / 10));
+            var increment = Math.abs(Math.floor(data / 10)) === 0 ? 1 : Math.abs(Math.floor(data / 10));
             var thiss = this;
 
             var timer = setInterval(function () {
