@@ -180,7 +180,7 @@ class Controller {
             isEncryptChecksumFilter = "*";
             types = "*";
           }
-          requests[i].query = requests[i].template.getTemplate(...params, getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, requests[i].filter, domainFilter, isEncryptChecksumFilter, requests[i].exists), supress);
+          requests[i].query = requests[i].template.getTemplate(...params, getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, requests[i].filter, domainFilter, isEncryptChecksumFilter, requests[i].exists, requests[i].index), supress);
 
         }
         else {
@@ -190,7 +190,7 @@ class Controller {
             types = "*";
           }
 
-          requests[i].query = requests[i].template.getTemplate(getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, requests[i].filter, domainFilter, isEncryptChecksumFilter, requests[i].exists), supress);
+          requests[i].query = requests[i].template.getTemplate(getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, requests[i].filter, domainFilter, isEncryptChecksumFilter, requests[i].exists, requests[i].index), supress);
         }
 
         //ged old timestamp if has changed
@@ -243,7 +243,7 @@ class Controller {
         console.error("Failed msearch query: " + JSON.stringify(requestList));
       }
 
-      if (cfg.debug) console.info("ES response: " + JSON.stringify(response));
+     // if (cfg.debug) console.info("ES response: " + JSON.stringify(response));
       return resp;
     }
 
@@ -336,7 +336,7 @@ class Controller {
 
       console.info("SERVER search with filters: " + filters + " types: " + types + " timerange: " + timestamp_gte + "-" + timestamp_lte + " timebucket: " + timebucket + " userFilter: " + userFilter + " domainFilter: " + domainFilter + " encrypt checksum filter: " + isEncryptChecksumFilter);
       //always timerange_query
-      requests.query = timerange_query.getTemplate(getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, requests.filter, domainFilter, isEncryptChecksumFilter), supress, source, querySize);
+      requests.query = timerange_query.getTemplate(getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, requests.filter, domainFilter, isEncryptChecksumFilter, false, requests.index), supress, source, querySize);
       if (cfg.debug) console.info(requests.index);
       if (cfg.debug) console.info(JSON.stringify(requests.query));
 
@@ -370,8 +370,7 @@ class Controller {
           body: requests.query
         });
       }
-
-      if (cfg.debug) console.info("------ES response---------- " + JSON.stringify(response));
+      //if (cfg.debug) console.info("------ES response---------- " + JSON.stringify(response));
 
       userFilter = "*";
       console.info(new Date() + " got elastic data");
