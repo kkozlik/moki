@@ -21,8 +21,7 @@ import storePersistent from "../store/indexPersistent";
 import store from "../store/index";
 import { parseTimestamp } from "../helpers/parseTimestamp";
 import SimpleSequenceDiagram from "../charts/simpleSequenceDiagram";
-import { getSearchableAttributes } from '@moki-client/gui';
-import { getExceededName } from '@moki-client/gui';
+import { getSearchableAttributes, getExceededName, isEncryptedAttr } from '@moki-client/gui';
 
 const attrsTypes = {
     "@timestamp": "time",
@@ -417,8 +416,13 @@ function getColumn(column_name, tags, tag, width = 0, hidden = false) {
                         if (field === "attrs.from" || field === "attrs.to") {
                             field = field + ".keyword";
                         }
+
+                        let isEncrypted = false;
+                        if (ob.encrypt) {
+                            isEncrypted = isEncryptedAttr(field, ob.encrypt);
+                        }
                         if (value) {
-                            return <span className="filterToggleActive">
+                            return <span className="filterToggleActive" style={{ "color": isEncrypted ? "darkred" : "#212529" }}>
                                 <span className="filterToggle">
                                     <img onClick={doFilter} field={field} value={value} className="icon" alt="filterIcon" src={filterIcon} />
                                     <img field={field} value={value} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} />
@@ -452,8 +456,21 @@ function getColumn(column_name, tags, tag, width = 0, hidden = false) {
                     editable: false,
                     sort: true,
                     hidden: hidden,
-                    headerStyle: { width: getColumnWidth(column_name.source, width) }
+                    headerStyle: { width: getColumnWidth(column_name.source, width) },
+                    formatter: (cell, obj) => {
+                        var ob = obj._source;
+                        var field = column_name.source;
+                        if (field === "attrs.from" || field === "attrs.to") {
+                            field = field + ".keyword";
+                        }
+                        let isEncrypted = false;
+                        if (ob.encrypt) {
+                            isEncrypted = isEncryptedAttr(field, ob.encrypt);
+                        }
+                        return <span style={{ "color": isEncrypted ? "darkred" : "#212529" }}></span>
+                    }
                 }
+
                 //encrypt state 
                 let profile = storePersistent.getState().profile;
                 if (profile && profile[0] && profile[0].userprefs.mode === "encrypt") {

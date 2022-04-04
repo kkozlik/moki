@@ -14,8 +14,7 @@ import unfilter from "../../styles/icons/unfilter.png";
 import { Redirect } from 'react-router';
 import { createFilter } from '@moki-client/gui';
 import { getCategory } from '@moki-client/gui';
-import { getSearchableAttributes } from '@moki-client/gui';
-import { getDisplayedAttributes } from '@moki-client/gui';
+import { getSearchableAttributes, getDisplayedAttributes, isEncryptedAttr } from '@moki-client/gui';
 import emptyIcon from "../../styles/icons/empty_small.png";
 import downloadIcon from "../../styles/icons/download.png";
 import shareIcon from "../../styles/icons/share_dark.png";
@@ -409,7 +408,7 @@ export default class listChart extends Component {
             //get rid of race condition by waiting before getting new data again
             if (result.result && result.result === "updated") {
                 setTimeout(function () {
-                    //alert("Tag has been saved.");
+                    //alert("Tag has been saved."); 
                     document.getElementById("popupTag").style.display = "none";
                     document.getElementById("tag").value = "";
                     document.getElementsByClassName("iconReload")[0].click();
@@ -502,7 +501,12 @@ export default class listChart extends Component {
         }
     }
 
-    renderExpandRow(cell, value, isSearchable = false) {
+    renderExpandRow(cell, value, isSearchable, category, attr) {
+        let isEncrypted = false;
+        if (attr.encrypt) {
+            isEncrypted = isEncryptedAttr(category + "." + cell, attr.encrypt);
+        }
+        var style = { "color": isEncrypted ? "darkred" : "#212529" };
         //if  attrs.rtp-MOScqex-avg: [* TO 3] red
         //attrs.rtp-MOScqex-min : [* TO 2] red
         //attrs.rtp-lossmax: [25 TO *]  red
@@ -521,7 +525,7 @@ export default class listChart extends Component {
                 <span className="spanTab">{cell}: </span>
                 <img onClick={this.filter} field={"attrs." + cell + ".keyword"} value={value} title="filter" className="icon" alt="filterIcon" src={filter} />
                 <img field={"attrs." + cell + ".keyword"} value={value} onClick={this.unfilter} className="icon" alt="unfilterIcon" title="unfilter" src={unfilter} />
-                <span className="spanTab">{value}</span>
+                <span className="spanTab" style={ style } >{value}</span>
             </p>
         }
 
@@ -565,7 +569,7 @@ export default class listChart extends Component {
                 <span className="spanTab">{cell}: </span>
                 <img onClick={this.filter} field={"attrs." + cell} value={value} title="filter" className="icon" alt="filterIcon" src={filter} />
                 <img field={"attrs." + cell} value={value} onClick={this.unfilter} className="icon" alt="unfilterIcon" title="unfilter" src={unfilter} />
-                <span className="spanTab">{value}</span>
+                <span className="spanTab" style={style} >{value}</span>
             </p>
         }
 
@@ -575,13 +579,13 @@ export default class listChart extends Component {
                 <span className="spanTab">{cell}: </span>
                 <img onClick={this.filter} field={"attrs.vars." + cell} value={value} title="filter" className="icon" alt="filterIcon" src={filter} />
                 <img field={"attrs.vars." + cell} value={value} onClick={this.unfilter} className="icon" alt="unfilterIcon" title="unfilter" src={unfilter} />
-                <span className="spanTab">{value}</span>
+                <span className="spanTab" style={style} >{value}</span>
             </p>
         }
 
         return <p value={value} key={value}>
             <span className="spanTab">{cell}: </span>
-            <span className="tab">{value}</span>
+            <span className="tab" style={style} >{value}</span>
         </p>
     }
 
@@ -598,7 +602,7 @@ export default class listChart extends Component {
                     if (displayedAttrs.includes("attrs." + attrs[j])) {
                         let category = getCategory("attrs." + attrs[j]);
                         if (!categorySort[category]) categorySort[category] = [];
-                        categorySort[category].push(this.renderExpandRow(attrs[j], row[keys[i]][attrs[j]]));
+                        categorySort[category].push(this.renderExpandRow(attrs[j], row[keys[i]][attrs[j]], false, "attrs", row));
                     }
 
                     //custom variable in vars.* - render all and everything is searchable
@@ -607,7 +611,7 @@ export default class listChart extends Component {
                         for (let k = 0; k < variable.length; k++) {
                             let categoryInner = "VARS";
                             if (!categorySort[categoryInner]) categorySort[categoryInner] = [];
-                            categorySort[categoryInner].push(this.renderExpandRow(variable[k], row[keys[i]][attrs[j]][variable[k]], true));
+                            categorySort[categoryInner].push(this.renderExpandRow(variable[k], row[keys[i]][attrs[j]][variable[k]], true, "attrs.vars", row));
                         }
                     }
                 }
@@ -619,7 +623,7 @@ export default class listChart extends Component {
                     if (displayedAttrs.includes("geoip." + attrs[j])) {
                         let category = getCategory("geoip." + attrs[j]);
                         if (!categorySort[category]) categorySort[category] = [];
-                        categorySort[category].push(this.renderExpandRow(attrs[j], row[keys[i]][attrs[j]]));
+                        categorySort[category].push(this.renderExpandRow(attrs[j], row[keys[i]][attrs[j]], false, "geoip", row));
                     }
                 }
 
@@ -628,7 +632,7 @@ export default class listChart extends Component {
                 if (displayedAttrs.includes(keys[i])) {
                     let category = getCategory(keys[i]);
                     if (!categorySort[category]) categorySort[category] = [];
-                    categorySort[category].push(this.renderExpandRow(keys[i], row[keys[i]]));
+                    categorySort[category].push(this.renderExpandRow(keys[i], row[keys[i]], false, "", row));
                 }
             }
         }
@@ -686,7 +690,7 @@ export default class listChart extends Component {
 
         }
 
-        //download all with check
+        //download all with check        
         async function downloadAllCheck() {
             var selectedData = thiss.state.selected;
             if (selectedData.length === 0) {
@@ -756,7 +760,7 @@ export default class listChart extends Component {
 
         }
 
-        //this.isAdmin() || isDisplay("attrs."+cell) ?
+        //this.isAdmin() || isDisplay("attrs."+cell) ?   
         //what render if user click on row
         const expandRow = {
             onExpand: (row, isExpand, rowIndex, e) => {
