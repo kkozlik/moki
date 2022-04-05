@@ -26,6 +26,8 @@ import {
     getTimeBucketInt, getTimeBucket
 } from "../helpers/getTimeBucket";
 import { parseTimestamp } from "../helpers/parseTimestamp";
+import {setTickNrForTimeXAxis} from "../helpers/chart";
+
 const CUMULATIVE_SUM = ["CALL STARTS BY HOST", "TX BYTES BY HOST", "RX PACKET BY HOST", "TX PACKET BY HOST", "RX BYTES BY INTERFACE", "TX BYTES BY INTERFACE", "RX PACKETS BY INTERFACE", "TX PACKETS BY INTERFACE"];
 
 export default class MultipleLineChart extends Component {
@@ -223,6 +225,8 @@ export default class MultipleLineChart extends Component {
             .scale(xScale)
             .ticks(ticks)
             .tickFormat(parseDate);
+
+        setTickNrForTimeXAxis(xAxis);
 
         var yAxis = d3.axisLeft(yScale).ticks(5).tickFormat(function (d) {
             if (d / 1000000000000 >= 1) return d / 1000000000000 + " T";

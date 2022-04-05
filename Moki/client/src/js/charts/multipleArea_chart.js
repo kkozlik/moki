@@ -23,6 +23,7 @@ import {
     getTimeBucket, getTimeBucketInt
 } from "../helpers/getTimeBucket";
 import {parseTimestamp} from "../helpers/parseTimestamp";
+import {setTickNrForTimeXAxis} from "../helpers/chart";
 
 export default class MultipleAreaChart extends Component {
     constructor(props) {
@@ -42,12 +43,11 @@ export default class MultipleAreaChart extends Component {
     componentDidUpdate(prevProps, prevState) {
         if (prevProps.data !== this.props.data) {
             this.setState({ data: this.props.data });
-            this.draw(this.props.data, this.props.id, this.props.width, this.props.units);
+            this.draw(this.props.data, this.props.id, this.props.units);
         }
     }
 
-
-    draw(data, id, width, units) {
+    draw(data, id, units) {
         units = units ? " (" + units + ")" : "";
         //FOR UPDATE: remove chart if it's already there
         var chart = document.getElementById(id + "SVG");
@@ -63,11 +63,11 @@ export default class MultipleAreaChart extends Component {
 
         var margin = {
             top: 20,
-            right: 20,
+            right: 45,
             bottom: 40,
             left: 70
         };
-        width = width - margin.left - margin.right;
+
         var height = 200 - margin.top - margin.bottom;
         var duration = 250;
 
@@ -86,10 +86,15 @@ export default class MultipleAreaChart extends Component {
 
         var svg = d3.select('#' + id)
             .append("svg")
-            .attr('width', width + margin.left + margin.right)
+            .attr('width', '100%')
             .attr('height', height + margin.top + margin.bottom)
             .attr('id', id + "SVG")
             .append('g');
+
+        var svgWidth = d3.select('#' + id).node().clientWidth;
+
+        var width = svgWidth - (margin.left + margin.right);
+        if (width < 100) width = 100;
 
         var color = d3.scaleOrdinal().range(Colors);
         //special color scale for home dashboard
@@ -185,7 +190,8 @@ export default class MultipleAreaChart extends Component {
 
         var yAxis = d3.axisLeft(yScale).ticks(5);
 
-        svg.attr("transform", "translate(" + margin.left + "," + margin.right + ")");
+        setTickNrForTimeXAxis(xAxis);
+        svg.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 
         if (data === 0 || data.length === 0 || (data[0].values.length === 0 && data[1].values.length === 0)) {

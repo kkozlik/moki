@@ -9,6 +9,7 @@ import emptyIcon from "../../styles/icons/empty_small.png";
 import { getTimeBucket, getTimeBucketInt } from "../helpers/getTimeBucket";
 import { durationFormat } from "../helpers/durationFormat";
 import { parseTimestamp, parseTimestampD3js, parseTimeData, parseTimestampUTC } from "../helpers/parseTimestamp";
+import {setTickNrForTimeXAxis} from "../helpers/chart";
 
 export default class datebarChart extends Component {
     constructor(props) {
@@ -53,7 +54,7 @@ export default class datebarChart extends Component {
 
         var margin = {
             top: 10,
-            right: 20,
+            right: 45,
             bottom: 30,
             left: marginLeft + 45
         };
@@ -91,6 +92,8 @@ export default class datebarChart extends Component {
             .scale(xScale)
             .ticks(7)
             .tickFormat(parseDate);
+
+        setTickNrForTimeXAxis(xAxis);
 
         var yAxis = d3.axisLeft(yScale).ticks(5).tickFormat(function (d) {
             if (d / 1000000000000 >= 1) return d / 1000000000000 + " T";
