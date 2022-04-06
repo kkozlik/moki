@@ -88,7 +88,7 @@ async function checkSelectedTypes(types, dashboardName) {
 
 //concat all enable types (if exceeded use field exceeded, otherwise attrs.type)
 function getTypesConcat(value, type = "attrs.type") {
-  if (cfg.debug) console.info("Concatine types "+JSON.stringify(value));
+  if (cfg.debug) console.info("Concatine types " + JSON.stringify(value));
   // concat types with OR
   let types = '*';
   if (value && value.length !== 0) {
@@ -103,34 +103,50 @@ function getTypesConcat(value, type = "attrs.type") {
   return types;
 }
 
-function getQueries(filter, types, timestamp_gte, timestamp_lte, userFilter, chartFilter, domain, isEncryptChecksumFilter, exists) {
+function getQueries(filter, types, timestamp_gte, timestamp_lte, userFilter, chartFilter, domain, isEncryptChecksumFilter, exists, index) {
   if (cfg.debug) console.info("--queries--");
 
   const queries = [];
   if (isEncryptChecksumFilter !== "*") {
     //anonymous mode,  see everything encrypted
     if (isEncryptChecksumFilter === "anonymous") {
-      queries.push({
-        "query_string": {
-          "query": "NOT encrypt: plain"
-        }
-      });
-      if (cfg.debug) console.info("Adding NOT PLAIN  encrypt filter");
-
+      if (index && index.includes("exceeded")) {
+        //do nothing, anonymous for exceeded can see all
+        if (cfg.debug) console.info("Exceeded anonymous case - no encrypt filter");
+      }
+      else {
+        queries.push({
+          "query_string": {
+            "query": "NOT encrypt: plain"
+          }
+        });
+        if (cfg.debug) console.info("Adding NOT PLAIN  encrypt filter");
+      }
     }
     else {
-      if (cfg.debug) console.info("Adding encrypt filter "+isEncryptChecksumFilter);
+      if (cfg.debug) console.info("Adding encrypt filter " + isEncryptChecksumFilter);
+      if (index.includes("exceeded")){
+        if (cfg.debug) console.info("Exceeded case - adding encrypt filter and plain text");
+        queries.push({
+          "query_string": {
+            "query": "encrypt: "+isEncryptChecksumFilter +" OR encrypt:plain"
+          }
+        });
+      }
+      else {
+        if (cfg.debug) console.info("Adding encrypt filter");
 
-      queries.push({
-        "match": {
-          "encrypt": isEncryptChecksumFilter
-        }
-      });
+        queries.push({
+          "match": {
+            "encrypt": isEncryptChecksumFilter
+          }
+        });
+      }
     }
   }
 
   if (domain !== "*") {
-    if (cfg.debug) console.info("Adding domain filter "+domain);
+    if (cfg.debug) console.info("Adding domain filter " + domain);
 
     queries.push({
       "match": {
@@ -198,7 +214,7 @@ function getParameterFromHeader(req, info) {
     return parsedHeader[info];
   } catch (e) {
     console.log("parsing failed header failed");
-    return { error: "Problem to get "+info+" parameter from request header" };
+    return { error: "Problem to get " + info + " parameter from request header" };
   }
 
 }

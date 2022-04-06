@@ -98,12 +98,12 @@ class RegistrationCharts extends Dashboard {
                     width={store.getState().width - 300}
                 />  </div>
             <div className="row no-gutters">
-                <div className="col-10">
+                <div className="col-10 pr-1 mr-0">
                     <MultipleAreaChart data={
                         this.state.parallelRegs
-                    } name={"PARALLEL REGS"} id={"parallelRegs"} width={store.getState().width - 600} />
+                    } name={"PARALLEL REGS"} id={"parallelRegs"} />
                 </div>
-                <div className="col-1">
+                <div className="col-2 px-1">
                     <ValueChart data={this.getLastValueInInterval(this.state.parallelRegs, 1)} name={"ACTUAL REGS"} biggerFont={"biggerFont"} />
                 </div>
             </div>

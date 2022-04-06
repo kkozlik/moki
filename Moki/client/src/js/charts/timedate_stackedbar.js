@@ -8,6 +8,7 @@ import { createFilter, getExceededTypes } from '@moki-client/gui';
 import { getTimeBucket, getTimeBucketInt } from "../helpers/getTimeBucket";
 import emptyIcon from "../../styles/icons/empty_small.png";
 import { parseTimestamp, parseTimestampD3js, parseTimeData, parseTimestampUTC } from "../helpers/parseTimestamp";
+import {setTickNrForTimeXAxis} from "../helpers/chart";
 
 /*
 format:
@@ -61,7 +62,7 @@ export default class StackedChart extends Component {
             hit.time = parseTimeData(hit.time);
         }
 
-        //window.innerWidth -200 
+        //window.innerWidth -200
         width = width - margin.left - margin.right - 30;
         var height = 200 - margin.top - margin.bottom;
 
@@ -98,6 +99,8 @@ export default class StackedChart extends Component {
             .scale(xScale)
             .ticks(7)
             .tickFormat(parseDate);
+
+        setTickNrForTimeXAxis(xAxis);
 
         var yAxis = d3.axisLeft(yScale).ticks(5).tickFormat(function (d) {
             if (d / 1000000000000 >= 1) return d / 1000000000000 + " T";
@@ -254,7 +257,7 @@ export default class StackedChart extends Component {
                          return yScale(d[1]);
                      })
                      .attr("height", function (d) {
-                     var height = yScale(d[0]) - yScale(d[1]); 
+                     var height = yScale(d[0]) - yScale(d[1]);
                          if(height){
                              return height
                          }
@@ -294,7 +297,7 @@ export default class StackedChart extends Component {
                 })
                 .on("mouseover", function (d, i) {
                     //d3.select(this).style("stroke","orange");
-                    
+
                     tooltip.select("div").html("<strong>Time: </strong> " + parseTimestamp(d.data.time) + " + " + getTimeBucket() + "<br/><strong>Value:</strong> " + d3.format(',')(d[1] - d[0]) + units + "<br/><strong>Type: </strong>" + this.parentNode.getAttribute("type") + "<br/> ");
                     d3.select(this).style("cursor", "pointer");
 

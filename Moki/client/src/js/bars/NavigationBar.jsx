@@ -110,9 +110,13 @@ class navBar extends Component {
             document.getElementById("create").style.display = "block";
 
             var password = document.getElementById("password").value;
+            var password2 = document.getElementById("password2").value;
             //password length > 8
             if (password.length < 8) {
                 window.mainPopup.error("Password must have at least 8 characters.");
+            }
+            else if (password !== password2) {
+                window.mainPopup.error("Passwords are not same.");
             }
             else {
 
@@ -185,13 +189,14 @@ class navBar extends Component {
         var changePasswordForm = <span>
             <h3 style={{ "marginBottom": "15px" }}>Set a new password with at least 8 characters:</h3>
             <input type="password" id="password" className="form-control" placeholder="password"></input>
+            <input type="password" id="password2" className="form-control" placeholder="same password again" style={{ "marginTop": "5px" }}></input>
             <div style={{ "textAlign": "end" }}>
                 <button style={{ "marginRight": "5px", "marginTop": "10px" }} className="btn btn-secondary" onClick={window.mainPopup.storno}>Storno </button>
                 <button style={{ "marginRight": "5px", "marginTop": "10px" }} className="btn btn-primary" onClick={() => checkPassword()}><i className="fa fa-circle-o-notch fa-spin" id="create" style={{ "display": "none" }}></i> <span id="createR">Change</span> </button>
             </div>
 
         </span>
-
+        window.mainPopup.error("");
         window.mainPopup.setPopup("visible", changePasswordForm);
     }
 

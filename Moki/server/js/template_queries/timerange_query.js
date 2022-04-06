@@ -1,6 +1,6 @@
-var getTemplate = function (queries, supress, size = 500) {
+var getTemplate = function (queries, supress, source, size = 500) {
     var template = {
-        size: size,
+        "size": size,
         "track_total_hits": true,
         "sort": [
             {
@@ -22,6 +22,10 @@ var getTemplate = function (queries, supress, size = 500) {
         }
 
     };
+
+    if(source !== "*"){
+        template._source = source;
+    }
     return template;
 }
 

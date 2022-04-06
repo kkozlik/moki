@@ -130,7 +130,7 @@ class HomeCharts extends Dashboard {
                     <div className="col-10 pr-1 mr-0">
                         <MultipleAreaChart data={
                             this.state.parallelCalls
-                        } name={"PARALLEL CALLS"} id={"parallelCalls"} width={store.getState().width - 500} units={"count"} />
+                        } name={"PARALLEL CALLS"} id={"parallelCalls"} units={"count"} />
                     </div>
                     <div className="col-2 px-1">
                         <CountUpChart data={this.getLastValueInInterval(this.state.parallelCalls, 1)} name={"ACTUAL CALLS"} biggerFont={"biggerFont"} dataAgo={this.getLastValueInInterval(this.state.parallelCalls, 0)} />
@@ -140,7 +140,7 @@ class HomeCharts extends Dashboard {
                     <div className="col-10 pr-1 mr-0">
                         <MultipleAreaChart data={
                             this.state.parallelRegs
-                        } name={"PARALLEL REGS"} id={"parallelRegs"} width={store.getState().width - 500} units={"count"} />
+                        } name={"PARALLEL REGS"} id={"parallelRegs"} units={"count"} />
                     </div>
                     <div className="col-2 px-1">
                         <CountUpChart data={this.getLastValueInInterval(this.state.parallelRegs, 1)} name={"ACTUAL REGS"} biggerFont={"biggerFont"} dataAgo={this.getLastValueInInterval(this.state.parallelRegs, 0)} />
@@ -150,7 +150,7 @@ class HomeCharts extends Dashboard {
                     <div className="col-10 pr-1 mr-0">
                         <MultipleAreaChart data={
                             this.state.incidentCount
-                        } name={"INCIDENTS"} units={"count"} id={"incidentCount"} width={store.getState().width - 500} />
+                        } name={"INCIDENTS"} units={"count"} id={"incidentCount"} />
                     </div>
                     <div className="col-2 px-1">
                         <CountUpChart data={this.getLastValueInInterval(this.state.incidentCount, 1)} name={"INCIDENTS ACTUAL"} biggerFont={"biggerFont"} dataAgo={this.getLastValueInInterval(this.state.incidentCount, 0)} />

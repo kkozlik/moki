@@ -14,8 +14,7 @@ import unfilter from "../../styles/icons/unfilter.png";
 import { Redirect } from 'react-router';
 import { createFilter } from '@moki-client/gui';
 import { getCategory } from '@moki-client/gui';
-import { getSearchableAttributes } from '@moki-client/gui';
-import { getDisplayedAttributes } from '@moki-client/gui';
+import { getSearchableAttributes, getDisplayedAttributes, isEncryptedAttr } from '@moki-client/gui';
 import emptyIcon from "../../styles/icons/empty_small.png";
 import downloadIcon from "../../styles/icons/download.png";
 import shareIcon from "../../styles/icons/share_dark.png";
@@ -70,6 +69,8 @@ export default class listChart extends Component {
             seenPages: [1]
         }
 
+        this.chartRef = React.createRef();
+
         this.filter = this.filter.bind(this);
         this.unfilter = this.unfilter.bind(this);
         this.tags = this.tags.bind(this);
@@ -92,10 +93,11 @@ export default class listChart extends Component {
                 seenPages: [this.state.page],
                 dataEncrypted: this.props.data
             });
-            var table = document.getElementsByClassName('table table-hover')[0];
-            if (table) {
-                this.resizableGrid(table);
-            }
+        }
+
+        var table = this.chartRef.current.getElementsByClassName('table table-hover')[0];
+        if (table) {
+            this.resizableGrid(table);
         }
     }
 
@@ -175,6 +177,10 @@ export default class listChart extends Component {
 
         var tableHeight = table.offsetHeight;
         for (var i = 0; i < cols.length; i++) {
+            if (cols[i].querySelector(':scope > div')) continue;                // do not add the resizable element if the column already contains it
+            if (cols[i].classList.contains('expand-cell-header')) continue;     // do not add the resizable element to expand column
+            if (cols[i].classList.contains('selection-cell-header')) continue;  // do not add the resizable element to selection column
+
             var div = createDiv(tableHeight);
             cols[i].appendChild(div);
             cols[i].style.position = 'relative';
@@ -304,6 +310,11 @@ export default class listChart extends Component {
                 console.error(error);
                 alert("Problem with receiving alarms data. " + error);
             }
+        }
+
+        var table = this.chartRef.current.getElementsByClassName('table table-hover')[0];
+        if (table) {
+            this.resizableGrid(table);
         }
     }
 
@@ -490,7 +501,12 @@ export default class listChart extends Component {
         }
     }
 
-    renderExpandRow(cell, value, isSearchable = false) {
+    renderExpandRow(cell, value, isSearchable, category, attr) {
+        let isEncrypted = false;
+        if (attr.encrypt) {
+            isEncrypted = isEncryptedAttr(category + "." + cell, attr.encrypt);
+        }
+        var style = { "color": isEncrypted ? "darkred" : "#212529" };
         //if  attrs.rtp-MOScqex-avg: [* TO 3] red
         //attrs.rtp-MOScqex-min : [* TO 2] red
         //attrs.rtp-lossmax: [25 TO *]  red
@@ -509,7 +525,7 @@ export default class listChart extends Component {
                 <span className="spanTab">{cell}: </span>
                 <img onClick={this.filter} field={"attrs." + cell + ".keyword"} value={value} title="filter" className="icon" alt="filterIcon" src={filter} />
                 <img field={"attrs." + cell + ".keyword"} value={value} onClick={this.unfilter} className="icon" alt="unfilterIcon" title="unfilter" src={unfilter} />
-                <span className="spanTab">{value}</span>
+                <span className="spanTab" style={ style } >{value}</span>
             </p>
         }
 
@@ -553,7 +569,7 @@ export default class listChart extends Component {
                 <span className="spanTab">{cell}: </span>
                 <img onClick={this.filter} field={"attrs." + cell} value={value} title="filter" className="icon" alt="filterIcon" src={filter} />
                 <img field={"attrs." + cell} value={value} onClick={this.unfilter} className="icon" alt="unfilterIcon" title="unfilter" src={unfilter} />
-                <span className="spanTab">{value}</span>
+                <span className="spanTab" style={style} >{value}</span>
             </p>
         }
 
@@ -563,13 +579,13 @@ export default class listChart extends Component {
                 <span className="spanTab">{cell}: </span>
                 <img onClick={this.filter} field={"attrs.vars." + cell} value={value} title="filter" className="icon" alt="filterIcon" src={filter} />
                 <img field={"attrs.vars." + cell} value={value} onClick={this.unfilter} className="icon" alt="unfilterIcon" title="unfilter" src={unfilter} />
-                <span className="spanTab">{value}</span>
+                <span className="spanTab" style={style} >{value}</span>
             </p>
         }
 
         return <p value={value} key={value}>
             <span className="spanTab">{cell}: </span>
-            <span className="tab">{value}</span>
+            <span className="tab" style={style} >{value}</span>
         </p>
     }
 
@@ -586,7 +602,7 @@ export default class listChart extends Component {
                     if (displayedAttrs.includes("attrs." + attrs[j])) {
                         let category = getCategory("attrs." + attrs[j]);
                         if (!categorySort[category]) categorySort[category] = [];
-                        categorySort[category].push(this.renderExpandRow(attrs[j], row[keys[i]][attrs[j]]));
+                        categorySort[category].push(this.renderExpandRow(attrs[j], row[keys[i]][attrs[j]], false, "attrs", row));
                     }
 
                     //custom variable in vars.* - render all and everything is searchable
@@ -595,7 +611,7 @@ export default class listChart extends Component {
                         for (let k = 0; k < variable.length; k++) {
                             let categoryInner = "VARS";
                             if (!categorySort[categoryInner]) categorySort[categoryInner] = [];
-                            categorySort[categoryInner].push(this.renderExpandRow(variable[k], row[keys[i]][attrs[j]][variable[k]], true));
+                            categorySort[categoryInner].push(this.renderExpandRow(variable[k], row[keys[i]][attrs[j]][variable[k]], true, "attrs.vars", row));
                         }
                     }
                 }
@@ -607,7 +623,7 @@ export default class listChart extends Component {
                     if (displayedAttrs.includes("geoip." + attrs[j])) {
                         let category = getCategory("geoip." + attrs[j]);
                         if (!categorySort[category]) categorySort[category] = [];
-                        categorySort[category].push(this.renderExpandRow(attrs[j], row[keys[i]][attrs[j]]));
+                        categorySort[category].push(this.renderExpandRow(attrs[j], row[keys[i]][attrs[j]], false, "geoip", row));
                     }
                 }
 
@@ -616,7 +632,7 @@ export default class listChart extends Component {
                 if (displayedAttrs.includes(keys[i])) {
                     let category = getCategory(keys[i]);
                     if (!categorySort[category]) categorySort[category] = [];
-                    categorySort[category].push(this.renderExpandRow(keys[i], row[keys[i]]));
+                    categorySort[category].push(this.renderExpandRow(keys[i], row[keys[i]], false, "", row));
                 }
             }
         }
@@ -814,7 +830,8 @@ export default class listChart extends Component {
                                 data-toggle="button"
                                 aria-pressed={column.toggle ? 'true' : 'false'}
                                 onClick={() => {
-                                    onColumnToggle(column.dataField); if (document.getElementById(column.dataField).classList.contains('green')) {
+                                    onColumnToggle(column.dataField);
+                                    if (document.getElementById(column.dataField).classList.contains('green')) {
                                         document.getElementById(column.dataField).classList.remove('green');
                                     }
                                     else {
@@ -837,11 +854,6 @@ export default class listChart extends Component {
                                     }
                                     storedColumns[dashboard] = columns;
                                     window.localStorage.setItem("columns", JSON.stringify(storedColumns));
-
-                                    var table = document.getElementsByClassName('table table-hover')[0];
-                                    if (table) {
-                                        this.resizableGrid(table);
-                                    }
                                 }
                                 }>
                                 {column.text}
@@ -925,7 +937,7 @@ export default class listChart extends Component {
 
                         {
                             props => (
-                                <div key={"tablechart"}>
+                                <div key={"tablechart"} ref={this.chartRef}>
                                     <h3 className="alignLeft title inline" style={{ "float": "inherit" }} >{this.props.id}</h3>
                                     {this.props.id !== "LAST LOGIN EVENTS" && <div id="popupTag" className="popupTag" style={{ "display": "none" }}>
                                         <input type="text" id="tag" name="name" className="form-control" onKeyUp={(event) => this.onEnterKey(event)} style={{ "display": "inline-table", "height": "30px" }} />

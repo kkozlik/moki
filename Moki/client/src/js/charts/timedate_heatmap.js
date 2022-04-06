@@ -8,6 +8,7 @@ import { getTimeBucket, getTimeBucketInt} from "../helpers/getTimeBucket";
 import {ColorsRedGreen} from "@moki-client/gui";
 import { ColorsGreen} from "@moki-client/gui";
 import {parseTimestamp, parseTimestampD3js, parseTimeData, parseTimestampUTC } from "../helpers/parseTimestamp";
+import {setTickNrForTimeXAxis} from "../helpers/chart";
 
 export default class timedateHeatmap extends Component {
     constructor(props) {
@@ -23,7 +24,7 @@ export default class timedateHeatmap extends Component {
        }
        else return null;
      }
-     
+
      componentDidUpdate(prevProps, prevState) {
        if(prevProps.data!==this.props.data){
         this.setState({ data: this.props.data });
@@ -48,11 +49,11 @@ export default class timedateHeatmap extends Component {
         var marginLeft = 100;
         if (data.length > 0) {
             var maxTextWidth = d3.max(data.map(n => n.attr2.length));
-            marginLeft = maxTextWidth > 23 ? 150 : maxTextWidth > 15 ? maxTextWidth * 8 :  maxTextWidth * 13;
+            marginLeft = maxTextWidth > 23 ? 150 : maxTextWidth > 15 ? maxTextWidth * 8 :  maxTextWidth * 17;
         }
         var margin = {
             top: 10,
-            right: 30,
+            right: 45,
             bottom: 40,
             left: marginLeft
         };
@@ -115,6 +116,7 @@ export default class timedateHeatmap extends Component {
                 .ticks(7)
                 .tickFormat(parseDate);
 
+            setTickNrForTimeXAxis(xAxis);
 
             var yScale = d3.scaleBand()
                 .domain(y_elements)
@@ -298,7 +300,7 @@ export default class timedateHeatmap extends Component {
                .duration(1200)
                .ease(d3.easeLinear)
                .attr('x', -2 * width - 50);
-               
+
 
             svg.append("g")
                 .attr("class", "y axis")
@@ -309,8 +311,8 @@ export default class timedateHeatmap extends Component {
                     if(d.length > 20)
                         return d.substring(0,20)+'...';
                     else
-                        return d;                       
-                })         
+                        return d;
+                })
                 .attr('font-weight', 'normal')
                 .style('cursor', 'pointer')
                 .on("click", el => {

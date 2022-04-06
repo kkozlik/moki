@@ -19,7 +19,7 @@ class TransportTable extends Table {
         return (
             <div className="row no-gutters" >
                 <TableChart data={
-                        this.state.registrations
+                        this.state.calls
                     } total={this.state.total}
                     name={
                         "transport"

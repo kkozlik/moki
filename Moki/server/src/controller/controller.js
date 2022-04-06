@@ -3,6 +3,7 @@
 const { getFiltersConcat, getTypesConcat, getQueries, checkSelectedTypes } = require('../utils/metrics');
 const { connectToES } = require('../modules/elastic');
 const scroll = require('../../js/template_queries/scroll');
+const fs = require('fs');
 let { timestamp_gte, timestamp_lte } = require('../utils/ts');
 const { getTimestampBucket } = require('../utils/ts');
 const { getJWTsipUserFilter, getEncryptChecksumFilter } = require('../modules/jwt');
@@ -179,7 +180,7 @@ class Controller {
             isEncryptChecksumFilter = "*";
             types = "*";
           }
-          requests[i].query = requests[i].template.getTemplate(...params, getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, requests[i].filter, domainFilter, isEncryptChecksumFilter, requests[i].exists), supress);
+          requests[i].query = requests[i].template.getTemplate(...params, getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, requests[i].filter, domainFilter, isEncryptChecksumFilter, requests[i].exists, requests[i].index), supress);
 
         }
         else {
@@ -189,7 +190,7 @@ class Controller {
             types = "*";
           }
 
-          requests[i].query = requests[i].template.getTemplate(getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, requests[i].filter, domainFilter, isEncryptChecksumFilter, requests[i].exists), supress);
+          requests[i].query = requests[i].template.getTemplate(getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, requests[i].filter, domainFilter, isEncryptChecksumFilter, requests[i].exists, requests[i].index), supress);
         }
 
         //ged old timestamp if has changed
@@ -237,12 +238,12 @@ class Controller {
       client.close();
       let resp = res.json(response);
       if (typeof resp === "string") {
-        if(cfg.debug) console.info("-----ES response----- "+ resp);
+        if (cfg.debug) console.info("-----ES response----- " + resp);
         console.error("Failed msearch: " + resp);
         console.error("Failed msearch query: " + JSON.stringify(requestList));
       }
 
-      if(cfg.debug) console.info("ES response: "+JSON.stringify(response));
+     // if (cfg.debug) console.info("ES response: " + JSON.stringify(response));
       return resp;
     }
 
@@ -258,7 +259,7 @@ class Controller {
       const filters = getFiltersConcat(req.body.filters);
       let types = req.body.types;
       const querySize = req.body.params && req.body.params.size ? req.body.params.size : 500;
-      if(cfg.debug) console.info("----------------------TABLE DATA SEARCH-------------------------");
+      if (cfg.debug) console.info("----------------------TABLE DATA SEARCH-------------------------");
 
       //if no types from client, get types from monitor_layout
       if (!types || types.length === 0) {
@@ -312,7 +313,7 @@ class Controller {
       //check if encrypt filter should be used
       let isEncryptChecksumFilter = await getEncryptChecksumFilter(req);
       if (isEncryptChecksumFilter.encryptChecksum) {
-        if(cfg.debug) console.info("Encrypt checksum filter applied "+ isEncryptChecksumFilter.encryptChecksum);
+        if (cfg.debug) console.info("Encrypt checksum filter applied " + isEncryptChecksumFilter.encryptChecksum);
         isEncryptChecksumFilter = isEncryptChecksumFilter.encryptChecksum;
       }
 
@@ -321,16 +322,28 @@ class Controller {
         isEncryptChecksumFilter = "*";
       }
 
+      //for export return only some attr, list is stored in layout
+      var source = "*";
+      if (req.body.params && req.body.params.type === "export") {
+        try{
+        let layout = fs.readFileSync(cfg.fileGUILayout);
+        source = JSON.parse(layout.toString('utf8')).export;
+        }
+        catch(error){
+          console.error("Problem to read monitor layout file. "+error);
+        }
+      }
+
       console.info("SERVER search with filters: " + filters + " types: " + types + " timerange: " + timestamp_gte + "-" + timestamp_lte + " timebucket: " + timebucket + " userFilter: " + userFilter + " domainFilter: " + domainFilter + " encrypt checksum filter: " + isEncryptChecksumFilter);
       //always timerange_query
-      requests.query = timerange_query.getTemplate(getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, requests.filter, domainFilter, isEncryptChecksumFilter), supress, querySize);
+      requests.query = timerange_query.getTemplate(getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, requests.filter, domainFilter, isEncryptChecksumFilter, false, requests.index), supress, source, querySize);
       if (cfg.debug) console.info(requests.index);
-      if(cfg.debug) console.info(JSON.stringify(requests.query));
+      if (cfg.debug) console.info(JSON.stringify(requests.query));
 
       if (querySize > 500) {
         var response = await client.search({
           index: requests.index,
-          scroll: '20s',
+          scroll: '2m',
           "ignore_unavailable": true,
           "preference": 1542895076143,
           body: requests.query
@@ -357,8 +370,7 @@ class Controller {
           body: requests.query
         });
       }
-
-      if(cfg.debug) console.info("------ES response---------- "+ JSON.stringify(response));
+      //if (cfg.debug) console.info("------ES response---------- " + JSON.stringify(response));
 
       userFilter = "*";
       console.info(new Date() + " got elastic data");

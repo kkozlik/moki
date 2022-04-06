@@ -24,7 +24,7 @@ class ProfileController {
       const user = AdminController.getUser(req);
       let keys = Object.keys(req.body.userprefs);
       const field = req.body.userprefs[Object.keys(req.body.userprefs)[0]];
-      let secret = user["tls-cn"];
+      var secret = user["tls-cn"];
       let secretField = "tls-cn";
 
       if (req.body.type === "domain" && user.jwtbit !== 2) {
@@ -87,7 +87,7 @@ class ProfileController {
       }
     }
 
-    if(cfg.debug) console.info("Profile with secret "+secret + " created");
+    if(cfg.debug) console.info("Profile was created");
     return search().catch((e) => {
       return next(e);
     });

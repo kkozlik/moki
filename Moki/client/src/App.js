@@ -558,11 +558,11 @@ class App extends Component {
         //loading screen span
         var loadingScreen = <span>
             <Notificationbar className="errorBarLoading" error={this.state.error} deleteAllErrors={this.deleteAllErrors}></Notificationbar>
-            <div style={{ "marginTop": (window.innerHeight / 2) - 50 }} className="row align-items-center justify-content-center">
+            <div style={{ "marginTop": (window.innerHeight / 2) - 50 }} className=" align-items-center justify-content-center">
                 <div className="loaderr">
                     <div className="bar"></div>
                 </div>
-                {this.state.logo && <div><img src={this.state.logo} alt="logo" style={{ "marginLeft": "30%", "width": "50%" }} /></div>}
+                {this.state.logo && <div><img src={this.state.logo} alt="logo" style={{ "marginLeft": "40%", "width": "300px"}} /></div>}
             </div>
         </span>
 
