@@ -24,6 +24,7 @@ class ProfileController {
       const user = AdminController.getUser(req);
       let keys = Object.keys(req.body.userprefs);
       const field = req.body.userprefs[Object.keys(req.body.userprefs)[0]];
+
       var secret = user["tls-cn"];
       let secretField = "tls-cn";
 
@@ -239,8 +240,8 @@ class ProfileController {
         } //check if all parameters in default profile are also in user profile
         else {
           domainProfile = domainProfile.hits.hits[0]._source.event;
-          keys = Object.keys(defaultDomainProfile.userprefs);
-          for (i = 0; i < keys.length; i++) {
+          var keys = Object.keys(defaultDomainProfile.userprefs);
+          for (var i = 0; i < keys.length; i++) {
             if (!domainProfile.userprefs[keys[i]]) {
               domainProfile.userprefs[keys[i]] = defaultDomainProfile.userprefs[keys[i]];
             }
