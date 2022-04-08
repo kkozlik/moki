@@ -7,6 +7,8 @@ const { cfg } = require('../modules/config');
 
 let oldJti = "";
 const hfName = 'x-amzn-oidc-data';
+const index = "lastlog-" + new Date().getFullYear() + "." + (new Date().getMonth() + 1);
+
 
 /**
  * @swagger
@@ -52,7 +54,6 @@ class AdminController {
     async function storeLoginInES(domain, userID, jwtbit, email, sourceIP) {
       const client = connectToES();
       const now = new Date();
-      const index = "lastlog-" + now.getFullYear() + "." + (now.getMonth() + 1);
       const existIndex = await client.indices.exists({ index: index });
 
       if (!existIndex) {
@@ -67,7 +68,8 @@ class AdminController {
                 "domain": { "type": "keyword", "index": "true" },
                 "email": { "type": "keyword", "index": "true" },
                 "source": { "type": "keyword", "index": "true" },
-                "level": { "type": "integer", "index": "true" }
+                "level": { "type": "integer", "index": "true" },
+                "type": { "type": "keyword", "index": "true" }
               }
             }
           }
@@ -85,7 +87,8 @@ class AdminController {
           "domain": domain,
           "email": email,
           "level": jwtbit,
-          "source": sourceIP
+          "source": sourceIP,
+          "type": "lastLogin"
         }
       }, function (err, resp) {
         if (err) {
@@ -209,6 +212,65 @@ class AdminController {
     // no well-known admin-level found exit with error
     console.log(`ACCESS getJWTsipUserFilter: unexpected admin level ${jwtbit} for user ${subId}`);
     return res.json({ redirect: "unexcpectedAdminLevel" });
+  }
+
+  //store mode change
+  static async storeModeChange(req, res) {
+    const client = new elasticsearch.Client({ host: process.env.ES, requestTimeout: 60000 });
+    if(cfg.debug) console.info("Storing new mode change in lastlog index");
+    const now = new Date();
+
+    // JWT required -- parse it and validate it
+    let parsedHeader;
+    try {
+      parsedHeader = parseBase64(req.headers[hfName]);
+    } catch (e) {
+      console.log("ACCESS getJWTsipUserFilter: JWT parsing failed");
+      return res.json({ redirect: "JWTparsingError" });
+    }
+
+    let parsedHeaderAccessToken;
+    let IPs;
+    try {
+      parsedHeaderAccessToken = parseBase64(req.headers['x-amzn-oidc-accesstoken']);
+      //split x-forwarded-for by comma and take first IP
+      IPs = req.headers['x-forwarded-for'].split(",");
+    } catch (e) {
+      console.log("ACCESS getJWTsipUserFilter: JTI parsing failed");
+      return res.json({ msg: "JTIparsingError" });
+    }
+    console.log("parsed Header: ", JSON.stringify(parsedHeader));
+    let jwtbit = parsedHeader['custom:adminlevel'];
+    const userID = parsedHeader['custom:domainid'];
+    const domain = parsedHeader['sub'];
+    const email = parsedHeader['email'];
+    const sourceIP = IPs[0];
+    const mode = req.body.mode;
+
+    await client.index({
+      index: index,
+      refresh: true,
+      type: "_doc",
+      body: {
+        "@timestamp": now,
+        "tls-cn": userID,
+        "domain": domain,
+        "email": email,
+        "level": jwtbit,
+        "source": sourceIP,
+        "mode": mode,
+        "type": "modeChanged"
+      }
+    }, function (err, resp) {
+      if (err) {
+        console.error(resp);
+        return res.json({ msg: "Problem to store mode change in ES index "+err });
+
+      } else {
+        if(cfg.debug) console.info("Inserted new login: " + userID + " " + domain + " mode: "+mode);
+        return res.json({ msg: "ok" });
+      }
+    });
   }
 
   /*

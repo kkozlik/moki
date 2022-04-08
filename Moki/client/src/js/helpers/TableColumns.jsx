@@ -497,6 +497,9 @@ export function tableColumns(dashboard, tags, layout) {
     var result = [];
     var name = window.location.pathname.substring(1);
     //user case fix - has two table in one dashboard
+    if (dashboard === "modeChanges") {
+        name = dashboard;
+    }
     if (!name) {
         if (dashboard === "homeLoginCalls") name = "calls";
         if (dashboard === "exceeded") name = "exceeded";
@@ -513,8 +516,7 @@ export function tableColumns(dashboard, tags, layout) {
         }
     }
 
-
-    if (toggleListDefault) {
+    if (name !== "domains" && dashboard !== "modeChanges" && toggleListDefault) {
         for (let toggleHit of toggleListDefault) {
             let isExist = false;
             for (let hit of columnsTableDefault) {

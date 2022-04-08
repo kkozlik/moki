@@ -32,6 +32,7 @@ import { setFilters } from "../actions/index";
 import { downloadPcapMerged } from '../helpers/download/downloadPcapMerged';
 import { parseTimestamp } from "../helpers/parseTimestamp";
 import { decryptTableHits, decryptAttr } from '@moki-client/es-response-parser';
+const NOT_EXPAND_OR_COLUMNS_SELECTION = ["LAST LOGIN EVENTS", "LAST MODE CHANGES"];
 
 var FileSaver = require('file-saver');
 var JSZip = require("jszip");
@@ -821,7 +822,7 @@ export default class listChart extends Component {
                             ...column,
                             toggle: toggles[column.toggles]
                         }))
-                        .filter(column => column.dataField !== "_source" && this.props.id !== "LAST LOGIN EVENTS").map(column => (
+                        .filter(column => column.dataField !== "_source" && !NOT_EXPAND_OR_COLUMNS_SELECTION.includes(this.props.id)).map(column => (
                             <button
                                 type="button"
                                 id={column.dataField}
@@ -939,7 +940,7 @@ export default class listChart extends Component {
                             props => (
                                 <div key={"tablechart"} ref={this.chartRef}>
                                     <h3 className="alignLeft title inline" style={{ "float": "inherit" }} >{this.props.id}</h3>
-                                    {this.props.id !== "LAST LOGIN EVENTS" && <div id="popupTag" className="popupTag" style={{ "display": "none" }}>
+                                    {!NOT_EXPAND_OR_COLUMNS_SELECTION.includes(this.props.id) && <div id="popupTag" className="popupTag" style={{ "display": "none" }}>
                                         <input type="text" id="tag" name="name" className="form-control" onKeyUp={(event) => this.onEnterKey(event)} style={{ "display": "inline-table", "height": "30px" }} />
                                         <button type="button" className="btn btn-small btn-primary" onClick={() => this.tags()}>OK</button><button type="button" className="btn btn-small btn-secondary" style={{ "margin": "0" }} onClick={() => this.closePopupTag()}>X</button>
                                     </div>}
@@ -949,9 +950,9 @@ export default class listChart extends Component {
                                         <img className="icon" alt="downloadIcon" src={downloadPcapIcon} onClick={() => getPcaps()} title="download merge PCAP" />
                                     </span>
                                     }
-                                    {this.props.id !== "LAST LOGIN EVENTS" && <button className="noFormatButton" onClick={() => downloadAllCheck()} >  <img className="icon" alt="downloadIcon" src={downloadIcon} title="download selected" /><span id="downloadAllTooltip" style={{ "display": "none" }}>Downloading a lot of data, it can take a while. Max. 500 events will be download. Use export button for more</span></button>}
+                                    {!NOT_EXPAND_OR_COLUMNS_SELECTION.includes(this.props.id) && <button className="noFormatButton" onClick={() => downloadAllCheck()} >  <img className="icon" alt="downloadIcon" src={downloadIcon} title="download selected" /><span id="downloadAllTooltip" style={{ "display": "none" }}>Downloading a lot of data, it can take a while. Max. 500 events will be download. Use export button for more</span></button>}
 
-                                    {this.props.id !== "LAST LOGIN EVENTS" && <button className="noFormatButton" onClick={() => this.shareFilters()} >  <img className="icon" alt="shareIcon" src={shareIcon} title="share selected" /><span id="tooltipshareFilters" style={{ "display": "none", "position": "absolute", "backgroundColor": "white" }}>Copied to clipboard</span></button>}
+                                    {!NOT_EXPAND_OR_COLUMNS_SELECTION.includes(this.props.id) && <button className="noFormatButton" onClick={() => this.shareFilters()} >  <img className="icon" alt="shareIcon" src={shareIcon} title="share selected" /><span id="tooltipshareFilters" style={{ "display": "none", "position": "absolute", "backgroundColor": "white" }}>Copied to clipboard</span></button>}
 
                                     {<button className="noFormatButton" onClick={() => this.resetLayout()} >  <img className="icon" alt="resetLayoutIcon" src={resetIcon} title="reset table layout to default" style={{ "height": "15px" }} /></button>}
                                     <span className="smallText"> (total: {this.props.total > 500 ? "500/" + this.props.total.toLocaleString() : this.props.total.toLocaleString()})</span>
@@ -965,7 +966,7 @@ export default class listChart extends Component {
                                         selectRow={this.props.checkbox === false ? undefined : selectRowProp}
                                         hover
                                         printable
-                                        expandRow={this.props.id !== "LAST LOGIN EVENTS" ?
+                                        expandRow={!NOT_EXPAND_OR_COLUMNS_SELECTION.includes(this.props.id) ?
                                             expandRow : ""
                                         }
                                         cellEdit={cellEditFactory({
