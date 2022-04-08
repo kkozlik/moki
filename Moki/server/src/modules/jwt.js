@@ -106,8 +106,16 @@ async function getJWTsipUserFilter(req) {
   }
   // Site-Admin level
   if (jwtbit === 1) {
-    console.log(`ACCESS: USER LEVEL 1, Domain Filter Applied: ${domainID} for user ${subId}`);
-    return { "domain": domainID };
+    if (domainID === subId) {
+      console.log(`ACCESS: SITE OWNER, Domain Filter Applied: ${domainID} for user ${subId}`);
+      return { "domain": domainID };
+    }
+    else {
+      console.log(`ACCESS: SITE ADMIN, Domain Filter Applied: ${domainID} and user filter ${subId}`);
+      let userfilter = `domain: ${subId}`;
+      return { "domain": domainID, "userFilter": userfilter };
+    }
+
   }
   // End-User level
   if (jwtbit === 2) {
@@ -122,7 +130,7 @@ async function getJWTsipUserFilter(req) {
     //create user filter
     const colon = sip.indexOf(':');
     const user = [sip.substr(0, colon), String.fromCharCode(92), sip.substr(colon)].join('');
-    const userfilter = `attrs.from.keyword: ${user}  OR attrs.to.keyword: ${user} OR attrs.r-uri: ${user}`;
+    let userfilter = `attrs.from.keyword: ${user}  OR attrs.to.keyword: ${user} OR attrs.r-uri: ${user}`;
     console.log(`ACCESS: User Level 2, Activating Domain -${domainID}- and SIP -${user}- Filter for user ${subId}`);
     return { "domain": domainID, "userFilter": userfilter };
   }
@@ -150,14 +158,14 @@ function getEncryptChecksumFilter(req) {
 
   //admin, no encrypt checksum filter
   if (jwtbit === 0) { return { encryptChecksum: "*" }; }
-    //no encrypt checksum passed from client
+  //no encrypt checksum passed from client
 
-  else  if (!req.body.encryptChecksum) { return { encryptChecksum: "*" }; }
+  else if (!req.body.encryptChecksum) { return { encryptChecksum: "*" }; }
   else if (req.body.encryptChecksum === "anonymous") { return { encryptChecksum: "anonymous" }; }
 
   //no password was used for decryption, show only unecrypted events -> plain state
   //user or site admin, use filter
-  else {return { encryptChecksum: req.body.encryptChecksum };}
+  else { return { encryptChecksum: req.body.encryptChecksum }; }
 }
 
 module.exports = {
