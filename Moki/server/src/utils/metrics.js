@@ -129,7 +129,7 @@ function getQueries(filter, types, timestamp_gte, timestamp_lte, userFilter, cha
         if (cfg.debug) console.info("Exceeded case - adding encrypt filter and plain text");
         queries.push({
           "query_string": {
-            "query": "encrypt: "+isEncryptChecksumFilter +" OR encrypt:plain"
+            "query": "encrypt: \""+isEncryptChecksumFilter +"\" OR encrypt:plain"
           }
         });
       }
