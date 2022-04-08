@@ -467,7 +467,7 @@ function getColumn(column_name, tags, tag, width = 0, hidden = false) {
                         if (ob.encrypt) {
                             isEncrypted = isEncryptedAttr(field, ob.encrypt);
                         }
-                        return <span style={{ "color": isEncrypted ? "darkred" : "#212529" }}></span>
+                        return <span style={{ "color": isEncrypted ? "darkred" : "#212529" }}>{ob[field]}</span>
                     }
                 }
 
