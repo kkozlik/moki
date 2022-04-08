@@ -5,9 +5,10 @@ import * as d3 from "d3";
 
 export const parseTimestamp = (timestamp, ms = false) => {  
         var format = getTimeSetings(ms);
+
         //no format
-        if (format === "") {
-                return moment(timestamp);
+        if (!format) {
+                return new Date(timestamp).toLocaleString();
         }
         //timezone and format from settings 
         else if (Array.isArray(format)) {
