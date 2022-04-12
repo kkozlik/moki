@@ -196,12 +196,6 @@ class ProfileController {
           });
         }
         //default user profile
-        //get timezone from server
-        var tz = new Date().getTimezoneOffset() === 0 ? "Etc/GMT+" + new Date().getTimezoneOffset() : "Etc/GMT" + new Date().getTimezoneOffset();
-
-        //get user defaults config
-        jsonDefaults.userprefs.timezone = tz;
-
         let userProfileDefault = {
           "tls-cn": "default",
           "userprefs": jsonDefaults.userprefs
