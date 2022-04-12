@@ -86,7 +86,7 @@ class StoredFilters extends Component {
         document.getElementById(name).click();
 
         //filters
-        if (filters.attribute[0].filters) {
+        if (filters.attribute[0] &&  filters.attribute[0].filters && filters.attribute[0].filters[0] && filters.attribute[0].filters[0].length > 0) {
             for (i = 0; i < filters.attribute[0].filters[0].length; i++) {
                 newFilters.push(await createFilter(filters.attribute[0].filters[0][i].title, filters.attribute[0].filters[0][i].id, false, false));
             }
@@ -103,7 +103,9 @@ class StoredFilters extends Component {
             var timestamp_readiable = new Date(filters.attribute[3].timerange[0]).toLocaleString() + " - " + new Date(filters.attribute[3].timerange[1]).toLocaleString();
             store.dispatch(setTimerange([filters.attribute[3].timerange[0], filters.attribute[3].timerange[1], timestamp_readiable]));
         }
-        document.getElementById("storedFiltersClose").click();
+        if(document.getElementById("storedFiltersClose")){
+            document.getElementById("storedFiltersClose").click();
+        }
     }
 
 
@@ -148,7 +150,7 @@ class StoredFilters extends Component {
                                 <img style={{ "width": "10px" }} alt="deleteIcon" src={disableIcon} title="delete filter" />
                             </span >
                             <b style={{ "marginLeft": "20px" }}>{item.title}: </b>
-                            {item.attribute[0].filters[0].length > 0 &&
+                            {item.attribute.length > 0 && item.attribute[0].filters.length > 0 && item.attribute[0].filters[0].length > 0 &&
                                 item.attribute[0].filters[0].map((subitem, i) => {
                                     if (i <= 3) {
                                         return (
@@ -157,7 +159,6 @@ class StoredFilters extends Component {
                                     }
                                     return "";
                                 })}
-
 
                         </div>
                     )}
