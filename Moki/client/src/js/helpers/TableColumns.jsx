@@ -322,7 +322,7 @@ function getColumn(column_name, tags, tag, width = 0, hidden = false) {
                         )}
                     </Popup>
                     }
-                    {(storePersistent.getState().user.aws === true && window.location.pathname === ("/exceeded")) && <Popup trigger={<img className="icon" alt="alertProfileIcon" src={alertProfileIcon} title="alert profile" />} modal>
+                    {(storePersistent.getState().user.aws === true && storePersistent.getState().user.jwt !== 0 && window.location.pathname === ("/exceeded")) && <Popup trigger={<img className="icon" alt="alertProfileIcon" src={alertProfileIcon} title="alert profile" />} modal>
                         {close => (
                             <div className="Advanced">
                                 <div className="contentAdvanced" style={{ "padding": "0px" }}>
@@ -460,17 +460,13 @@ function getColumn(column_name, tags, tag, width = 0, hidden = false) {
                     formatter: (cell, obj) => {
                         var ob = obj._source;
                         var field = column_name.source;
-                        if (field === "attrs.from" || field === "attrs.to") {
-                            field = field + ".keyword";
-                        }
                         let isEncrypted = false;
                         if (ob.encrypt) {
                             isEncrypted = isEncryptedAttr(field, ob.encrypt);
                         }
-                        return <span style={{ "color": isEncrypted ? "darkred" : "#212529" }}>{ob[field]}</span>
+                        return <span style={{ "color": isEncrypted ? "darkred" : "#212529" }}>{cell}</span>
                     }
                 }
-
                 //encrypt state 
                 let profile = storePersistent.getState().profile;
                 if (profile && profile[0] && profile[0].userprefs.mode === "encrypt") {

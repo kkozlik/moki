@@ -602,13 +602,18 @@ class App extends Component {
                     dashboardAlter.push("connectivityIP");
                 }
 
+                var styleUser = { "display": "inline", "paddingTop": "7px", "position": "absolute" };
+                if (storePersistent.getState().user && storePersistent.getState().user.jwt === 0) {
+                    styleUser = { "display": "inline" };
+                }
+
                 //admin context
                 sipUserSwitch = <div className="row" id="body-row" >
                     <NavBar redirect={this.redirect} toggle={this.toggle} aws={this.state.aws} dashboardsUser={this.state.dashboardsUser} dashboards={this.state.dashboards} dashboardsSettings={this.state.dashboardsSettings} />
                     <div className="row justify-content-between header" style={{ "marginRight": 0, "marginLeft": 0 }} >
                         <span id="user" className="top" style={{ style }}>
                             {aws === true && <DecryptPasswordPopup />}
-                            {sipUser}
+                            <div style={styleUser}>{sipUser}</div>
                             {aws === true && (!this.state.admin && !this.state.siteAdmin) && <a href="/logout" > Log out </a>}
                         </span>
 

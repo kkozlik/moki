@@ -5,9 +5,8 @@ import * as d3 from "d3";
 
 export const parseTimestamp = (timestamp, ms = false) => {  
         var format = getTimeSetings(ms);
-
         //no format
-        if (!format) {
+        if (format === "") {
                 return new Date(timestamp).toLocaleString();
         }
         //timezone and format from settings 
@@ -24,7 +23,7 @@ export const parseTimestampUTC = (timestamp, ms) => {
         var format = getTimeSetings(ms);
 
         if (format === "") {
-                return moment(timestamp);
+                return new Date(timestamp).toLocaleString();
         }
         else if (Array.isArray(format)) {
                 return moment.utc(timestamp).format(format[0]);
