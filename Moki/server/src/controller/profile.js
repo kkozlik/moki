@@ -250,8 +250,21 @@ class ProfileController {
 
         //if nothing, return default where domain and tls-cn == "default"
         if (domain === "N/A" || domainProfile.hits.hits.length === 0) {
-          domainProfile = defaultDomainProfile;
-          if(cfg.debug) console.info("Domain profile not stored in ES, using default one");
+
+          //FIX: domain profile doesn't exists because site owner was created before
+          var domainProfileSiteOwner = await searchES(indexName, [{ query_string: { "query": "event.tls-cn:" + domain } }], res);
+
+          if (domainProfileSiteOwner.hits.hits.length > 0) {
+            domainProfile = {
+              "domain": domain,
+              "userprefs": domainProfileSiteOwner.hits.hits[0]._source.event.userprefs
+            }
+          }
+          else {
+            domainProfile = defaultDomainProfile;
+
+          }
+          if (cfg.debug) console.info("Domain profile not stored in ES, using default one");
 
         } //check if all parameters in default profile are also in user profile
         else {
