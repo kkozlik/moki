@@ -51,6 +51,10 @@ class Typebar extends Component {
         var jsonData = await getLayoutSettings();
         let name = window.location.pathname.substring(1);
 
+        if(name === "web"){
+            return;
+        }
+
         //check if stored types, remove old version
         let storedTypes = JSON.parse(window.localStorage.getItem("types"));
         if (window.localStorage.getItem("types") && (!storedTypes.version || storedTypes.version !== STORED_TYPES_VERSION)) {
