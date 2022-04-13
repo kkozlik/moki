@@ -920,9 +920,57 @@ export default class listChart extends Component {
             );
         };
 
+        const sizePerPageOptionRenderer = ({
+            text,
+            page,
+            onSizePerPageChange
+        }) => (
+            <li
+                key={text}
+                role="presentation"
+                className="dropdown-item"
+                onMouseDown={async (e) => {
+                    e.preventDefault();
+                    onSizePerPageChange(page);
+                    //decrypt new pages
+                    let parseData = await decryptTableHits(JSON.parse(JSON.stringify(this.state.dataEncrypted)), storePersistent.getState().profile, page, this.state.page);
+                    this.setState({
+                        count: page,
+                        data: parseData,
+                        seenPages: [this.state.page],
+                    });
+                }}
+            >
+                <a
+                    href="#"
+                    tabIndex="-1"
+                    role="menuitem"
+                    data-page={page}
+                    onMouseDown={async (e) => {
+                        e.preventDefault();
+                        onSizePerPageChange(page);
+                        //decrypt new pages
+                        let parseData = await decryptTableHits(JSON.parse(JSON.stringify(this.state.dataEncrypted)), storePersistent.getState().profile, page, this.state.page);
+                        this.setState({
+                            count: page,
+                            data: parseData,
+                            seenPages: [this.state.page],
+                        });
+
+
+                    }}
+                    style={{ color: 'black' }}
+                >
+                    {text}
+                </a>
+            </li>
+        );
+
+
         const options = {
             pageButtonRenderer,
-            sizePerPage: this.state.count
+            sizePerPage: this.state.count,
+            sizePerPageOptionRenderer
         };
 
         getSearchableAttributes();
@@ -969,10 +1017,6 @@ export default class listChart extends Component {
                                         expandRow={!NOT_EXPAND_OR_COLUMNS_SELECTION.includes(this.props.id) ?
                                             expandRow : ""
                                         }
-                                        cellEdit={cellEditFactory({
-                                            mode: 'click',
-                                            blurToSave: true
-                                        })}
                                     />
 
                                 </div>
