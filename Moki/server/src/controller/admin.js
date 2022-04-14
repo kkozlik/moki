@@ -57,7 +57,7 @@ class AdminController {
       const existIndex = await client.indices.exists({ index: index });
 
       if (!existIndex) {
-        if(cfg.debug) console.info(index+" index doesn't exists. Creating new one.");
+        if (cfg.debug) console.info(index + " index doesn't exists. Creating new one.");
         await client.indices.create({
           index: index,
           body: {
@@ -94,7 +94,7 @@ class AdminController {
         if (err) {
           console.error(resp);
         } else {
-          if(cfg.debug) console.info("Inserted new login: " + userID + " " + domain);
+          if (cfg.debug) console.info("Inserted new login: " + userID + " " + domain);
         }
       });
     }
@@ -216,8 +216,8 @@ class AdminController {
 
   //store mode change
   static async storeModeChange(req, res) {
-    const client = new elasticsearch.Client({ host: process.env.ES, requestTimeout: 60000 });
-    if(cfg.debug) console.info("Storing new mode change in lastlog index");
+    const client = connectToES();
+    if (cfg.debug) console.info("Storing new mode change in lastlog index");
     const now = new Date();
 
     // JWT required -- parse it and validate it
@@ -239,19 +239,17 @@ class AdminController {
       console.log("ACCESS getJWTsipUserFilter: JTI parsing failed");
       return res.json({ msg: "JTIparsingError" });
     }
-    console.log("parsed Header: ", JSON.stringify(parsedHeader));
     let jwtbit = parsedHeader['custom:adminlevel'];
     const userID = parsedHeader['custom:domainid'];
     const domain = parsedHeader['sub'];
     const email = parsedHeader['email'];
     const sourceIP = IPs[0];
     const mode = req.body.mode;
-
-    await client.index({
+    
+    let insert = await client.index({
       index: index,
       refresh: true,
-      type: "_doc",
-      body: {
+      document: {
         "@timestamp": now,
         "tls-cn": userID,
         "domain": domain,
@@ -261,16 +259,15 @@ class AdminController {
         "mode": mode,
         "type": "modeChanged"
       }
-    }, function (err, resp) {
-      if (err) {
-        console.error(resp);
-        return res.json({ msg: "Problem to store mode change in ES index "+err });
-
-      } else {
-        if(cfg.debug) console.info("Inserted new login: " + userID + " " + domain + " mode: "+mode);
-        return res.json({ msg: "ok" });
-      }
     });
+    if (insert.result === "created") {
+      if (cfg.debug) console.info("Inserted new login: " + userID + " " + domain + " mode: " + mode);
+      return res.json({ msg: "ok" });
+    }
+    else {
+      console.error(resp);
+      return res.json({ msg: "Problem to store mode change in ES index " + err });
+    }
   }
 
   /*
@@ -311,7 +308,7 @@ class AdminController {
 create new user with password in htpasswd
 */
   static async createUser(req, res) {
-    exec("sudo htpasswd -b -c "+cfg.htpasswd+ " '" + req.body.name + "' '" + req.body.password+"'", (error, stdout, stderr) => {
+    exec("sudo htpasswd -b -c " + cfg.htpasswd + " '" + req.body.name + "' '" + req.body.password + "'", (error, stdout, stderr) => {
       if (error) {
         console.error(`Can't create new user in nginx : ${error.message}`);
         return res.json({ "error": error.message });
