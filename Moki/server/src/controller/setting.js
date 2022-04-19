@@ -238,7 +238,7 @@ class SettingController {
             bool: {
               must: [
                 { query_string: { "query": "domain:" + user.domain } },
-                { query_string: { "query": "tls-cn:" + user["tls-cn"] } },
+                { query_string: { "query": "sub:" + user.sub } },
                 { query_string: { "query": 'encrypt:"' + req.body.validation_code + '"' } }
               ]
             }
@@ -312,7 +312,7 @@ class SettingController {
     async function search() {
       const client = connectToES(res);
       const user = AdminController.getUser(req);
-      const tls = user["tls-cn"];
+      const sub = user.sub;
       const indexName = "filters";
       let newIndex = false;
 
@@ -326,7 +326,7 @@ class SettingController {
             mappings: {
               properties: {
                 "encrypt": { "type": "keyword", "index": "true" },
-                "tls-cn": { "type": "keyword", "index": "true" },
+                "sub": { "type": "keyword", "index": "true" },
                 "domain": { "type": "keyword", "index": "true" },
                 "id": { "type": "keyword", "index": "true" },
                 "title": { "type": "keyword", "index": "false" },
@@ -349,7 +349,7 @@ class SettingController {
           refresh: true,
           type: "_doc",
           body: {
-            "tls-cn": tls,
+            "sub": sub,
             "id": req.body.id,
             "title": req.body.title,
             "domain": user.domain,
@@ -360,7 +360,7 @@ class SettingController {
           if (err) {
             console.error(resp);
           } else {
-            console.info("Inserted new filter: " + tls + ": " + req.body.id);
+            console.info("Inserted new filter: " + sub + ": " + req.body.id);
           }
         });
         return res.json(response);

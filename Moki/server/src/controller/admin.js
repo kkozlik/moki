@@ -64,7 +64,7 @@ class AdminController {
             mappings: {
               properties: {
                 "@timestamp": { "type": "date", "index": "true" },
-                "tls-cn": { "type": "keyword", "index": "true" },
+                "sub": { "type": "keyword", "index": "true" },
                 "domain": { "type": "keyword", "index": "true" },
                 "email": { "type": "keyword", "index": "true" },
                 "source": { "type": "keyword", "index": "true" },
@@ -83,7 +83,7 @@ class AdminController {
         refresh: true,
         body: {
           "@timestamp": now,
-          "tls-cn": userID,
+          "sub": userID,
           "domain": domain,
           "email": email,
           "level": jwtbit,
@@ -175,7 +175,7 @@ class AdminController {
     // Root SuperAdmin Level
     if (jwtbit === 0) {
       console.log(`ACCESS: JWT admin level 0, NO FILTERS for user ${subId}`);
-      return res.json({ user: `ADMIN`, aws: true, email: email, domainID: domainID, jwt: jwtbit, "tls-cn": subId });
+      return res.json({ user: `ADMIN`, aws: true, email: email, domainID: domainID, jwt: jwtbit, "sub": subId });
     }
     // less privileged users must belong to a domain
     if (domainID === undefined) {
@@ -186,11 +186,11 @@ class AdminController {
     if (jwtbit === 1) {
       if (domainID === subId) {
         console.log(`ACCESS: USER LEVEL 1 - site owner, Domain Filter Applied: ${domainID} for user ${subId}`);
-        return res.json({ user: `SITE OWNER`, aws: true, email: email, domainID: domainID, jwt: jwtbit, "tls-cn": subId });
+        return res.json({ user: `SITE OWNER`, aws: true, email: email, domainID: domainID, jwt: jwtbit, "sub": subId });
       }
       else {
         console.log(`ACCESS: USER LEVEL 1, Domain Filter Applied: ${domainID} for user ${subId}`);
-        return res.json({ user: `SITE ADMIN`, aws: true, email: email, domainID: domainID, jwt: jwtbit, "tls-cn": subId });
+        return res.json({ user: `SITE ADMIN`, aws: true, email: email, domainID: domainID, jwt: jwtbit, "sub": subId });
       }
     }
     // End-User level
@@ -207,7 +207,7 @@ class AdminController {
       const colon = sip.indexOf(':');
       const user = [sip.substr(0, colon), String.fromCharCode(92), sip.substr(colon)].join('');
       console.log(`ACCESS: User Level 2, Activating Domain -${domainID}- and SIP -${user}- Filter for user ${subId}`);
-      return res.json({ user: `USER`, aws: true, name: sip, email: email, domainID: domainID, jwt: jwtbit, "tls-cn": subId });
+      return res.json({ user: `USER`, aws: true, name: sip, email: email, domainID: domainID, jwt: jwtbit, "sub": subId });
     }
     // no well-known admin-level found exit with error
     console.log(`ACCESS getJWTsipUserFilter: unexpected admin level ${jwtbit} for user ${subId}`);
@@ -251,7 +251,7 @@ class AdminController {
       refresh: true,
       document: {
         "@timestamp": now,
-        "tls-cn": userID,
+        "sub": userID,
         "domain": domain,
         "email": email,
         "level": jwtbit,
@@ -291,7 +291,7 @@ class AdminController {
         sip: sip,
         jwtbit: jwtbit,
         domain: domainID,
-        "tls-cn": subId
+        sub: subId
       };
     }
     else {
@@ -299,7 +299,7 @@ class AdminController {
         sip: "admin",
         jwtbit: 0,
         domain: "default",
-        "tls-cn": "default"
+        sub: "default"
       };
     }
   }
