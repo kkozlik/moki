@@ -25,8 +25,8 @@ class ProfileController {
       let keys = Object.keys(req.body.userprefs);
       const field = req.body.userprefs[Object.keys(req.body.userprefs)[0]];
 
-      var secret = user["tls-cn"];
-      let secretField = "tls-cn";
+      var secret = user.sub;
+      let secretField = "sub";
 
       if (req.body.type === "domain" && user.jwtbit !== 2) {
         secret = user["domain"];
@@ -57,9 +57,9 @@ class ProfileController {
 
       if(cfg.debug) console.info("Update script "+JSON.stringify(script));
       // keys.splice(keys.indexOf("anonymizableAttrs"), 1);
-      //check if event with same tls-cn/domain exists, if so update it
+      //check if event with same sub/domain exists, if so update it
       const update = await updateES(indexName, [
-        { "query_string": { "query": "event." + [secretField] + ":" + secret } }
+        { "query_string": { "query": "event." + secretField + ":" + secret } }
       ], script, {
         "field": field,
         "key": keys
@@ -77,12 +77,12 @@ class ProfileController {
           "userprefs": req.body.userprefs
         }, res);
 
-        if (insert === "ok") {
+        if (insert.result === "created") {
           return res.status(200).send({ insert });
         }
         else {
           return res.status(400).send({
-            "msg": "Problem with saving profile ." + insert
+            "msg": "Problem with saving profile ." + JSON.stringify(insert)
           });
         }
       }
@@ -101,8 +101,8 @@ class ProfileController {
     async function search() {
       if(cfg.debug) console.info("Deleting user profile "+secret);
       const user = AdminController.getUser(req);
-      const secret = user["tls-cn"];
-      const deleted = await deleteES(indexName, { "query": { "match": { "event.tls-cn": secret } } }, res);
+      const secret = user.sub;
+      const deleted = await deleteES(indexName, { "query": { "match": { "event.sub": secret } } }, res);
       if (deleted !== 0) {
         return res.status(200).send(deleted);
       }
@@ -127,10 +127,10 @@ class ProfileController {
   static getUserSettings(req, res, next) {
     async function search() {
       const user = AdminController.getUser(req);
-      const tls = user["tls-cn"];
+      const sub = user.sub;
       const domain = user["domain"];
       if(cfg.debug) console.info("--------------------------GETING USER PROFILE---------------------");
-      if(cfg.debug) console.info("Getting user profile tls: "+tls + " domain: "+domain);
+      if(cfg.debug) console.info("Getting user profile sub: "+sub + " domain: "+domain);
 
       let newIndex = false;
       let jsonDefaults = await getDefaults();
@@ -146,7 +146,7 @@ class ProfileController {
             "properties": {
               "event": {
                 "properties": {
-                  "tls-cn": { "type": "keyword", "index": "true" },
+                  "sub": { "type": "keyword", "index": "true" },
                   "domain": { "type": "keyword", "index": "true" },
                   "profile": { "type": "keyword", "index": "true" },
                   "userprefs": {
@@ -172,7 +172,7 @@ class ProfileController {
           });
         }
 
-        if (response !== "ok") {
+        if (!response.acknowledged) {
           res.status(400).send({
             "msg": "Problem with creating profile index. " + JSON.stringify(response)
           });
@@ -185,7 +185,7 @@ class ProfileController {
       if (existIndex || newIndex) {
         try {
           //search for user settings
-          var userProfile = await searchES(indexName, [{ query_string: { "query": "event.tls-cn:" + tls } }], res);
+          var userProfile = await searchES(indexName, [{ query_string: { "query": "event.sub:" + sub } }], res);
           if(cfg.debug) console.info("Got profile from ES: "+JSON.stringify(userProfile));
 
         }
@@ -197,7 +197,7 @@ class ProfileController {
         }
         //default user profile
         let userProfileDefault = {
-          "tls-cn": "default",
+          "sub": "default",
           "userprefs": jsonDefaults.userprefs
         };
 
@@ -242,11 +242,11 @@ class ProfileController {
           "userprefs": jsonDefaults.domainprefs
         }
 
-        //if nothing, return default where domain and tls-cn == "default"
+        //if nothing, return default where domain and sub == "default"
         if (domain === "N/A" || domainProfile.hits.hits.length === 0) {
 
           //FIX: domain profile doesn't exists because site owner was created before
-          var domainProfileSiteOwner = await searchES(indexName, [{ query_string: { "query": "event.tls-cn:" + domain } }], res);
+          var domainProfileSiteOwner = await searchES(indexName, [{ query_string: { "query": "event.sub:" + domain } }], res);
 
           if (domainProfileSiteOwner.hits.hits.length > 0) {
             domainProfile = {
