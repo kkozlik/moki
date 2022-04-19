@@ -147,10 +147,14 @@ function getQueries(filter, types, timestamp_gte, timestamp_lte, userFilter, cha
 
   if (domain !== "*") {
     if (cfg.debug) console.info("Adding domain filter " + domain);
+    let match = "tls-cn";
+    if(index.includes("lastlog")){
+      match = "sub";
+    }
 
     queries.push({
       "match": {
-        "tls-cn": domain
+        [match]: domain
       }
     });
   }
