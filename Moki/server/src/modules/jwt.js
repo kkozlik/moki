@@ -106,6 +106,7 @@ async function getJWTsipUserFilter(req) {
   }
   // Site-Admin level
   if (jwtbit === 1) {
+    /*
     if (domainID === subId) {
       console.log(`ACCESS: SITE OWNER, Domain Filter Applied: ${domainID} for user ${subId}`);
       return { "domain": domainID };
@@ -115,7 +116,8 @@ async function getJWTsipUserFilter(req) {
       let userfilter = `domain: ${subId}`;
       return { "domain": domainID, "userFilter": userfilter };
     }
-
+    */
+    return { "domain": domainID };
   }
   // End-User level
   if (jwtbit === 2) {
