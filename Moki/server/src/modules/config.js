@@ -44,11 +44,23 @@ async function getWebFilter() {
 // is accept JWT in settings
 async function isRequireJWT() {
   return new Promise(function (resolve, reject) {
+
+    //check if files exists
+    if (!fs.existsSync(c.fileMonitor)) {
+      reject();
+      return;
+    }
+    if (!fs.existsSync(c.fileDefaults)) {
+      reject();
+      return;
+    }
+
     //check if in monitor.json
     fs.readFile(c.fileMonitor, (err2, data) => {
       if (err2) {
         console.error(`Problem with reading default file. ${err2}`);
-        reject;
+        reject();
+        return;
       }
       const jsonData = JSON.parse(data);
       if ('general' in jsonData && jsonData.general['global-config']) {
@@ -68,7 +80,8 @@ async function isRequireJWT() {
       fs.readFile(c.fileDefaults, (err2, data) => {
         if (err2) {
           console.error(`Problem with reading default file. ${err2}`);
-          reject;
+          reject();
+          return;
         }
         const jsonData = JSON.parse(data);
         jsonData.forEach(data => {
@@ -82,7 +95,8 @@ async function isRequireJWT() {
         })
       })
     })
-    reject;
+    reject();
+    return;
   })
 }
 

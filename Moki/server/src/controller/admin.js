@@ -109,7 +109,7 @@ class AdminController {
     // check config if JWT required
     let isAccept;
     try {
-      isAccept = await isRequireJWT();
+      isAccept = cfg.JWT_required ||  await isRequireJWT();
     } catch (e) {
       // error in config processing:
       console.log("ACCESS getJWTsipUserFilter: error in config processing: ", JSON.stringify(e));
