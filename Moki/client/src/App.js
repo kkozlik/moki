@@ -25,6 +25,7 @@ import { parseTimestamp } from "./js/helpers/parseTimestamp";
 import { setTimerange } from "./js/actions/index";
 import { setFilters } from "./js/actions/index";
 import { createFilter } from '@moki-client/gui';
+const BASE_NAME = process.env.PUBLIC_URL;
 
 //General class - check user level, profile from ES, monitor_layout before loading monitor
 //return router with dashboards and bars
@@ -125,7 +126,7 @@ class App extends Component {
 * */
     async getMonitorSettings() {
         //get monitor version
-        var url = "/api/monitor/version";
+        var url = BASE_NAME+"/api/monitor/version";
         var monitorVersion = "";
         try {
             const response = await fetch(url, {
@@ -143,6 +144,7 @@ class App extends Component {
             console.error(error);
         }
 
+
         var res = await getProfile(this.state.user);
 
         if (res !== "ok") {
@@ -150,7 +152,7 @@ class App extends Component {
         }
 
         //check if logstash is running
-        const response = await fetch("/api/status", {
+        const response = await fetch(BASE_NAME+"/api/status", {
             method: "GET",
             timeout: 10000,
             credentials: 'include',
@@ -182,7 +184,7 @@ class App extends Component {
             storePersistent.dispatch(setSettings(jsonSettings));
 
             //check if first time login
-            const response = await fetch("/api/user/check", {
+            const response = await fetch(BASE_NAME+"/api/user/check", {
                 method: "GET",
                 timeout: 10000,
                 credentials: 'include',
@@ -290,7 +292,7 @@ class App extends Component {
 * @return {base64} return img in base64
 * */
     async getLogo(path) {
-        var url = "/api/monitor/logo";
+        var url = BASE_NAME+"/api/monitor/logo";
         try {
             const response = await fetch(url, {
                 method: "POST",
@@ -322,7 +324,7 @@ class App extends Component {
 * @return {response} json response from ES
 * */
     async getUserSetting(attribute) {
-        var url = "/api/setting/user";
+        var url = BASE_NAME+"/api/setting/user";
         try {
             const response = await fetch(url, {
                 method: "POST",
@@ -349,7 +351,7 @@ class App extends Component {
     async getHostnames() {
         const request = async () => {
             try {
-                const response = await fetch("/api/hostnames", {
+                const response = await fetch(BASE_NAME+"/api/hostnames", {
                     method: "GET",
                     timeout: 10000,
                     credentials: 'include',
@@ -441,7 +443,7 @@ class App extends Component {
         var response = "";
         try {
             var sip;
-            response = await fetch("/api/user/sip", {
+            response = await fetch(BASE_NAME+"/api/user/sip", {
                 credentials: "include",
                 method: "GET",
                 headers: {
@@ -477,7 +479,7 @@ class App extends Component {
 
                     //get username
                     try {
-                        response = await fetch("/api/user/username", {
+                        response = await fetch(BASE_NAME+"/api/user/username", {
                             method: "GET",
                             credentials: 'include',
                             headers: {
@@ -548,6 +550,8 @@ class App extends Component {
             })
         }
     }
+
+
 
     /**
 * render layout based on user level
@@ -679,7 +683,7 @@ class App extends Component {
 
                 {this.state.firstTimeLogin ? <FirstLoginPopup setFirstTimeLogin={this.setFirstTimeLogin} /> :
                     (this.state.isLoading) ? loadingScreen :
-                        <Router>
+                        <Router basename={BASE_NAME+"/"}>
                             <div className="container-fluid" style={{ "backgroundColor": "white" }}> {sipUserSwitch}
                             </div>
                         </Router>
@@ -690,3 +694,4 @@ class App extends Component {
 }
 
 export default App;
+

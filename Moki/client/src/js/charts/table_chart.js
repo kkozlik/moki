@@ -293,7 +293,7 @@ export default class listChart extends Component {
         //store already exclude alarms list
         if (window.location.pathname === "/exceeded") {
             try {
-                const response = await fetch("/api/setting", {
+                const response = await fetch(process.env.PUBLIC_URL+"/api/setting", {
                     method: "GET",
                     credentials: 'include',
                     headers: {
@@ -398,10 +398,10 @@ export default class listChart extends Component {
                 //previous tag exist
                 if (record['_source']['attrs']['tags']) {
                     var tags = record['_source']['attrs']['tags'] + "," + tag.toString();
-                    result = await elasticsearchConnection("/api/tag", { id: record['_id'], index: record['_index'], tags: tags });
+                    result = await elasticsearchConnection(process.env.PUBLIC_URL+"/api/tag", { id: record['_id'], index: record['_index'], tags: tags });
                 }
                 else {
-                    result = await elasticsearchConnection("/api/tag", { id: record['_id'], index: record['_index'], tags: tag });
+                    result = await elasticsearchConnection(process.env.PUBLIC_URL+"/api/tag", { id: record['_id'], index: record['_index'], tags: tag });
                 }
                 console.info("Tagging event");
                 console.info(result);
