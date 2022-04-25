@@ -160,7 +160,7 @@ class AdminController {
 
     //store login to ES
     if (oldJti !== jti) {
-      storeLoginInES(subId, domainID, jwtbit, email, sourceIP);
+      storeLoginInES(domainID, subId, jwtbit, email, sourceIP);
     }
 
     oldJti = jti;
