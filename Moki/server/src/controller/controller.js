@@ -243,7 +243,7 @@ class Controller {
         console.error("Failed msearch query: " + JSON.stringify(requestList));
       }
 
-     // if (cfg.debug) console.info("ES response: " + JSON.stringify(response));
+      // if (cfg.debug) console.info("ES response: " + JSON.stringify(response));
       return resp;
     }
 
@@ -256,7 +256,7 @@ class Controller {
   static requestTable(req, res, next, requests, dashboard = "overview") {
     async function search() {
       const client = connectToES();
-      const filters = getFiltersConcat(req.body.filters);
+      let filters = getFiltersConcat(req.body.filters);
       let types = req.body.types;
       const querySize = req.body.params && req.body.params.size ? req.body.params.size : 500;
       if (cfg.debug) console.info("----------------------TABLE DATA SEARCH-------------------------");
@@ -325,13 +325,18 @@ class Controller {
       //for export return only some attr, list is stored in layout
       var source = "*";
       if (req.body.params && req.body.params.type === "export") {
-        try{
-        let layout = fs.readFileSync(cfg.fileGUILayout);
-        source = JSON.parse(layout.toString('utf8')).export;
+        try {
+          let layout = fs.readFileSync(cfg.fileGUILayout);
+          source = JSON.parse(layout.toString('utf8')).export;
         }
-        catch(error){
-          console.error("Problem to read monitor layout file. "+error);
+        catch (error) {
+          console.error("Problem to read monitor layout file. " + error);
         }
+      }
+
+      //no filters for report index
+      if (requests.index === "report*") {
+        filters = "*";
       }
 
       console.info("SERVER search with filters: " + filters + " types: " + types + " timerange: " + timestamp_gte + "-" + timestamp_lte + " timebucket: " + timebucket + " userFilter: " + userFilter + " domainFilter: " + domainFilter + " encrypt checksum filter: " + isEncryptChecksumFilter);
