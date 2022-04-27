@@ -1,7 +1,7 @@
 //get monitor layout form monitor-layout.json
 
 export async function getLayoutSettings() {
-    var url = "/api/layout";
+    var url = process.env.PUBLIC_URL+"/api/layout";
     try {
         const response = await fetch(url, {
             method: "GET",
