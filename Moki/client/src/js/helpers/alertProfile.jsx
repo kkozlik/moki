@@ -1,6 +1,7 @@
 import { Component } from 'react';
 import { parseTimestamp } from "./parseTimestamp";
 import storePersistent from "../store/indexPersistent";
+import {cipherAttr} from '@moki-client/gui';
 const DATEFORMATS = ["lastModified", "created", "lastLogin", "lastExceeded", "ts", "lastRaised", "lastLaunchedTimer", "lastRaisedTS", "lastExceededTS"];
 
 class AlertProfile extends Component {
@@ -50,14 +51,16 @@ class AlertProfile extends Component {
 
         let list = "";
         let key = "";
+        let attr = "";
         if (this.state.data["exceeded-by"] === "ip") {
             list = "ipprofile";
             key = this.state.data.attrs.source;
-            
+            attr = "attrs.source";
         }
         else if (this.state.data["exceeded-by"] === "uri") {
             list = "uriprofile";
             key = this.state.data.attrs.from;
+            attr = "attrs.from";
         }
         else if (this.state.data["exceeded-by"] === "tenant") {
             list = "tenantprofile";
@@ -65,6 +68,8 @@ class AlertProfile extends Component {
             hmac="plain";
         }
 
+        let profile = storePersistent.getState().profile;
+        key = await cipherAttr(attr, key, profile, "encrypt");
         await this.get("api/bw/delete?key="+key+"&list="+list+"&hmac="+hmac);
         this.setState({
             data: [],
@@ -78,12 +83,15 @@ class AlertProfile extends Component {
         //if (hmac !== "plain") hmac = hmac.substring(0, hmac.indexOf(":"));
         let hmac = this.state.data.encrypt;
         if (hmac && hmac !== "plain") hmac = hmac.substring(0, hmac.indexOf(":"));
+        let profile = storePersistent.getState().profile;
 
         if (this.state.data["exceeded-by"] === "ip") {
-            result = await this.get("api/bw/getip?key=" + this.state.data.attrs.source + "&list=ipprofile&hmac=" + hmac + "&pretty=true");
+            let key = await cipherAttr("attrs.source", this.state.data.attrs.source, profile, "encrypt");
+            result = await this.get("api/bw/getip?key=" + key + "&list=ipprofile&hmac=" + hmac + "&pretty=true");
         }
         else if (this.state.data["exceeded-by"] === "uri") {
-            result = await this.get("api/bw/geturi?key=" + this.state.data.attrs.from + "&list=uriprofile&hmac=" + hmac + "&pretty=true");
+            let key = await cipherAttr("attrs.from",  this.state.data.attrs.from , profile, "encrypt");
+            result = await this.get("api/bw/geturi?key=" +key+ "&list=uriprofile&hmac=" + hmac + "&pretty=true");
         }
         else {
             result = await this.get("api/bw/gettenantprofile?pretty=true");
