@@ -93,6 +93,7 @@ class AdminController {
       }, function (err, resp) {
         if (err) {
           console.error(resp);
+          if (cfg.debug) console.info("Problem to insert new login: " + resp);
         } else {
           if (cfg.debug) console.info("Inserted new login: " + userID + " " + domain);
         }
@@ -240,8 +241,8 @@ class AdminController {
       return res.json({ msg: "JTIparsingError" });
     }
     let jwtbit = parsedHeader['custom:adminlevel'];
-    const userID = parsedHeader['custom:domainid'];
-    const domain = parsedHeader['sub'];
+    const userID = parsedHeader['sub'];
+    const domain =  parsedHeader['custom:domainid'];
     const email = parsedHeader['email'];
     const sourceIP = IPs[0];
     const mode = req.body.mode;
