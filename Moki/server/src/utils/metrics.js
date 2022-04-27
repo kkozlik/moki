@@ -13,7 +13,6 @@ function getFiltersConcat(filters) {
       if (cfg.debug) console.info(filters[i].title);
       let tit = filters[i].title;
       //replace double shash with ASCII - ES had a problem to parse it
-      if (tit.includes("\\")) {
         tit = tit.replace("\\", String.fromCharCode(92));
       }
 
@@ -149,7 +148,7 @@ function getQueries(filter, types, timestamp_gte, timestamp_lte, userFilter, cha
     if (cfg.debug) console.info("Adding domain filter " + domain);
     let match = "tls-cn";
     if(index.includes("lastlog")){
-      match = "sub";
+      match = "domain";
     }
 
     queries.push({
