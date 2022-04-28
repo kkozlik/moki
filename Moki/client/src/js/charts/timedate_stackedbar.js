@@ -165,7 +165,7 @@ export default class StackedChart extends Component {
 
             var keys = this.props.keys ? storePersistent.getState().layout.types[this.props.keys] ? storePersistent.getState().layout.types[this.props.keys] : this.props.keys : storePersistent.getState().layout.types["overview"];
 
-            if (window.location.pathname === "/exceeded") {
+            if (window.location.pathname.includes("/exceeded")) {
                 keys = [];
                 let exceededTemplate = await getExceededTypes();
                 if (exceededTemplate.length > 0) {
