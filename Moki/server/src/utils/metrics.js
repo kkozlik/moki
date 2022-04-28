@@ -12,7 +12,9 @@ function getFiltersConcat(filters) {
     for (let i = 0; i < filters.length; i++) {
       if (cfg.debug) console.info(filters[i].title);
       let tit = filters[i].title;
+
       //replace double shash with ASCII - ES had a problem to parse it
+      if (tit.includes("\\")) {
         tit = tit.replace("\\", String.fromCharCode(92));
       }
 
@@ -124,11 +126,11 @@ function getQueries(filter, types, timestamp_gte, timestamp_lte, userFilter, cha
     }
     else {
       if (cfg.debug) console.info("Adding encrypt filter " + isEncryptChecksumFilter);
-      if (index.includes("exceeded")){
+      if (index.includes("exceeded")) {
         if (cfg.debug) console.info("Exceeded case - adding encrypt filter and plain text");
         queries.push({
           "query_string": {
-            "query": "encrypt: \""+isEncryptChecksumFilter +"\" OR encrypt:plain"
+            "query": "encrypt: \"" + isEncryptChecksumFilter + "\" OR encrypt:plain"
           }
         });
       }
@@ -147,7 +149,7 @@ function getQueries(filter, types, timestamp_gte, timestamp_lte, userFilter, cha
   if (domain !== "*") {
     if (cfg.debug) console.info("Adding domain filter " + domain);
     let match = "tls-cn";
-    if(index.includes("lastlog")){
+    if (index.includes("lastlog")) {
       match = "domain";
     }
 
