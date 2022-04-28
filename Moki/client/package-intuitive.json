@@ -13,7 +13,7 @@
   "homepage": ".",
   "dependencies": {
     "@moki-client/es-response-parser": "git+ssh://git@github.com/intuitivelabs/es-response-parser-private.git#master",
-    "@moki-client/gui": "git+ssh://git@github.com/intuitivelabs/moki-gui-intuitive.git#master",
+    "@moki-client/gui": "git+ssh://git@github.com/intuitivelabs/moki-gui-intuitive.git#chargebee",
     "@moki-client/react-bootstrap-table-next": "git+ssh://git@github.com/intuitivelabs/react-bootstrap-table2-1.git#master",
     "bootstrap": "^4.6.0",
     "classnames": "^2.2.6",
