@@ -322,7 +322,7 @@ function getColumn(column_name, tags, tag, width = 0, hidden = false) {
                         )}
                     </Popup>
                     }
-                    {(storePersistent.getState().user.aws === true && storePersistent.getState().user.jwt !== 0 && window.location.pathname === ("/exceeded")) && <Popup trigger={<img className="icon" alt="alertProfileIcon" src={alertProfileIcon} title="alert profile" />} modal>
+                    {(storePersistent.getState().user.aws === true && storePersistent.getState().user.jwt !== 0 && window.location.pathname.includes("/exceeded")) && <Popup trigger={<img className="icon" alt="alertProfileIcon" src={alertProfileIcon} title="alert profile" />} modal>
                         {close => (
                             <div className="Advanced">
                                 <div className="contentAdvanced" style={{ "padding": "0px" }}>
@@ -332,7 +332,7 @@ function getColumn(column_name, tags, tag, width = 0, hidden = false) {
                         )}
                     </Popup>
                     }
-                    {(storePersistent.getState().user.aws === true && window.location.pathname === ("/exceeded") && (ob["exceeded-by"] === "ip" || ob["exceeded-by"] === "uri")) &&
+                    {(storePersistent.getState().user.aws === true && window.location.pathname.includes("/exceeded") && (ob["exceeded-by"] === "ip" || ob["exceeded-by"] === "uri")) &&
                         <button className="noFormatButton" onClick={() => window.tableChart.createFilterAndRedirect(ob)} data={obj}>  <img className="icon" alt="overview" src={overviewIcon} title="show records in overview" /></button>
                     }
                     {column_name.icons.includes("details") && <Popup trigger={<img className="icon" alt="detailsIcon" src={detailsIcon} title="details" />} modal>
@@ -491,11 +491,9 @@ export function tableColumns(dashboard, tags, layout) {
     //check browser local storage
     var storedColumns = JSON.parse(window.localStorage.getItem("columns"));
     var result = [];
-    var name = window.location.pathname.substring(1);
-    //user case fix - has two table in one dashboard
-    if (dashboard === "modeChanges") {
-        name = dashboard;
-    }
+
+    var name = dashboard;
+
     if (!name) {
         if (dashboard === "homeLoginCalls") name = "calls";
         if (dashboard === "exceeded") name = "exceeded";
