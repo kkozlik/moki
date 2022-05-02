@@ -216,6 +216,7 @@ function getQueries(filter, types, timestamp_gte, timestamp_lte, userFilter, cha
 
 function getParameterFromHeader(req, info) {
   try {
+    let parsedHeader = parseBase64(req.headers[hfName]);
     return parsedHeader[info];
   } catch (e) {
     console.log("parsing failed header failed");
