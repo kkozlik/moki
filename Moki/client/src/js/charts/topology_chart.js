@@ -2,7 +2,7 @@ import React, {
     Component
 } from 'react';
 import * as d3 from "d3";
-import {Colors} from '@moki-client/gui';
+import { Colors } from '@moki-client/gui';
 import emptyIcon from "../../styles/icons/empty_small.png";
 import Animation from '../helpers/Animation';
 
@@ -95,18 +95,38 @@ export default class topology extends Component {
             var simulation = d3.forceSimulation()
                 .force("link", d3.forceLink().id(function (d) {
                     return d.id;
-                }).distance(100).strength(2))
+                }).distance(100).strength(1))
                 .force("charge", d3.forceManyBody())
+                .force('collide', d3.forceCollide(50))
                 .force("center", d3.forceCenter(width / 2, height / 2));
 
+
+            //Zoom functions 
+            function zoom_actions() {
+                g.attr("transform", d3.event.transform)
+            }
+            // Create the zoom handler
+            const zoom = d3
+                .zoom()
+                .on("zoom", zoom_actions)
+
             // Create primary <g> element
-            g = d3.select('#topologyChart')
+            var svg = d3.select('#topologyChart')
                 .append("svg")
                 .attr('id', 'topologyChartSVG')
                 .attr('width', width)
-                .attr('height', height + 100);
-            /* .append('g')
-             .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')');*/
+                .attr('height', height + 100)
+                .call(zoom);
+
+            var g = svg.append('g')
+                .attr("class", "everything");
+            // .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')');
+
+            //add zoom capabilities 
+            var zoom_handler = d3.zoom().on("zoom", zoom_actions);
+
+            zoom_handler(svg);
+
 
             var tooltip;
 
@@ -218,9 +238,9 @@ export default class topology extends Component {
                         y1 = d.source.y,
                         x2 = d.target.x,
                         y2 = d.target.y,
-                       // dx = x2 - x1,
-                       // dy = y2 - y1,
-                       // dr = Math.sqrt(dx * dx + dy * dy),
+                        // dx = x2 - x1,
+                        // dy = y2 - y1,
+                        // dr = Math.sqrt(dx * dx + dy * dy),
 
                         // Defaults for normal edge.
                         drx = 0,
@@ -260,6 +280,7 @@ export default class topology extends Component {
                         return "translate(" + d.x + "," + d.y + ")";
                     })
             }
+
 
             function dragstarted(d) {
                 if (!d3.event.active) simulation.alphaTarget(0.01).restart();
