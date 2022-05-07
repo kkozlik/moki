@@ -5,6 +5,7 @@ import * as d3 from "d3";
 import { Colors } from '@moki-client/gui';
 import emptyIcon from "../../styles/icons/empty_small.png";
 import Animation from '../helpers/Animation';
+import { createFilter } from '@moki-client/gui';
 
 export default class topology extends Component {
     constructor(props) {
@@ -25,7 +26,7 @@ export default class topology extends Component {
     componentDidUpdate(prevProps, prevState) {
         if (prevProps.data !== this.props.data) {
             this.setState({ data: this.props.data });
-            this.draw(this.state.data, this.props.width, this.props.height, this.props.units);
+            this.draw(this.state.data, this.props.width, this.props.height, this.props.units, this.props.field1, this.props.field2);
         }
     }
 
@@ -34,7 +35,7 @@ export default class topology extends Component {
         this.setState({ data: data });
     }
 
-    draw(data, width, height, units) {
+    draw(data, width, height, units, field1, field2) {
         units = units ? " (" + units + ")" : "";
         //FOR UPDATE: remove chart if it's already there
         var chart = document.getElementById("topologyChartSVG");
@@ -42,11 +43,18 @@ export default class topology extends Component {
             chart.remove();
         }
 
-
+        var legendSVG = document.getElementById("legendSVG" + this.props.id);
+        if (legendSVG) {
+            legendSVG.remove();
+        }
 
         var links = data ? data[2] : [];
         var nodes = data ? data[0] : [];
         var xScale = d3.scaleOrdinal(Colors);
+        var legendRectSize = 15;
+        var legendSpacing = 3;
+        var legendWidth = "200px";
+        width = width - 300;//legend width
 
 
         if (!data || data.length === 0 || links.length === 0 || nodes.length === 0) {
@@ -60,7 +68,17 @@ export default class topology extends Component {
                 .attr("xlink:href", emptyIcon)
                 .attr('transform', 'translate(' + width / 2 + ',100)')
 
+            legendSVG = document.getElementById("divLegend" + this.props.id);
+            if (legendSVG) {
+                legendSVG.style.height = 0;
+            }
+
         } else {
+
+            legendSVG = document.getElementById("divLegend" + this.props.id);
+            if (legendSVG) {
+                legendSVG.style.height = "250px";
+            }
 
             //get min a max value for nodes and links
             var minValueLink = links[0].value;
@@ -90,7 +108,7 @@ export default class topology extends Component {
 
             var linkSizeScale = d3.scaleLog().domain([minValueLink, maxValueLink]).range([1, 5]);
             var nodeSizeScale = d3.scaleLog().domain([minValueNode, maxValueNode]).range([3, 10]);
-
+            var notVisible = 0;
 
             var simulation = d3.forceSimulation()
                 .force("link", d3.forceLink().id(function (d) {
@@ -98,35 +116,38 @@ export default class topology extends Component {
                 }).distance(100).strength(1))
                 .force("charge", d3.forceManyBody())
                 .force('collide', d3.forceCollide(50))
-                .force("center", d3.forceCenter(width / 2, height / 2));
-
+                .force("center", d3.forceCenter(width / 2, height / 2))
+                .on('end', function () {
+                    checkVisibility(notVisible);
+                })
 
             //Zoom functions 
             function zoom_actions() {
-                g.attr("transform", d3.event.transform)
+                g.attr("transform", d3.event.transform);
             }
+
             // Create the zoom handler
-            const zoom = d3
-                .zoom()
-                .on("zoom", zoom_actions)
+            const zoom = d3.zoom()
+                .on("zoom", zoom_actions);
 
             // Create primary <g> element
             var svg = d3.select('#topologyChart')
                 .append("svg")
                 .attr('id', 'topologyChartSVG')
                 .attr('width', width)
-                .attr('height', height + 100)
-                .call(zoom);
+                .attr('height', height)
+                .call(zoom)
 
             var g = svg.append('g')
                 .attr("class", "everything");
-            // .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')');
+            //.attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')');
 
             //add zoom capabilities 
             var zoom_handler = d3.zoom().on("zoom", zoom_actions);
 
             zoom_handler(svg);
 
+            console.log(data);
 
             var tooltip;
 
@@ -147,8 +168,26 @@ export default class topology extends Component {
                 .append('svg:path')
                 .attr('d', 'M 0,-5 L 10 ,0 L 0,5')
                 .attr('fill', 'gray')
+                .attr('class', 'marker')
                 .attr('stroke', 'gray');
 
+
+            g.append('defs').append('marker')
+                .attr('id', 'arrowheadblack')
+                .attr('viewBox', '-0 -5 10 10')
+                .attr('refX', 14)
+                .attr('refY', 0)
+                .attr('markerUnits', 'strokeWidth')
+                .attr('orient', 'auto')
+                // .attr('markerWidth',   function(d) { return scaleMarker(d.value);})
+                .attr('markerWidth', 5)
+                .attr('markerHeight', 5)
+                .attr('xoverflow', 'visible')
+                .append('svg:path')
+                .attr('d', 'M 0,-5 L 10 ,0 L 0,5')
+                .attr('fill', '#343a40')
+                .attr('class', 'marker')
+                .attr('stroke', '#343a40');
 
             var link = g.selectAll('link')
                 .data(links)
@@ -158,6 +197,12 @@ export default class topology extends Component {
                 })
                 .attr('class', 'link')
                 .style('stroke', 'gray')
+                .attr("source", function (d) {
+                    return d.source
+                })
+                .attr("target", function (d) {
+                    return d.target
+                })
                 .style('fill', 'none')
                 .attr('marker-end', function (d) {
                     if (d.source === d.target) {
@@ -178,8 +223,15 @@ export default class topology extends Component {
                 .attr("r", function (d) {
                     return nodeSizeScale(d.value)
                 })
+                .attr("class", "circle")
                 .attr("fill", function (d) {
-                    return xScale(d.value);
+                    return xScale(d.ip);
+                })
+                .attr("id", function (d) {
+                    return d.id
+                })
+                .attr("ip", function (d) {
+                    return d.ip
                 })
                 .call(d3.drag()
                     .on("start", dragstarted)
@@ -187,6 +239,7 @@ export default class topology extends Component {
                     .on("end", dragended))
                 .style("cursor", "pointer")
                 .on('mouseover', (d) => {
+                    mouseOverAnimation(d.ip);
 
                     tooltip = d3.select('#topologyChart').append('div')
                         .attr('class', 'tooltip tooltipTopology')
@@ -212,7 +265,20 @@ export default class topology extends Component {
                         .style("left", (d3.event.clientX - chartRect.left + document.body.scrollLeft - (tooltipDim.width / 2)) + "px")
                         .style("top", (d3.event.clientY - chartRect.top + document.body.scrollTop + 15) + "px");
                 })
-                .on('mouseout', () => tooltip.remove());
+                .on('mouseout', function (d) {
+                    mouseOutAnimation(d.ip);
+                    tooltip.remove()
+                })
+                .on("click", el => {
+                    createFilter(field1 + ":\"" + el.ip + "\" OR " + field2 + ":\"" + el.ip + "\"");
+                    //bug fix: if you click but not move out
+                    var tooltips = document.getElementsByClassName("tooltipDonut");
+                    if (tooltip) {
+                        for (var j = 0; j < tooltips.length; j++) {
+                            tooltips[j].remove();
+                        }
+                    }
+                })
 
 
             node.append("text")
@@ -228,6 +294,7 @@ export default class topology extends Component {
 
             simulation.force("link")
                 .links(links);
+
 
             function ticked() {
                 for (let i = 0; i < 5; i++) {
@@ -274,12 +341,30 @@ export default class topology extends Component {
                     return "M" + x1 + "," + y1 + "A" + drx + "," + dry + " " + xRotation + "," + largeArc + "," + sweep + " " + x2 + "," + y2;
                 });
 
-
-                node
-                    .attr("transform", function (d) {
-                        return "translate(" + d.x + "," + d.y + ")";
-                    })
+                node.attr("transform", function (d) {
+                    if (d.x < 0) {
+                        if (notVisible > d.x) notVisible = d.x;
+                    }
+                    if (d.y < 0) {
+                        if (notVisible > d.y) notVisible = d.y;
+                    }
+                    return "translate(" + d.x + "," + d.y + ")";
+                })
             }
+
+            function checkVisibility(notVisible) {
+                console.log("notVisible");
+
+                console.log(notVisible);
+                // var transform = d3.zoomIdentity.translate(width / 2, height / 2).scale(1-.2);
+
+                /* if (notVisible < 0) {
+                     d3.scale(zoomfactor - 0.2).event(svg);
+                 }*/
+
+                //  svg.call(zoom.transform, transform);
+            }
+
 
 
             function dragstarted(d) {
@@ -298,15 +383,160 @@ export default class topology extends Component {
                 d.fx = null;
                 d.fy = null;
             }
+
+            var divLegend = d3.select("#divLegend" + this.props.id);
+            var legendHeight = data[1].length * 16;
+
+            divLegend = divLegend.append("svg").attr('height', legendHeight).attr('width', legendWidth).attr('id', "legendSVG" + this.props.id)
+
+            var legend = divLegend.selectAll('.legend')
+                .data(data[1])
+                .enter()
+                .append('g')
+                .attr('class', 'legend')
+                .attr('transform', function (d, i) {
+                    var height = legendRectSize;
+                    var horz = -2 * legendRectSize + 50;
+                    var vert = i * height;
+                    return 'translate(' + horz + ',' + vert + ')';
+                })
+                .on('mouseover', function (d) {
+                    //selection animation
+                    mouseOverAnimation(d);
+                })
+                .on('mouseout', function (d) {
+                    mouseOutAnimation(d);
+                });
+
+            legend.append('rect')
+                .attr('width', legendRectSize)
+                .attr('height', legendRectSize)
+                .style("stroke-width", "2px")
+                .style("stroke", "white")
+                .attr('fill', function (d, i) {
+                    return xScale(d);
+                }).on("click", el => {
+
+                    console.log(el);
+                    createFilter(field1 + ":\"" + el + "\" OR " + field2 + ":\"" + el + "\"");
+                    //bug fix: if you click but not move out
+                    var tooltips = document.getElementsByClassName("tooltipDonut");
+                    if (tooltip) {
+                        for (var j = 0; j < tooltips.length; j++) {
+                            tooltips[j].remove();
+                        }
+                    }
+                });
+
+            legend.append('text')
+                .attr('x', legendRectSize + legendSpacing)
+                .attr('y', legendRectSize - legendSpacing)
+                .text(function (d, i) {
+                    //find value to key
+                    let value = 0;
+                    for (let hit of data[0]) {
+                        if (hit.ip === d) {
+                            value = hit.value;
+                            break;
+                        }
+                    }
+                    if (d.length <= 20) {
+                        return d + " (" + value + ")";
+                    }
+                    else {
+                        return d.substring(0, 20) + "... (" + value + ")";
+                    }
+                })
+                .on("click", el => {
+                    createFilter(field1 + ":\"" + el + "\" OR " + field2 + ":\"" + el + "\"");
+                    //bug fix: if you click but not move out
+                    var tooltips = document.getElementsByClassName("tooltipDonut");
+                    if (tooltip) {
+                        for (var j = 0; j < tooltips.length; j++) {
+                            tooltips[j].remove();
+                        }
+                    }
+                })
+                .append("svg:title")
+                .text(function (d) { return d.key })
+                .on("click", el => {
+                    createFilter(field1 + ":\"" + el + "\" OR " + field2 + ":\"" + el + "\"");
+                    //bug fix: if you click but not move out
+                    var tooltips = document.getElementsByClassName("tooltipDonut");
+                    if (tooltip) {
+                        for (var j = 0; j < tooltips.length; j++) {
+                            tooltips[j].remove();
+                        }
+                    }
+                });
+
+
+            //on mouse over show selected arc
+            function mouseOverAnimation(name) {
+                //selection animation
+                let nodes = document.getElementsByClassName("circle");
+                let nodeId = "";
+                let adjacentNodes = [];
+                //check also links to nodes                       
+                for (let node of data[2]) {
+                    if (node.source.ip === name) {
+                        adjacentNodes.push(node.target.ip)
+                    }
+                    else if (node.target.ip === name) {
+                        adjacentNodes.push(node.source.ip)
+                    }
+                }
+                for (let node of nodes) {
+                    if (node.getAttribute("ip") !== name) {
+                        if (!adjacentNodes.includes(node.getAttribute("ip"))) {
+                            node.style.fill = "grey";
+                        }
+                    }
+                    else {
+                        nodeId = node.getAttribute("id");
+                    }
+                }
+                let links = document.getElementsByClassName("link");
+                for (let link of links) {
+                    if (link.getAttribute("source") === nodeId || link.getAttribute("target") === nodeId) {
+
+                        link.style.stroke = "#343a40";
+                        link.style.fill = "#343a40";
+                        link.setAttribute('marker-end', 'url(#arrowheadblack)')
+                    }
+                }
+            }
+
+            //on mouse out reset selected
+            function mouseOutAnimation() {
+                //selection animation
+                let nodes = document.getElementsByClassName("circle");
+                for (let node of nodes) {
+                    node.style.fill = xScale(node.getAttribute("ip"));
+                }
+                let links = document.getElementsByClassName("link");
+                for (let link of links) {
+                    link.style.stroke = "grey";
+                    link.style.fill = "grey";
+                    link.setAttribute('marker-end', 'url(#arrowhead)')
+                }
+
+            }
         }
 
     }
 
     render() {
-        return (<div id="topologyChart" className="chart"> <h3 className="alignLeft title" > {
-            this.props.name
-        } </h3>
-            {window.location.pathname !== "/connectivity" && <Animation name={this.props.name} type={this.props.type} setData={this.setData} dataAll={this.state.data} />}
+        return (<div className="chart">
+            <h3 className="alignLeft title" > {this.props.name} </h3>  {window.location.pathname !== "/connectivity" && <Animation name={this.props.name} type={this.props.type} setData={this.setData} dataAll={this.state.data} />}
+            <div className="row" style={{ "width": "max-content", "marginTop": "10px" }}>
+                <div className="col-auto" >
+                    <div id="topologyChart" />
+                </div >
+                <div className="col-auto">
+                    <div id={"divLegend" + this.props.id} style={{ "height": "250px", "width": "250px", "overflowX": "auto", "marginTop": "15px" }} />
+                </div>
+            </div>
         </div >)
     }
 }
