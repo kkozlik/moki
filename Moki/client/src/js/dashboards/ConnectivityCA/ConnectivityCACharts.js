@@ -189,6 +189,9 @@ class ConnectivityCACharts extends Dashboard {
                   width={
                       store.getState().width - 300
                   }
+                  field1={"attrs.src_ca_id"}
+                  field2={"attrs.dst_ca_id"}
+                  id="topologyChart"
                   height={
                       400
                   }
