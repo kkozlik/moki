@@ -144,10 +144,7 @@ export default class topology extends Component {
 
             //add zoom capabilities 
             var zoom_handler = d3.zoom().on("zoom", zoom_actions);
-
             zoom_handler(svg);
-
-            console.log(data);
 
             var tooltip;
 
@@ -353,19 +350,12 @@ export default class topology extends Component {
             }
 
             function checkVisibility(notVisible) {
-                console.log("notVisible");
-
-                console.log(notVisible);
-                // var transform = d3.zoomIdentity.translate(width / 2, height / 2).scale(1-.2);
-
-                /* if (notVisible < 0) {
-                     d3.scale(zoomfactor - 0.2).event(svg);
-                 }*/
-
-                //  svg.call(zoom.transform, transform);
+                if (notVisible < 0) {
+                    let scaleFactor = (notVisible % 10) / 10;
+                    var transform = d3.zoomIdentity.translate(width / 8, (height / 8) + 10).scale(1 + scaleFactor);
+                    svg.call(zoom.transform, transform);
+                }
             }
-
-
 
             function dragstarted(d) {
                 if (!d3.event.active) simulation.alphaTarget(0.01).restart();
@@ -416,8 +406,6 @@ export default class topology extends Component {
                 .attr('fill', function (d, i) {
                     return xScale(d);
                 }).on("click", el => {
-
-                    console.log(el);
                     createFilter(field1 + ":\"" + el + "\" OR " + field2 + ":\"" + el + "\"");
                     //bug fix: if you click but not move out
                     var tooltips = document.getElementsByClassName("tooltipDonut");
@@ -490,6 +478,8 @@ export default class topology extends Component {
                     if (node.getAttribute("ip") !== name) {
                         if (!adjacentNodes.includes(node.getAttribute("ip"))) {
                             node.style.fill = "grey";
+
+                            node.nextSibling.style.visibility = "hidden";
                         }
                     }
                     else {
@@ -513,6 +503,7 @@ export default class topology extends Component {
                 let nodes = document.getElementsByClassName("circle");
                 for (let node of nodes) {
                     node.style.fill = xScale(node.getAttribute("ip"));
+                    node.nextSibling.style.visibility = "visible";
                 }
                 let links = document.getElementsByClassName("link");
                 for (let link of links) {
