@@ -1,7 +1,7 @@
 import { Component } from 'react';
 import { parseTimestamp } from "./parseTimestamp";
 import storePersistent from "../store/indexPersistent";
-import {cipherAttr} from '@moki-client/gui';
+import { cipherAttr } from '@moki-client/gui';
 const DATEFORMATS = ["lastModified", "created", "lastLogin", "lastExceeded", "ts", "lastRaised", "lastLaunchedTimer", "lastRaisedTS", "lastExceededTS"];
 
 class AlertProfile extends Component {
@@ -65,12 +65,12 @@ class AlertProfile extends Component {
         else if (this.state.data["exceeded-by"] === "tenant") {
             list = "tenantprofile";
             key = storePersistent.getState().user.domainID;
-            hmac="plain";
+            hmac = "plain";
         }
 
         let profile = storePersistent.getState().profile;
         key = await cipherAttr(attr, key, profile, "encrypt");
-        await this.get("api/bw/delete?key="+key+"&list="+list+"&hmac="+hmac);
+        await this.get("api/bw/delete?key=" + key + "&list=" + list + "&hmac=" + hmac);
         this.setState({
             data: [],
             result: []
@@ -78,7 +78,7 @@ class AlertProfile extends Component {
     }
 
     async load() {
-        let result = [];
+        let result = null;
         //let hmac = window.localStorage.HMAC_SHA_256_KEY ? window.localStorage.HMAC_SHA_256_KEY : "plain";
         //if (hmac !== "plain") hmac = hmac.substring(0, hmac.indexOf(":"));
         let hmac = this.state.data.encrypt;
@@ -90,72 +90,74 @@ class AlertProfile extends Component {
             result = await this.get("api/bw/getip?key=" + key + "&list=ipprofile&hmac=" + hmac + "&pretty=true");
         }
         else if (this.state.data["exceeded-by"] === "uri") {
-            let key = await cipherAttr("attrs.from",  this.state.data.attrs.from , profile, "encrypt");
-            result = await this.get("api/bw/geturi?key=" +key+ "&list=uriprofile&hmac=" + hmac + "&pretty=true");
+            let key = await cipherAttr("attrs.from", this.state.data.attrs.from, profile, "encrypt");
+            result = await this.get("api/bw/geturi?key=" + key + "&list=uriprofile&hmac=" + hmac + "&pretty=true");
         }
         else {
             result = await this.get("api/bw/gettenantprofile?pretty=true");
         }
 
-
         //add exceeded name from settings
-        if (storePersistent.getState().layout.types.exceeded) {
-            for (let item of Object.keys(result.Item)) {
-                for (let template of storePersistent.getState().layout.types.exceeded) {
-                    if (template.id === item) {
-                        result.Item[item + " - " + template.name] = result.Item[item];
-                        delete result.Item[item];
-                    }
-                }
-            }
-        }
 
-
-
-        /*
-        //show only result for this alarms
-        var newDataFormat = { domain: result.domain };
-
-        if (result.IP) {
-            newDataFormat.IP = result.IP;
-        }
-        else if (result.URI) {
-            newDataFormat.URI = result.URI;
-        }
-
-        //exceded is an array
-        for (let hit of this.props.data.exceeded) {
-            if (result[hit]) {
-                newDataFormat.exceeded = hit;
-                newDataFormat.name = getExceededName(hit);
-
-                for (let key of Object.keys(result[hit])) {
-                    if (DATEFORMATS.includes(key)) {
-                        newDataFormat[key] = parseTimestamp(result[hit][key] * 1000);
-                    }
-                    else {
-                        newDataFormat[key] = result[hit][key];
-                    }
-                }
-            }
-
-            //get alert info from layout
+        if (result && result.statusCode !== 400) {
             if (storePersistent.getState().layout.types.exceeded) {
-                for (let template of storePersistent.getState().layout.types.exceeded) {
-                    if (template.id === hit) {
-                        newDataFormat.description = template.description;
-                        newDataFormat.key = template.key;
-                        if (template.eventTypes.length > 0) newDataFormat.eventTypes = template.eventTypes.toString(",");
+                for (let item of Object.keys(result.Item)) {
+                    for (let template of storePersistent.getState().layout.types.exceeded) {
+                        if (template.id === item) {
+                            result.Item[item + " - " + template.name] = result.Item[item];
+                            delete result.Item[item];
+                        }
                     }
                 }
             }
+
+
+
+            /*
+            //show only result for this alarms
+            var newDataFormat = { domain: result.domain };
+    
+            if (result.IP) {
+                newDataFormat.IP = result.IP;
+            }
+            else if (result.URI) {
+                newDataFormat.URI = result.URI;
+            }
+    
+            //exceded is an array
+            for (let hit of this.props.data.exceeded) {
+                if (result[hit]) {
+                    newDataFormat.exceeded = hit;
+                    newDataFormat.name = getExceededName(hit);
+    
+                    for (let key of Object.keys(result[hit])) {
+                        if (DATEFORMATS.includes(key)) {
+                            newDataFormat[key] = parseTimestamp(result[hit][key] * 1000);
+                        }
+                        else {
+                            newDataFormat[key] = result[hit][key];
+                        }
+                    }
+                }
+    
+                //get alert info from layout
+                if (storePersistent.getState().layout.types.exceeded) {
+                    for (let template of storePersistent.getState().layout.types.exceeded) {
+                        if (template.id === hit) {
+                            newDataFormat.description = template.description;
+                            newDataFormat.key = template.key;
+                            if (template.eventTypes.length > 0) newDataFormat.eventTypes = template.eventTypes.toString(",");
+                        }
+                    }
+                }
+            }
+    
+            */
+
+            this.setState({
+                result: result.Item
+            })
         }
-
-        */
-
-        this.setState({
-            result: result.Item
-        })
     }
 
     close() {
