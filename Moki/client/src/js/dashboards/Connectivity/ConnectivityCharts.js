@@ -8,41 +8,41 @@ import TopologyChart from '../../charts/topology_chart.js';
 import Heatmap from '../../charts/heatmap_chart.js';
 import store from "../../store/index";
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
-import {parseHeatmapData, parseDateHeatmap, parseTopologyData} from '@moki-client/es-response-parser';
+import { parseHeatmapData, parseDateHeatmap, parseTopologyData } from '@moki-client/es-response-parser';
 
 class ConnectivityCharts extends Dashboard {
 
-  // Initialize the state
-  constructor(props) {
-    super(props);
-    this.state = {
-      dashboardName: "connectivity/charts",
-      fromTo: [],
-      failure: [],
-      callAtempts: [],
-      duration: [],
-      callEnds: [],
-      isLoading: true
-    };
-    this.callBacks = {
-      functors: [
-        //FROM TO 
-        [{result: 'fromTo', func: parseTopologyData}],
+    // Initialize the state
+    constructor(props) {
+        super(props);
+        this.state = {
+            dashboardName: "connectivity/charts",
+            fromTo: [],
+            failure: [],
+            callAtempts: [],
+            duration: [],
+            callEnds: [],
+            isLoading: true
+        };
+        this.callBacks = {
+            functors: [
+                //FROM TO 
+                [{ result: 'fromTo', func: parseTopologyData }],
 
-        //CONNECTION FAILURE RATIO 
-        [{result: 'failure', func: parseHeatmapData}],
+                //CONNECTION FAILURE RATIO 
+                [{ result: 'failure', func: parseHeatmapData }],
 
-        //NUMBER OF CALL-ATTEMPS 
-        [{result: 'callAtempts', func: parseDateHeatmap}],
+                //NUMBER OF CALL-ATTEMPS 
+                [{ result: 'callAtempts', func: parseDateHeatmap }],
 
-        //DURATION 
-        [{result: 'duration', func: parseHeatmapData}],
+                //DURATION 
+                [{ result: 'duration', func: parseHeatmapData }],
 
-        //NUMBER OF CALL-ENDS 
-        [{result: 'callEnds', func: parseDateHeatmap}]
-      ]
-    };
-  }
+                //NUMBER OF CALL-ENDS 
+                [{ result: 'callEnds', func: parseDateHeatmap }]
+            ]
+        };
+    }
 
     //render GUI
     render() {
@@ -63,6 +63,9 @@ class ConnectivityCharts extends Dashboard {
                             300
                         }
                         units={"count"}
+                        field1={"attrs.from"}
+                        field2={"attrs.to"}
+                        id="topologyChart"
                     />  </div>
 
                 <div className="col" >
