@@ -45,6 +45,8 @@ class MicroanalysisCharts extends Dashboard {
             distinctURI: [],
             topNodes: [],
             versions: [],
+            callingCountries: [],
+            serverIP: [],
             isLoading: true
         }
         this.callBacks = {
@@ -125,6 +127,12 @@ class MicroanalysisCharts extends Dashboard {
 
                 //DISTINCT URI
                 [{ result: 'distinctURI', func: parseAggDistinct, attrs: ["attrs.from.keyword"] }],
+
+                //CALLING COUNTRIES
+                [{ result: 'callingCountries', func: parseListData, attrs: ["geoip.country_code2"] }],
+
+                //SERVER IP 
+                [{ result: 'serverIP', func: parseListData, attrs: ["server.ip"] }],
             ]
         }
     }
@@ -274,6 +282,16 @@ class MicroanalysisCharts extends Dashboard {
                     <ListChart data={this.state.topNodes}
                         name={"TOP HOSTs LIST"}
                         field={"agent.hostname"}
+                    />  </div>}
+                    {this.state.charts["CALLING COUNTRIES"] && <div className="col-auto" >
+                    <ListChart data={this.state.callingCountries}
+                        name={"CALLING COUNTRIES"}
+                        field={"geoip.country_code2"}
+                    />  </div>}
+                    {this.state.charts["SERVER IP"] && <div className="col-auto" >
+                    <ListChart data={this.state.serverIP}
+                        name={"SERVER IP"}
+                        field={"server.ip"}
                     />  </div>}
             </div> </div>
         );
