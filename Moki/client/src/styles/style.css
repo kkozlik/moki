@@ -651,6 +651,11 @@ h6 {
     .count-chart-counter.count-chart-counter-xs {
         font-size:.65em;
     }
+
+    .popup-content {
+        min-width: 300px;
+        max-height: 600px;
+    }
 }
 @media only screen and (min-width: 840px) {
     .count-chart-counter {
@@ -664,6 +669,11 @@ h6 {
     .count-chart-counter.count-chart-counter-xs {
         font-size:.75em;
     }
+
+    .popup-content {
+        min-width: 300px;
+        max-height: 600px;
+    }
 }
 @media only screen and (min-width: 970px) {
     .count-chart-counter {
@@ -675,6 +685,11 @@ h6 {
     }
     .count-chart-counter.count-chart-counter-xs {
         font-size:1em;
+    }
+
+    .popup-content {
+        min-width: 400px;
+        max-height: 700px;
     }
 }
 @media only screen and (min-width: 1250px) {
@@ -688,6 +703,11 @@ h6 {
     .count-chart-counter.count-chart-counter-xs {
         font-size:1.4em;
     }
+
+    .popup-content {
+        min-width: 500px;
+        max-height: 600px;
+    }
 }
 @media only screen and (min-width: 1650px) {
     .count-chart-counter {
@@ -699,6 +719,11 @@ h6 {
     }
     .count-chart-counter.count-chart-counter-xs {
         font-size:2.2em;
+    }
+
+    .popup-content {
+        min-width: 500px;
+        max-height: 1000px;
     }
 }
 
@@ -1385,8 +1410,6 @@ button {
     width: fit-content !important;
     overflow-y: auto;
     min-height: 200px;
-    min-width: 200px;
-    max-height: 600px;
 }
 
 .close {
