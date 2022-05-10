@@ -10,4 +10,5 @@ export const SET_PROFILE = "SET_PROFILE";
 export const SET_USER_PROFILE = "SET_USER_PROFILE";
 export const SET_LAYOUT = "SET_LAYOUT";
 export const SET_SETTINGS = "SET_SETTINGS";
+export const SET_PERNAMENT_FILTERS = "SET_PERNAMENT_FILTERS";
 

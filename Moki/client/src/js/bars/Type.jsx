@@ -7,7 +7,7 @@ class Type extends Component {
     constructor(props) {
         super(props);
         let color = ColorType[this.props.id];
-        if (window.location.pathname === "/exceeded"){
+        if (window.location.pathname === "/exceeded" || window.location.pathname === "/alerts" ){
             color = getExceededColor(this.props.id);
         }
         this.state = {
@@ -21,7 +21,7 @@ class Type extends Component {
     componentWillReceiveProps(nextProps) {
         // if (nextProps.state !== this.props.state) {
         let color = ColorType[this.props.id];
-        if (window.location.pathname === "/exceeded") {
+        if (window.location.pathname === "/exceeded" || window.location.pathname === "/alerts" ) {
             color = getExceededColor(this.props.id);
         }
         if (nextProps.state === "disable") {

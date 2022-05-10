@@ -288,10 +288,10 @@ export default class listChart extends Component {
         }
     }
 
-    //insert columns iinto table
+    //insert columns into table
     async componentDidMount() {
         //store already exclude alarms list
-        if (window.location.pathname === "/exceeded") {
+        if (window.location.pathname === "/exceeded" || window.location.pathname === "/alerts") {
             try {
                 const response = await fetch(process.env.PUBLIC_URL+"/api/setting", {
                     method: "GET",

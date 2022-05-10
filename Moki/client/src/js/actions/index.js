@@ -19,6 +19,10 @@ export function setTimerange(payload) {
   return { type: "SET_TIMERANGE", payload }
 };
 
+export function setPernamentFilter(payload) {
+  return { type: "SET_PERNAMENT_FILTER", payload }
+};
+
 export function setFilters(payload) {
   return { type: "SET_FILTERS", payload }
 };

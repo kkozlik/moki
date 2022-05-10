@@ -65,7 +65,7 @@ class Typebar extends Component {
 
             //get types from template to keep it update it
             var allTypes = [];
-            if (name === "exceeded") {
+            if (name === "exceeded" || name === "alerts") {
                 allTypes = await getExceededTypes();
             }
             else if (jsonData.types[name]) {
@@ -99,7 +99,7 @@ class Typebar extends Component {
                 }
             }
         }
-        else if (name === "exceeded") {
+        else if (name === "exceeded" || name === "alerts") {
             types = await getExceededTypes();
         }
         else if (jsonData.types[name]) {
