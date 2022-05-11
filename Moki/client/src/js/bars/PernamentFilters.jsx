@@ -23,7 +23,7 @@ const pernamentFilters = {
         {
             id: 2,
             name: "low",
-            filter: "severity: 3",
+            filter: "severity: 2",
             color: "green"
         }
     ]
