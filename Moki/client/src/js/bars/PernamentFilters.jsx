@@ -4,6 +4,8 @@ import React, {
 import { setPernamentFilters } from "../actions/index";
 import store from "../store/index";
 
+//pernament filters for dashboard. 
+//Dashboard_name: list
 const pernamentFilters = {
     alerts: [
         {
@@ -21,7 +23,7 @@ const pernamentFilters = {
         {
             id: 2,
             name: "low",
-            filter: "severity: 2",
+            filter: "severity: 3",
             color: "green"
         }
     ]
@@ -38,14 +40,14 @@ class PernamentFilters extends Component {
     activateFilter(event) {
         var oldPernamentFilters = JSON.parse(JSON.stringify(store.getState().pernamentFilters));
         //enable
-        if (this.state[event.currentTarget.getAttribute('id')]) {
+        if (this.state[event.currentTarget.getAttribute('id')] === false) {
             this.setState({
                 [event.currentTarget.getAttribute('id')]: true
             })
             //remove from store
-            for (let filter of oldPernamentFilters) {
-                if (filter.id === event.currentTarget.getAttribute('id')) {
-                    oldPernamentFilters.splice(filter.id, 1);
+            for (var i = 0; i < oldPernamentFilters.length; i++) {
+                if (oldPernamentFilters[i].id === event.currentTarget.getAttribute('id')) {
+                    oldPernamentFilters.splice(i, 1);
                 }
             }
         }
@@ -55,11 +57,8 @@ class PernamentFilters extends Component {
                 [event.currentTarget.getAttribute('id')]: false
             })
 
-            oldPernamentFilters.push({ "id": event.currentTarget.getAttribute('id'), "title": event.currentTarget.getAttribute('filter'), "state": "enable" });
+            oldPernamentFilters.push({ "id": event.currentTarget.getAttribute('id'), "title": "NOT "+event.currentTarget.getAttribute('filter'), "state": "enable" });
         }
-
-        console.log("-----");
-        console.log(oldPernamentFilters);
         store.dispatch(setPernamentFilters(oldPernamentFilters));
     }
 
@@ -71,7 +70,9 @@ class PernamentFilters extends Component {
                         return (<span className="filterBody">
                             <button style={{ backgroundColor: this.state[par.id] === false ? "grey" : par.color }}
                                 type="button"
-                                className="filter"
+                                name={par.id}
+                                title={par.filter}
+                                className="filterPernament"
                                 filter={par.filter}
                                 onClick={this.activateFilter}
                                 id={par.id} > {
