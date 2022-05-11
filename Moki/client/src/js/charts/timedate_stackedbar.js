@@ -165,7 +165,7 @@ export default class StackedChart extends Component {
 
             var keys = this.props.keys ? storePersistent.getState().layout.types[this.props.keys] ? storePersistent.getState().layout.types[this.props.keys] : this.props.keys : storePersistent.getState().layout.types["overview"];
 
-            if (window.location.pathname.includes("/exceeded")) {
+            if (window.location.pathname.includes("/exceeded") || window.location.pathname.includes("/alerts")) {
                 keys = [];
                 let exceededTemplate = await getExceededTypes();
                 if (exceededTemplate.length > 0) {
@@ -215,7 +215,7 @@ export default class StackedChart extends Component {
                         if (d.key === "3.6-4.03") { return "#95c196"; }
                         if (d.key === "4.03-*") { return "#4f9850"; }
                     }
-                    else if (window.location.pathname === "/exceeded") {
+                    else if (window.location.pathname === "/exceeded" || window.location.pathname.includes("/alerts")) {
                         return getExceededColor(d.key);
                     }
                     else if (ColorType[d.key]) {
@@ -322,7 +322,7 @@ export default class StackedChart extends Component {
 
             //filter type onClick
             layer.on("click", el => {
-                if (window.location.pathname === "/exceeded") {
+                if (window.location.pathname === "/exceeded" || window.location.pathname.includes("/alerts")) {
                     createFilter("exceeded:" + el.key);
                 }
                 else {

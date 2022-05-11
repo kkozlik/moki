@@ -52,7 +52,7 @@ class Controller {
       }
       //or if client request types, use this instead 
       else {
-        if (req.url.includes("exceeded")) {
+        if (req.url.includes("exceeded") || req.url.includes("alerts")) {
           types = getTypesConcat(types, "exceeded");
         }
         else {
@@ -267,7 +267,7 @@ class Controller {
       }
       //or if client request types, use this instead 
       else {
-        if (req.url.includes("exceeded")) {
+        if (req.url.includes("exceeded") || req.url.includes("alerts")) {
           types = getTypesConcat(types, "exceeded");
         }
         else {

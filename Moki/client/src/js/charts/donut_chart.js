@@ -32,8 +32,15 @@ export default class StackedChart extends Component {
 
     //d3js can't select element with special chart in ID
     getArcId(name) {
+        name = name.toString();
         name = name.replace(/ /g, '');
-        return "o"+name.replace(/[&\/\\#,+()$~%.'":*!?<>{}]/g, '');
+        return "o" + name.replace(/[&\/\\#,+()$~%.'":*!?<>{}]/g, '');
+    }
+
+    getSeverityString(severity) {
+        if (severity == 0) return "high";
+        else if (severity == 1) return "medium";
+        else return "low";
     }
 
 
@@ -66,7 +73,7 @@ export default class StackedChart extends Component {
         var legendRectSize = 15;
         var legendSpacing = 3;
 
-        var radius = Math.min(width, height) / 2 -20;
+        var radius = Math.min(width, height) / 2 - 20;
         var color;
         var colorScale = d3.scaleOrdinal(ColorsReds);
         var colorScaleMix = d3.scaleOrdinal(Colors);
@@ -87,6 +94,10 @@ export default class StackedChart extends Component {
 
             } else if (field === "attrs.type") {
                 return ColorType[nmb];
+            } else if (field === "severity") {
+                if (nmb == 0) return "red";
+                else if (nmb == 1) return "orange";
+                else return "green";
             } else if (field === "encrypt") {
                 var hmac = profile[0] ? profile[0].userprefs.validation_code : "";
                 var mode = profile[0] ? profile[0].userprefs.mode : "";
@@ -168,6 +179,11 @@ export default class StackedChart extends Component {
                 .on('mouseover', async (d) => {
                     mouseOverAnimation(d.data.key);
 
+                    var key = d.data.key;
+                    if (field === "severity") {
+                        key = thiss.getSeverityString(key);
+                    }
+
                     tooltip = d3.select('#' + id).append('div')
                         .style("width", "200px")
                         .style("height", "90px")
@@ -177,7 +193,7 @@ export default class StackedChart extends Component {
                         .style("position", "absolute")
                         .style("box-shadow", "0px 0px 6px black")
                         .style("padding", "10px")
-                        .html(`<span><strong>${d.data.key}</strong>: ${d3.format(',')(d.data.doc_count) + units}</span>`);
+                        .html(`<span><strong>${key}</strong>: ${d3.format(',')(d.data.doc_count) + units}</span>`);
 
                     var tooltipDim = tooltip.node().getBoundingClientRect();
                     var chartRect = d3.select('#' + id).node().getBoundingClientRect();
@@ -209,7 +225,7 @@ export default class StackedChart extends Component {
 
 
             let angleInterpolation = d3.interpolate(pie.startAngle()(), pie.endAngle()());
-           arcs.transition()
+            arcs.transition()
                 .duration(1200)
                 .attrTween("d", d => {
                     let originalEnd = d.endAngle;
@@ -270,21 +286,28 @@ export default class StackedChart extends Component {
                 .attr('y', legendRectSize - legendSpacing)
                 .text(function (d) {
                     for (var i = 0; i < pie(data).length; i++) {
-                        if (d.key.length <= 20) {
-                            if (Types[d.key]) {
-                                return Types[d.key] + " (" + d.doc_count + ")";
+                        d.key = d.key.toString();
+                        
+                        var key = d.key;
+                        if (field === "severity") {
+                            key = thiss.getSeverityString(key);
+                        }
+
+                        if (key.length <= 20) {
+                            if (Types[key]) {
+                                return Types[key] + " (" + d.doc_count + ")";
                             }
                             else if (field === "exceeded") {
-                                return getExceededName(d.key).then(val => {
+                                return getExceededName(key).then(val => {
                                     this.textContent = val + " (" + d.doc_count + ")";
                                 })
                             }
                             else {
-                                return d.key + " (" + d.doc_count + ")";
+                                return key + " (" + d.doc_count + ")";
                             }
                         }
                         else {
-                            return d.key.substring(0, 20) + "... (" + d.doc_count + ")";
+                            return key.substring(0, 20) + "... (" + d.doc_count + ")";
                         }
                     }
                 })

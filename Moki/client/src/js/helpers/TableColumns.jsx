@@ -249,6 +249,23 @@ function getColumn(column_name, tags, tag, width = 0, hidden = false) {
                 }
             }
         }
+         //translate severity: 0 - hight, 1 - medium, 2 - low
+         case 'severity': return {
+            dataField: '_source.severity',
+            text: 'SEVERITY',
+            sort: true,
+            editable: false,
+            hidden: hidden,
+            headerStyle: { width: getColumnWidth("SEVERITY", width) },
+            formatter: (cell, obj) => {
+                var ob = obj._source;
+                return <span className="filterToggleActive"><span className="filterToggle">
+                    <img onClick={doFilter} field="severity" value={ob.severity} className="icon" alt="filterIcon" src={filterIcon} />
+                    <img field="severity" value={ob.severity} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} />
+                </span >{ob.severity === 0 ? "high" : ob.severity === 1 ? "medium" : "low"}
+                </span>
+            }
+        }
         //special time format
         case 'attrs.duration': return {
             dataField: '_source.attrs.duration',
@@ -332,7 +349,7 @@ function getColumn(column_name, tags, tag, width = 0, hidden = false) {
                         )}
                     </Popup>
                     }
-                    {(storePersistent.getState().user.aws === true && window.location.pathname.includes("/exceeded") && (ob["exceeded-by"] === "ip" || ob["exceeded-by"] === "uri")) &&
+                    {(storePersistent.getState().user.aws === true && (window.location.pathname.includes("/exceeded") || window.location.pathname.includes("/alerts")) && (ob["exceeded-by"] === "ip" || ob["exceeded-by"] === "uri")) &&
                         <button className="noFormatButton" onClick={() => window.tableChart.createFilterAndRedirect(ob)} data={obj}>  <img className="icon" alt="overview" src={overviewIcon} title="show records in overview" /></button>
                     }
                     {column_name.icons.includes("details") && <Popup trigger={<img className="icon" alt="detailsIcon" src={detailsIcon} title="details" />} modal>
@@ -493,7 +510,6 @@ export function tableColumns(dashboard, tags, layout) {
     var result = [];
 
     var name = dashboard;
-
     if (!name) {
         if (dashboard === "homeLoginCalls") name = "calls";
         if (dashboard === "exceeded") name = "exceeded";
