@@ -8,6 +8,7 @@ class Popup extends Component {
             text: "",
             error: "",
             timeout: null,
+            style: "popupsmall",
             showOKAnnoying: false
         };
         window.mainPopup = this;
@@ -19,12 +20,12 @@ class Popup extends Component {
         this.stopStornoAnnoying = this.stopStornoAnnoying.bind(this);
     }
 
-
-    setPopup(visibility, text, showOKAnnoying = false) {
+    setPopup(visibility, text, showOKAnnoying = false, style="popupsmall") {
         this.setState({
             visible: visibility,
             text, text,
-            showOKAnnoying: showOKAnnoying
+            showOKAnnoying: showOKAnnoying,
+            style:style
         })
     }
 
@@ -49,13 +50,14 @@ class Popup extends Component {
     }
 
     showAnnoying() {
-        let timeout = setTimeout(() => {
+       /* let timeout = setTimeout(() => {
             this.setState({
                 visible: "visible"
             })
         }, 45000)
 
         this.setState({ timeout: timeout })
+        */
     }
 
     stopStornoAnnoying() {
@@ -78,7 +80,7 @@ class Popup extends Component {
     render() {
         return (
             <div style={{ "visibility": this.state.visible, "left": 0 }} className="row align-items-center justify-content-center overlay">
-                <div id="popupsmall" style={{ "maxWidth": "550px" }}>
+                <div id={this.state.style} className={this.state.style+"context"} >
                     {this.state.text}
                     {this.state.error ? <h3 className="error" style={{ "marginTop": "10px", "color": "red" }}>{this.state.error}</h3> : ""}
                     {this.state.showOKAnnoying ? <div><button className="btn btn-secondary" onClick={() => this.stornoAnnoying()} style={{ "marginTop": "15px", "marginLeft": "28%" }}>OK</button></div> : ""}

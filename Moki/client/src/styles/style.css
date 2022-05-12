@@ -55,6 +55,29 @@ a {
     max-width: fit-content;
 }
 
+#popupwide{
+    background-color: white;
+    position: fixed;
+    margin-left: 20%;
+    margin-right: 20%;
+    margin-top: 0;
+    padding: 15px;
+    border: 1px solid #ced4da;
+    border-radius: .25rem;
+    max-width: max-content;
+    overflow-y: auto;
+    max-height: 660px;
+}
+
+.popupsmallcontext{
+    max-width: 550px;
+}
+
+.popupwidecontext{
+    max-width: 800px;
+    min-width: 600px;
+}
+
 .expand-cell-header {
     width: 18px;
 }
@@ -124,6 +147,11 @@ a {
     border: none;
     background-color: transparent;
     padding: 0;
+}
+
+#buttonColor{
+    color: var(--main) !important;
+    background-color: transparent !important;
 }
 
 .textGaude {
@@ -528,13 +556,12 @@ h5 {
 }
 
 .btn-tertiary {
-    float: right;
     min-width: 170px;
     margin-right: auto;
-    background-color: #00c8cc !important;
-    border-color: #00c8cc !important;
+    background-color: white !important;
+    border-color: var(--main) !important;
+    color:  var(--main) !important;
 }
-
 .btn-default {
     color: #fff;
     background-color: grey !important;
@@ -784,6 +811,7 @@ select {
     padding: 0 !important;
     margin: 0 !important;
 }
+
 
 
 /*d3js axis ticks */
