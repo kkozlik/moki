@@ -50,14 +50,14 @@ class Popup extends Component {
     }
 
     showAnnoying() {
-       /* let timeout = setTimeout(() => {
+        let timeout = setTimeout(() => {
             this.setState({
                 visible: "visible"
             })
         }, 45000)
 
         this.setState({ timeout: timeout })
-        */
+        
     }
 
     stopStornoAnnoying() {
