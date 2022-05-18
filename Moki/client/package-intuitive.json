@@ -1,6 +1,6 @@
 {
   "name": "moki-react",
-  "version": "1.1.0",
+  "version": "2.0.1",
   "description": "Moki GUI",
   "author": "Frafos, Intuitive Labs",
   "license": "Apache-2.0",
@@ -12,8 +12,8 @@
   ],
   "homepage": ".",
   "dependencies": {
-    "@moki-client/es-response-parser": "git+ssh://git@github.com/intuitivelabs/es-response-parser-private.git#master",
-    "@moki-client/gui": "git+ssh://git@github.com/intuitivelabs/moki-gui-intuitive.git#master",
+    "@moki-client/es-response-parser": "git+ssh://git@github.com/intuitivelabs/es-response-parser-private.git#v0.0.4",
+    "@moki-client/gui": "git+ssh://git@github.com/intuitivelabs/moki-gui-intuitive.git#v0.0.4",
     "@moki-client/react-bootstrap-table-next": "git+ssh://git@github.com/intuitivelabs/react-bootstrap-table2-1.git#master",
     "bootstrap": "^4.6.0",
     "classnames": "^2.2.6",
