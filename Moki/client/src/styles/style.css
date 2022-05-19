@@ -150,7 +150,7 @@ a {
 }
 
 #buttonColor{
-    color: var(--main) !important;
+    color: rgb(0, 168, 150) !important;
     background-color: transparent !important;
 }
 
@@ -559,8 +559,8 @@ h5 {
     min-width: 170px;
     margin-right: auto;
     background-color: white !important;
-    border-color: var(--main) !important;
-    color:  var(--main) !important;
+    border-color: rgb(0, 168, 150) !important;
+    color:  rgb(0, 168, 150) !important;
 }
 .btn-default {
     color: #fff;
