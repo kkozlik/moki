@@ -17,11 +17,13 @@ function CollapseArea(data) {
                 aria-expanded={open}
                 className="noFormatButton"
                 id="buttonColor"
+
             >
-                {data.description}
+                {data.name}
+                {data.description && <span style={{ "color": "grey" }}>{" - " + data.description}</span>}
             </Button>
             <Collapse in={open}>
-                <div id="example-collapse-text" >
+                <div id="example-collapse-text" style={{"width": "716px"}}>
                     <div className="card card-body">
                         {data.data}
                     </div>
