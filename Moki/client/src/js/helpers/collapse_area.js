@@ -18,7 +18,6 @@ function CollapseArea(data) {
                 className="noFormatButton"
                 id="buttonColor"
                 title={data.title}
-
             >
                 {data.name}
                 {data.description && <span style={{ "color": "grey" }}>{" - " + data.description}</span>}
