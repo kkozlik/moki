@@ -56,10 +56,9 @@ class Table extends Component {
   }
 
   async loadData() {
-    console.log("window.dashboard.finishedLoadingInicialValues false");
-    console.log(window.dashboard.finishedLoadingInicialValues());
     //wait for types to load, it will trigger again
-    if (window.dashboard.finishedLoadingInicialValues() === false) {
+    if (window.dashboard.finishedLoadingInicialValues() === false || this.state.dashboardName === "alerts/tableHighSeverity") {
+     
       try {
         var data = await elasticsearchConnection(this.state.dashboardName);
         if (typeof data === "string") {
