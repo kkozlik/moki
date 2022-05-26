@@ -339,7 +339,7 @@ function getColumn(column_name, tags, tag, width = 0, hidden = false) {
                         )}
                     </Popup>
                     }
-                    {(storePersistent.getState().user.aws === true && storePersistent.getState().user.jwt !== 0 && window.location.pathname.includes("/exceeded")) && <Popup trigger={<img className="icon" alt="alertProfileIcon" src={alertProfileIcon} title="alert profile" />} modal>
+                    {(storePersistent.getState().user.aws === true && storePersistent.getState().user.jwt !== 0 && window.location.pathname.includes("/alerts")) && <Popup trigger={<img className="icon" alt="alertProfileIcon" src={alertProfileIcon} title="alert profile" />} modal>
                         {close => (
                             <div className="Advanced">
                                 <div className="contentAdvanced" style={{ "padding": "0px" }}>
