@@ -19,9 +19,18 @@ import search from "../../styles/icons/search.png";
 class filterBar extends Component {
     constructor(props) {
         super(props);
+        var oldFilters = store.getState().filters;
+        var newFilters = [];
+        for (var i = 0; i < oldFilters.length; i++) {
+            if (oldFilters[i].pinned !== 'false') {
+                newFilters.push(oldFilters[i]);
+            }
+        }
+        store.dispatch(setFilters(newFilters));
+        //remove unpinned filters
         this.state = {
             filterbar: "",
-            filters: store.getState().filters,
+            filters: newFilters,
             dstRealms: this.props.dstRealms ? this.props.dstRealms : [],
             srcRealms: this.props.srcRealms ? this.props.srcRealms : []
         }
