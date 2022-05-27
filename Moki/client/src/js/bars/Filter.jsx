@@ -104,7 +104,7 @@ class Filter extends Component {
             this.setState({
                 pinIcon: unpinIcon,
                 pinned: "true",
-                color: '#58a959'
+                color: 'var(--second)'
             });
             this.props.pinFilter(document.getElementById(event.currentTarget.getAttribute('pinid')).getAttribute('id'));
         }
