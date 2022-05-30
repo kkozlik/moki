@@ -85,11 +85,15 @@ class Dashboard extends Component {
       for (let j = 0; j < functors.length; j++) {
         let attrs = [];
         if (functors[j].attrs) attrs = functors[j].attrs;
-
         //special loader
         //multi parser "Regs", "data.responses[5]", "Regs-1d", "data.responses[6]"
         if (functors[j].type === "multipleLineData") {
           this.transientState[functors[j].result] = await functors[j].func(functors[j].details[0], data.responses[i], functors[j].details[1], data.responses[i + 1], profile, attrs);
+        }
+        //parseEventsRateData - pass also hours and total count
+        else if (functors[j].type === "parseEventsRateData") {
+          let hours = (store.getState().timerange[1] -  store.getState().timerange[0])/3600000;
+          this.transientState[functors[j].result] = await functors[j].func(data.responses[i], data.responses[2], hours);
         }
         else {
           this.transientState[functors[j].result] =
