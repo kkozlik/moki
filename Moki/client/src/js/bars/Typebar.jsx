@@ -16,11 +16,10 @@ class Typebar extends Component {
         super(props);
 
         this.state = {
-            icon: uncheckAll,
             types: [],
+            isAllSelected: true,
             isFetching: true
         }
-        this.enableType = this.enableType.bind(this);
         this.disableType = this.disableType.bind(this);
         this.checkAll = this.checkAll.bind(this);
         this.loadTypes = this.loadTypes.bind(this);
@@ -51,7 +50,7 @@ class Typebar extends Component {
         var jsonData = await getLayoutSettings();
         let name = window.location.pathname.substring(1);
 
-        if(name === "web"){
+        if (name === "web") {
             return;
         }
 
@@ -62,6 +61,8 @@ class Typebar extends Component {
         }
 
         if (storedTypes && storedTypes[name]) {
+            this.setState({isAllSelected: false});
+
 
             //get types from template to keep it update it
             var allTypes = [];
@@ -132,22 +133,7 @@ class Typebar extends Component {
             }
         }
         store.dispatch(assignType(types));
-
-        //check if all types are disabled - change checkAll icon
-        let isAllDisabled = true;
-        for (let type of types) {
-            if (type.state !== "disable") {
-                isAllDisabled = false;
-                return;
-            }
-        }
-        if(isAllDisabled){
-            this.setState({
-                icon: checkAll,
-            })
-        }
         return types;
-
     }
 
     componentWillUnmount() {
@@ -179,13 +165,14 @@ class Typebar extends Component {
     }
 
     //check/uncheck all types
-    checkAll() {
+    checkAll(checkState) {
         let state = "enable";
-        if (this.state.icon === checkAll) {
-            this.setState({ icon: uncheckAll });
+        if (checkState === "check") {
+            this.setState({
+                isAllSelected: true
+            });
         }
         else {
-            this.setState({ icon: checkAll });
             state = "disable";
         }
 
@@ -198,27 +185,35 @@ class Typebar extends Component {
         store.dispatch(assignType(oldTypes));
     }
 
-    enableType(type) {
-        var oldTypes = this.state.types;
-        for (var i = 0; i < oldTypes.length; i++) {
-            if (oldTypes[i].id === type) {
-                oldTypes[i].state = 'enable';
+    /*
+    if all types selected - disable all types accept the selected one
+    if one or more types selected - add new type or deselect
+    */
+    disableType(type, state, color) {
+        //disable all except selected
+        if (this.state.isAllSelected) {
+            var oldTypes = this.state.types;
+            for (var i = 0; i < oldTypes.length; i++) {
+                if (oldTypes[i].id !== type) {
+                    oldTypes[i].state = state;
+                    oldTypes[i].color = color;
+                }
             }
         }
-
-
-        console.info("Type is enabled:" + JSON.stringify(oldTypes));
-        this.storeTypesInLocalStorage(oldTypes);
-        store.dispatch(assignType(oldTypes));
-    }
-
-    disableType(type) {
-        var oldTypes = this.state.types;
-        for (var i = 0; i < oldTypes.length; i++) {
-            if (oldTypes[i].id === type) {
-                oldTypes[i].state = 'disable';
+        //add only new type
+        else {
+            var oldTypes = this.state.types;
+            for (var i = 0; i < oldTypes.length; i++) {
+                if (oldTypes[i].id === type) {
+                    oldTypes[i].state = state;
+                    oldTypes[i].color = color;
+                }
             }
         }
+        this.setState({
+            types: oldTypes,
+            isAllSelected: false
+        });
         console.info("Type is disabled:" + JSON.stringify(oldTypes));
         this.storeTypesInLocalStorage(oldTypes);
         store.dispatch(assignType(oldTypes));
@@ -231,14 +226,15 @@ class Typebar extends Component {
                 <div style={{ "display": "contents" }}>
                     {this.state.types.map((type, index) => {
                         return <Type key={type.id}
-                            name={type.name} id={type.id} state={type.state} description={type.description} disableType={this.disableType} enableType={this.enableType} />
+                            name={type.name} id={type.id} state={type.state} description={type.description} isAllSelected={this.state.isAllSelected} disableType={this.disableType} />
                     })}
                 </div>
             )
             return (
                 <div className="typeBar">
                     <div className="row align-items-center ">
-                        <img alt="checkAllIcon" onClick={this.checkAll} className="tabletd checkAll" src={this.state.icon} />
+                        <img alt="checkAllIcon" onClick={() =>this.checkAll("check")} className="tabletd checkAll" src={checkAll} />
+                        <img alt="uncheckAllIcon" onClick={() =>this.checkAll("uncheck")} className="tabletd checkAll" src={uncheckAll} />
                         {types}
                     </div>
 

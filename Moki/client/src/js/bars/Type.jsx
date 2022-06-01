@@ -7,7 +7,7 @@ class Type extends Component {
     constructor(props) {
         super(props);
         let color = ColorType[this.props.id];
-        if (window.location.pathname === "/exceeded" || window.location.pathname === "/alerts" ){
+        if (window.location.pathname === "/exceeded" || window.location.pathname === "/alerts") {
             color = getExceededColor(this.props.id);
         }
         this.state = {
@@ -21,7 +21,7 @@ class Type extends Component {
     componentWillReceiveProps(nextProps) {
         // if (nextProps.state !== this.props.state) {
         let color = ColorType[this.props.id];
-        if (window.location.pathname === "/exceeded" || window.location.pathname === "/alerts" ) {
+        if (window.location.pathname === "/exceeded" || window.location.pathname === "/alerts") {
             color = getExceededColor(this.props.id);
         }
         if (nextProps.state === "disable") {
@@ -35,19 +35,24 @@ class Type extends Component {
         }
     }
 
-
+    //if all is selected, disable everything accept this type
     disableType(events) {
-        if (this.state.state === "enable") {
-            this.setState({ state: 'disable' });
-            this.setState({ color: 'gray' });
-            this.props.disableType(events.currentTarget.getAttribute('id'));
-
-        } else {
-            this.setState({ state: 'enable' });
-            this.setState({ color: ColorType[this.props.id] });
-            this.props.enableType(events.currentTarget.getAttribute('id'));
+        if (this.props.isAllSelected) {
+            this.props.disableType(events.currentTarget.getAttribute('id'), "disable", "grey");
         }
+        else {
 
+            if (this.state.state === "enable") {
+                this.setState({ state: 'disable' });
+                this.setState({ color: 'gray' });
+                this.props.disableType(events.currentTarget.getAttribute('id'), "disable", "grey");
+
+            } else {
+                this.setState({ state: 'enable' });
+                this.setState({ color: ColorType[this.props.id] });
+                this.props.disableType(events.currentTarget.getAttribute('id'), "enable", ColorType[this.props.id]);
+            }
+        }
     }
 
     render() {
