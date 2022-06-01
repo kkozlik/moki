@@ -201,61 +201,60 @@ class SettingController {
    *               error: "bash: not found"
    */
   static loadFilters(req, res) {
-    //get user's right to load correct filters
-    const user = AdminController.getUser(req);
-    let condition;
-    //admin, show everything
-    if (user.jwtbit === 0) {
-      condition = {
-        index: 'filters',
-        type: '_doc'
-      };
-    }
-    //site admin, show only domain and encrypt filter
-    else if (user.jwtbit === 1) {
-      condition = {
-        index: 'filters',
-        type: '_doc',
-        body: {
-          query: {
-            bool: {
-              must: [
-                { query_string: { "query": "domain:" + user.domain } },
-                { query_string: { "query": 'encrypt:"' + req.body.validation_code + '"' } }
-              ]
-            }
-          }
-        }
-      };
-    }
-    //user, show domain, encrypt and user filter
-    else {
-      condition = {
-        index: 'filters',
-        type: '_doc',
-        body: {
-          query: {
-            bool: {
-              must: [
-                { query_string: { "query": "domain:" + user.domain } },
-                { query_string: { "query": "sub:" + user.sub } },
-                { query_string: { "query": 'encrypt:"' + req.body.validation_code + '"' } }
-              ]
-            }
-          }
-        }
-      };
-    }
-    const client = connectToES(res);
-    console.info("Getting filters for user level: " + user.jwtbit);
-    client.search(condition, (error, response) => {
-      if (error) {
-        res.json(400, error);
+    async function search(req) {
+      //get user's right to load correct filters
+      const user = AdminController.getUser(req);
+      let condition;
+      //admin, show everything
+      if (user.jwtbit === 0) {
+        condition = {
+          index: 'filters'
+        };
       }
+      //site admin, show only domain and encrypt filter
+      else if (user.jwtbit === 1) {
+        condition = {
+          index: 'filters',
+          body: {
+            query: {
+              bool: {
+                must: [
+                  { query_string: { "query": "domain:" + user.domain } },
+                  { query_string: { "query": 'encrypt:"' + req.body.validation_code + '"' } }
+                ]
+              }
+            }
+          }
+        };
+      }
+      //user, show domain, encrypt and user filter
       else {
-        res.json(200, response);
+        condition = {
+          index: 'filters',
+          body: {
+            query: {
+              bool: {
+                must: [
+                  { query_string: { "query": "domain:" + user.domain } },
+                  { query_string: { "query": "sub:" + user.sub } },
+                  { query_string: { "query": 'encrypt:"' + req.body.validation_code + '"' } }
+                ]
+              }
+            }
+          }
+        };
       }
+      const client = connectToES(res);
+      console.info("Getting filters for user level: " + user.jwtbit);
+      var result = await client.search(condition);
+      return res.json(200, result);
+
+    }
+
+    return search(req).catch((e) => {
+      return next(e);
     });
+
   }
 
   /**
@@ -347,7 +346,6 @@ class SettingController {
         const response = await client.index({
           index: indexName,
           refresh: true,
-          type: "_doc",
           body: {
             "sub": sub,
             "id": req.body.id,
