@@ -43,15 +43,11 @@ async function getWebFilter() {
 
 // is accept JWT in settings
 async function isRequireJWT() {
-  return new Promise(function (resolve, reject) {
-
     //check if files exists
     if (!fs.existsSync(c.fileMonitor)) {
-      reject();
       return;
     }
     if (!fs.existsSync(c.fileDefaults)) {
-      reject();
       return;
     }
 
@@ -59,7 +55,6 @@ async function isRequireJWT() {
     fs.readFile(c.fileMonitor, (err2, data) => {
       if (err2) {
         console.error(`Problem with reading default file. ${err2}`);
-        reject();
         return;
       }
       const jsonData = JSON.parse(data);
@@ -69,7 +64,7 @@ async function isRequireJWT() {
           if (data.app === "m_config") {
             data.attrs.forEach(attrs => {
               if (attrs.attribute === "requireJwt") {
-                resolve(attrs.value);
+                return attrs.value;
               }
             })
           }
@@ -80,7 +75,6 @@ async function isRequireJWT() {
       fs.readFile(c.fileDefaults, (err2, data) => {
         if (err2) {
           console.error(`Problem with reading default file. ${err2}`);
-          reject();
           return;
         }
         const jsonData = JSON.parse(data);
@@ -88,16 +82,14 @@ async function isRequireJWT() {
           if (data.app === "m_config") {
             data.attrs.forEach(attrs => {
               if (attrs.attribute === "requireJwt") {
-                resolve(attrs.value)
+                return attrs.value
               }
             })
           }
         })
       })
     })
-    reject();
     return;
-  })
 }
 
 function getActualConfig() {
