@@ -8,12 +8,13 @@ export const getTypes = () => {
     //check if correct types - changing dashboard from no type to types one
     var pathname = window.location.pathname.substring(1);
     var dashboardTypesChecked = storePersistent.getState().layout.types[pathname];
-    if(window.location.pathname === "/exceeded"){
+    if(window.location.pathname === "/exceeded" || window.location.pathname === "/alerts"){
         dashboardTypesChecked = getExceededTypes();
     }
     if (dashboardTypesChecked === undefined) {
         types = [];
     }
+
     var typesResult = [];
     var disableCount = 0;
     for (var i = 0; i < types.length; i++) {
