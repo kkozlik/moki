@@ -110,9 +110,6 @@ export default class MultipleLineChart extends Component {
         //make div values if necessary
         //  if ((window.location.pathname === "/stats" && (!ABSOLUTE_VALUES.includes(this.props.name))) || CUMULATIVE_SUM.includes(this.props.name)) {
 
-        console.log("draw");
-        console.log(this.state.state);
-        console.log(state);
         if (window.location.pathname === "/stats" && state === "rate" ) {
             var divData = [];
             for (var k = 0; k < data.length; k++) {
@@ -436,8 +433,6 @@ export default class MultipleLineChart extends Component {
     }
 
     changeState(newState) {
-        console.log("newState");
-        console.log(newState);
         this.setState({ state: newState }, this.draw(this.props.data, this.props.id, this.props.ticks, this.props.hostnames, newState));
 
     }
