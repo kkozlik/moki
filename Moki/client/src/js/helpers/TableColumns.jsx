@@ -21,6 +21,7 @@ import storePersistent from "../store/indexPersistent";
 import store from "../store/index";
 import { parseTimestamp } from "../helpers/parseTimestamp";
 import SimpleSequenceDiagram from "../charts/simpleSequenceDiagram";
+import { checkBLip } from "../helpers/alertProfile";
 import { getSearchableAttributes, getExceededName, isEncryptedAttr } from '@moki-client/gui';
 
 const attrsTypes = {
@@ -56,6 +57,36 @@ class ExceededName extends Component {
         return <span className="filterToggleActive"><span className="filterToggle">
             <img onClick={this.props.doFilterRaw} field="exceeded" value={this.props.value} className="icon" alt="filterIcon" src={filterIcon} /><img field="exceeded" value={this.props.notvalue} onClick={this.props.doFilterRaw} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span >   {this.state.name}
         </span>
+    }
+}
+
+//support class for async value for checking IP blacklisted
+class BLcheck extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            isBL: false
+        }
+        this.getBL = this.getBL.bind(this);
+    }
+
+    componentDidMount() {
+        this.getBL();
+    }
+
+    async getBL() {
+        this.setState({
+            isBL: await checkBLip(this.props.data)
+        })
+    }
+
+    render() {
+        if (this.state.isBL) {
+            return <span  style={{"marginLeft": "5px"}}>BL</span>
+        }
+        else {
+            return "";
+        }
     }
 }
 
@@ -249,8 +280,8 @@ function getColumn(column_name, tags, tag, width = 0, hidden = false) {
                 }
             }
         }
-         //translate severity: 0 - hight, 1 - medium, 2 - low
-         case 'severity': return {
+        //translate severity: 0 - hight, 1 - medium, 2 - low
+        case 'severity': return {
             dataField: '_source.severity',
             text: 'SEVERITY',
             sort: true,
@@ -444,6 +475,7 @@ function getColumn(column_name, tags, tag, width = 0, hidden = false) {
                                     <img onClick={doFilter} field={field} value={value} className="icon" alt="filterIcon" src={filterIcon} />
                                     <img field={field} value={value} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} />
                                 </span >{value}
+                                {field === "attrs.source" && window.location.pathname.includes("/alerts") && <BLcheck data={ob} />}
                             </span>
                         }
                     }
