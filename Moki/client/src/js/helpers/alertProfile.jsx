@@ -94,11 +94,16 @@ class AlertProfile extends Component {
             result = await this.get("api/bw/geturi?key=" + key + "&list=uriprofile&hmac=" + hmac + "&pretty=true");
         }
         else {
-            result = await this.get("api/bw/gettenantprofile?pretty=true");
+            //check if custom profile or not
+            if(this.state.data["exceeded-by"].startsWith("cstm_")){
+                result = await this.get("api/bw/getcustomprofile?pretty=true&key="+this.state.data.attrs["from-ua"]+"&list=attrs.from-ua&hmac="+hmac);
+            }
+            else {
+                result = await this.get("api/bw/gettenantprofile?pretty=true");
+            }
         }
 
         //add exceeded name from settings
-
         if (result && result.statusCode !== 400) {
             if (storePersistent.getState().layout.types.exceeded) {
                 for (let item of Object.keys(result.Item)) {
