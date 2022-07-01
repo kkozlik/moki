@@ -38,7 +38,7 @@ export default class MultipleLineChart extends Component {
         super(props);
         this.state = {
             data: [],
-            state: ABSOLUTE_VALUES.includes(this.props.name) ? "rate" :"absolute"
+            state: ABSOLUTE_VALUES.includes(this.props.name) ? "rate" : "absolute"
         }
         this.draw = this.draw.bind(this);
         this.changeState = this.changeState.bind(this);
@@ -110,7 +110,7 @@ export default class MultipleLineChart extends Component {
         //make div values if necessary
         //  if ((window.location.pathname === "/stats" && (!ABSOLUTE_VALUES.includes(this.props.name))) || CUMULATIVE_SUM.includes(this.props.name)) {
 
-        if (window.location.pathname === "/stats" && state === "rate" ) {
+        if (state === "rate") {
             var divData = [];
             for (var k = 0; k < data.length; k++) {
                 divData.push({
@@ -145,7 +145,6 @@ export default class MultipleLineChart extends Component {
         //max and min date
         var maxTime = store.getState().timerange[1] + getTimeBucketInt();
         var minTime = store.getState().timerange[0];
-
         // Clean up lost tooltips
         var elements = document.getElementById('tooltip' + id);
         if (elements) {
@@ -225,7 +224,7 @@ export default class MultipleLineChart extends Component {
         var domain = max === 0 ? 1 : max + max / 10;
         let minY = 0;
         //  if (ABSOLUTE_VALUES.includes(this.props.name)) {
-       if ( data.length >0) {
+        if (data.length > 0 && data[0].values.length > 0) {
             minY = data[0].values[0].value;
             for (var i = 0; i < data.length; i++) {
                 for (k = 0; k < data[i].values.length; k++) {
@@ -446,11 +445,11 @@ export default class MultipleLineChart extends Component {
                 this.props.name
             } <span className="smallText"> (interval: {bucket})</span></h3>
             {this.props.data && this.props.data.length > 0 &&
-                <div style={{"marginLeft": "83%"}}> 
-                    <input type="radio" value="rate" style={{"width":"34px"}} name={"ratio"+this.props.name} onClick={() => this.changeState("rate")} defaultChecked={ABSOLUTE_VALUES.includes(this.props.name)} />
+                <div style={{ "marginLeft": "83%" }}>
+                    <input type="radio" value="rate" style={{ "width": "34px" }} name={"ratio" + this.props.name} onClick={() => this.changeState("rate")} defaultChecked={ABSOLUTE_VALUES.includes(this.props.name)} />
                     rate
-                    <br/>
-                    <input type="radio" value="absolute" style={{"width":"34px"}} name={"ratio"+this.props.name} onClick={() => this.changeState("absolute")} defaultChecked={!ABSOLUTE_VALUES.includes(this.props.name)} />
+                    <br />
+                    <input type="radio" value="absolute" style={{ "width": "34px" }} name={"ratio" + this.props.name} onClick={() => this.changeState("absolute")} defaultChecked={!ABSOLUTE_VALUES.includes(this.props.name)} />
                     absolute
                 </div>}
         </div>)
