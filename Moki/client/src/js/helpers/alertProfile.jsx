@@ -237,4 +237,43 @@ class AlertProfile extends Component {
     }
 }
 
+//check if IP is blacklisted
+export async function checkBLip(ob){
+    try {
+        let hmac = ob.encrypt;
+        if (hmac && hmac !== "plain") hmac = hmac.substring(0, hmac.indexOf(":"));
+        let profile = storePersistent.getState().profile;
+        let key = await cipherAttr("attrs.source", ob.attrs.source, profile, "encrypt");
+
+        let url = "api/bw/getip?key=" + key + "&list=ipprofile&hmac=" + hmac + "&pretty=true"
+        const response = await fetch(url, {
+            method: "GET",
+            credentials: 'include',
+            headers: {
+                "Content-Type": "application/json",
+                "Access-Control-Allow-Credentials": "include"
+            }
+        });
+        var jsonData = await response.json();
+
+        if (jsonData.statusCode && jsonData.statusCode === 404) {
+            console.error(jsonData.statusDescription);
+        }
+        else {
+            //no result
+            if(  Object.keys(jsonData.Item).length === 0){
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+    } catch (error) {
+        console.error(error);
+    }
+    return false;
+}
+
 export default AlertProfile;
+
+
