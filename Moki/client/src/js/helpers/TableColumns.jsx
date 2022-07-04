@@ -82,7 +82,7 @@ class BLcheck extends Component {
 
     render() {
         if (this.state.isBL) {
-            return <span  style={{"marginLeft": "5px"}}>BL</span>
+            return <span  style={{"marginLeft": "5px"}} title="blacklisted">BL</span>
         }
         else {
             return "";
@@ -475,7 +475,7 @@ function getColumn(column_name, tags, tag, width = 0, hidden = false) {
                                     <img onClick={doFilter} field={field} value={value} className="icon" alt="filterIcon" src={filterIcon} />
                                     <img field={field} value={value} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} />
                                 </span >{value}
-                                {field === "attrs.source" && window.location.pathname.includes("/alerts") && <BLcheck data={ob} />}
+                                {field === "attrs.source" && window.location.pathname.includes("/alerts") && ob["exceeded-by"] === "ip" &&  <BLcheck data={ob} />}
                             </span>
                         }
                     }
