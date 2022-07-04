@@ -26,17 +26,22 @@ import {
     getTimeBucketInt, getTimeBucket
 } from "../helpers/getTimeBucket";
 import { parseTimestamp } from "../helpers/parseTimestamp";
-import {setTickNrForTimeXAxis} from "../helpers/chart";
+import { setTickNrForTimeXAxis } from "../helpers/chart";
+
+//STATE: absolute value or rate
 
 const CUMULATIVE_SUM = ["CALL STARTS BY HOST", "TX BYTES BY HOST", "RX PACKET BY HOST", "TX PACKET BY HOST", "RX BYTES BY INTERFACE", "TX BYTES BY INTERFACE", "RX PACKETS BY INTERFACE", "TX PACKETS BY INTERFACE"];
+const ABSOLUTE_VALUES = ["BLACKLISTED IPs", "WHITELISTED IPs"];
 
 export default class MultipleLineChart extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            data: []
+            data: [],
+            state: ABSOLUTE_VALUES.includes(this.props.name) ? "rate" : "absolute"
         }
         this.draw = this.draw.bind(this);
+        this.changeState = this.changeState.bind(this);
     }
 
     static getDerivedStateFromProps(nextProps, prevState) {
@@ -99,11 +104,13 @@ export default class MultipleLineChart extends Component {
         return legendGroup;
     }
 
-    draw(data, id, ticks, hostnames) {
+    draw(data, id, ticks, hostnames, state = this.state.state) {
         var field = this.props.field ? this.props.field : "attrs.hostname";
 
         //make div values if necessary
-        if (window.location.pathname === "/stats" || CUMULATIVE_SUM.includes(this.props.name)) {
+        //  if ((window.location.pathname === "/stats" && (!ABSOLUTE_VALUES.includes(this.props.name))) || CUMULATIVE_SUM.includes(this.props.name)) {
+
+        if (state === "rate") {
             var divData = [];
             for (var k = 0; k < data.length; k++) {
                 divData.push({
@@ -138,7 +145,6 @@ export default class MultipleLineChart extends Component {
         //max and min date
         var maxTime = store.getState().timerange[1] + getTimeBucketInt();
         var minTime = store.getState().timerange[0];
-
         // Clean up lost tooltips
         var elements = document.getElementById('tooltip' + id);
         if (elements) {
@@ -176,7 +182,7 @@ export default class MultipleLineChart extends Component {
         var color = d3.scaleOrdinal().range(Colors);
 
         var svgWidth = d3.select('#' + id).node().clientWidth;
-
+        if (svgWidth === 0) svgWidth = 500;
         var legendWidth = 110;
         var legendSpacer = 10;
         var legendPadding = 5;
@@ -189,7 +195,6 @@ export default class MultipleLineChart extends Component {
 
         var width = svgWidth - (margin.left + margin.right + legendSpacer + legendWidth);
         if (width < 100) width = 100;
-
         var xScale = d3.scaleLinear()
             .range([0, width])
             .domain([minTime, maxTime]);
@@ -215,10 +220,28 @@ export default class MultipleLineChart extends Component {
             }
         }
 
+        //plus 10%
+        var domain = max === 0 ? 1 : max + max / 10;
+        let minY = 0;
+        //  if (ABSOLUTE_VALUES.includes(this.props.name)) {
+        if (data.length > 0 && data[0].values.length > 0) {
+            minY = data[0].values[0].value;
+            for (var i = 0; i < data.length; i++) {
+                for (k = 0; k < data[i].values.length; k++) {
+                    if (data[i].values[k].hasOwnProperty("value")) {
+                        if (minY > data[i].values[k].value) {
+                            minY = data[i].values[k].value;
+                        }
+                    }
+                }
+            }
+            //minus 10%
+            if (minY - minY / 10 > 0) minY = minY - minY / 10;
+            else minY = 0;
+        }
 
-        var domain = max === 0 ? 1 : max + max / 3;
         var yScale = d3.scaleLinear()
-            .domain([0, domain])
+            .domain([minY, domain])
             .range([height, 0]);
 
         var xAxis = d3.axisBottom()
@@ -408,6 +431,11 @@ export default class MultipleLineChart extends Component {
         }
     }
 
+    changeState(newState) {
+        this.setState({ state: newState }, this.draw(this.props.data, this.props.id, this.props.ticks, this.props.hostnames, newState));
+
+    }
+
     render() {
         var bucket = getTimeBucket();
         return (<div id={
@@ -415,6 +443,15 @@ export default class MultipleLineChart extends Component {
         } className="chart">
             <h3 className="alignLeft title" style={{ "float": "inherit" }}> {
                 this.props.name
-            } <span className="smallText"> (interval: {bucket})</span></h3></div>)
+            } <span className="smallText"> (interval: {bucket})</span></h3>
+            {this.props.data && this.props.data.length > 0 &&
+                <div style={{ "marginLeft": "83%" }}>
+                    <input type="radio" value="rate" style={{ "width": "34px" }} name={"ratio" + this.props.name} onClick={() => this.changeState("rate")} defaultChecked={ABSOLUTE_VALUES.includes(this.props.name)} />
+                    rate
+                    <br />
+                    <input type="radio" value="absolute" style={{ "width": "34px" }} name={"ratio" + this.props.name} onClick={() => this.changeState("absolute")} defaultChecked={!ABSOLUTE_VALUES.includes(this.props.name)} />
+                    absolute
+                </div>}
+        </div>)
     }
 }
