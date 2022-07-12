@@ -222,9 +222,10 @@ function getColumn(column_name, tags, tag, width = 0, hidden = false) {
                 if (ob.attrs.type === "parse-error") {
                     reason = ob.err_info;
                 }
-                return <span className="filterToggleActive"><span className="filterToggle">
-                    <span><img onClick={() => copyToclipboard(reason)} className="icon" title="copy to clipboard" alt="clipboardIcon" src={clipboardIcon} /><span id={"copyToClipboardText" + reason} className="copyToClip">copied to clipboard</span></span>
-                </span >{reason}
+                return <span className="filterToggleActive"><div className="filterToggle">
+                    <span><img onClick={() => copyToclipboard(reason)} className="icon" title="copy to clipboard" alt="clipboardIcon" src={clipboardIcon} />
+                        <span id={"copyToClipboardText" + reason} className="copyToClip">copied to clipboard</span></span>
+                </div>{reason}
                 </span>
             }
         }
@@ -292,8 +293,9 @@ function getColumn(column_name, tags, tag, width = 0, hidden = false) {
                         value = "exceeded-by: " + ob["exceeded-by"];
                         notvalue = "NOT exceeded-by: " + ob["exceeded-by"];
                     }
-                    return <span className="filterToggleActive"><span className="filterToggle">
-                        <img onClick={doFilterRaw} field="exceeded-by" value={value} className="icon" alt="filterIcon" src={filterIcon} /><img field="exceeded-by" value={notvalue} onClick={doFilterRaw} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span > {ob['exceeded-by'] ? ob['exceeded-by'].toString() : ""}
+                    return <span className="filterToggleActive"><div className="filterToggle">
+                        <img onClick={doFilterRaw} field="exceeded-by" value={value} className="icon" alt="filterIcon" src={filterIcon} />
+                        <img field="exceeded-by" value={notvalue} onClick={doFilterRaw} className="icon" alt="unfilterIcon" src={unfilterIcon} /></div > {ob['exceeded-by'] ? ob['exceeded-by'].toString() : ""}
                     </span>
                 }
             }
@@ -308,11 +310,11 @@ function getColumn(column_name, tags, tag, width = 0, hidden = false) {
             headerStyle: { width: getColumnWidth("SEVERITY", width) },
             formatter: (cell, obj) => {
                 var ob = obj._source;
-                return <span className="filterToggleActive"><span className="filterToggle">
+                return <span className="filterToggleActive"><div className="filterToggle">
                     <img onClick={doFilter} field="severity" value={ob.severity} className="icon" title="filter" alt="filterIcon" src={filterIcon} />
                     <img field="severity" value={ob.severity} onClick={doUnfilter} className="icon" title="unfilter" alt="unfilterIcon" src={unfilterIcon} />
                     <span><img onClick={() => copyToclipboard(ob.severity)} className="icon" title="copy to clipboard" alt="clipboardIcon" src={clipboardIcon} /><span id={"copyToClipboardText" + ob.severity} className="copyToClip">copied to clipboard</span></span>
-                </span >{ob.severity === 0 ? "high" : ob.severity === 1 ? "medium" : "low"}
+                </div >{ob.severity === 0 ? "high" : ob.severity === 1 ? "medium" : "low"}
                 </span>
             }
         }
@@ -326,11 +328,11 @@ function getColumn(column_name, tags, tag, width = 0, hidden = false) {
             headerStyle: { width: getColumnWidth("DURATION", width) },
             formatter: (cell, obj) => {
                 var ob = obj._source;
-                return <span className="filterToggleActive"><span className="filterToggle">
+                return <span className="filterToggleActive"><div className="filterToggle">
                     <img onClick={doFilter} field="attrs.duration" value={ob.attrs.duration} className="icon" title="filter" alt="filterIcon" src={filterIcon} />
                     <img field="attrs.duration" value={ob.attrs.duration} onClick={doUnfilter} className="icon" title="unfilter" alt="unfilterIcon" src={unfilterIcon} />
                     <span><img onClick={() => copyToclipboard(ob.attrs.duration)} className="icon" title="copy to clipboard" alt="clipboardIcon" src={clipboardIcon} /><span id={"copyToClipboardText" + ob.attrs.duration} className="copyToClip">copied to clipboard</span></span>
-                </span >{formatDuration(ob.attrs.duration)}
+                </div >{formatDuration(ob.attrs.duration)}
                 </span>
             }
         }
@@ -345,8 +347,9 @@ function getColumn(column_name, tags, tag, width = 0, hidden = false) {
             ),
             formatter: (cell, obj) => {
                 var ob = obj._source;
-                return <span className="filterToggleActive"><span className="filterToggle">
-                    <img onClick={doFilter} field="attrs.tags" value={ob.attrs.tags} className="icon" alt="filterIcon" src={filterIcon} /><img field="attrs.tags" value={ob.attrs.tags} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} /></span > {ob.attrs.tags ? ob.attrs.tags.toString() : []}
+                return <span className="filterToggleActive"><div className="filterToggle">
+                    <img onClick={doFilter} field="attrs.tags" value={ob.attrs.tags} className="icon" alt="filterIcon" src={filterIcon} />
+                    <img field="attrs.tags" value={ob.attrs.tags} onClick={doUnfilter} className="icon" alt="unfilterIcon" src={unfilterIcon} /></div > {ob.attrs.tags ? ob.attrs.tags.toString() : []}
                 </span>
             }
         }
@@ -491,11 +494,11 @@ function getColumn(column_name, tags, tag, width = 0, hidden = false) {
                         }
                         if (value) {
                             return <span className="filterToggleActive" style={{ "color": isEncrypted ? "darkred" : "#212529" }}>
-                                <span className="filterToggle">
+                                <div className="filterToggle">
                                     <img onClick={doFilter} field={field} value={value} className="icon" title="filter" alt="filterIcon" src={filterIcon} />
                                     <img field={field} value={value} onClick={doUnfilter} className="icon" title="unfilter" alt="unfilterIcon" src={unfilterIcon} />
                                     <span><img onClick={() => copyToclipboard(value)} className="icon" title="copy to clipboard" alt="clipboardIcon" src={clipboardIcon} /><span id={"copyToClipboardText" + value} className="copyToClip">copied to clipboard</span></span>
-                                </span >{value}
+                                </div >{value}
                                 {field === "attrs.source" && window.location.pathname.includes("/alerts") && ob["exceeded-by"] === "ip" && <BLcheck data={ob} />}
                             </span>
                         }
