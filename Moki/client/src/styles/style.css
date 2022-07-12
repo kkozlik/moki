@@ -857,7 +857,10 @@ text {
 }
 
 .filterToggle {
-    display: none
+   /* display: none;*/
+    position: absolute;
+    opacity: 0;
+
 }
 
 #filterBar {
@@ -866,14 +869,16 @@ text {
 }
 
 .filterToggleActive:hover .filterToggle {
-    display: inline-table;
-    position: initial;
+  /*  display: block;*/
+    position: absolute;
+    background-color: #ECECEC;
     cursor: pointer;
     opacity: 1;
+    display: table;
 }
 
 .filterToggleActiveWhite:hover .filterToggle {
-    display: contents;
+   /* display: block;*/
     position: initial;
     cursor: pointer;
     opacity: 1;
