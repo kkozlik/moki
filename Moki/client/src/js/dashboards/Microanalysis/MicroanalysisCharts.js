@@ -250,7 +250,7 @@ class MicroanalysisCharts extends Dashboard {
                 {this.state.charts["TOP CALL ENDS"] && <div className="col-auto">
                     <ListChart data={this.state.topCallEnds}
                         name={"TOP CALL ENDS"}
-                        field={"attrs.from-keyword"}
+                        field={"attrs.from.keyword"}
                     />  </div>}
                 {this.state.charts["DESTINATION BY R-URI"] && <div className="col-auto" >
                     <ListChart data={this.state.destination}
