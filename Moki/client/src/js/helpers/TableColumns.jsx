@@ -27,6 +27,7 @@ import { getSearchableAttributes, getExceededName, isEncryptedAttr } from '@moki
 
 const attrsTypes = {
     "@timestamp": "time",
+    "timestamp": "time",
     "ts-start": "time",
     "rx": "round",
     "tx": "round",
@@ -34,6 +35,8 @@ const attrsTypes = {
     "midterm": "round",
     "longterm": "round"
 }
+
+const rawTables = ["apiLogs"];
 
 //support class for async value
 class ExceededName extends Component {
@@ -200,7 +203,7 @@ function copyToclipboard(value) {
     }, 1000);
 }
 
-function getColumn(column_name, tags, tag, width = 0, hidden = false) {
+function getColumn(column_name, tags, tag, width = 0, hidden = false, dashboard) {
     switch (column_name.source) {
         case '_id': return {
             dataField: '_source._id',
@@ -451,15 +454,26 @@ function getColumn(column_name, tags, tag, width = 0, hidden = false) {
             }
             //time format
             else if (attrsTypes[column_name.source] && attrsTypes[column_name.source] === "time") {
+                let dataField = '_source.' + column_name.source;
+                if (rawTables.includes(dashboard)) {
+                    dataField = column_name.source;
+                }
                 return {
-                    dataField: '_source.' + column_name.source,
+                    dataField: dataField,
                     text: column_name ? column_name.name.toUpperCase() : "",
                     editable: false,
                     sort: true,
                     hidden: hidden,
                     headerStyle: { width: '170px' },
                     formatter: (cell, obj) => {
-                        var ob = obj._source[column_name.source];
+                        if (rawTables.includes(dashboard)) {
+                            var ob = obj[column_name.source];
+                            return parseTimestamp(new Date(parseInt(ob*1000)));
+                        }
+                        else {
+                            var ob = obj._source[column_name.source];
+                        }
+ 
                         if (parseTimestamp(ob) !== "Invalid date") {
                             return parseTimestamp(ob)
                         }
@@ -523,8 +537,13 @@ function getColumn(column_name, tags, tag, width = 0, hidden = false) {
                 }
             }
             else {
+                let dataField = '_source.' + column_name.source;
+                if (rawTables.includes(dashboard)) {
+                    dataField = column_name.source;
+                }
+
                 let col = {
-                    dataField: '_source.' + column_name.source,
+                    dataField: dataField,
                     text: column_name ? column_name.name.toUpperCase() : "",
                     editable: false,
                     sort: true,
@@ -534,7 +553,7 @@ function getColumn(column_name, tags, tag, width = 0, hidden = false) {
                         var ob = obj._source;
                         var field = column_name.source;
                         let isEncrypted = false;
-                        if (ob.encrypt) {
+                        if (ob && ob.encrypt) {
                             isEncrypted = isEncryptedAttr(field, ob.encrypt);
                         }
                         return <span style={{ "color": isEncrypted ? "darkred" : "#212529" }}>{cell}</span>
@@ -613,13 +632,13 @@ export function tableColumns(dashboard, tags, layout) {
                 var width = field.headerStyle && field.headerStyle.width ? field.headerStyle.width : null;
                 var hidden = field.hidden ? field.hidden : false;
                 var source = field.text === "ADVANCED" ? "advanced" : field.dataField.slice(8);
-                result.push(getColumn({ source: source, name: field.text, "icons": ["download", "diagram", "details", "share"] }, tags, tag, width, hidden));
+                result.push(getColumn({ source: source, name: field.text, "icons": ["download", "diagram", "details", "share"] }, tags, tag, width, hidden, dashboard));
             }
             else {
                 let name = columnsTableDefaultListConcat[i].name ? columnsTableDefaultListConcat[i].name : columnsTableDefaultListConcat[i];
                 let source = columnsTableDefaultListConcat[i].source ? columnsTableDefaultListConcat[i].source : columnsTableDefaultListConcat[i];
                 let hidden = columnsTableDefaultListConcat[i].hasOwnProperty("hidden") ? columnsTableDefaultListConcat[i].hidden : false;
-                result.push(getColumn({ source: source, name: name, "icons": ["download", "diagram", "details", "share"] }, tags, tag, width = "50px", hidden));
+                result.push(getColumn({ source: source, name: name, "icons": ["download", "diagram", "details", "share"] }, tags, tag, width = "50px", hidden, dashboard));
             }
         }
         return result;
@@ -636,7 +655,7 @@ export function tableColumns(dashboard, tags, layout) {
             let name = columnsTableDefaultListConcat[i].name ? columnsTableDefaultListConcat[i].name : columnsTableDefaultListConcat[i];
             let source = columnsTableDefaultListConcat[i].source ? columnsTableDefaultListConcat[i].source : columnsTableDefaultListConcat[i];
             let hidden = columnsTableDefaultListConcat[i].hasOwnProperty("hidden") ? columnsTableDefaultListConcat[i].hidden : true;
-            result.push(getColumn({ source: source, name: name, "icons": ["download", "diagram", "details", "share"] }, tags, tag = null, width = "150px", hidden));
+            result.push(getColumn({ source: source, name: name, "icons": ["download", "diagram", "details", "share"] }, tags, tag = null, width = "150px", hidden, dashboard));
         }
         return result;
     }
