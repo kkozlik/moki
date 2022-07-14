@@ -6,7 +6,7 @@ it is seperate request from call charts
 */
 import React, { Component } from 'react';
 import BootstrapTable from '@moki-client/react-bootstrap-table-next';
-import cellEditFactory from 'react-bootstrap-table2-editor';
+import Datetime from 'react-datetime';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import ToolkitProvider from 'react-bootstrap-table2-toolkit';
 import filter from "../../styles/icons/filter.png";
@@ -32,7 +32,7 @@ import { setFilters } from "../actions/index";
 import { downloadPcapMerged } from '../helpers/download/downloadPcapMerged';
 import { parseTimestamp } from "../helpers/parseTimestamp";
 import { decryptTableHits, decryptAttr } from '@moki-client/es-response-parser';
-const NOT_EXPAND_OR_COLUMNS_SELECTION = ["LAST LOGIN EVENTS", "LAST MODE CHANGES"];
+const NOT_EXPAND_OR_COLUMNS_SELECTION = ["LAST LOGIN EVENTS", "LAST MODE CHANGES", "API LOGS"];
 
 var FileSaver = require('file-saver');
 var JSZip = require("jszip");
@@ -67,7 +67,9 @@ export default class listChart extends Component {
             count: count,
             page: 1,
             decryptAttrs: [],
-            seenPages: [1]
+            seenPages: [1],
+            timestamp_gte: (Math.round(new Date().getTime() / 1000) - (6 * 3600)) * 1000,
+            timestamp_lte: (Math.round(new Date().getTime() / 1000)) * 1000,
         }
 
         this.chartRef = React.createRef();
@@ -82,18 +84,37 @@ export default class listChart extends Component {
         this.getRecord = this.getRecord.bind(this);
         this.resizableGrid = this.resizableGrid.bind(this);
         this.orderDecrypt = this.orderDecrypt.bind(this);
+        this.focousOutLte = this.focousOutLte.bind(this);
+        this.focousOutGte = this.focousOutGte.bind(this);
+        this.focousSaveOutLte = this.focousSaveOutLte.bind(this);
+        this.focousSaveOutGte = this.focousSaveOutGte.bind(this);
         window.tableChart = this;
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.data !== this.state.data) {
+            this.setState({ data: nextProps.data, total: nextProps.total });
+        }
     }
 
     async componentDidUpdate(prevProps) {
         if (prevProps.data !== this.props.data) {
-            let copy = JSON.parse(JSON.stringify(this.props.data));
-            let parseData = await decryptTableHits(copy, storePersistent.getState().profile, this.state.count, this.state.page);
-            this.setState({
-                data: parseData,
-                seenPages: [this.state.page],
-                dataEncrypted: this.props.data
-            });
+            if (this.props.type !== "raw") {
+                let copy = JSON.parse(JSON.stringify(this.props.data));
+                let parseData = await decryptTableHits(copy, storePersistent.getState().profile, this.state.count, this.state.page);
+                this.setState({
+                    data: parseData,
+                    seenPages: [this.state.page],
+                    dataEncrypted: this.props.data
+                });
+            }
+            else {
+                this.setState({
+                    data: this.props.data,
+                    seenPages: [this.state.page],
+                    dataEncrypted: this.props.data
+                });
+            }
         }
 
         var table = this.chartRef.current.getElementsByClassName('table table-hover')[0];
@@ -293,7 +314,7 @@ export default class listChart extends Component {
         //store already exclude alarms list
         if (window.location.pathname === "/exceeded" || window.location.pathname === "/alerts") {
             try {
-                const response = await fetch(process.env.PUBLIC_URL+"/api/setting", {
+                const response = await fetch(process.env.PUBLIC_URL + "/api/setting", {
                     method: "GET",
                     credentials: 'include',
                     headers: {
@@ -384,6 +405,24 @@ export default class listChart extends Component {
         }
     }
 
+    focousOutLte(value) {
+        this.setState({ timestamp_lte: value });
+    }
+
+    focousOutGte(value) {
+        this.setState({ timestamp_gte: value });
+    }
+
+    focousSaveOutGte(value) {
+        this.setState({ timestamp_gte: value });
+        this.props.getApiLogs(value, this.state.timestamp_lte);
+    }
+
+    focousSaveOutLte(value) {
+        this.setState({ timestamp_lte: value });
+        this.props.getApiLogs(this.state.timestamp_gte, value);
+    }
+
     //add tags to event
     async tags() {
         var selected = this.state.selected;
@@ -398,10 +437,10 @@ export default class listChart extends Component {
                 //previous tag exist
                 if (record['_source']['attrs']['tags']) {
                     var tags = record['_source']['attrs']['tags'] + "," + tag.toString();
-                    result = await elasticsearchConnection(process.env.PUBLIC_URL+"/api/tag", { id: record['_id'], index: record['_index'], tags: tags });
+                    result = await elasticsearchConnection(process.env.PUBLIC_URL + "/api/tag", { id: record['_id'], index: record['_index'], tags: tags });
                 }
                 else {
-                    result = await elasticsearchConnection(process.env.PUBLIC_URL+"/api/tag", { id: record['_id'], index: record['_index'], tags: tag });
+                    result = await elasticsearchConnection(process.env.PUBLIC_URL + "/api/tag", { id: record['_id'], index: record['_index'], tags: tag });
                 }
                 console.info("Tagging event");
                 console.info(result);
@@ -526,7 +565,7 @@ export default class listChart extends Component {
                 <span className="spanTab">{cell}: </span>
                 <img onClick={this.filter} field={"attrs." + cell + ".keyword"} value={value} title="filter" className="icon" alt="filterIcon" src={filter} />
                 <img field={"attrs." + cell + ".keyword"} value={value} onClick={this.unfilter} className="icon" alt="unfilterIcon" title="unfilter" src={unfilter} />
-                <span className="spanTab" style={ style } >{value}</span>
+                <span className="spanTab" style={style} >{value}</span>
             </p>
         }
 
@@ -988,6 +1027,28 @@ export default class listChart extends Component {
                             props => (
                                 <div key={"tablechart"} ref={this.chartRef}>
                                     <h3 className="alignLeft title inline" style={{ "float": "inherit" }} >{this.props.id}</h3>
+                                    {this.props.id === "API LOGS" && <span className="row" style={{ "float": "right", "paddingTop": "6px", "paddingRight": "6px" }}>
+                                        <Datetime closeOnTab
+                                            closeOnSelect
+                                            timeFormat={storePersistent.getState().profile[0].userprefs.time_format}
+                                            dateFormat={storePersistent.getState().profile[0].userprefs.date_format}
+                                            className="timestamp_gteInput"
+                                            input={true}
+                                            onChange={this.focousOutGte}
+                                            onBlur={this.focousSaveOutGte}
+                                            defaultValue={new Date(this.state.timestamp_gte)}
+                                            value={this.state.timestamp_gte} />
+                                        <span style={{ "padding": "5px" }}>-</span>
+                                        <Datetime closeOnTab
+                                            closeOnSelect
+                                            timeFormat={storePersistent.getState().profile[0].userprefs.time_format}
+                                            dateFormat={storePersistent.getState().profile[0].userprefs.date_format}
+                                            onChange={this.focousOutLte}
+                                            onBlur={this.focousSaveOutLte}
+                                            defaultValue={new Date(this.state.timestamp_lte)}
+                                            value={this.state.timestamp_lte}
+                                            className="timestamp_lteInput" />
+                                    </span>}
                                     {!NOT_EXPAND_OR_COLUMNS_SELECTION.includes(this.props.id) && <div id="popupTag" className="popupTag" style={{ "display": "none" }}>
                                         <input type="text" id="tag" name="name" className="form-control" onKeyUp={(event) => this.onEnterKey(event)} style={{ "display": "inline-table", "height": "30px" }} />
                                         <button type="button" className="btn btn-small btn-primary" onClick={() => this.tags()}>OK</button><button type="button" className="btn btn-small btn-secondary" style={{ "margin": "0" }} onClick={() => this.closePopupTag()}>X</button>
