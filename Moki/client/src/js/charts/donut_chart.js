@@ -299,7 +299,12 @@ export default class StackedChart extends Component {
                             }
                             else if (field === "exceeded") {
                                 return getExceededName(key).then(val => {
-                                    this.textContent = val + " (" + d.doc_count + ")";
+                                    if(val.length <= 20){
+                                        this.textContent = val + " (" + d.doc_count + ")";
+                                    }
+                                    else {
+                                        this.textContent =  val.substring(0, 20) + "...  ("+ d.doc_count + ")";
+                                    }
                                 })
                             }
                             else {

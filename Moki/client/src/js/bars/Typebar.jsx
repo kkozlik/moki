@@ -61,10 +61,8 @@ class Typebar extends Component {
         }
 
         if (storedTypes && storedTypes[name]) {
-            this.setState({isAllSelected: false});
-
-
             //get types from template to keep it update it
+            let isAllSelected = true;
             var allTypes = [];
             if (name === "exceeded" || name === "alerts") {
                 allTypes = await getExceededTypes();
@@ -85,6 +83,7 @@ class Typebar extends Component {
                 }
 
                 if (typeExists) {
+                    isAllSelected = isAllSelected && thisType.state === "enable";
                     types.push({
                         id: thisType.id,
                         name: Types[thisType.id] ? Types[thisType.id] : thisType.name,
@@ -98,6 +97,9 @@ class Typebar extends Component {
                         state: "enable"
                     });
                 }
+
+                this.setState({isAllSelected: isAllSelected});
+
             }
         }
         else if (name === "exceeded" || name === "alerts") {
@@ -132,6 +134,7 @@ class Typebar extends Component {
                 }
             }
         }
+
         store.dispatch(assignType(types));
         return types;
     }
@@ -210,6 +213,7 @@ class Typebar extends Component {
                 }
             }
         }
+
         this.setState({
             types: oldTypes,
             isAllSelected: false
