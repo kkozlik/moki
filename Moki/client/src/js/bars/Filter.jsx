@@ -15,7 +15,7 @@ class Filter extends Component {
         super(props);
         this.state = {
             enable: this.props.state === "disable" ? "false" : "true",
-            color: this.props.state === "disable" ? 'gray' : 'var(--second)',
+            color: this.props.state === "disable" ? 'transparent' : 'var(--second)',
             icon: this.props.state === "disable" ? enableIcon : disableIcon,
             pinIcon: unpinIcon,
             negationIcon: unpinIcon,
@@ -73,16 +73,16 @@ class Filter extends Component {
 
 
     disableFilter(event) {
-        if (this.state.enable === "true") {
+        if (this.state.enable === "enable" || this.state.enable === "true") {
             this.setState({
-                enable: 'false',
-                color: 'gray',
+                enable: 'disable',
+                color: 'transparent',
                 icon: enableIcon
             });
             this.props.disableFilter(document.getElementById(event.currentTarget.getAttribute('disableid')).getAttribute('id'));
         } else {
             this.setState({
-                enable: 'true',
+                enable: 'enable',
                 color: 'var(--second)',
                 icon: disableIcon
             });
@@ -113,7 +113,7 @@ class Filter extends Component {
 
     render() {
         let user = storePersistent.getState().user.jwt ? storePersistent.getState().user.jwt : 0;
-        return (<span className="filterBody">
+        return (<span className="filterBody stripes">
             <span id={"edit" + this.props.id} className="editFilter">
                 <p className="modalText" style={{ "float": "left", "marginLeft": "10px" }}><input type="text" id={"filtervalue" + this.props.id} editid={this.props.id} defaultValue={this.props.title} size={this.props.title.length} onKeyPress={this.keyPress} style={{ "width": "auto" }} /></p>
                 <button type="button"
@@ -132,7 +132,7 @@ class Filter extends Component {
             </span>
             <button style={{ backgroundColor: this.state.color }}
                 type="button"
-                className="filter"
+                className={this.props.state === "enable" ? "filter" :  "filter stripes"}
                 id={this.props.id} > {
                     this.props.title
                 } <div className="buttonHover" >

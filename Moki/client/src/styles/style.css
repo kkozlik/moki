@@ -863,6 +863,11 @@ text {
 
 }
 
+.stripes {
+    background-image: linear-gradient(45deg, #a8a6a6 25%, #808080 25%, #808080 50%, #a8a6a6 50%, #a8a6a6 75%, #808080 75%, #808080 100%);
+    background-size: 56.57px 56.57px;
+}
+
 #filterBar {
     margin-top: 0.3rem;
     margin-left: 10px;
