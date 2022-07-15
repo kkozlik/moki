@@ -2,7 +2,7 @@ import { Component } from 'react';
 import { parseTimestamp } from "./parseTimestamp";
 import storePersistent from "../store/indexPersistent";
 import { cipherAttr } from '@moki-client/gui';
-const DATEFORMATS = ["lastModified", "created", "lastLogin", "lastExceeded", "ts", "lastRaised", "lastLaunchedTimer", "lastRaisedTS", "lastExceededTS"];
+const DATEFORMATS = ["lastModified", "created", "lastLogin", "lastExceeded", "ts", "lastRaised", "lastLaunchedTimer", "lastRaisedTS", "lastExceededTS", "timestamp"];
 
 class AlertProfile extends Component {
     constructor(props) {
@@ -95,8 +95,8 @@ class AlertProfile extends Component {
         }
         else {
             //check if custom profile or not
-            if(this.state.data["exceeded-by"].startsWith("cstm_")){
-                result = await this.get("api/bw/getcustomprofile?pretty=true&key="+this.state.data.attrs["from-ua"]+"&list=attrs.from-ua&hmac="+hmac);
+            if (this.state.data["exceeded-by"].startsWith("cstm_")) {
+                result = await this.get("api/bw/getcustomprofile?pretty=true&key=" + this.state.data.attrs["from-ua"] + "&list=attrs.from-ua&hmac=" + hmac);
             }
             else {
                 result = await this.get("api/bw/gettenantprofile?pretty=true");
@@ -116,6 +116,21 @@ class AlertProfile extends Component {
                 }
             }
 
+            //decrypt IP or URI if necessary
+            if (profile[0].userprefs.mode === "encrypt") {
+                if (result.Item.IP) {
+                    //remove hmac
+                    if (!result.Item.IP.includes("plain")) {
+                        let ip = result.Item.IP.substring(result.Item.IP.indexOf("#") + 1);
+                        result.Item.IP = await cipherAttr("attrs.source", ip, profile, "decrypt");
+
+                    }
+                }
+
+                if (result.Item.URI) {
+                    result.Item.URI = await cipherAttr("attrs.from", result.Item.URI, profile, "decrypt");
+                }
+            }
 
 
             /*
@@ -238,7 +253,7 @@ class AlertProfile extends Component {
 }
 
 //check if IP is blacklisted
-export async function checkBLip(ob){
+export async function checkBLip(ob) {
     try {
         let hmac = ob.encrypt;
         if (hmac && hmac !== "plain") hmac = hmac.substring(0, hmac.indexOf(":"));
@@ -261,7 +276,7 @@ export async function checkBLip(ob){
         }
         else {
             //no result
-            if(  Object.keys(jsonData.Item).length === 0){
+            if (Object.keys(jsonData.Item).length === 0) {
                 return false;
             }
             else {
