@@ -66,10 +66,10 @@ class filterBar extends Component {
 
     //if store filters changes, render new state
     rerenderFilters() {
-        if (store.getState().filters !== this.state.filters) {
+        //if (store.getState().filters !== this.state.filters) {
             console.info("Filters are changed: " + JSON.stringify(store.getState().filters));
             this.setState({ filters: store.getState().filters });
-        }
+       // }
     }
 
     //check if attribute prefix is correct
@@ -193,7 +193,7 @@ class filterBar extends Component {
                 oldFilters[i].previousState = 'disable';
             }
         }
-        console.info("Filter is enabled: " + oldFilters);
+        console.info("Filter is enabled: " + JSON.stringify(oldFilters));
         store.dispatch(setFilters(oldFilters));
     }
 
