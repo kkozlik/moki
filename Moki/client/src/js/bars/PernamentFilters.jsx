@@ -68,11 +68,11 @@ class PernamentFilters extends Component {
                 <div className="filterBar" id="filterBarPernament">
                     {pernamentFilters[this.props.dashboard] && pernamentFilters[this.props.dashboard].map((par, i) => {
                         return (<span className="filterBody">
-                            <button style={{ backgroundColor: this.state[par.id] === false ? "grey" : par.color }}
+                            <button style={{ backgroundColor: this.state[par.id] === false ? "transparent" : par.color }} 
                                 type="button"
                                 name={par.id}
                                 title={par.filter}
-                                className="filterPernament"
+                                className={this.state[par.id] === false ? "filterPernament stripes" :  "filterPernament"} 
                                 filter={par.filter}
                                 onClick={this.activateFilter}
                                 id={par.id} > {
