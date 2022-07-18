@@ -12,7 +12,7 @@ class Type extends Component {
         }
         this.state = {
             state: this.props.state ? this.props.state : 'enable',
-            color: this.props.state && this.props.state === "disable" ? "gray" : color,
+            color: this.props.state && this.props.state === "disable" ? "transparent" : color,
         }
         this.disableType = this.disableType.bind(this);
 
@@ -26,7 +26,7 @@ class Type extends Component {
         }
         if (nextProps.state === "disable") {
             this.setState({ state: 'disable' });
-            this.setState({ color: 'gray' });
+            this.setState({ color: 'transparent' });
 
         } else {
             this.setState({ state: 'enable' });
@@ -38,14 +38,13 @@ class Type extends Component {
     //if all is selected, disable everything accept this type
     disableType(events) {
         if (this.props.isAllSelected) {
-            this.props.disableType(events.currentTarget.getAttribute('id'), "disable", "grey");
+            this.props.disableType(events.currentTarget.getAttribute('id'), "disable", "transparent");
         }
         else {
-
             if (this.state.state === "enable") {
                 this.setState({ state: 'disable' });
-                this.setState({ color: 'gray' });
-                this.props.disableType(events.currentTarget.getAttribute('id'), "disable", "grey");
+                this.setState({ color: 'transparent' });
+                this.props.disableType(events.currentTarget.getAttribute('id'), "disable", "transparent");
 
             } else {
                 this.setState({ state: 'enable' });
@@ -57,7 +56,7 @@ class Type extends Component {
 
     render() {
         return (
-            <button type="button" className="type" id={this.props.id} state={this.state.state} title={this.props.description ? this.props.description : ""} style={{ backgroundColor: this.state.color }} onClick={this.disableType}>{this.props.name}
+            <button type="button" className={this.props.state === "enable" ? "type" :  "type stripes"} id={this.props.id} state={this.state.state} title={this.props.description ? this.props.description : ""} style={{ backgroundColor: this.state.color }} onClick={this.disableType}>{this.props.name}
             </button>
         )
     };
