@@ -13,6 +13,7 @@ class Type extends Component {
         this.state = {
             state: this.props.state ? this.props.state : 'enable',
             color: this.props.state && this.props.state === "disable" ? "transparent" : color,
+            timer: null
         }
         this.disableType = this.disableType.bind(this);
 
@@ -35,28 +36,40 @@ class Type extends Component {
         }
     }
 
-    //if all is selected, disable everything accept this type
+    //single click - deselect this type
+    //doubůe click - select only this type
     disableType(events) {
-        if (this.props.isAllSelected) {
-            this.props.disableType(events.currentTarget.getAttribute('id'), "disable", "transparent");
-        }
-        else {
-            if (this.state.state === "enable") {
-                this.setState({ state: 'disable' });
-                this.setState({ color: 'transparent' });
-                this.props.disableType(events.currentTarget.getAttribute('id'), "disable", "transparent");
+        let id = events.currentTarget.getAttribute('id');
+        //sigle click
+        if (events.detail === 1) {
+            let timer = setTimeout(() => {
+                if (this.state.state === "enable") {
+                    this.props.disableType(id, "disable", "transparent", "single");
+                }
+                else {
+                    this.props.disableType(id, "enable", ColorType[this.props.id], "single");
+                }
+            }, 200);
 
-            } else {
-                this.setState({ state: 'enable' });
-                this.setState({ color: ColorType[this.props.id] });
-                this.props.disableType(events.currentTarget.getAttribute('id'), "enable", ColorType[this.props.id]);
-            }
+            this.setState({
+                timer: timer
+            })
+            //double click
+        } else if (events.detail === 2) {
+            clearTimeout(this.state.timer);
+            this.setState({
+                timer: null,
+                state: 'disable',
+                color: 'transparent'
+            });
+            this.props.disableType(id, "disable", "transparent", "double");
+
         }
     }
 
     render() {
         return (
-            <button type="button" className={this.props.state === "enable" ? "type" :  "type stripes"} id={this.props.id} state={this.state.state} title={this.props.description ? this.props.description : ""} style={{ backgroundColor: this.state.color }} onClick={this.disableType}>{this.props.name}
+            <button type="button" className={this.props.state === "enable" ? "type" : "type stripes"} id={this.props.id} state={this.state.state} title={this.props.description ? this.props.description : ""} style={{ backgroundColor: this.state.color }} onClick={this.disableType}>{this.props.name}
             </button>
         )
     };
