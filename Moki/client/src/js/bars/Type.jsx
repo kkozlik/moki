@@ -40,6 +40,7 @@ class Type extends Component {
     //doubůe click - select only this type
     disableType(events) {
         let id = events.currentTarget.getAttribute('id');
+        //sigle click
         if (events.detail === 1) {
             let timer = setTimeout(() => {
                 if (this.state.state === "enable") {
@@ -53,9 +54,16 @@ class Type extends Component {
             this.setState({
                 timer: timer
             })
+            //double click
         } else if (events.detail === 2) {
-            this.setState({ timer: null });
+            clearTimeout(this.state.timer);
+            this.setState({
+                timer: null,
+                state: 'disable',
+                color: 'transparent'
+            });
             this.props.disableType(id, "disable", "transparent", "double");
+
         }
     }
 

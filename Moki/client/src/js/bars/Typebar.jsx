@@ -9,6 +9,7 @@ import uncheckAll from "../../styles/icons/uncheckAll.png";
 import store from "../store/index";
 import { assignType } from "../actions/index";
 import { getLayoutSettings } from '../helpers/getLayout';
+import { ColorType, getExceededColor } from '@moki-client/gui';
 const STORED_TYPES_VERSION = "1.0";
 
 class Typebar extends Component {
@@ -204,6 +205,10 @@ class Typebar extends Component {
                 }
                 else {
                     oldTypes[i].state = "enable";
+                    let color = ColorType[type];
+                    if (window.location.pathname === "/exceeded" || window.location.pathname === "/alerts") {
+                        color = getExceededColor(this.props.id);
+                    }
                     oldTypes[i].color = color;
                 }
             }
@@ -227,7 +232,7 @@ class Typebar extends Component {
             isAllSelected: isAllSelected
         });
 
-        console.info("Type is disabled:" + JSON.stringify(oldTypes));
+        console.info("Type is "+state+": " + JSON.stringify(oldTypes));
         this.storeTypesInLocalStorage(oldTypes);
         store.dispatch(assignType(oldTypes));
     }
