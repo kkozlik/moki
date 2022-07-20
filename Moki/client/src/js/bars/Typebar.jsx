@@ -98,7 +98,7 @@ class Typebar extends Component {
                     });
                 }
 
-                this.setState({isAllSelected: isAllSelected});
+                this.setState({ isAllSelected: isAllSelected });
 
             }
         }
@@ -192,32 +192,41 @@ class Typebar extends Component {
     if all types selected - disable all types accept the selected one
     if one or more types selected - add new type or deselect
     */
-    disableType(type, state, color) {
-        //disable all except selected
-        if (this.state.isAllSelected) {
+    disableType(type, state, color, click) {
+        var isAllSelected = true;
+        if (click === "double") {
+            //disable all except selected
             var oldTypes = this.state.types;
             for (var i = 0; i < oldTypes.length; i++) {
                 if (oldTypes[i].id !== type) {
                     oldTypes[i].state = state;
                     oldTypes[i].color = color;
                 }
+                else {
+                    oldTypes[i].state = "enable";
+                    oldTypes[i].color = color;
+                }
             }
+            isAllSelected = false;
         }
-        //add only new type
         else {
             var oldTypes = this.state.types;
             for (var i = 0; i < oldTypes.length; i++) {
                 if (oldTypes[i].id === type) {
                     oldTypes[i].state = state;
-                    oldTypes[i].color = color;
+                }
+
+                if (oldTypes[i].state === "disable") {
+                    isAllSelected = isAllSelected && false;
                 }
             }
         }
 
         this.setState({
             types: oldTypes,
-            isAllSelected: false
+            isAllSelected: isAllSelected
         });
+
         console.info("Type is disabled:" + JSON.stringify(oldTypes));
         this.storeTypesInLocalStorage(oldTypes);
         store.dispatch(assignType(oldTypes));
@@ -237,8 +246,8 @@ class Typebar extends Component {
             return (
                 <div className="typeBar">
                     <div className="row align-items-center ">
-                        <img alt="checkAllIcon" onClick={() =>this.checkAll("check")} className="tabletd checkAll" src={checkAll} />
-                        <img alt="uncheckAllIcon" onClick={() =>this.checkAll("uncheck")} className="tabletd checkAll" src={uncheckAll} />
+                        <img alt="checkAllIcon" onClick={() => this.checkAll("check")} className="tabletd checkAll" src={checkAll} />
+                        <img alt="uncheckAllIcon" onClick={() => this.checkAll("uncheck")} className="tabletd checkAll" src={uncheckAll} />
                         {types}
                     </div>
 
