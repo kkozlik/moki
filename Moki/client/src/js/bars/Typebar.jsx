@@ -207,7 +207,7 @@ class Typebar extends Component {
                     oldTypes[i].state = "enable";
                     let color = ColorType[type];
                     if (window.location.pathname === "/exceeded" || window.location.pathname === "/alerts") {
-                        color = getExceededColor(this.props.id);
+                        color = getExceededColor(oldTypes[i].id);
                     }
                     oldTypes[i].color = color;
                 }
