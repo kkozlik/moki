@@ -110,14 +110,22 @@ class Settings extends Component {
                 }
                 return "Error: " + attribute + " must be integer.";
             }
+            
+            let ldap_schema = '(ldap(s)?:\/\/)';
+            let ipv4_schema = '(((\d{1,3}.){3}\d{1,3}(:\d+)?)';
+            let ipv6_schema = '([a-f0-9]{1,4}:{1,2}){1,4}([a-f0-9]{1,4}))';
+            let ipv6_bracket_schema = '(\[' + ipv6_schema + '\]:\d+)';
+            let uri_schema = '((\w|\d|-)+\.)+(\w)+(:\d+)?';
 
             if (restriction.type === "ldapIP") {
-                if (/^(ldap(s)?:\/\/)(((\d{1,3}.){3}\d{1,3}(:\d+)?)|(\[([a-f0-9]{1,4}:{1,2}){1,4}([a-f0-9]{1,4})\]:\d+)|((\w|\d)+\.)+(\w)+(:\d+)?|([a-f0-9]{1,4}:{1,2}){1,4}([a-f0-9]{1,4}))$/.test(value)) {
+                if (new RegExp("/^" + ldap_schema + ipv4_schema + ipv6_schema +
+                    ipv6_bracket_schema + uri_schema + "$/").test(value)) {
                     return true;
                 }
-                else if(value === "") return true;
+                else if (value === "") return true;
                 return "Error: " + attribute + " must have format 'ldap:// + ipv4 or ipv4:port or ipv6 or ip6:port or dns";
             }
+
 
             if (restriction.type && restriction.type.enum) {
                 if (restriction.type.enum.includes(value)) {
@@ -191,7 +199,7 @@ class Settings extends Component {
 
 
             for (i = 0; i < jsonData.length; i++) {
-                 data = document.getElementById(jsonData[i].attribute);
+                data = document.getElementById(jsonData[i].attribute);
                 if (data.type === "checkbox") {
                     jsonData[i].value = data.checked;
                 }
@@ -462,11 +470,11 @@ class Settings extends Component {
         var LEdata = this.generate(LE);
         var Eventsdata = this.generate(Events);
         var Authdata = this.generate(Auth);
-//        var Tagdata = this.generateTags();
+        //        var Tagdata = this.generateTags();
 
 
         return (<div className="container-fluid" > {this.state.wait && < SavingScreen />}
-            <div className="chart"><p className="settingsH" style={{"marginTop": "30px"}}> General </p> {Generaldata} </div>
+            <div className="chart"><p className="settingsH" style={{ "marginTop": "30px" }}> General </p> {Generaldata} </div>
             <div className="chart"><p className="settingsH" > Authentication </p> {Authdata}</div>
             <div className="chart"><p className="settingsH" > Events </p> {Eventsdata} </div>
             <div className="chart"><p className="settingsH" > Elasticsearch and logstash </p> {LEdata} </div>
