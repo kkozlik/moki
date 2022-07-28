@@ -24,7 +24,8 @@ export default class FirstLoginPopup extends Component {
             document.getElementById("create").style.display = "none";
 
         }
-        else if (password.indexOf('\'') >= 0 || password.indexOf('"') >= 0) {
+        else if (password.indexOf("'") >= 0 || password.indexOf('"') >= 0) {
+            console.log("quotes");
             this.setState({ "error": "Passwords can't contains quotes." });
             document.getElementById("createR").style.display = "block";
             document.getElementById("create").style.display = "none";
@@ -94,7 +95,7 @@ export default class FirstLoginPopup extends Component {
                         <label className="col-sm-4 col-form-label" style={{ "color": "grey" }}>Password again</label>
                         <input type="password" id="password2" required className="form-control" placeholder="same password again"></input>
                     </div>
-                    {this.state.error ? <p className="error">{this.state.error}</p> : ""}
+                    {this.state.error ? <p className="erro" style={{"color": "red"}}>{this.state.error}</p> : ""}
                     <div style={{ "textAlign": "center" }}>
                         <button onClick={this.createUser} style={{ "marginRight": "5px" }} className="btn btn-primary"><i className="fa fa-circle-o-notch fa-spin" id="create" style={{ "display": "none" }}></i> <span id="createR">Create</span> </button>
                     </div>
