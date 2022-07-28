@@ -9,6 +9,7 @@ import DonutChart from '../../charts/donut_chart.js';
 import DatebarChart from '../../charts/datebar_chart.js';
 import ListChart from '../../charts/list_chart.js';
 import ValueChart from '../../charts/value_chart.js';
+import StackedChartLine from '../../charts/timedate_stackedbar_with_line_chart.js'; 
 import store from "../../store/index";
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
 import { parseListData, parseStackedbarTimeData, parseBucketData, parseSunburstData, parseQueryStringData, parseAggData, parseAggSumBucketData } from '@moki-client/es-response-parser';
@@ -139,20 +140,15 @@ class CallCharts extends Dashboard {
 
                 </div>
                 {this.state.charts["EVENTS OVER TIME"] && <div className="row no-gutters" >
-                    <TimedateStackedChart id="eventsOverTime" data={
+                    <StackedChartLine id="eventsOverTime" data={
                         this.state.eventCallsTimeline
-                    } name={"EVENTS OVER TIME"} keys={"calls"} width={store.getState().width - 300} units={"count"}
+                    } name={"EVENTS OVER TIME"} keys={"calls"} width={store.getState().width - 300} data2={this.state.asrDurationOverTime}  units={"count"}
                     />
                 </div>}
                 {this.state.charts["SUM DURATION OVER TIME"] && <div className="row no-gutters" >
                     <DatebarChart data={
                         this.state.sumDurationOverTime} id={"sumDurationOverTime"} marginLeft={25} height={200}
                         name={"SUM DURATION OVER TIME"} width={store.getState().width - 300} />
-                </div>}
-                {this.state.charts["ASR OVER TIME"] && <div className="row no-gutters" >
-                    <DatebarChart data={
-                        this.state.asrDurationOverTime} id={"asrDurationOverTime"} marginLeft={25} height={200}
-                        name={"ASR OVER TIME"} width={store.getState().width - 300} units={"%"} />
                 </div>}
                 <div className="row no-gutters" >
                     {this.state.charts["CALL SUCCESS RATIO"] && <div className="col-auto" style={{ "marginRight": "5px" }}>
