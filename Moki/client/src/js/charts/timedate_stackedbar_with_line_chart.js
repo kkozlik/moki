@@ -1,15 +1,14 @@
-import React, {
-    Component
-} from 'react';
+import React, { Component} from 'react';
 import * as d3 from "d3";
-
-import ColorType from '@moki-client/gui';
-import Colors from '@moki-client/gui';
-import { timestampBucket } from '../bars/TimestampBucket.js';
+import { ColorType, Colors } from '@moki-client/gui';
 import store from "../store/index";
+import storePersistent from "../store/indexPersistent";
 import { setTimerange } from "../actions/index";
 import { createFilter } from '@moki-client/gui';
 import emptyIcon from "../../styles/icons/empty_small.png";
+import { getTimeBucket, getTimeBucketInt } from "../helpers/getTimeBucket";
+import { parseTimestamp, parseTimestampD3js, parseTimeData } from "../helpers/parseTimestamp";
+import {setTickNrForTimeXAxis} from "../helpers/chart";
 
 /*
 format:
@@ -17,14 +16,14 @@ format:
 time
 key
 */
-export default class StackedChart extends Component {
+export default class StackedChartLine extends Component {
 
     componentDidUpdate(prevProps) {
-        this.draw(this.props.data, this.props.id, this.props.data2, this.props.width);
+        this.draw(this.props.data, this.props.id, this.props.data2, this.props.width, this.props.units, this.props.name);
     }
 
 
-    draw(data, id, data2, width) {
+    draw(data, id, data2, width, units, name) {
         //FOR UPDATE: remove chart if it's already there
         var chart = document.getElementById(id + "SVG");
         if (chart) {
@@ -49,7 +48,7 @@ export default class StackedChart extends Component {
         var height = 200 - margin.top - margin.bottom;
 
         var colorScale = d3.scaleOrdinal(Colors);
-        var parseDate = d3.utcFormat(timestampBucket(store.getState().timerange[0], store.getState().timerange[1]));
+        var parseDate = parseTimestampD3js(store.getState().timerange[0], store.getState().timerange[1]);
 
         // var bucketSize = d3.timeFormat(timestampBucketSizeWidth(store.getState().timerange[0], store.getState().timerange[1]));
 
@@ -58,68 +57,73 @@ export default class StackedChart extends Component {
             .attr('height', height + margin.top + margin.bottom)
             .attr('id', id + "SVG");
         //  .append('g');
-
         //max and min date
-        var maxTime = store.getState().timerange[1];
-        var minTime = store.getState().timerange[0] - 7200;
+        var maxTime = parseTimeData(store.getState().timerange[1]) + getTimeBucketInt();
+        var minTime = parseTimeData(store.getState().timerange[0]) - (60 * 1000); //minus one minute fix for round up
+
+        var x = d3.scaleBand().range([0, width]).padding(0.1);
 
         //scale for brush function
-        var x = d3.scaleLinear()
-            .range([0, widthChart])
+        var xScale = d3.scaleLinear()
+            .range([0, width])
             .domain([minTime, maxTime]);
 
-        var rectWidth = 0;
-        if (data[1]) {
-            rectWidth = x(data[1].time) - x(data[0].time) - 2;
-
-            console.log("šířka sloupečku: " + rectWidth);
-            console.log(data[0].time);
-
-            console.log(x(data[0].time));
-
+        if (data !== undefined) {
+            var max = d3.max(data, d => d.sum + 5);
+            var domain = max ? max + max / 3 : 1;
         }
-
-
-        var y = d3.scaleLinear().range([height, 0]);
+        var yScale = d3.scaleLinear().range([height, 0]).domain([0, domain]);
         var z = d3.scaleOrdinal().range(['#d53e4f', '#fc8d59', '#fee08b', '#ffffbf', '#e6f598', '#99d594', '#3288bd']);
 
+
         var xAxis = d3.axisBottom()
-            .scale(x)
+            .scale(xScale)
             .ticks(7)
             .tickFormat(parseDate);
 
-        var yAxis = d3.axisLeft(y).ticks(5).tickFormat(function (d) {
-            return d
+        setTickNrForTimeXAxis(xAxis);
+
+        var yAxis = d3.axisLeft(yScale).ticks(5).tickFormat(function (d) {
+            if (d / 1000000000000 >= 1) return d / 1000000000000 + " T";
+            if (d / 1000000000 >= 1) return d / 1000000000 + " G";
+            if (d / 1000000 >= 1) return d / 1000000 + " M";
+            if (d / 1000 >= 1) return d / 1000 + " K";
+            return d;
         });
-        rootsvg.append("g")
-            .attr("class", "x axis")
-            .attr("transform", "translate(" + margin.left + "," + (height + 5) + ")")
-            .call(xAxis);
 
-        rootsvg.append("g")
-            .attr("class", "y axis")
-            .attr("transform", "translate(" + margin.left + ",0)")
-            .call(yAxis);
+        rootsvg.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-        if (data.length === 0) {
+
+        if (data === undefined || data.length === 0) {
             rootsvg
                 .append('svg:image')
                 .attr("xlink:href", emptyIcon)
                 .attr('transform', 'translate(' + widthChart / 2 + ',' + height / 2 + ')')
         }
         else {
-            rootsvg.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-
+          
+            rootsvg.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(" + margin.left + "," + (height) + ")")
+                .call(xAxis);
 
             rootsvg.append("g")
+                .attr("class", "y axis")
+                .attr("transform", "translate(" + margin.left + ",0)").call(yAxis);
+
+            var dataLength = 0;
+            for (var o = 0; o < data.length; o++) {
+                dataLength = dataLength + Object.keys(data[o]).length - 2;   //minus time attribute
+            }
+            var g = rootsvg.append("g")
+                .attr("transform", "translate(" + margin.left + ",0)");
+
+            g.append("g")
                 .attr("class", "brush")
                 .call(d3.brushX()
-                    .extent([[0, 0], [widthChart, height]])
+                    .extent([[0, 0], [width, height]])
                     .on("end", brushended));
-
-            var g = rootsvg.append("g")
-                .attr("transform", "translate(" + (margin.left) + ",0)");
 
             function brushended() {
                 if (!d3.event.sourceEvent) return;
@@ -127,31 +131,24 @@ export default class StackedChart extends Component {
                 if (!d3.event.selection) return;
                 // Ignore empty selections.
                 var extent = d3.event.selection;
-                var timestamp_gte = Math.round(x.invert(extent[0]));
-                var timestamp_lte = Math.round(x.invert(extent[1]));
-                var timestamp_readiable = new Date(Math.trunc(timestamp_gte)).toLocaleString() + " - " + new Date(Math.trunc(timestamp_lte)).toLocaleString()
+                var timestamp_gte = Math.round(xScale.invert(extent[0]));
+                var timestamp_lte = Math.round(xScale.invert(extent[1]));
 
-                // timestamp_gte = Math.round(timestamp_gte/1000)*1000;
-                //    timestamp_lte = Math.round(timestamp_lte/1000)*1000;
+                var timestamp_readiable = parseTimestamp(new Date(Math.trunc(timestamp_gte))) + " - " + parseTimestamp(new Date(Math.trunc(timestamp_lte)));
                 store.dispatch(setTimerange([timestamp_gte, timestamp_lte, timestamp_readiable]));
 
             }
 
-            y.domain([0, d3.max(data, function (d) {
-                return d.sum + (d.sum / 3);
-            })]);
+            x.domain(data.map(function (d) {
+                return parseDate(d.time);
+            }));
+
             z.domain(data.map(function (d) {
                 return d.keys;
             }));
 
-            // gridlines in x axis function
-            function make_x_gridlines() {
-                return d3.axisBottom(x)
-                    .ticks(7)
-            }
+            var keys = this.props.keys ? storePersistent.getState().layout.types[this.props.keys] ? storePersistent.getState().layout.types[this.props.keys] : this.props.keys : storePersistent.getState().layout.types["overview"];
 
-
-            var keys = this.props.keys;
 
             //var id = 0;
             var stack = d3.stack()
@@ -170,7 +167,14 @@ export default class StackedChart extends Component {
                     return d.key;
                 })
                 .style("fill", function (d) {
-                    if (ColorType[d.key]) {
+                    if (name === "MoS STATS") {
+                        if (d.key === "*-2.58") { return "#FE2E2E"; }
+                        if (d.key === "2.58-3.1") { return "#F79F81"; }
+                        if (d.key === "3.1-3.6") { return "#F3E2A9"; }
+                        if (d.key === "3.6-4.03") { return "#95c196"; }
+                        if (d.key === "4.03-*") { return "#4f9850"; }
+                    }
+                    else if (ColorType[d.key]) {
                         return ColorType[d.key];
                     }
                     else {
@@ -184,41 +188,79 @@ export default class StackedChart extends Component {
                     d3.select(this).style("stroke", "none");
                 });
 
+            // gridlines in y axis function
+            function make_y_gridlines() {
+                return d3.axisLeft(yScale)
+                    .ticks(5)
+            }
+
 
             layer.selectAll("rect")
-                .data(function (d) {
+                .data(function (d, i) {
                     return d;
                 })
                 .enter().append("rect")
                 .attr('class', 'barStacked')
                 .attr("x", function (d) {
                     //bug fix
-                    if (x(d.data.time) < 0) {
+                    if (xScale(d.data.time) < 0) {
                         return -1000;
                     }
-                    return x(d.data.time);
+                    return xScale(d.data.time);
                 })
                 //.attr("x", function(d) { return x(d.data.date); })
+                /*     .attr("y", function (d) {
+                         return yScale(d[1]);
+                     })
+                     .attr("height", function (d) {
+                     var height = yScale(d[0]) - yScale(d[1]);
+                         if(height){
+                             return height
+                         }
+                         else {
+                             return 0;
+                         }
+                     })*/
+                .attr('width', function (d, i) {
+                    var timebucket = getTimeBucket();
+                    var nextTime = d.data.time;
+                    if (timebucket.includes("m")) {
+                        nextTime = nextTime + (timebucket.slice(0, -1) * 60 * 1000);
+                    }
+                    else if (timebucket.includes("s")) {
+                        nextTime = nextTime + (timebucket.slice(0, -1) * 1000);
+                    }
+                    else {
+                        nextTime = nextTime + (timebucket.slice(0, -1) * 60 * 60 * 1000);
+                    }
+
+                    if (nextTime < maxTime && d.data.time > minTime) {
+                        return xScale(nextTime) - xScale(d.data.time) - 1;
+                    }
+                    return;
+                })
                 .attr("y", function (d) {
-                    return y(d[1]);
+                    return yScale(d[1]);
                 })
                 .attr("height", function (d) {
-                    return y(d[0]) - y(d[1]);
+                    var height = yScale(d[0]) - yScale(d[1]);
+                    if (height) {
+                        return height
+                    }
+                    else {
+                        return 0;
+                    }
                 })
-                //  .attr("width", bucketSize)
-                .attr('width', (d, i) => data[i + 1] ? x(data[i + 1].time) - x(d.data.time) - 2 : 10)
-
                 .on("mouseover", function (d, i) {
                     //d3.select(this).style("stroke","orange");
 
-                    tooltip.style("visibility", "visible");
-
-                    tooltip.select("div").html("<strong>Time: </strong> " + parseDate(d.data.time) + "<br/><strong>Value:</strong> " + d3.format(',')(d[1] - d[0]) + "<br/><strong>Type: </strong>" + this.parentNode.getAttribute("type") + "<br/> ");
+                    tooltip.select("div").html("<strong>Time: </strong> " + parseTimestamp(d.data.time) + " + " + getTimeBucket() + "<br/><strong>Value:</strong> " + d3.format(',')(d[1] - d[0]) + units + "<br/><strong>Type: </strong>" + this.parentNode.getAttribute("type") + "<br/> ");
                     d3.select(this).style("cursor", "pointer");
 
                     var tooltipDim = tooltip.node().getBoundingClientRect();
                     var chartRect = d3.select('#' + id).node().getBoundingClientRect();
                     tooltip
+                        .style("visibility", "visible")
                         .style("left", (d3.event.clientX - chartRect.left + document.body.scrollLeft - (tooltipDim.width / 2)) + "px")
                         .style("top", (d3.event.clientY - chartRect.top + document.body.scrollTop + 15) + "px");
                 })
@@ -236,42 +278,35 @@ export default class StackedChart extends Component {
 
             //filter type onClick
             layer.on("click", el => {
-                createFilter("attrs.type:" + el.key);
+                if (window.location.pathname === "/exceeded" || window.location.pathname.includes("/alerts")) {
+                    createFilter("exceeded:" + el.key);
+                }
+                else {
+                    createFilter("attrs.type:" + el.key);
+                }
 
-                var tooltips = document.getElementsByClassName("tooltip" + id);
-                if (tooltip) {
-                    for (var j = 0; j < tooltips.length; j++) {
-                        tooltips[j].style.opacity = 0;
-                    }
+                var tooltips = document.getElementById("tooltip" + id);
+                if (tooltips) {
+                    tooltips.style.opacity = 0;
                 }
             });
 
             // Animation
             /* Add 'curtain' rectangle to hide entire graph */
             var curtain = rootsvg.append('rect')
-                .attr('x', -1 * width)
-                .attr('y', -1 * height)
-                .attr('height', height)
-                .attr('width', width)
-                .attr('class', 'curtain')
-                .attr('transform', 'rotate(180)')
-                .style('fill', '#ffffff');
+            .attr('x', -1 * width - 70)
+            .attr('y', -1 * height)
+            .attr('height', height)
+            .attr('width', width + 100)
+            .attr('class', 'curtain')
+            .attr('transform', 'rotate(180)')
+            .style('fill', '#ffffff');
 
-            // Now transition the curtain to double of its width
-            curtain.transition()
-                .duration(1200)
-                .ease(d3.easeLinear)
-                .attr('x', -2 * width - 50);
-
-
-            // add the X gridlines
-            g.append("g")
-                .attr("class", "grid")
-                .attr("transform", "translate(" + (-rectWidth) + "," + height + ")")
-                .call(make_x_gridlines()
-                    .tickSize(-height)
-                    .tickFormat("")
-                )
+        // Now transition the curtain to double of its width
+        curtain.transition()
+            .duration(1200)
+            .ease(d3.easeLinear)
+            .attr('x', -2 * width - 300);
 
 
             //y axis label
@@ -312,7 +347,7 @@ export default class StackedChart extends Component {
 
                 // define the line
                 var valueline = d3.line()
-                    .x(function (d) { return x(d.key); })
+                    .x(function (d) { return xScale(d.key); })
                     .y(function (d) { return yLine(d.agg.value); });
 
                 g.append("path")
@@ -336,19 +371,19 @@ export default class StackedChart extends Component {
                     .attr("x", 0 - (height / 2))
                     .attr("dy", "1em")
                     .style("text-anchor", "middle")
-                    .text("Minutes");
+                    .text("ASR (%)");
 
                 // Data dots
                 g.selectAll(".dot")
                     .data(data2)
                     .enter().append("circle") // Uses the enter().append() method
                     .attr("class", "dot") // Assign a class for styling
-                    .attr("cx", function (d, i) { return x(d.key) })
+                    .attr("cx", function (d, i) { return xScale(d.key) })
                     .attr("cy", function (d) { return yLine(d.agg.value) })
                     .attr("r", 3)
                     .on("mouseover", function (d, i) {
                         tooltip.style("visibility", "visible");
-                        tooltip.select("div").html("<strong>Time: </strong> " + parseDate(d.key) + "<br/><strong>Duration:</strong> " + d3.format(',')(Math.round(d.agg.value)) + "<br/>");
+                        tooltip.select("div").html("<strong>Time: </strong> " + parseTimestamp(d.key) + "<br/><strong>Value:</strong> " + d3.format(',')(Math.round(d.agg.value)) + "% <br/>");
                         d3.select(this).style("cursor", "pointer");
                     })
                     .on("mouseout", function () {
@@ -386,6 +421,6 @@ export default class StackedChart extends Component {
     }
 
     render() {
-        return (<div id={this.props.id}  className="chart"> <h3 className="alignLeft title">{this.props.name}</h3></div>)
+        return (<div id={this.props.id} className="chart"> <h3 className="alignLeft title">{this.props.name}</h3></div>)
     }
 }
