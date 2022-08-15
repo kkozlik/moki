@@ -110,19 +110,11 @@ class Settings extends Component {
                 }
                 return "Error: " + attribute + " must be integer.";
             }
-            
-            let ldap_schema = '(ldap(s)?:\/\/)';
-            let ipv4_schema = '(((\d{1,3}.){3}\d{1,3}(:\d+)?)';
-            let ipv6_schema = '([a-f0-9]{1,4}:{1,2}){1,4}([a-f0-9]{1,4}))';
-            let ipv6_bracket_schema = '(\[' + ipv6_schema + '\]:\d+)';
-            let uri_schema = '((\w|\d|-)+\.)+(\w)+(:\d+)?';
 
             if (restriction.type === "ldapIP") {
-                if (new RegExp("/^" + ldap_schema + ipv4_schema + ipv6_schema +
-                    ipv6_bracket_schema + uri_schema + "$/").test(value)) {
-                    return true;
+                if (/^(ldap(s)?:\/\/)(((\d{1,3}.){3}\d{1,3}(:\d+)?)|(\[([a-f0-9]{1,4}:{1,2}){1,4}([a-f0-9]{1,4})\]:\d+)|((\w|\d|-|_)+\.)+(\w)+(:\d+)?|([a-f0-9]{1,4}:{1,2}){1,4}([a-f0-9]{1,4}))$/.test(value)) {
+                    return true; 
                 }
-                else if (value === "") return true;
                 return "Error: " + attribute + " must have format 'ldap:// + ipv4 or ipv4:port or ipv6 or ip6:port or dns";
             }
 
