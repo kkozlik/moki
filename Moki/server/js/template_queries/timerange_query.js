@@ -8,8 +8,9 @@ var getTemplate = function (queries, supress, source, size = 500) {
                     "order": "desc",
                     "unmapped_type": "boolean"
                 }
-            }
-            ],
+            },
+            { "attrs.type": { "order": "asc" } }
+        ],
         "query": {
             "bool": {
                 "must": queries,
@@ -23,7 +24,7 @@ var getTemplate = function (queries, supress, source, size = 500) {
 
     };
 
-    if(source !== "*"){
+    if (source !== "*") {
         template._source = source;
     }
     return template;
