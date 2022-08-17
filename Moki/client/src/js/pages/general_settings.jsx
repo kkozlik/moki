@@ -17,10 +17,13 @@ class Settings extends Component {
         this.save = this.save.bind(this);
         this.check = this.check.bind(this);
         this.generate = this.generate.bind(this);
+        this.removeFile = this.removeFile.bind(this);
+        this.checkboxClick = this.checkboxClick.bind(this);
         this.state = {
             data: [],
             wait: false,
-            tags: this.props.tags
+            tags: this.props.tags,
+            isLdap: false
         }
     }
 
@@ -36,6 +39,14 @@ class Settings extends Component {
             });
         }
 
+    }
+
+    checkboxClick(attribute) {
+        if (attribute === "ldap_enable") {
+            this.setState({
+                isLdap: !this.state.isLdap
+            })
+        }
     }
 
     /*
@@ -58,6 +69,20 @@ class Settings extends Component {
                 if (data.app === "m_config")
                     result = data.attrs
             });
+
+            //check if ldap is enabled to show ldap option settings
+            for (let hit of result) {
+                if (hit.attribute === "ldap_enable") {
+                    if (hit.value === true) {
+                        this.setState({
+                            isLdap: true
+                        });
+                    }
+                    else {
+                        continue
+                    }
+                }
+            }
             this.setState({
                 data: result
             });
@@ -70,7 +95,24 @@ class Settings extends Component {
 
     }
 
-    validate(attribute, value, restriction) {
+    //remove loaded file from state
+    removeFile(attr) {
+        var jsonData = this.state.data;
+        for (let hit of jsonData) {
+            if (hit.attribute === attr) {
+                hit.value = "";
+                continue
+            }
+        }
+
+        this.setState({ data: jsonData })
+    }
+
+    validate(attribute, value, restriction, required = false) {
+        if (required && value === "") {
+            return "Error: " + attribute + " must be filled.";
+        }
+
         if (restriction) {
             restriction = JSON.parse(restriction);
 
@@ -112,12 +154,12 @@ class Settings extends Component {
             }
 
             if (restriction.type === "ldapIP") {
-                if (/^(ldap(s)?:\/\/)(((\d{1,3}.){3}\d{1,3}(:\d+)?)|(\[([a-f0-9]{1,4}:{1,2}){1,4}([a-f0-9]{1,4})\]:\d+)|((\w|\d|-|_)+\.)+(\w)+(:\d+)?|([a-f0-9]{1,4}:{1,2}){1,4}([a-f0-9]{1,4}))$/.test(value)) {
-                    return true; 
+                if (/^(ldap(s)?:\/\/)(((\d{1,3}.){3}\d{1,3}(:\d+)?)|(\[([a-f0-9]{1,4}:{1,2}){1,4}([a-f0-9]{1,4})\]:\d+)|((\w|\d)+\.)+(\w)+(:\d+)?|([a-f0-9]{1,4}:{1,2}){1,4}([a-f0-9]{1,4}))$/.test(value)) {
+                    return true;
                 }
+                else if (value === "") return true;
                 return "Error: " + attribute + " must have format 'ldap:// + ipv4 or ipv4:port or ipv6 or ip6:port or dns";
             }
-
 
             if (restriction.type && restriction.type.enum) {
                 if (restriction.type.enum.includes(value)) {
@@ -139,8 +181,8 @@ class Settings extends Component {
         return true;
     }
 
-    check(attribute, value, restriction) {
-        var error = this.validate(attribute, value, restriction);
+    check(attribute, value, restriction, required) {
+        var error = this.validate(attribute, value, restriction, required);
         if (error !== true) {
             this.setState({
                 [attribute]: error
@@ -192,25 +234,44 @@ class Settings extends Component {
 
             for (i = 0; i < jsonData.length; i++) {
                 data = document.getElementById(jsonData[i].attribute);
-                if (data.type === "checkbox") {
-                    jsonData[i].value = data.checked;
-                }
-                else if (jsonData[i].attribute === "jwtAdmins" && !Array.isArray(jsonData[i].value)) {
-                    jsonData[i].value = jsonData[i].value.split(",");
+                if (data) {
+                    if (data.type === "checkbox") {
+                        jsonData[i].value = data.checked;
+                    }
+                    else if (data.type === "file" && data.files[0]) {
+                        async function parseJsonFile(file) {
+                            return new Promise((resolve, reject) => {
+                                const fileReader = new FileReader()
+                                fileReader.onload = event => resolve(JSON.parse(JSON.stringify(event.target.result)))
+                                fileReader.onerror = error => reject(error)
+                                fileReader.readAsText(file)
+                            })
+                        }
+                        const object = await parseJsonFile(data.files[0]);
+                        jsonData[i].value = object;//JSON.stringify(object);
+                    }
+                    else if (jsonData[i].attribute === "jwtAdmins" && !Array.isArray(jsonData[i].value)) {
+                        jsonData[i].value = jsonData[i].value.split(",");
 
-                } else {
-                    jsonData[i].value = data.value;
-                }
+                    } else {
+                        jsonData[i].value = data.value;
+                    }
 
-                var validateResult = this.validate(jsonData[i].attribute, jsonData[i].value, JSON.stringify(jsonData[i].restriction))
-                if (validateResult !== true) {
-                    alert(validateResult);
-                    return;
+                    let required = jsonData[i].required;
+                    if (jsonData[i].attribute.includes("ldap")) {
+                        required = ldap_enable ? jsonData[i].required && true : false;
+                    }
+                    var validateResult = this.validate(jsonData[i].attribute, jsonData[i].value, JSON.stringify(jsonData[i].restriction), required)
+                    if (validateResult !== true) {
+                        alert(validateResult);
+                        return;
+                    }
+
+                    result.push({
+                        attribute: jsonData[i].attribute,
+                        value: jsonData[i].value
+                    });
                 }
-                result.push({
-                    attribute: jsonData[i].attribute,
-                    value: jsonData[i].value
-                });
 
             };
             this.setState({
@@ -219,46 +280,46 @@ class Settings extends Component {
             var thiss = this;
 
             if (!ldapChange) {
-                await fetch("api/save", {
-                    method: "POST",
-                    body: JSON.stringify({
-                        "app": "m_config",
-                        "attrs": result
-                    }),
-                    credentials: 'include',
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Access-Control-Allow-Credentials": "include"
-                    }
-                }).then(function (response) {
-                    thiss.setState({
-                        wait: false
-                    });
-                    if (!response.ok) {
-                        console.error(response.statusText);
-                    }
-                    else {
-                        //store new settings in storage
-                        result.forEach(res => {
-                            jsonData.forEach(data => {
-                                if (data.attributes === res.attribute) {
-                                    data.value = res.value;
-                                }
-                            })
-                        });
-                        let settings = storePersistent.getState().settings;
-                        settings[0] = { app: "m_config", attrs: jsonData };
-                    }
-                    return response.json();
-                }).then(function (responseData) {
-                    if (responseData.msg && responseData.msg !== "Data has been saved.") {
-                        alert(JSON.stringify(responseData.msg));
-                    }
-
-                }).catch(function (error) {
-                    console.error(error);
-                    alert("Problem with saving data. " + error);
-                });
+                 await fetch("api/save", {
+                     method: "POST",
+                     body: JSON.stringify({
+                         "app": "m_config",
+                         "attrs": result
+                     }),
+                     credentials: 'include',
+                     headers: {
+                         "Content-Type": "application/json",
+                         "Access-Control-Allow-Credentials": "include"
+                     }
+                 }).then(function (response) {
+                     thiss.setState({
+                         wait: false
+                     });
+                     if (!response.ok) {
+                         console.error(response.statusText);
+                     }
+                     else {
+                         //store new settings in storage
+                         result.forEach(res => {
+                             jsonData.forEach(data => {
+                                 if (data.attributes === res.attribute) {
+                                     data.value = res.value;
+                                 }
+                             })
+                         });
+                         let settings = storePersistent.getState().settings;
+                         settings[0] = { app: "m_config", attrs: jsonData };
+                     }
+                     return response.json();
+                 }).then(function (responseData) {
+                     if (responseData.msg && responseData.msg !== "Data has been saved.") {
+                         alert(JSON.stringify(responseData.msg));
+                     }
+ 
+                 }).catch(function (error) {
+                     console.error(error);
+                     alert("Problem with saving data. " + error);
+                 });
             }
             else {
                 fetch("api/save", {
@@ -283,9 +344,8 @@ class Settings extends Component {
 
                 }, 1000);
             }
-
-
         }
+
     }
 
 
@@ -305,7 +365,7 @@ class Settings extends Component {
                                     <label> {data[i].label} </label>
                                     {data[i].details ? <div className="smallText">{data[i].details}</div> : ""}
                                 </span>
-                                {<select className="text-left form-control form-check-input" defaultValue={data[i].value} id={data[i].attribute} restriction={JSON.stringify(data[i].restriction)} label={data[i].attribute} onChange={(e) => { this.check(e.target.getAttribute("label"), e.target.value, e.target.getAttribute("restriction")) }} >
+                                {<select className="text-left form-control form-check-input" defaultValue={data[i].value} id={data[i].attribute} restriction={JSON.stringify(data[i].restriction)} label={data[i].attribute} isRequired={data[i].required} onChange={(e) => { this.check(e.target.getAttribute("label"), e.target.value, e.target.getAttribute("restriction"), e.target.getAttribute("isRequired")) }} >
                                     <option value={"DD/MM/YYYY"} key={"20/12/2020"}>20/12/2020</option>
                                     <option value={"MM/DD/YYYY"} key={"12/20/2020"}>12/20/2020</option>
                                     <option value={"YYYY-MM-DD"} key={"2020-20-12"}>2020-20-12</option>
@@ -324,7 +384,7 @@ class Settings extends Component {
                                     <label> {data[i].label} </label>
                                     {data[i].details ? <div className="smallText">{data[i].details}</div> : ""}
                                 </span>
-                                {<select className="text-left form-control form-check-input" defaultValue={data[i].value} id={data[i].attribute} restriction={JSON.stringify(data[i].restriction)} label={data[i].attribute} onChange={(e) => { this.check(e.target.getAttribute("label"), e.target.value, e.target.getAttribute("restriction")) }} >
+                                {<select className="text-left form-control form-check-input" defaultValue={data[i].value} id={data[i].attribute} restriction={JSON.stringify(data[i].restriction)} label={data[i].attribute} isRequired={data[i].required} onChange={(e) => { this.check(e.target.getAttribute("label"), e.target.value, e.target.getAttribute("restriction"), e.target.getAttribute("isRequired")) }} >
                                     <option value={"hh:mm:ss A"} key={"9:40 AM"}>7:40:20 AM</option>
                                     <option value={"HH:mm:ss"} key={"9:40:20"}>19:40:20</option>
                                 </select>}
@@ -333,26 +393,26 @@ class Settings extends Component {
                 //special case: number restriction
                 else if (data[i].restriction && (data[i].restriction.min || data[i].restriction.max)) {
                     alarms.push(
-                        <div key={data[i].attribute + "key"} className="tab ">
+                        <div key={data[i].attribute + "key"} className={data[i].attribute.includes("ldap") && !this.state.isLdap ? "tab hidden" : "tab"}>
                             <span className="form-inline row justify-content-start paddingBottom">
                                 <span className="col-6" >
                                     <label> {data[i].label} </label>
                                     {data[i].details ? <div className="smallText">{data[i].details}</div> : ""}
                                 </span>
-                                {<input className="text-left form-control form-check-input" type="number" min={data[i].restriction.min} max={data[i].restriction.max ? data[i].restriction.max : ""} defaultValue={data[i].value} id={data[i].attribute} restriction={JSON.stringify(data[i].restriction)} label={data[i].attribute} onChange={(e) => { this.check(e.target.getAttribute("label"), e.target.value, e.target.getAttribute("restriction")) }} />}
+                                {<input className="text-left form-control form-check-input" type="number" min={data[i].restriction.min} max={data[i].restriction.max ? data[i].restriction.max : ""} defaultValue={data[i].value} id={data[i].attribute} isRequired={data[i].required} restriction={JSON.stringify(data[i].restriction)} label={data[i].attribute} onChange={(e) => { this.check(e.target.getAttribute("label"), e.target.value, e.target.getAttribute("restriction"), e.target.getAttribute("isRequired")) }} />}
                                 {this.state[data[i].attribute] ? <span className="col-3 errorStay" >{this.state[data[i].attribute]}</span> : ""}
                             </span></div>);
                 }
                 //special case: select input for enum type
                 else if (data[i].restriction && data[i].restriction.type && data[i].restriction.type.enum) {
                     alarms.push(
-                        <div key={data[i].attribute + "key"} className="tab ">
+                        <div key={data[i].attribute + "key"} className={data[i].attribute.includes("ldap") && !this.state.isLdap ? "tab hidden" : "tab"}>
                             <span className="form-inline row justify-content-start paddingBottom">
                                 <span className="col-6" >
                                     <label> {data[i].label} </label>
                                     {data[i].details ? <div className="smallText">{data[i].details}</div> : ""}
                                 </span>
-                                {<select className="text-left form-control form-check-input" defaultValue={data[i].value} id={data[i].attribute} restriction={JSON.stringify(data[i].restriction)} label={data[i].attribute} onChange={(e) => { this.check(e.target.getAttribute("label"), e.target.value, e.target.getAttribute("restriction")) }} >
+                                {<select className="text-left form-control form-check-input" defaultValue={data[i].value} id={data[i].attribute} restriction={JSON.stringify(data[i].restriction)} label={data[i].attribute} isRequired={data[i].required} onChange={(e) => { this.check(e.target.getAttribute("label"), e.target.value, e.target.getAttribute("restriction"), e.target.getAttribute("isRequired")) }} >
                                     {data[i].restriction.type.enum.map((e, i) => {
                                         return (<option value={e} key={e}>{e}</option>)
                                     })}
@@ -365,16 +425,27 @@ class Settings extends Component {
                 }
                 else {
                     alarms.push(
-                        <div key={data[i].attribute + "key"} className="tab ">
+                        <div key={data[i].attribute + "key"} className={data[i].attribute.includes("ldap") && !this.state.isLdap && data[i].attribute !== "ldap_enable" ? "tab hidden" : "tab"}>
                             <span className="form-inline row justify-content-start paddingBottom">
                                 <span className="col-6" >
                                     <label> {data[i].label} </label>
                                     {data[i].details ? <div className="smallText">{data[i].details}</div> : ""}
                                 </span>
-                                {data[i].type === "boolean" ? data[i].value ? <input className="text-left form-check-input" type="checkbox" defaultChecked="true" id={data[i].attribute} /> :
-                                    <input className="text-left form-check-input" type="checkbox" id={data[i].attribute} />
-                                    : <input className="text-left form-control form-check-input" type={data[i].type} defaultValue={data[i].value} id={data[i].attribute} label={data[i].attribute} restriction={JSON.stringify(data[i].restriction)} onChange={(e) => { this.check(e.target.getAttribute("label"), e.target.value, e.target.getAttribute("restriction")) }} />
+                                {data[i].type === "boolean" ? data[i].value ? <input className="text-left form-check-input" type="checkbox" defaultChecked="true" id={data[i].attribute} onClick={(e) => this.checkboxClick(e.target.getAttribute("id"))} /> :
+                                    <input className="text-left form-check-input" type="checkbox" id={data[i].attribute} onClick={(e) => this.checkboxClick(e.target.getAttribute("id"))} />
+                                    : data[i].type === "file" && data[i].value !== "" ? ""
+                                        :
+                                        <input className="text-left form-control form-check-input" type={data[i].type} defaultValue={data[i].type !== "file" ? data[i].value : ""} id={data[i].attribute} label={data[i].attribute} isRequired={data[i].required} restriction={JSON.stringify(data[i].restriction)} onChange={(e) => { this.check(e.target.getAttribute("label"), e.target.value, e.target.getAttribute("restriction"), e.target.getAttribute("isRequired")) }} />
+
                                 }
+                                {data[i].type === "file" && data[i].value !== "" ? <span style={{ "fontSize": "0.8rem" }}>{"CA certificate for ldap TLS connection"}<img className="icon"
+                                    alt="deleteIcon" src={deleteIcon}
+                                    title="remove file"
+                                    attr={data[i].attribute}
+                                    onClick={(e) => this.removeFile(e.target.getAttribute("attr"))}
+                                    id={data[i].key}
+                                /></span> : ""}
+
                                 {this.state[data[i].attribute] ? <span className="col-3 errorStay" >{this.state[data[i].attribute]}</span> : ""}
 
                             </span></div>);
