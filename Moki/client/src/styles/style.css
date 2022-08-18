@@ -421,9 +421,10 @@ h3 {
 }
 
 .smallText {
-    font-size: small !important;
+    font-size: 12px !important;
     color: gray !important;
     font-weight: 350;
+    margin-left: 10px;
 }
 
 h4 {
