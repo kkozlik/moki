@@ -284,12 +284,24 @@ export default class StackedChart extends Component {
                     return;
                 })
                 .attr("y", function (d) {
-                    return yScale(d[1]);
+                    var height = yScale(d[0]) - yScale(d[1]);
+                    if (height) {
+                       if (height < 1.5) {
+                            return yScale(d[1])-1;
+                        }
+                        return yScale(d[1]);
+                    }
+                    else {
+                        return 0;
+                    }
                 })
                 .attr("height", function (d) {
                     var height = yScale(d[0]) - yScale(d[1]);
                     if (height) {
-                        return height
+                        if (height < 1.5) {
+                            return 2;
+                        }
+                        return height;
                     }
                     else {
                         return 0;
