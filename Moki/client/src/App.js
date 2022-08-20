@@ -638,6 +638,7 @@ class App extends Component {
                         </div>
                         <span className="footer" style={{ "float": "right" }}>
                             <img src={this.state.logo} alt="logo" id="footerlogo" />
+                            <div>{this.state.monitorName}</div>
                         </span>
                     </div>
                 </div>;
@@ -670,6 +671,7 @@ class App extends Component {
                             </Switch>
                             <span className="footer" style={{ "float": "right" }}>
                                 <img src={this.state.logo} alt="logo" id="footerlogo" />
+                                <div>{this.state.monitorName}</div>
                             </span>
                         </div>
                     </div>
