@@ -1513,8 +1513,17 @@ pre {
 
 #user {
     font-size: 1rem;
-    padding-bottom: 4px;
+    padding-bottom: 27px !important;
     padding-left: 7px;
+}
+
+.copyToClip {
+    font-size: 13px;
+    padding-left: 2px;
+    position: absolute;
+    margin-top: 10px;
+    background-color: white;
+    display: none;
 }
 
 
@@ -1616,7 +1625,7 @@ input {
     margin-top: 0px;
 } 
 
-.searchBar {
+#searchBar {
     height: 30px;
     display: table-cell;
     font-size: 1rem;

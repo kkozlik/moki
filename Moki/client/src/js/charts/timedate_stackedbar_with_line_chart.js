@@ -347,7 +347,7 @@ export default class StackedChartLine extends Component {
 
                 // define the line
                 var valueline = d3.line()
-                    .x(function (d) { return xScale(d.key); })
+                    .x(function (d) { if( xScale(d.key) < 0 ){ return 0} else {return xScale(d.key); }})
                     .y(function (d) { return yLine(d.agg.value); });
 
                 g.append("path")
@@ -359,7 +359,7 @@ export default class StackedChartLine extends Component {
                 // Add the Yline Axis
                 g.append("g")
                     .attr("class", "axisLine")
-                    .attr("transform", "translate( " + widthChart + ", 0 )")
+                    .attr("transform", "translate( " + width-20 + ", 0 )")
                     .call(d3.axisRight(yLine).ticks(5));
 
 
@@ -367,7 +367,7 @@ export default class StackedChartLine extends Component {
                 //yLine axis label
                 g.append("text")
                     .attr("transform", "rotate(-90)")
-                    .attr("y", widthChart + 40)
+                    .attr("y", width-20)
                     .attr("x", 0 - (height / 2))
                     .attr("dy", "1em")
                     .style("text-anchor", "middle")
@@ -378,7 +378,7 @@ export default class StackedChartLine extends Component {
                     .data(data2)
                     .enter().append("circle") // Uses the enter().append() method
                     .attr("class", "dot") // Assign a class for styling
-                    .attr("cx", function (d, i) { return xScale(d.key) })
+                    .attr("cx", function (d, i) { if(xScale(d.key) < 0) { return -1000} else {return xScale(d.key) }})
                     .attr("cy", function (d) { return yLine(d.agg.value) })
                     .attr("r", 3)
                     .on("mouseover", function (d, i) {
