@@ -1275,6 +1275,12 @@ a.nav-item {
     margin-right: 5px;
 }
 
+.expandJson{
+    background-color: transparent;
+    border: none;
+    color: blue;
+    font-weight: bold;
+}
 
 /*------------------------filter bar-----------------------------*/
 
