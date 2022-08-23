@@ -82,7 +82,7 @@ class Popup extends Component {
             <div style={{ "visibility": this.state.visible, "left": 0 }} className="row align-items-center justify-content-center overlay">
                 <div id={this.state.style} className={this.state.style+"context"} >
                     {this.state.text}
-                    {this.state.error ? <h3 className="error" style={{ "marginTop": "10px", "color": "red" }}>{this.state.error}</h3> : ""}
+                    {this.state.error ? <div className="error" style={{ "marginTop": "10px", "color": "red" }}>{this.state.error}</div> : ""}
                     {this.state.showOKAnnoying ? <div><button className="btn btn-secondary" onClick={() => this.stornoAnnoying()} style={{ "marginTop": "15px", "marginLeft": "28%" }}>OK</button></div> : ""}
                 </div>
             </div>
