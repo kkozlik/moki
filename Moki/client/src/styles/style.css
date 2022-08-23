@@ -1470,6 +1470,7 @@ button {
     width: fit-content !important;
     overflow-y: auto;
     min-height: 200px;
+    margin-top: 50px;
 }
 
 .close {
