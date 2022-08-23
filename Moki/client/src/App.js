@@ -126,7 +126,7 @@ class App extends Component {
 * */
     async getMonitorSettings() {
         //get monitor version
-        var url = BASE_NAME+"/api/monitor/version";
+        var url = BASE_NAME + "/api/monitor/version";
         var monitorVersion = "";
         try {
             const response = await fetch(url, {
@@ -152,7 +152,7 @@ class App extends Component {
         }
 
         //check if logstash is running
-        const response = await fetch(BASE_NAME+"/api/status", {
+        const response = await fetch(BASE_NAME + "/api/status", {
             method: "GET",
             timeout: 10000,
             credentials: 'include',
@@ -184,7 +184,7 @@ class App extends Component {
             storePersistent.dispatch(setSettings(jsonSettings));
 
             //check if first time login
-            const response = await fetch(BASE_NAME+"/api/user/check", {
+            const response = await fetch(BASE_NAME + "/api/user/check", {
                 method: "GET",
                 timeout: 10000,
                 credentials: 'include',
@@ -292,7 +292,7 @@ class App extends Component {
 * @return {base64} return img in base64
 * */
     async getLogo(path) {
-        var url = BASE_NAME+"/api/monitor/logo";
+        var url = BASE_NAME + "/api/monitor/logo";
         try {
             const response = await fetch(url, {
                 method: "POST",
@@ -324,7 +324,7 @@ class App extends Component {
 * @return {response} json response from ES
 * */
     async getUserSetting(attribute) {
-        var url = BASE_NAME+"/api/setting/user";
+        var url = BASE_NAME + "/api/setting/user";
         try {
             const response = await fetch(url, {
                 method: "POST",
@@ -351,7 +351,7 @@ class App extends Component {
     async getHostnames() {
         const request = async () => {
             try {
-                const response = await fetch(BASE_NAME+"/api/hostnames", {
+                const response = await fetch(BASE_NAME + "/api/hostnames", {
                     method: "GET",
                     timeout: 10000,
                     credentials: 'include',
@@ -370,7 +370,7 @@ class App extends Component {
                 var hostnamesColor = [];
                 if (json.responses && json.responses[0] && json.responses[0].aggregations && json.responses[0].aggregations.distinct && json.responses[0].aggregations.distinct.buckets) {
                     hostnames = json.responses[0].aggregations.distinct.buckets;
-                    var colors = ['#58a959', '#61BEE2', '#f58231', '#00008B', '#c41d03', '#2077e8','#41FA51', '#d66bad', '#ffe119', '#e6beff', '#ccc8a0', '#aa59e0', '#99e5af', '#d18e1a', '#465D00'];
+                    var colors = ['#58a959', '#61BEE2', '#f58231', '#00008B', '#c41d03', '#2077e8', '#41FA51', '#d66bad', '#ffe119', '#e6beff', '#ccc8a0', '#aa59e0', '#99e5af', '#d18e1a', '#465D00'];
                     for (var i = 0; i <= hostnames.length; i++) {
                         if (hostnames[i]) {
                             hostnamesColor[hostnames[i].key] = colors[i % 14];
@@ -443,7 +443,7 @@ class App extends Component {
         var response = "";
         try {
             var sip;
-            response = await fetch(BASE_NAME+"/api/user/sip", {
+            response = await fetch(BASE_NAME + "/api/user/sip", {
                 credentials: "include",
                 method: "GET",
                 headers: {
@@ -479,7 +479,7 @@ class App extends Component {
 
                     //get username
                     try {
-                        response = await fetch(BASE_NAME+"/api/user/username", {
+                        response = await fetch(BASE_NAME + "/api/user/username", {
                             method: "GET",
                             credentials: 'include',
                             headers: {
@@ -489,9 +489,9 @@ class App extends Component {
                         })
 
                         var res = await response.json();
-                        sip.username =  res.username;
+                        sip.username = res.username;
                     } catch (error) {
-                       
+
                     }
 
                     //set user info :  email:email, domainID:domainID, jwt: jwtbit
@@ -566,17 +566,24 @@ class App extends Component {
                 <div className="loaderr">
                     <div className="bar"></div>
                 </div>
-                {this.state.logo && <div><img src={this.state.logo} alt="logo" style={{ "marginLeft": "40%", "width": "300px"}} /></div>}
+                {this.state.logo && <div><img src={this.state.logo} alt="logo" style={{ "marginLeft": "40%", "width": "300px" }} /></div>}
             </div>
         </span>
 
         //get userto display
         var sipUser = storePersistent.getState().user;
         if (sipUser) {
-            sipUser = storePersistent.getState().user.email ? storePersistent.getState().user.user + ": " + storePersistent.getState().user.email : storePersistent.getState().user.username ? storePersistent.getState().user.user + " "+storePersistent.getState().user.username : storePersistent.getState().user.user ;
+            if (storePersistent.getState().user.aws === false) {
+                sipUser = "Account: " + storePersistent.getState().user.username;
+            }
+            else {
+                sipUser = storePersistent.getState().user.email ? storePersistent.getState().user.user + ": " + storePersistent.getState().user.email : storePersistent.getState().user.username ? storePersistent.getState().user.user + " " + storePersistent.getState().user.username : storePersistent.getState().user.user;
+            }
         } else {
             sipUser = "";
         }
+
+
 
         var sipUserSwitch;
         const aws = this.state.aws;
