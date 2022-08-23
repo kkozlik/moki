@@ -175,7 +175,11 @@ export const syntaxHighlight = (json) => {
         //sort main object
         let not_sorted = json;
         json = Object.keys(not_sorted)
-            .sort()
+            .sort(function (a, b) {
+                return a.toLowerCase().localeCompare(
+                    b.toLowerCase()
+                );
+            })
             .reduce((acc, key) => ({
                 ...acc, [key]: not_sorted[key]
             }), {})
@@ -184,26 +188,42 @@ export const syntaxHighlight = (json) => {
         for (let hit of listInnerObject) {
             let not_sorted = json[hit];
             json[hit] = Object.keys(not_sorted)
-                .sort()
+                .sort(function (a, b) {
+                    return a.toLowerCase().localeCompare(
+                        b.toLowerCase()
+                    );
+                })
                 .reduce((acc, key) => ({
                     ...acc, [key]: not_sorted[key]
                 }), {})
         }
 
         //sort rtp-stats-a - is an array
-        not_sorted = json.attrs["rtp-stats-a"][0];
-        json.attrs["rtp-stats-a"][0] = Object.keys(not_sorted)
-            .sort()
-            .reduce((acc, key) => ({
-                ...acc, [key]: not_sorted[key]
-            }), {})
+        if (json.attrs && json.attrs["rtp-stats-a"] && json.attrs["rtp-stats-a"][0]) {
+            not_sorted = json.attrs["rtp-stats-a"][0];
+            json.attrs["rtp-stats-a"][0] = Object.keys(not_sorted)
+                .sort(function (a, b) {
+                    return a.toLowerCase().localeCompare(
+                        b.toLowerCase()
+                    );
+                })
+                .reduce((acc, key) => ({
+                    ...acc, [key]: not_sorted[key]
+                }), {})
+        }
 
-        not_sorted = json.attrs["rtp-stats-b"][0];
-        json.attrs["rtp-stats-b"][0] = Object.keys(not_sorted)
-            .sort()
-            .reduce((acc, key) => ({
-                ...acc, [key]: not_sorted[key]
-            }), {})
+        if (json.attrs && json.attrs["rtp-stats-b"] && json.attrs["rtp-stats-b"][0]) {
+            not_sorted = json.attrs["rtp-stats-b"][0];
+            json.attrs["rtp-stats-b"][0] = Object.keys(not_sorted)
+                .sort(function (a, b) {
+                    return a.toLowerCase().localeCompare(
+                        b.toLowerCase()
+                    );
+                })
+                .reduce((acc, key) => ({
+                    ...acc, [key]: not_sorted[key]
+                }), {})
+        }
 
         json = JSON.stringify(json, undefined, 4);
     }
@@ -510,12 +530,12 @@ function getColumn(column_name, tags, tag, width = 0, hidden = false, dashboard)
                     {column_name.icons.includes("details") && <Popup trigger={<img className="icon" alt="detailsIcon" src={detailsIcon} title="details" />} modal>
                         {close => (
                             <div className="Advanced">
-                                    <button className="link close export" onClick={() => exportJSON(ob)} style={{"position": "absolute",  "top": "-5px"}}>
-                                        <img className="icon" alt="downloadIcon" src={downloadIcon} title="download json" />
-                                    </button>
-                                    <button className="close" onClick={close}>
-                                        &times;
-                                    </button>
+                                <button className="link close export" onClick={() => exportJSON(ob)} style={{ "position": "absolute", "top": "-5px" }}>
+                                    <img className="icon" alt="downloadIcon" src={downloadIcon} title="download json" />
+                                </button>
+                                <button className="close" onClick={close}>
+                                    &times;
+                                </button>
                                 <div className="contentAdvanced">
                                     <pre> <div onClick={clickHandlerHTML} dangerouslySetInnerHTML={{ __html: syntaxHighlight(ob) }} /></pre>
 
@@ -566,12 +586,12 @@ function getColumn(column_name, tags, tag, width = 0, hidden = false, dashboard)
                     formatter: (cell, obj) => {
                         if (rawTables.includes(dashboard)) {
                             var ob = obj[column_name.source];
-                            return parseTimestamp(new Date(parseInt(ob*1000)));
+                            return parseTimestamp(new Date(parseInt(ob * 1000)));
                         }
                         else {
                             var ob = obj._source[column_name.source];
                         }
- 
+
                         if (parseTimestamp(ob) !== "Invalid date") {
                             return parseTimestamp(ob)
                         }
