@@ -7,6 +7,7 @@ export default class FirstLoginPopup extends Component {
             error: ""
         };
         this.createUser = this.createUser.bind(this);
+        this.keyPressCheckPassword = this.keyPressCheckPassword.bind(this);
     }
 
     async createUser() {
@@ -25,7 +26,6 @@ export default class FirstLoginPopup extends Component {
 
         }
         else if (password.indexOf("'") >= 0 || password.indexOf('"') >= 0) {
-            console.log("quotes");
             this.setState({ "error": "Passwords can't contains quotes." });
             document.getElementById("createR").style.display = "block";
             document.getElementById("create").style.display = "none";
@@ -79,6 +79,12 @@ export default class FirstLoginPopup extends Component {
         }
     }
 
+    keyPressCheckPassword(e){
+        if (e.key === "Enter") {
+            e.preventDefault();
+            this.createUser();
+          }
+    }
 
     render() {
         return (
@@ -93,7 +99,7 @@ export default class FirstLoginPopup extends Component {
                         <label className="col-sm-4 col-form-label" style={{ "color": "grey" }}>Password </label>
                         <input type="password" id="password" required className="form-control" placeholder="password"></input>
                         <label className="col-sm-4 col-form-label" style={{ "color": "grey" }}>Password again</label>
-                        <input type="password" id="password2" required className="form-control" placeholder="same password again"></input>
+                        <input type="password" id="password2" required className="form-control" placeholder="same password again" onKeyPress={(e) => this.keyPressCheckPassword(e)} ></input>
                     </div>
                     {this.state.error ? <p className="erro" style={{"color": "red"}}>{this.state.error}</p> : ""}
                     <div style={{ "textAlign": "center" }}>

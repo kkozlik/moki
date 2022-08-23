@@ -105,6 +105,13 @@ class navBar extends Component {
 
 
     changepassword() {
+        function keyPressCheckPassword(e){
+            if (e.key === "Enter") {
+                e.preventDefault();
+                checkPassword();
+              }
+        }
+
         async function checkPassword() {
             document.getElementById("createR").style.display = "none";
             document.getElementById("create").style.display = "block";
@@ -117,6 +124,9 @@ class navBar extends Component {
             }
             else if (password !== password2) {
                 window.mainPopup.error("Passwords are not same.");
+            }
+            else if (password.indexOf("'") >= 0 || password.indexOf('"') >= 0) {
+                window.mainPopup.error("Passwords can't contains quotes." );
             }
             else {
 
@@ -189,7 +199,7 @@ class navBar extends Component {
         var changePasswordForm = <span>
             <h3 style={{ "marginBottom": "15px" }}>Set a new password with at least 8 characters:</h3>
             <input type="password" id="password" className="form-control" placeholder="password"></input>
-            <input type="password" id="password2" className="form-control" placeholder="same password again" style={{ "marginTop": "5px" }}></input>
+            <input type="password" id="password2" onKeyPress={(e) => keyPressCheckPassword(e)} className="form-control" placeholder="same password again" style={{ "marginTop": "5px" }}></input>
             <div style={{ "textAlign": "end" }}>
                 <button style={{ "marginRight": "5px", "marginTop": "10px" }} className="btn btn-secondary" onClick={window.mainPopup.storno}>Storno </button>
                 <button style={{ "marginRight": "5px", "marginTop": "10px" }} className="btn btn-primary" onClick={() => checkPassword()}><i className="fa fa-circle-o-notch fa-spin" id="create" style={{ "display": "none" }}></i> <span id="createR">Change</span> </button>
