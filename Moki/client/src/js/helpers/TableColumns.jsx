@@ -128,14 +128,95 @@ export const closePopupExclude = (i) => {
 
 //json syntax highlight
 export const syntaxHighlight = (json) => {
+
     if (typeof json != 'string') {
+
+        if (json.attrs && json.attrs["rtp-stats-a"]) {
+            json.attrs["rtp-stats-a"] = JSON.parse(json.attrs["rtp-stats-a"]);
+        }
+
+        if (json.attrs && json.attrs["rtp-stats-b"]) {
+            json.attrs["rtp-stats-b"] = JSON.parse(json.attrs["rtp-stats-b"]);
+        }
+
+
+        /*      let innerPaths = [];
+              function sortObject(obj, path) {
+                  for (let hit of Object.keys(obj)) {
+                      if (typeof obj[hit] === 'object' && obj[hit].constructor !== Array) {
+                          if (path === "") {
+                              innerPaths.push(hit);
+                          }
+                          else {
+                              innerPaths.push(path + "." + hit);
+                          }
+                          sortObject(obj[hit], hit);
+                      }
+                  }
+                  sortObject(json, "")
+      
+      
+                 for (let hit of innerPaths) {
+                      Object.keys(eval("json." + hit))
+                          .sort()
+                          .reduce((acc, key) => ({
+                              ...acc, [key]: eval("json." + hit)[key]
+                          }), {})
+                  }
+      */
+
+        let listInnerObject = [];
+        for (let hit of Object.keys(json)) {
+            if (typeof json[hit] === 'object' && json[hit].constructor !== Array) {
+                listInnerObject.push(hit);
+            }
+        }
+
+        //sort main object
+        let not_sorted = json;
+        json = Object.keys(not_sorted)
+            .sort()
+            .reduce((acc, key) => ({
+                ...acc, [key]: not_sorted[key]
+            }), {})
+
+        //sort all of it
+        for (let hit of listInnerObject) {
+            let not_sorted = json[hit];
+            json[hit] = Object.keys(not_sorted)
+                .sort()
+                .reduce((acc, key) => ({
+                    ...acc, [key]: not_sorted[key]
+                }), {})
+        }
+
+        //sort rtp-stats-a - is an array
+        not_sorted = json.attrs["rtp-stats-a"][0];
+        json.attrs["rtp-stats-a"][0] = Object.keys(not_sorted)
+            .sort()
+            .reduce((acc, key) => ({
+                ...acc, [key]: not_sorted[key]
+            }), {})
+
+        not_sorted = json.attrs["rtp-stats-b"][0];
+        json.attrs["rtp-stats-b"][0] = Object.keys(not_sorted)
+            .sort()
+            .reduce((acc, key) => ({
+                ...acc, [key]: not_sorted[key]
+            }), {})
+
         json = JSON.stringify(json, undefined, 4);
     }
 
+
     json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    json = json.substring(1);
+    json = json.substring(0, json.length - 1);
+    json = json.replaceAll("{", "<button class='expandJson'>-</button><span>{");
+    json = json.replaceAll("}", "}</span>");
+
     return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\\-]?\d+)?)/g, function (match) {
         var cls = 'number';
-
         if (/^"/.test(match)) {
             if (/:$/.test(match)) {
                 cls = 'key';
@@ -151,6 +232,23 @@ export const syntaxHighlight = (json) => {
         return '<span class="rowSplit ' + cls + '">' + match + '</span>';
     });
 }
+
+function clickHandlerHTML(e) {
+    let el = e.target;
+    if (el.className === "expandJson") {
+        if (el.innerText === '-') {
+            el.setAttribute("expand", 'false');
+            el.innerText = "+";
+            el.nextSibling.style.display = "none";
+        }
+        else {
+            el.setAttribute("expand", 'true');
+            el.innerText = "-";
+            el.nextSibling.style.display = "inline";
+        }
+    }
+}
+
 
 const shareEvent = (id) => {
     let href = window.location.origin + window.location.pathname + "?from=" + store.getState().timerange[0] + "&to=" + store.getState().timerange[1];
@@ -412,14 +510,14 @@ function getColumn(column_name, tags, tag, width = 0, hidden = false, dashboard)
                     {column_name.icons.includes("details") && <Popup trigger={<img className="icon" alt="detailsIcon" src={detailsIcon} title="details" />} modal>
                         {close => (
                             <div className="Advanced">
-                                <button className="link close export" onClick={() => exportJSON(ob)}>
-                                    Export json
-                                </button>
-                                <button className="close" onClick={close}>
-                                    &times;
-                                </button>
+                                    <button className="link close export" onClick={() => exportJSON(ob)} style={{"position": "absolute",  "top": "-5px"}}>
+                                        <img className="icon" alt="downloadIcon" src={downloadIcon} title="download json" />
+                                    </button>
+                                    <button className="close" onClick={close}>
+                                        &times;
+                                    </button>
                                 <div className="contentAdvanced">
-                                    <pre> <div dangerouslySetInnerHTML={{ __html: syntaxHighlight(ob) }} /></pre>
+                                    <pre> <div onClick={clickHandlerHTML} dangerouslySetInnerHTML={{ __html: syntaxHighlight(ob) }} /></pre>
 
                                 </div>
                             </div>
