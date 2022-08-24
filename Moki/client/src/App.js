@@ -150,27 +150,7 @@ class App extends Component {
         if (res !== "ok") {
             //this.showError(JSON.stringify(res));
         }
-
-        //check if logstash is running
-        const response = await fetch(BASE_NAME + "/api/status", {
-            method: "GET",
-            timeout: 10000,
-            credentials: 'include',
-            headers: {
-                "Content-Type": "application/json",
-                "Access-Control-Allow-Credentials": "include"
-            }
-        });
-
-        const json = await response.json();
-        if (!response.ok) {
-            //this.showError(JSON.stringify(json.error));
-            return;
-        }
-        if (json.logstash.code) {
-            this.showError("Logstash is not running.");
-        }
-
+        
         //store layout
         var jsonData = await getLayoutSettings();
         storePersistent.dispatch(setLayout(jsonData));
