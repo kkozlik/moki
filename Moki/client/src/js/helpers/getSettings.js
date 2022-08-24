@@ -1,7 +1,7 @@
 //get monitor settings from defaults.json or stored user values
 
 export async function getSettings() {
-    var url = process.env.PUBLIC_URL+"api/setting";
+    var url = process.env.PUBLIC_URL+"/api/setting";
     try {
         const response = await fetch(url, {
             method: "GET",
