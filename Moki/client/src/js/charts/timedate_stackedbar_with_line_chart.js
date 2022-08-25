@@ -1,4 +1,4 @@
-import React, { Component} from 'react';
+import React, { Component } from 'react';
 import * as d3 from "d3";
 import { ColorType, Colors } from '@moki-client/gui';
 import store from "../store/index";
@@ -8,14 +8,14 @@ import { createFilter } from '@moki-client/gui';
 import emptyIcon from "../../styles/icons/empty_small.png";
 import { getTimeBucket, getTimeBucketInt } from "../helpers/getTimeBucket";
 import { parseTimestamp, parseTimestampD3js, parseTimeData } from "../helpers/parseTimestamp";
-import {setTickNrForTimeXAxis} from "../helpers/chart";
+import { setTickNrForTimeXAxis } from "../helpers/chart";
 
 /*
 format:
 
 time
 key
-*/
+*/ 
 export default class StackedChartLine extends Component {
 
     componentDidUpdate(prevProps) {
@@ -40,7 +40,7 @@ export default class StackedChartLine extends Component {
         var svg = d3.select('#' + id);
         var margin = {
             top: 20,
-            right: 60,
+            right: 0,
             bottom: 30,
             left: 35
         };
@@ -61,15 +61,15 @@ export default class StackedChartLine extends Component {
         var maxTime = parseTimeData(store.getState().timerange[1]) + getTimeBucketInt();
         var minTime = parseTimeData(store.getState().timerange[0]) - (60 * 1000); //minus one minute fix for round up
 
-        var x = d3.scaleBand().range([0, width]).padding(0.1);
+        var x = d3.scaleBand().range([0, widthChart]).padding(0.1);
 
         //scale for brush function
         var xScale = d3.scaleLinear()
-            .range([0, width])
+            .range([0, widthChart])
             .domain([minTime, maxTime]);
 
         if (data !== undefined) {
-            var max = d3.max(data, d => d.sum + 5);
+            var max = d3.max(data, d => d.sum + 10);
             var domain = max ? max + max / 3 : 1;
         }
         var yScale = d3.scaleLinear().range([height, 0]).domain([0, domain]);
@@ -102,7 +102,7 @@ export default class StackedChartLine extends Component {
         }
         else {
 
-          
+
             rootsvg.append("g")
                 .attr("class", "x axis")
                 .attr("transform", "translate(" + margin.left + "," + (height) + ")")
@@ -294,19 +294,19 @@ export default class StackedChartLine extends Component {
             // Animation
             /* Add 'curtain' rectangle to hide entire graph */
             var curtain = rootsvg.append('rect')
-            .attr('x', -1 * width - 70)
-            .attr('y', -1 * height)
-            .attr('height', height)
-            .attr('width', width + 100)
-            .attr('class', 'curtain')
-            .attr('transform', 'rotate(180)')
-            .style('fill', '#ffffff');
+                .attr('x', -1 * width - 70)
+                .attr('y', -1 * height)
+                .attr('height', height)
+                .attr('width', width + 100)
+                .attr('class', 'curtain')
+                .attr('transform', 'rotate(180)')
+                .style('fill', '#ffffff');
 
-        // Now transition the curtain to double of its width
-        curtain.transition()
-            .duration(1200)
-            .ease(d3.easeLinear)
-            .attr('x', -2 * width - 300);
+            // Now transition the curtain to double of its width
+            curtain.transition()
+                .duration(1200)
+                .ease(d3.easeLinear)
+                .attr('x', -2 * width - 300);
 
 
             //y axis label
@@ -320,7 +320,7 @@ export default class StackedChartLine extends Component {
 
             // tooltip
             var tooltip = d3.select('#' + id).append("div")
-                .style("width", "200px")
+                .style("width", "250px")
                 .style("height", "90px")
                 .style("background", "white")
                 .attr('class', 'tooltip tooltip' + id)
@@ -338,16 +338,16 @@ export default class StackedChartLine extends Component {
             var yLine = d3.scaleLinear().range([height, 0]);
 
             if (d3.max(data2, function (d) {
-                return parseInt(d.agg.value + (d.agg.value / 3), 10);
+                return parseInt(d.agg.value, 10);
             }) !== 0) {
 
                 yLine.domain([0, d3.max(data2, function (d) {
-                    return parseInt(d.agg.value + (d.agg.value / 3), 10);
+                    return parseInt(110, 10);
                 })]);
 
                 // define the line
                 var valueline = d3.line()
-                    .x(function (d) { if( xScale(d.key) < 0 ){ return 0} else {return xScale(d.key); }})
+                    .x(function (d) { if (xScale(d.key) < 0) { return 0 } else { return xScale(d.key); } })
                     .y(function (d) { return yLine(d.agg.value); });
 
                 g.append("path")
@@ -359,7 +359,7 @@ export default class StackedChartLine extends Component {
                 // Add the Yline Axis
                 g.append("g")
                     .attr("class", "axisLine")
-                    .attr("transform", "translate( " + width-20 + ", 0 )")
+                    .attr("transform", "translate( " + widthChart + ", 0 )")
                     .call(d3.axisRight(yLine).ticks(5));
 
 
@@ -367,7 +367,7 @@ export default class StackedChartLine extends Component {
                 //yLine axis label
                 g.append("text")
                     .attr("transform", "rotate(-90)")
-                    .attr("y", width-20)
+                    .attr("y", width - 20)
                     .attr("x", 0 - (height / 2))
                     .attr("dy", "1em")
                     .style("text-anchor", "middle")
@@ -378,44 +378,29 @@ export default class StackedChartLine extends Component {
                     .data(data2)
                     .enter().append("circle") // Uses the enter().append() method
                     .attr("class", "dot") // Assign a class for styling
-                    .attr("cx", function (d, i) { if(xScale(d.key) < 0) { return -1000} else {return xScale(d.key) }})
+                    .attr("cx", function (d, i) { if (xScale(d.key) < 0) { return -1000 } else { return xScale(d.key) } })
                     .attr("cy", function (d) { return yLine(d.agg.value) })
                     .attr("r", 3)
                     .on("mouseover", function (d, i) {
-                        tooltip.style("visibility", "visible");
-                        tooltip.select("div").html("<strong>Time: </strong> " + parseTimestamp(d.key) + "<br/><strong>Value:</strong> " + d3.format(',')(Math.round(d.agg.value)) + "% <br/>");
+                        var tooltipDim = tooltip.node().getBoundingClientRect();
+                        var chartRect = d3.select('#' + id).node().getBoundingClientRect();
+                        tooltip
+                            .style("visibility", "visible")
+                            .style("left", (d3.event.clientX - chartRect.left + document.body.scrollLeft - (tooltipDim.width / 2)) + "px")
+                            .style("top", (d3.event.clientY - chartRect.top + document.body.scrollTop + 15) + "px");
+                        tooltip.select("div").html("<strong>Time: </strong> " + parseTimestamp(d.key) + "<br/><strong>ASR value:</strong> " + d3.format(',')(Math.round(d.agg.value)) + "% <br/>");
                         d3.select(this).style("cursor", "pointer");
                     })
                     .on("mouseout", function () {
                         tooltip.style("visibility", "hidden");
                     })
                     .on("mousemove", function (d) {
+                        var tooltipDim = tooltip.node().getBoundingClientRect();
+                        var chartRect = d3.select('#' + id).node().getBoundingClientRect();
                         tooltip
-                            .style("left", (d3.event.pageX - 200) + "px")
-                            .style("top", (d3.event.pageY - 100) + "px");
+                            .style("left", (d3.event.clientX - chartRect.left + document.body.scrollLeft - (tooltipDim.width / 2)) + "px")
+                            .style("top", (d3.event.clientY - chartRect.top + document.body.scrollTop + 15) + "px");
                     });
-
-
-
-                /*
-
-               // define legend box size and space
-                  var legend_keys = ["duration"]
-
-                  var lineLegend = g.selectAll(".lineLegend").data(legend_keys)
-                      .enter().append("g")
-                      .attr("class","lineLegend")
-                      .attr("transform", function (d,i) {
-                              return "translate(" + width + "," + (i*20)+")";
-                          });
-
-                  lineLegend.append("text").text(function (d) {return d;})
-                      .attr("transform", "translate(15,9)"); //align texts with boxes
-
-                  lineLegend.append("rect")
-                      .attr("fill", "indigo")
-                      .attr("width", 10).attr("height", 10);
-                      */
             }
         }
     }
