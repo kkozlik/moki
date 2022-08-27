@@ -304,7 +304,7 @@ export default class timedateHeatmap extends Component {
 
             svg.append("g")
                 .attr("class", "y axis")
-                .attr("transform", "translate(-15,0)")
+                .attr("transform", "translate(0,0)")
                 .call(yAxis)
                 .selectAll('text')
                 .text(function (d) {
