@@ -185,8 +185,6 @@ export default class StackedChart extends Component {
                     }
 
                     tooltip = d3.select('#' + id).append('div')
-                        .style("width", "200px")
-                        .style("height", "90px")
                         .style("background", "white")
                         .attr('class', 'tooltip tooltipDonut')
                         .style('opacity', 0.9)

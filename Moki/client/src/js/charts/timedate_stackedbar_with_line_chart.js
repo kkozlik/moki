@@ -320,8 +320,6 @@ export default class StackedChartLine extends Component {
 
             // tooltip
             var tooltip = d3.select('#' + id).append("div")
-                .style("width", "250px")
-                .style("height", "90px")
                 .style("background", "white")
                 .attr('class', 'tooltip tooltip' + id)
                 .style("opacity", "0.9")
