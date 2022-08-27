@@ -30,9 +30,8 @@ import { setTickNrForTimeXAxis } from "../helpers/chart";
 
 //STATE: absolute value or rate
 
-const CUMULATIVE_SUM = ["CALL STARTS BY HOST", "TX BYTES BY HOST", "RX PACKET BY HOST", "TX PACKET BY HOST", "RX BYTES BY INTERFACE", "TX BYTES BY INTERFACE", "RX PACKETS BY INTERFACE", "TX PACKETS BY INTERFACE"];
 const ABSOLUTE_VALUES = ["BLACKLISTED IPs", "WHITELISTED IPs"];
-
+const DONT_DISPLAY_OPTION = ["IPS ON FW BLACKLIST BY HOST", "IPS ON FW GREYLIST BY HOST", "IPS ON FW WHITELIST BY HOST", "LOAD-SHORTTERM", "LOAD-MIDTERM", "LOAD-LONGTERM", "MEMORY-FREE", "MEMORY-USED", "MEMORY-CACHED", "MEMORY-BUFFERED", "CPU-USER", "CPU-SYSTEM", "CPU-IDLE"]
 export default class MultipleLineChart extends Component {
     constructor(props) {
         super(props);
@@ -444,7 +443,7 @@ export default class MultipleLineChart extends Component {
             <h3 className="alignLeft title" style={{ "float": "inherit" }}> {
                 this.props.name
             } <span className="smallText"> (interval: {bucket})</span></h3>
-            {this.props.data && this.props.data.length > 0 &&
+            {this.props.data && this.props.data.length > 0 && !DONT_DISPLAY_OPTION.includes(this.props.name) && 
                 <div style={{ "marginLeft": "83%" }}>
                     <input type="radio" value="rate" style={{ "width": "34px" }} name={"ratio" + this.props.name} onClick={() => this.changeState("rate")} defaultChecked={ABSOLUTE_VALUES.includes(this.props.name)} />
                     rate
