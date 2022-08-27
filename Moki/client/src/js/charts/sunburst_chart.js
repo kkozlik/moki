@@ -141,8 +141,6 @@ export default class sunburst extends Component {
                 .on('mouseover', (d) => {
 
                     tooltip = d3.select('#sunburstChart').append('div')
-                        .style("width", "200px")
-                        .style("height", "90px")
                         .style("background", "white")
                         .attr('class', 'tooltip tooltipSunburst')
                         .style('opacity', 0.9)

@@ -240,8 +240,6 @@ export default class topology extends Component {
 
                     tooltip = d3.select('#topologyChart').append('div')
                         .attr('class', 'tooltip tooltipTopology')
-                        .style("width", "250px")
-                        .style("height", "90px")
                         .style("background", "white")
                         .style("position", "absolute")
                         .style("box-shadow", "0px 0px 6px black")
