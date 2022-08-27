@@ -255,8 +255,18 @@ class App extends Component {
                 document.body.style.setProperty('--main', jsonData.color);
                 document.body.style.setProperty('--second', jsonData.colorSecondary);
 
+                let monitorName = "";
+                if (!this.state.aws) {
+                    for (let hit of jsonSettings[0].attrs) {
+                        if (hit.attribute === "monitor_name") {
+                            monitorName = hit.value;
+                        }
+                    }
+                } else {
+                    monitorName = jsonData.name;
+                }
                 this.setState({
-                    monitorName: jsonData.name + " " + monitorVersion,
+                    monitorName: monitorName + " " + monitorVersion,
                     isLoading: false
                 });
             });
@@ -644,8 +654,8 @@ class App extends Component {
                             </Switch>
                         </div>
                         <span className="footer" style={{ "float": "right" }}>
-                            <img src={this.state.logo} alt="logo" id="footerlogo" />
                             <div>{this.state.monitorName}</div>
+                            <img src={this.state.logo} alt="logo" id="footerlogo" />
                         </span>
                     </div>
                 </div>;
@@ -677,8 +687,8 @@ class App extends Component {
                                 <Redirect to="/" />
                             </Switch>
                             <span className="footer" style={{ "float": "right" }}>
-                                <img src={this.state.logo} alt="logo" id="footerlogo" />
                                 <div>{this.state.monitorName}</div>
+                                <img src={this.state.logo} alt="logo" id="footerlogo" />
                             </span>
                         </div>
                     </div>
@@ -692,7 +702,7 @@ class App extends Component {
 
                 {this.state.firstTimeLogin ? <FirstLoginPopup setFirstTimeLogin={this.setFirstTimeLogin} /> :
                     (this.state.isLoading) ? loadingScreen :
-                        <Router basename={BASE_NAME+"/"}>
+                        <Router basename={BASE_NAME + "/"}>
                             <div className="container-fluid" style={{ "backgroundColor": "white" }}> {sipUserSwitch}
                             </div>
                         </Router>
