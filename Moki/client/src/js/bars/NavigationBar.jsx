@@ -54,15 +54,16 @@ class navBar extends Component {
     handleScroll(event) {
         var navBar = document.getElementById("sidebar-container");
         if (navBar.clientHeight - window.innerHeight > 0) {
-            if (window.pageYOffset > (navBar.clientHeight - window.innerHeight)) {
+            //navbar is longer than page
+            if (window.pageYOffset + window.innerHeight <= navBar.clientHeight + 1) {
+                navBar.style.position = "sticky";
+                navBar.style.bottom = "auto";
+                navBar.style.top = "auto";
+            }
+            else if (window.pageYOffset > (navBar.clientHeight - window.innerHeight)) {
                 navBar.style.position = "fixed";
                 navBar.style.bottom = "0";
                 navBar.style.top = "auto";
-            }
-            else if (window.pageYOffset > 300) {
-                navBar.style.position = "sticky";
-                navBar.style.bottom = "auto";
-                navBar.style.top = "0";
             }
             else {
                 navBar.style.position = "sticky";
@@ -105,11 +106,11 @@ class navBar extends Component {
 
 
     changepassword() {
-        function keyPressCheckPassword(e){
+        function keyPressCheckPassword(e) {
             if (e.key === "Enter") {
                 e.preventDefault();
                 checkPassword();
-              }
+            }
         }
 
         async function checkPassword() {
@@ -126,7 +127,7 @@ class navBar extends Component {
                 window.mainPopup.error("Passwords are not same.");
             }
             else if (password.indexOf("'") >= 0 || password.indexOf('"') >= 0) {
-                window.mainPopup.error("Passwords can't contains any quotes." );
+                window.mainPopup.error("Passwords can't contains any quotes.");
             }
             else {
 
