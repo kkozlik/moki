@@ -126,7 +126,7 @@ class navBar extends Component {
                 window.mainPopup.error("Passwords are not same.");
             }
             else if (password.indexOf("'") >= 0 || password.indexOf('"') >= 0) {
-                window.mainPopup.error("Passwords can't contains quotes." );
+                window.mainPopup.error("Passwords can't contains any quotes." );
             }
             else {
 
