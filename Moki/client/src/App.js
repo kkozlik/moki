@@ -25,6 +25,7 @@ import { parseTimestamp } from "./js/helpers/parseTimestamp";
 import { setTimerange } from "./js/actions/index";
 import { setFilters } from "./js/actions/index";
 import { createFilter } from '@moki-client/gui';
+import { getUsername } from "./js/helpers/getUsername";
 const BASE_NAME = process.env.PUBLIC_URL;
 
 //General class - check user level, profile from ES, monitor_layout before loading monitor
@@ -60,7 +61,9 @@ class App extends Component {
         this.redirect = this.redirect.bind(this);
         this.getHostnames = this.getHostnames.bind(this);
         this.checkURLFilters = this.checkURLFilters.bind(this);
+        this.rerenderUsername = this.rerenderUsername.bind(this);
         this.getSipUser();
+        storePersistent.subscribe(() => this.rerenderUsername());
     }
 
     componentDidMount() {
@@ -73,6 +76,23 @@ class App extends Component {
             thiss.setState({ resizeId: setTimeout(thiss.windowResize, 500) });
         });
 
+    }
+
+    //when user has changed, rerender it in GUI
+    rerenderUsername() {
+        var sipUser = { ...storePersistent.getState().user };
+        if (sipUser) {
+            if (sipUser.aws === false) {
+                sipUser.account = "Account: " + sipUser.username;
+            }
+            else {
+                sipUser.account = sipUser.email ? sipUser.user + ": " + sipUser.email : sipUser.username ? sipUser.user + " " + sipUser.username : sipUser.user;
+            }
+        } else {
+            sipUser.account = "";
+        }
+
+        this.setState({ user: sipUser })
     }
 
     //check url parameters for filters
@@ -488,21 +508,7 @@ class App extends Component {
                     console.info("MOKI: sip user: " + sip.user);
 
                     //get username
-                    try {
-                        response = await fetch(BASE_NAME + "/api/user/username", {
-                            method: "GET",
-                            credentials: 'include',
-                            headers: {
-                                "Content-Type": "application/json",
-                                "Access-Control-Allow-Credentials": "include"
-                            }
-                        })
-
-                        var res = await response.json();
-                        sip.username = res.username;
-                    } catch (error) {
-
-                    }
+                    sip.username = await getUsername();
 
                     //set user info :  email:email, domainID:domainID, jwt: jwtbit
                     storePersistent.dispatch(setUser(sip));
@@ -581,20 +587,7 @@ class App extends Component {
         </span>
 
         //get userto display
-        var sipUser = storePersistent.getState().user;
-        if (sipUser) {
-            if (storePersistent.getState().user.aws === false) {
-                sipUser = "Account: " + storePersistent.getState().user.username;
-            }
-            else {
-                sipUser = storePersistent.getState().user.email ? storePersistent.getState().user.user + ": " + storePersistent.getState().user.email : storePersistent.getState().user.username ? storePersistent.getState().user.user + " " + storePersistent.getState().user.username : storePersistent.getState().user.user;
-            }
-        } else {
-            sipUser = "";
-        }
-
-
-
+        var sipUser = this.state.user;
         var sipUserSwitch;
         const aws = this.state.aws;
         var url = window.location.pathname;
@@ -634,7 +627,7 @@ class App extends Component {
                     <div className="row justify-content-between header" style={{ "marginRight": 0, "marginLeft": 0 }} >
                         <span id="user" className="top" style={{ style }}>
                             {aws === true && <DecryptPasswordPopup />}
-                            <div style={styleUser}>{sipUser}</div>
+                            <div style={styleUser}>{this.state.user.account}</div>
                             {aws === true && (!this.state.admin && !this.state.siteAdmin) && <a href="/logout" > Log out </a>}
                         </span>
 
@@ -670,7 +663,7 @@ class App extends Component {
                         <div className="d-flex justify-content-between header" >
                             <span id="user" className="top">
                                 {aws === true && <DecryptPasswordPopup />}
-                                {sipUser}
+                                {this.state.user.account}
                                 {aws === true && !this.state.admin && <a href="/logout"> Log out </a>}</span>
                             <TimerangeBar showError={this.showError} />
                         </div>
