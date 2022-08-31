@@ -2,8 +2,8 @@ import React, {
     Component
 } from 'react';
 import * as d3 from "d3";
-import {ColorType} from '@moki-client/gui';
-import {Colors} from '@moki-client/gui';
+import { ColorType } from '@moki-client/gui';
+import { Colors } from '@moki-client/gui';
 import emptyIcon from "../../styles/icons/empty_small.png";
 import Animation from '../helpers/Animation';
 
@@ -44,11 +44,12 @@ export default class barChart extends Component {
             chart.remove();
         }
 
+
         //compute max label length to get bottom margin
         var bottomMargin = 100;
         if (data && data.length > 0) {
             var maxTextWidth = d3.max(data.map(n => n.key.length));
-            bottomMargin = maxTextWidth  > 20 ? 100 : maxTextWidth * 13;
+            bottomMargin = maxTextWidth > 20 ? 100 : maxTextWidth * 13;
         }
         if (name === "TOTAL EVENTS IN INTERVAL") {
             bottomMargin = 100;
@@ -74,18 +75,30 @@ export default class barChart extends Component {
                     else if (d === "3.1-3.6") { return "Some users dissatisfied"; }
                     else if (d === "3.6-4.03") { return "Satisfied"; }
                     else if (d === "4.03-*") { return "Very satisfied"; }
-                    else {return d}
+                    else { return d }
                 }
                 else {
                     return d;
                 }
             });
 
+        let maxY = 0;
+        for (let hit of data) {
+            if (hit.doc_count > maxY) maxY = hit.doc_count;
+        }
 
-
-        var yAxis = d3.axisLeft()
-            .scale(yScale)
-            .ticks(5);
+        if (maxY <= 6 && name.includes("HISTOGRAM")) {
+            function range(start, end) {
+                return Array(end - start + 1).fill().map((_, idx) => start + idx)
+            }
+            var yValues = range(0, maxY + 1);
+            var yAxis = d3.axisLeft().scale(yScale).tickValues(yValues).tickFormat(d3.format('d'));
+        }
+        else {
+            var yAxis = d3.axisLeft()
+                .scale(yScale)
+                .ticks(5);
+        }
 
         var colorScale = d3.scaleOrdinal(Colors);
 
@@ -115,7 +128,7 @@ export default class barChart extends Component {
             else {
                 xScale.domain(data.map(d => d.key));
             }
-            yScale.domain([0, d3.max(data, d => d.doc_count)]);
+            yScale.domain([0, d3.max(data, d => d.doc_count + d.doc_count / 5)]);
         }
 
         function wrap(text, width) {
@@ -154,32 +167,38 @@ export default class barChart extends Component {
         else {
 
             svg.append('g')
-            .attr('class', 'x axis')
-            .attr('transform', `translate(0, ${height})`)
-            .call(xAxis)
-            .selectAll("text")
-            .call(wrap, 80)
-            .style("text-anchor", "end")
-            .attr("dx", "-.6em")
-            .attr("dy", ".10em")
-            .attr("transform", function (d) {
-                return "rotate(-65)"
-            });
+                .attr('class', 'x axis')
+                .attr('transform', `translate(0, ${height})`)
+                .call(xAxis)
+                .selectAll("text")
+                .call(wrap, 80)
+                .style("text-anchor", "end")
+                .attr("dx", "-.6em")
+                .attr("dy", ".10em")
+                .attr("transform", function (d) {
+                    return "rotate(-65)"
+                });
 
-        svg.append('g')
-            .attr('class', 'y axis')
-            .call(yAxis)
-            .append('text')
-            .attr('transform', 'rotate(-90)')
-            .attr('y', 6)
-            .attr('dy', '.71em')
-            .style('text-anchor', 'end')
-            .text('Count');
+            svg.append('g')
+                .attr('class', 'y axis')
+                .call(yAxis)
+                .append('text')
+                .attr('transform', 'rotate(-90)')
+                .attr('y', 6)
+                .attr('dy', '.71em')
+                .style('text-anchor', 'end')
+                .text('Count');
 
             // gridlines in y axis function
             function make_y_gridlines() {
-                return d3.axisLeft(yScale)
-                    .ticks(5)
+                if (maxY <= 6 && name.includes("HISTOGRAM")) {
+                    return d3.axisLeft(yScale)
+                        .ticks(maxY)
+                }
+                else {
+                    return d3.axisLeft(yScale)
+                        .ticks(5)
+                }
             }
 
             var tooltip = "";
