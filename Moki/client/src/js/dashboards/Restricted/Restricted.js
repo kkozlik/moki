@@ -11,21 +11,16 @@ import TypeBar from '../../bars/Typebar';
 class Restricted extends Component {
     constructor(props) {
         super(props);
-        this.showError = this.showError.bind(this);
         //no types needed in Home dashboard, delete them from redux
         store.dispatch( assignType(""));
 
-    }
-
-    showError(value){
-        this.props.showError(value);
     }
     
     render() {
         return (
             <div className="container-fluid">
              <TypeBar/>
-                <RestrictedCharts  showError={this.showError}/>
+                <RestrictedCharts />
                 <RestrictedExceededTable tags={this.props.tags}  />
                 <RestrictedTable tags={this.props.tags}  />
                

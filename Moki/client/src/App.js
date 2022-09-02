@@ -33,9 +33,7 @@ class App extends Component {
     // Initialize the state
     constructor(props) {
         super(props);
-        this.state = {
-            error: [],
-            redirect: false,
+        this.state = {            redirect: false,
             firstTimeLogin: false,
             isLoading: true,
             aws: false,
@@ -54,9 +52,7 @@ class App extends Component {
             user: {},
             resizeId: ""
         }
-        this.showError = this.showError.bind(this);
         this.setFirstTimeLogin = this.setFirstTimeLogin.bind(this);
-        this.deleteAllErrors = this.deleteAllErrors.bind(this);
         this.redirect = this.redirect.bind(this);
         this.getHostnames = this.getHostnames.bind(this);
         this.checkURLFilters = this.checkURLFilters.bind(this);
@@ -64,8 +60,6 @@ class App extends Component {
     }
 
     componentDidMount() {
-        //check if needed to display an error
-        this.showError(this.state.error);
         var thiss = this;
         //resize window function
         window.addEventListener('resize', function () {
@@ -244,21 +238,6 @@ class App extends Component {
         await this.checkURLFilters();
     }
 
-    /**
-* set error state -> past it to child and display it
-* @param {string}  error 
-* */
-    showError(error) {
-        console.log(error);
-        if (error.length > 0) {
-            this.setState({ error: [...this.state.error, error] });
-        }
-    }
-
-    deleteAllErrors() {
-        this.setState({ error: [] });
-    }
-
     //change value if first time login
     setFirstTimeLogin(value) {
         this.setState({
@@ -343,7 +322,6 @@ class App extends Component {
 
                 const json = await response.json();
                 if (!response.ok) {
-                    //this.showError(JSON.stringify(json.error));
                     return;
                 }
                 var hostnames = [];
@@ -404,7 +382,7 @@ class App extends Component {
                 });
             }
             catch (er) {
-                this.setState({ error: er });
+                window.notification.showError( { errno: 6, text: er, level: "error" });
             }
         }
         request();
@@ -432,7 +410,7 @@ class App extends Component {
                 "Access-Control-Allow-Credentials": "include"
             });
             if (!response.ok) {
-                this.showError("Monitor server is not running.");
+                window.notification.showError( { errno: 6, text: "Monitor server is not running.", level: "error" });
             }
             else {
                 sip = await response.json();
@@ -511,10 +489,11 @@ class App extends Component {
             }
         } catch (error) {
             if (response.status === 500) {
-                this.setState({ error: "500: Monitor server is not running." });
+                window.notification.showError( { errno: 6, text: "Monitor server is not running.", level: "error" });
+
             } else {
                 console.error(error);
-                this.setState({ error: "Check elasticsearch connection and restart the page." });
+                window.notification.showError( { errno: 2, text: "Check elasticsearch connection and restart the page.", level: "error" });
             }
         }
     }
@@ -541,7 +520,7 @@ class App extends Component {
 
         //loading screen span
         var loadingScreen = <span>
-            <Notificationbar className="errorBarLoading" error={this.state.error} deleteAllErrors={this.deleteAllErrors}></Notificationbar>
+            <Notificationbar className="errorBarLoading"></Notificationbar>
             <div style={{ "marginTop": (window.innerHeight / 2) - 50 }} className=" align-items-center justify-content-center">
                 <div className="loaderr">
                     <div className="bar"></div>
@@ -612,12 +591,12 @@ class App extends Component {
                     </div>
 
                     <div id="context" className={"margin250"}>
-                        <Notificationbar className="errorBar" error={this.state.error} deleteAllErrors={this.deleteAllErrors}></Notificationbar>
+                        <Notificationbar className="errorBar"></Notificationbar>
                         <div className="row">
                             <Switch >
-                                {paths(dashboardAlter, this.state.tags, this.state.hostnames, this.state.dstRealms, this.state.srcRealms, this.showError)}
-                                {paths(this.state.dashboardsSettings, this.state.tags, this.state.hostnames, this.state.dstRealms, this.state.srcRealms, this.showError)}
-                                {paths(this.state.dashboardsUser, this.state.tags, this.state.hostnames, this.state.dstRealms, this.state.srcRealms, this.showError)}
+                                {paths(dashboardAlter, this.state.tags, this.state.hostnames, this.state.dstRealms, this.state.srcRealms)}
+                                {paths(this.state.dashboardsSettings, this.state.tags, this.state.hostnames, this.state.dstRealms, this.state.srcRealms)}
+                                {paths(this.state.dashboardsUser, this.state.tags, this.state.hostnames, this.state.dstRealms, this.state.srcRealms)}
                                 {aws && <Route path="/logout" />}
                                 {aws && <Route path="/passwdd" />}
                                 <Redirect to={dashboards.includes("home") ? "/home" : "/" + dashboards[0]} />
@@ -642,14 +621,14 @@ class App extends Component {
                                 {aws === true && <DecryptPasswordPopup />}
                                 {sipUser}
                                 {aws === true && !this.state.admin && <a href="/logout"> Log out </a>}</span>
-                            <TimerangeBar showError={this.showError} />
+                            <TimerangeBar />
                         </div>
                         <FilterBar redirect={this.state.redirect} />
-                        <Notificationbar className="errorBarLoading" error={this.state.error} deleteAllErrors={this.deleteAllErrors}></Notificationbar>
+                        <Notificationbar className="errorBarLoading" ></Notificationbar>
                         <div>
                             <Switch >
-                                <Route exact path='/index' render={() => < Restricted name="restricted" showError={this.showError} tags={this.state.tags} />} />
-                                <Route exact path='/' render={() => < Restricted name="restricted" showError={this.showError} />} />
+                                <Route exact path='/index' render={() => < Restricted name="restricted" tags={this.state.tags} />} />
+                                <Route exact path='/' render={() => < Restricted name="restricted" />} />
                                 <Route path='/logout' />
                                 <Route path='/no-sip-identity/' />
                                 <Route path='/sequenceDiagram/:id' render={() => < Sequence />} />

@@ -13,11 +13,6 @@ class ConnectivityCA extends Component {
       srcRealms: this.props.srcRealms,
       dstRealms: this.props.dstRealms
     }
-    this.showError = this.showError.bind(this);
-  }
-
-  showError(value) {
-    this.props.showError(value);
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
@@ -43,7 +38,7 @@ class ConnectivityCA extends Component {
     return (
       <div className="container-fluid" style={{"paddingRight": "0"}}>
         <FilterBar tags={this.props.tags} srcRealms={this.state.srcRealms} dstRealms={this.state.dstRealms} />
-        <ConnectivityCACharts showError={this.showError} />
+        <ConnectivityCACharts />
       </div>
 
     );

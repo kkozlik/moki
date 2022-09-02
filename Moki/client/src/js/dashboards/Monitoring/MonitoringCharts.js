@@ -77,12 +77,12 @@ class MonitoringCharts extends Component {
         }
 
         if (typeof data === "string" && data.includes("ERROR:")) {
-            this.props.showError(data);
+            window.notification.showError( { errno: 2, text: data, level: "error" });
             this.setState({ isLoading: false });
             return;
         }
         if (typeof events === "string" && events.includes("ERROR:")) {
-            this.props.showError(events);
+            window.notification.showError( { errno: 2, text: events, level: "error" });
             this.setState({ isLoading: false });
             return;
         }

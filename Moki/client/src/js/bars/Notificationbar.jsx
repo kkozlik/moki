@@ -9,6 +9,7 @@ LEVELS
     - {errno: 1, text: "Logstash is not running", level: "error"}
     - {errno: 2, text: "Elasticsearch is not running", level: "error"}
     - {errno: 3, text: "Disk full > 90%", level: "error"}
+    - {errno: 6, text: "Can't connect to monitor server", level: "error" }
 2) warning
     - {errno: 4, text: "Disk full > 80%", level: "warning"}
 3) info
@@ -21,7 +22,8 @@ const NOTIFICATIONS = [
     { errno: 2, text: "Elasticsearch is not running", level: "error" },
     { errno: 3, text: "Disk full > 90%", level: "error" },
     { errno: 4, text: "Disk full > 80%", level: "warning" },
-    { errno: 5, text: "Downloading data", level: "info" }
+    { errno: 5, text: "Downloading data", level: "info" },
+    { errno: 6, text: "Can't connect to monitor server", level: "error" }
 ]
 class Notificationbar extends Component {
     constructor(props) {

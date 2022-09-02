@@ -14,11 +14,6 @@ class System extends Component {
         this.state = {
             hostnames: this.props.hostnames
         }
-        this.showError = this.showError.bind(this);
-    }
-
-    showError(value) {
-        this.props.showError(value);
     }
 
     static getDerivedStateFromProps(nextProps, prevState) {
@@ -39,7 +34,7 @@ class System extends Component {
             <div className="container-fluid" style={{"paddingRight": "0"}}>
                 <FilterBar tags={this.props.tags} />
                 <TypeBar />
-                <SystemCharts showError={this.showError} hostnames={this.state.hostnames} />
+                <SystemCharts  hostnames={this.state.hostnames} />
                 <SystemTable tags={this.props.tags} />
             </div>
 

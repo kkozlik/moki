@@ -13,13 +13,7 @@ class Realm extends Component {
     this.state = {
       hostnames: this.props.hostnames
     }
-    this.showError = this.showError.bind(this);
   }
-
-  showError(value) {
-    this.props.showError(value);
-  }
-
   static getDerivedStateFromProps(nextProps, prevState) {
     if (nextProps.hostnames !== prevState.hostnames) {
       return { hostnames: nextProps.hostnames };
@@ -37,7 +31,7 @@ class Realm extends Component {
     return (
       <div className="container-fluid" style={{"paddingRight": "0"}}>
         <FilterBar tags={this.props.tags} />
-        <RealmCharts showError={this.showError} hostnames={this.state.hostnames} />
+        <RealmCharts  hostnames={this.state.hostnames} />
         <RealmTable tags={this.props.tags} />
       </div>
 
