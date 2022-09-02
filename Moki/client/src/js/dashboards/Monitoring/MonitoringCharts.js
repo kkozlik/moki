@@ -13,9 +13,9 @@ import store from "../../store/index";
 import MultiListChart from '../../charts/multiple_list_chart.js';
 import ListChartMonitoring from '../../charts/list_chart_monitoring.js';
 import MonitoringListChart from '../../charts/monitoring_list_chart.js';
-import {
-    elasticsearchConnection
-} from '@moki-client/gui';
+import BootstrapTable from '@moki-client/react-bootstrap-table-next';
+import paginationFactory, { PaginationProvider } from 'react-bootstrap-table2-paginator';
+import {elasticsearchConnection} from '@moki-client/gui';
 
 class MonitoringCharts extends Component {
 
@@ -42,7 +42,7 @@ class MonitoringCharts extends Component {
             eventStats: 0,
             indices: [],
             freeMemory: 0
-                }
+        }
         store.subscribe(() => this.loadData());
 
 
@@ -194,10 +194,55 @@ class MonitoringCharts extends Component {
 
     //render GUI
     render() {
+        const paginationOption = {
+            totalSize: 100,
+            sizePerPage: 50,
+            hideSizePerPage: true,
+            paginationSize: 1,
+            prePageText: "<",
+            nextPageText: ">",
+            withFirstAndLast: false
+        };
+
+        var columns = [];
+        columns.push({
+            dataField: 'text',
+            text: 'Text'
+        },
+            {
+                dataField: 'level',
+                text: 'Level'
+            }
+        );
+
         return (<div > {
             this.state.isLoading && < LoadingScreenCharts />
         }
-
+            <h4> NOTIFICATIONS </h4> <div className="row no-gutters bottomMargin" >
+                <div className="col-auto" style={{ "marginRight": "5px" }}>
+                    <PaginationProvider pagination={paginationFactory(paginationOption)}>
+                        {({
+                            paginationProps,
+                            paginationTableProps
+                        }) => (
+                            <span >
+                                <BootstrapTable
+                                    keyField="sub"
+                                    data={window.notification.getAllNotifications()}
+                                    bordered={false}
+                                    bootstrap4
+                                    hover
+                                    printable
+                                    noDataIndication={"No notifications"}
+                                    columns={columns}
+                                    {...paginationTableProps}
+                                />
+                            </span>
+                        )
+                        }
+                    </PaginationProvider>
+                </div>
+            </div>
             <h4> CPU </h4> <div className="row no-gutters bottomMargin" >
                 <div className="col-auto" style={{ "marginRight": "5px" }}>
                     <GaugeChart data={this.state.cpu}
@@ -234,7 +279,7 @@ class MonitoringCharts extends Component {
                         name={"FREE MEMORY (KB)"}
                     />
                 </div>
-                <div className="col-auto" style={{"marginLeft": "5px"}}>
+                <div className="col-auto" style={{ "marginLeft": "5px" }}>
                     <ValueChart data={
                         this.state.memoryBytes
                     }

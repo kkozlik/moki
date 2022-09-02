@@ -23,8 +23,8 @@ export default async function status() {
         let logstash = true;
         let elasticsearch = true;
 
-        json.logstash = json.logstash.replace(/\r?\n|\r/g, "");
-        json.elasticsearch = json.elasticsearch.replace(/\r?\n|\r/g, "");
+        if(typeof json.logstash === 'string') json.logstash = json.logstash.replace(/\r?\n|\r/g, "");
+        if(typeof json.elasticsearch === 'string') json.elasticsearch = json.elasticsearch.replace(/\r?\n|\r/g, "");
 
 
         if (json.logstash !== "active") {
