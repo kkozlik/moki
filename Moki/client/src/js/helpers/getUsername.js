@@ -1,7 +1,7 @@
 //get username from server, store in redux and also return it
 
 import storePersistent from "../store/indexPersistent";
-import { setUser } from "./js/actions/index";
+import { setUser } from "../actions/index";
 
 export async function getUsername() {
     var url = process.env.PUBLIC_URL + "/api/user/username";
