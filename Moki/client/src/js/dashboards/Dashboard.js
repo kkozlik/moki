@@ -114,7 +114,7 @@ class Dashboard extends Component {
         var data = await elasticsearchConnection(this.state.dashboardName);
 
         if (typeof data === "string") {
-          window.notification.showError( { errno: 2, text: error, level: "error" });
+          window.notification.showError( { errno: 2, text: data, level: "error" });
           this.setState({ isLoading: false });
           return;
         } else if (data) {
