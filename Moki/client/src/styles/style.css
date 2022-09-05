@@ -620,12 +620,11 @@ button.export {
 }
 
 .errorBar {
-    background-color: orangered;
     padding-left: 30px;
     width: 87%;
     margin-left: 15px;
     font-size: medium;
-    padding: 4px;
+    padding: 0px;
     margin-top: 38px;
     position: fixed;
     z-index: 9999999;
@@ -636,7 +635,6 @@ button.export {
 }
 
 .errorBarLoading {
-    background-color: orangered;
     padding-left: 30px;
     width: 100%;
     margin-left: 15px;

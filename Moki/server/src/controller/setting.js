@@ -8,6 +8,7 @@ const { connectToES } = require('../modules/elastic');
 const distinct_query = require('../../js/template_queries/distinct_query');
 const { getJWTsipUserFilter } = require('../modules/jwt');
 const AdminController = require('./admin');
+const elastic = require('../modules/elastic');
 
 let domainFilter = "*";
 let monitorVersion = "4.6";
@@ -871,6 +872,7 @@ class SettingController {
   static systemStatus(req, res, next) {
     async function search() {
       let logstash = "";
+      let elastic = "";
       //get systemctl status logstash
       exec("systemctl is-active  logstash", function (error, stdout) {
         if (!error) {
@@ -879,15 +881,24 @@ class SettingController {
           logstash = error;
         }
 
-        return res.json({
-          logstash: logstash
+        exec("systemctl is-active  elasticsearch", function (error, stdout) {
+          if (!error) {
+            elastic = stdout;
+          } else {
+            elastic = error;
+          }
+
+          return res.json({
+            logstash: logstash,
+            elasticsearch: elastic
+          });
         });
       });
-    }
 
-    return search().catch((e) => {
-      return next(e);
-    });
+      return search().catch((e) => {
+        return next(e);
+      });
+    }
   }
 }
 

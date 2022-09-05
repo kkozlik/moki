@@ -14,11 +14,6 @@ class Network extends Component {
         this.state = {
             hostnames: this.props.hostnames
         }
-        this.showError = this.showError.bind(this);
-    }
-
-    showError(value) {
-        this.props.showError(value);
     }
 
     static getDerivedStateFromProps(nextProps, prevState) {
@@ -40,7 +35,7 @@ class Network extends Component {
             <div className="container-fluid" style={{"paddingRight": "0"}}>
                 <FilterBar />
                 <TypeBar />
-                <NetworkCharts showError={this.showError} hostnames={this.state.hostnames} />
+                <NetworkCharts hostnames={this.state.hostnames} />
                 <NetworkTable />
             </div>
 

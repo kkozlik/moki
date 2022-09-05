@@ -11,19 +11,15 @@ import TypeBar from '../../bars/Typebar';
 class Conference extends Component {
     constructor(props) {
         super(props);    
-        this.showError = this.showError.bind(this);
     }
-    
-    showError(value){
-        this.props.showError(value);
-    }  
+     
       
     render() {
         return (
            <div className="container-fluid" style={{"paddingRight": "0"}}>
                 <FilterBar  tags={this.props.tags}/>
                 <TypeBar/>
-                <ConferenceCharts  showError={this.showError} />
+                <ConferenceCharts  />
                 <ConferenceTable   tags={this.props.tags} />
             </div>
                        
