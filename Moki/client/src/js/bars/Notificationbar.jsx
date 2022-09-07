@@ -88,6 +88,7 @@ class Notificationbar extends Component {
             }
         }
     }
+    
     /**
 * display errors in error bar
 * @param {errors}  string
@@ -109,11 +110,6 @@ class Notificationbar extends Component {
         if (this.props.className !== "errorBarLoading") this.props.deleteAllErrors();
     }
 
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.error.length > 0) {
-            this.showError(nextProps.error);
-        }
-    }
 
     /**
     * get notification object
