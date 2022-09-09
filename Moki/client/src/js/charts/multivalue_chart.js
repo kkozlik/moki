@@ -138,7 +138,7 @@ export default class multivalueChart extends Component {
                     </div>
                 </td>
                     <td className="filtertd text-nowrap" key={"value0" + i}> {niceNumber(data[i].value0)}</td>
-                    <td className="filtertd text-nowrap" key={"value1" + i}>{durationFormat(data[i].value1)}</td>
+                    <td className="filtertd text-nowrap" key={"value1" + i}>{this.props.name2 === "Minutes" ? durationFormat(data[i].value1) : data[i].value1}</td>
                     <td className="filtertd text-nowrap" key={"value2" + i}>{niceNumber(data[i].value2)}</td>
                     <td className="filtertd text-nowrap" key={"value3" + i}>{niceNumber(data[i].value3)}</td>
                     <td className="filtertd text-nowrap" key={"value4" + i}>{niceNumber(data[i].value4)}</td>
