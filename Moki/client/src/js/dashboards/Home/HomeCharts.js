@@ -9,7 +9,7 @@ import ValueChart from '../../charts/value_chart.js';
 import MultipleAreaChart from '../../charts/multipleArea_chart';
 import store from "../../store/index";
 import LoadingScreenCharts from '../../helpers/LoadingScreenCharts';
-import { parseQueryStringData, parseDateHeatmap, parseAggData, parseAggSumBucketData, parseMultipleLineDataShareAxis, parseMultipleLineDataShareAxisWithoutAgg, parseAggQuerySumValue } from '@moki-client/es-response-parser';
+import { parseQueryStringData, parseDateHeatmap, parseAggData, parseAggSumBucketData, parseAggDistinct, parseMultipleLineDataShareAxis, parseMultipleLineDataShareAxisWithoutAgg, parseAggQuerySumValue } from '@moki-client/es-response-parser';
 
 class HomeCharts extends Dashboard {
 
@@ -31,6 +31,8 @@ class HomeCharts extends Dashboard {
             callsActual: [],
             regsActuall: [],
             incidentCount: [],
+            distinctIP: [],
+            distinctURI: [],
             isLoading: true
         }
 
@@ -57,7 +59,11 @@ class HomeCharts extends Dashboard {
                 [], //don't delete
                 //PARALLEL INCIDENT 13+14
                 [{ result: 'incidentCount', func: parseMultipleLineDataShareAxisWithoutAgg, type: "multipleLineData", details: ["Incident", "Incident-1d"] }],
-                [] //don't delete
+                [], //don't delete
+                //DISTINCT IP
+                [{ result: 'distinctIP', func: parseAggDistinct }],
+                //DISTINCT URI
+                [{ result: 'distinctURI', func: parseAggDistinct }],
 
             ]
         }
@@ -119,6 +125,16 @@ class HomeCharts extends Dashboard {
                         <ValueChart data={
                             this.state.avgDuration
                         } name={"AVG DURATION"} />
+                    </div>
+                   <div className="col-auto">
+                        <ValueChart data={
+                            this.state.distinctIP
+                        } name={"DISTINCT IP"} />
+                    </div>
+                   <div className="col-auto">
+                        <ValueChart data={
+                            this.state.distinctURI
+                        } name={"DISTINCT URI"} />
                     </div>
                 </div>
                 <div className="row no-gutters">

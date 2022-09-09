@@ -28,6 +28,7 @@ class OverviewCharts extends Dashboard {
             charts: [],
             distinctIP: [],
             totalEvents: [],
+            distinctURI: [],
             isLoading: true
         };
         this.callBacks = {
@@ -55,6 +56,9 @@ class OverviewCharts extends Dashboard {
 
                 //TOTAL EVENTS IN INTERVAL
                 [{ result: 'totalEvents', func: parseQueryStringData }],
+
+                //DISTINCT URI
+                [{ result: 'distinctURI', func: parseAggDistinct }],
             ]
         };
     }
@@ -71,6 +75,11 @@ class OverviewCharts extends Dashboard {
                         <ValueChart data={
                             this.state.distinctIP
                         } name={"DISTINCT IP"} />
+                    </div>}
+                    {this.state.charts["DISTINCT URI"] && <div className="col-auto">
+                        <ValueChart data={
+                            this.state.distinctURI
+                        } name={"DISTINCT URI"} />
                     </div>}
                     {this.state.charts["TOTAL EVENTS"] && <div className="col-auto">
                         <ValueChart data={

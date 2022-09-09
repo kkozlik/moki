@@ -62,6 +62,8 @@ class overviewController extends Controller {
       { index: "logstash*", template: distinct_query_string, params: ["attrs.source"], filter: "*" },
       //TOTAL EVENT COUNT
       { index: "logstash*", template: query_string, filter: "*" },
+      //DISTINCT URI
+      { index: "logstash*", template: distinct_query_string, params: ["attrs.from.keyword"], filter: "*" },
     ], "overview");
   }
 
