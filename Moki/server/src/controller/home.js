@@ -4,9 +4,8 @@ const agg_sum_bucket_query = require('../../js/template_queries/agg_sum_bucket_q
 const agg_query = require('../../js/template_queries/agg_query');
 const datehistogram_query = require('../../js/template_queries/datehistogram_query');
 const datehistogram_agg_query = require('../../js/template_queries/datehistogram_agg_query');
-const timerange_query = require('../../js/template_queries/timerange_query');
-const two_agg_query = require('../../js/template_queries/two_agg_query');
 const distinct_timerange_query_string = require('../../js/template_queries/distinct_timerange_query_string');
+const distinct_query_string = require('../../js/template_queries/distinct_query_string');
 
 /**
  * @swagger
@@ -191,7 +190,11 @@ class HomeController extends Controller {
       //11 INCIDENT COUNT
       { index: "exceeded*", template: datehistogram_query, params: ["timebucket", "timestamp_gte", "timestamp_lte"], types: "*", filter: "*" },
       //12 INCIDENT COUNT DAY AGO
-      { index: "exceeded*", template: datehistogram_query, params: ["timebucket", "timestamp_gte", "timestamp_lte"], types: "*", filter: "*", timestamp_gte: "- 60 * 60 * 24 * 1000", timestamp_lte: "- 60 * 60 * 24 * 1000" }
+      { index: "exceeded*", template: datehistogram_query, params: ["timebucket", "timestamp_gte", "timestamp_lte"], types: "*", filter: "*", timestamp_gte: "- 60 * 60 * 24 * 1000", timestamp_lte: "- 60 * 60 * 24 * 1000" },
+       //DISTINCT IP
+       { index: "logstash*", template: distinct_query_string, params: ["attrs.source"], filter: "*" },
+      //DISTINCT URI
+      { index: "logstash*", template: distinct_query_string, params: ["attrs.from.keyword"], filter: "*" },
     ]);
   }
 }
