@@ -69,25 +69,6 @@ class Notificationbar extends Component {
     componentWillUnmount(){
         clearTimeout(this.state.statusCheck);
     }
-
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.error.length > 0) {
-            var newNotification = [];
-            let isFound = false;
-            for (let i = 0; i < nextProps.error.length; i++) {
-                for (let j = 0; j < this.state.notifications.length; j++) {
-                    if (this.state.notifications[j].errno === nextProps.error[i].errno) {
-                        isFound = true;
-                        continue;
-                    }
-                }
-                if (!isFound) {
-                    newNotification.push(nextProps.error[i]);
-
-                }
-            }
-        }
-    }
     
     /**
 * display errors in error bar
