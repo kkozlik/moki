@@ -67,9 +67,9 @@ class filterBar extends Component {
     //if store filters changes, render new state
     rerenderFilters() {
         //if (store.getState().filters !== this.state.filters) {
-            console.info("Filters are changed: " + JSON.stringify(store.getState().filters));
-            this.setState({ filters: store.getState().filters });
-       // }
+        console.info("Filters are changed: " + JSON.stringify(store.getState().filters));
+        this.setState({ filters: store.getState().filters });
+        // }
     }
 
     //check if attribute prefix is correct
@@ -91,52 +91,72 @@ class filterBar extends Component {
         }
     }
 
+    //check input
+    check(input) {
+        // check for <script>
+        if (input.includes("<script>")) {
+            alert("Filter can't contain <script>");
+            return false;
+        }
+        //or special characters {}
+        else if (input.includes("{") || input.includes("}")) {
+            alert("Filter can't contain { or }");
+            return false;
+        }
+        return input;
+    }
+
     //add new filrer, generate id, status enable, pinned
     addFilter() {
         var searchBar = document.getElementById("searchBar");
         var searchValue = searchBar.value;
 
-        //with attribute name or "sip:"
-        if (searchValue.includes(":")) {
-            var operators = searchValue.indexOf(":");
-            //if it include \: don't put attrs 
-            if (searchValue.substring(operators - 1, operators) !== "\\") {
-                var includeChar = this.addAttrs(searchValue);
-                searchValue = includeChar + searchValue;
-            }
+        let check = this.check(searchValue);
+        if (check !== false) {
+            searchValue = check;
 
-            //it can contains OR so put attrs also there type:reg-del OR type:reg-new
-            operators = searchValue.indexOf("OR ");
-            while (operators !== -1) {
-                operators = operators + 3;
-                includeChar = this.addAttrs(searchValue.slice(operators));
-                searchValue = [searchValue.slice(0, operators), includeChar, searchValue.slice(operators)].join('');
-                operators = searchValue.indexOf("OR ", operators);
-            }
+            //with attribute name or "sip:"
+            if (searchValue.includes(":")) {
+                var operators = searchValue.indexOf(":");
+                //if it include \: don't put attrs 
+                if (searchValue.substring(operators - 1, operators) !== "\\") {
+                    var includeChar = this.addAttrs(searchValue);
+                    searchValue = includeChar + searchValue;
+                }
 
-            //the same for AND
-            operators = searchValue.indexOf("AND ");
-            while (operators !== -1) {
-                operators = operators + 4;
-                includeChar = this.addAttrs(searchValue.slice(operators));
-                searchValue = [searchValue.slice(0, operators), includeChar, searchValue.slice(operators)].join('');
-                operators = searchValue.indexOf("AND ", operators);
-            }
-        }
-        if (searchBar.value !== "") {
-            var filters = createFilter(searchValue);
-            searchBar.setAttribute("value", "");
+                //it can contains OR so put attrs also there type:reg-del OR type:reg-new
+                operators = searchValue.indexOf("OR ");
+                while (operators !== -1) {
+                    operators = operators + 3;
+                    includeChar = this.addAttrs(searchValue.slice(operators));
+                    searchValue = [searchValue.slice(0, operators), includeChar, searchValue.slice(operators)].join('');
+                    operators = searchValue.indexOf("OR ", operators);
+                }
 
-            console.info("Filters are changed: " + JSON.stringify(filters));
-            this.setState({
-                filterbar: ""
-            });
-        }
-        if (document.getElementById("filterRoom")) {
-            var room = document.getElementById("filterRoom").value;
-            if (room && room !== "") {
-                createFilter("attrs.conf_id: " + room);
-                document.getElementById("filterRoom").value = "";
+                //the same for AND
+                operators = searchValue.indexOf("AND ");
+                while (operators !== -1) {
+                    operators = operators + 4;
+                    includeChar = this.addAttrs(searchValue.slice(operators));
+                    searchValue = [searchValue.slice(0, operators), includeChar, searchValue.slice(operators)].join('');
+                    operators = searchValue.indexOf("AND ", operators);
+                }
+            }
+            if (searchBar.value !== "") {
+                var filters = createFilter(searchValue);
+                searchBar.setAttribute("value", "");
+
+                console.info("Filters are changed: " + JSON.stringify(filters));
+                this.setState({
+                    filterbar: ""
+                });
+            }
+            if (document.getElementById("filterRoom")) {
+                var room = document.getElementById("filterRoom").value;
+                if (room && room !== "") {
+                    createFilter("attrs.conf_id: " + room);
+                    document.getElementById("filterRoom").value = "";
+                }
             }
         }
     }
@@ -215,12 +235,20 @@ class filterBar extends Component {
         var oldFilters = store.getState().filters;
         for (var i = 0; i < oldFilters.length; i++) {
             if ('filter' + oldFilters[i].id === filter) {
-                oldFilters[i].title = value;
+                var check = this.check(value);
+                if (check !== false) {
+                    oldFilters[i].title = value;
+                }
+                else {
+                    continue;
+                }
             }
         }
-        console.info("Filter was edited: " + value);
-        store.dispatch(setFilters(oldFilters));
-        this.setState({ filters: store.getState().filters });
+        if (check) {
+            console.info("Filter was edited: " + value);
+            store.dispatch(setFilters(oldFilters));
+            this.setState({ filters: store.getState().filters });
+        }
     }
 
     //change state of filter to pinned
