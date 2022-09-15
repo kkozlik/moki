@@ -12,8 +12,8 @@
   ],
   "homepage": ".",
   "dependencies": {
-    "@moki-client/es-response-parser": "git+ssh://git@github.com/intuitivelabs/es-response-parser-private.git#v0.0.6",
-    "@moki-client/gui": "git+ssh://git@github.com/intuitivelabs/moki-gui-intuitive.git#v0.0.7",
+    "@moki-client/es-response-parser": "git+ssh://git@github.com/intuitivelabs/es-response-parser-private.git#master",
+    "@moki-client/gui": "git+ssh://git@github.com/intuitivelabs/moki-gui-intuitive.git#master",
     "@moki-client/react-bootstrap-table-next": "git+ssh://git@github.com/intuitivelabs/react-bootstrap-table2-1.git#master",
     "bootstrap": "^4.6.0",
     "classnames": "^2.2.6",
