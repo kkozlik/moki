@@ -894,11 +894,10 @@ class SettingController {
           });
         });
       });
-
+    }
       return search().catch((e) => {
         return next(e);
       });
-    }
   }
 }
 
