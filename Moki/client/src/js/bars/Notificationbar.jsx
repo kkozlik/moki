@@ -38,6 +38,7 @@ class Notificationbar extends Component {
         this.showError = this.showError.bind(this);
         this.dontshow = this.dontshow.bind(this);
         this.shouldShow = this.shouldShow.bind(this);
+        this.update = this.update.bind(this);
         window.notification = this;
 
     }
@@ -122,6 +123,27 @@ class Notificationbar extends Component {
                 }
                 array.splice(j, 1);
 
+            }
+        }
+
+        if (isFound) {
+            this.setState({ notifications: array });
+        }
+    }
+
+    /**
+    * update notification 
+    * @param {object}  error an error 
+    * @return {} stores in state 
+    * */
+     update(errno) {
+        var array = [...this.state.notifications];
+        let isFound = false;
+        for (let j = 0; j < array.length; j++) {
+            if (array[j].errno === errno.errno) {
+                array[j] = errno;
+                isFound = true;
+                continue;
             }
         }
 

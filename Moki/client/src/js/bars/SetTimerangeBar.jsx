@@ -434,7 +434,7 @@ class timerangeBar extends Component {
                 alert("Error: Timestamp 'FROM' has to be lower than 'TO'.");
                 return;
             }
-            var timestamp_readiable =parseTimestamp(timestamp_gte)+ " - " + parseTimestamp(timestamp_lte);
+            var timestamp_readiable = parseTimestamp(timestamp_gte) + " - " + parseTimestamp(timestamp_lte);
 
             console.info("Timerange is changed to " + timestamp_readiable + " " + gte + " " + lte);
 
@@ -481,7 +481,10 @@ class timerangeBar extends Component {
     }
 
     exportJSON() {
-        document.getElementById("JSONexport").style.display = "block";
+        if (storePersistent.getState().user.jwt) {
+            document.getElementById("JSONexport").style.display = "block";
+
+        }
         this.setState({ exportJSONOpen: true });
     }
 
