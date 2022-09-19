@@ -47,14 +47,17 @@ class Export extends Component {
 
     showDownloadingSize(value) {
         this.setState({ downloadValue: Math.round(value / 1000000) + "MB" })
+        window.notification.update({ errno: 5, text: "Downloading data, it can take a while! " + "Downloading " + Math.round(value / 1000000) + "MB", level: "info" });
+
     }
 
     async loadData() {
         this.setState({
-            dialogMsg: "Downloading data, it can take a while!",
             data: [],
-            downloadValue: 0
+            downloadValue: 0,
+            dialogMsg: "Downloading data, it can take a while! "
         });
+        window.notification.showError({ errno: 5, text: "Downloading data, it can take a while! ", level: "info" });
 
         try {
 
@@ -63,8 +66,17 @@ class Export extends Component {
                 name = "overview";
             }
 
+            var size = 10000;
+            if (storePersistent.getState().settings && storePersistent.getState().settings[0]) {
+                for (let hit of storePersistent.getState().settings[0].attrs) {
+                    if (hit.attribute === "query_size") {
+                        size = hit.value;
+                        continue;
+                    }
+                }
+            }
             // Retrieves the list of calls
-            var calls = await elasticsearchConnection(name + "/table", { "size": "10000", "type": "export", "fce": this.showDownloadingSize });
+            var calls = await elasticsearchConnection(name + "/table", { "size": size, "type": "export", "fce": this.showDownloadingSize });
             //parse data
             if (calls && calls.hits && calls.hits.hits && calls.hits.hits.length > 0) {
                 var data = await parseTableHits(calls.hits.hits, storePersistent.getState().profile, "export");
@@ -72,6 +84,9 @@ class Export extends Component {
                 this.setState({
                     data: data
                 });
+
+                window.notification.remove(5);
+
 
                 //if not encrypt mode, download directly
                 if (!(storePersistent.getState().profile && storePersistent.getState().profile[0] && storePersistent.getState().profile[0].userprefs.mode === "encrypt")) {
@@ -278,21 +293,20 @@ class Export extends Component {
                     return false;
                 }
                 */
+            return (
+                <span className="exportBody">
+                    <div className="row">
+                        {!this.state.data && <span style={{ "width": "100%" }}><span style={{ "color": "grey", "fontSize": "larger", "marginLeft": "1%" }} id="loadingExport"> {this.state.dialogMsg}</span></span>}
+                        {(this.state.data && this.state.data.length === 0) && <span style={{ "width": "100%" }}><i class="fa fa-circle-o-notch fa-spin" style={{ "color": "grey", "width": "10px", "height": "10px", "marginLeft": "5%" }}></i><span style={{ "color": "grey", "fontSize": "larger", "marginLeft": "1%" }} id="loadingExport"> {this.state.dialogMsg}</span><span style={{ "color": "grey", "fontSize": "larger" }}>{this.state.downloadValue !== 0 ? " Downloading data size: " + this.state.downloadValue : ""}</span></span>}
+                    </div>
+                    <div className="row">
+                        {(this.state.data && this.state.data.length !== 0) && storePersistent.getState().profile && storePersistent.getState().profile[0] && storePersistent.getState().profile[0].userprefs.mode === "encrypt" && <span style={{ "marginTop": "10px", "marginLeft": "2px" }}><input type="checkbox" id="decryptCheckbox" className="decryptCheckbox" defaultChecked={false} /><label style={{ "paddingBottom": "11px", "color": "grey", "fontSize": "larger" }}>Decrypt data. It could take a few minutes.</label></span>}
+                        {this.state.showProgressBar && <div className="row" style={{ "width": "65%", "marginLeft": "2px", "color": "grey", "fontSize": "larger" }}><div id="Progress_Status" className="col">  <div id="myprogressBar" style={{ "width": this.state.progressValue + "%" }}></div>  </div>{this.state.progressValue + "%"}<div>{this.state.progressText}</div></div>}
+                        {(this.state.data && this.state.data.length !== 0) && storePersistent.getState().profile && storePersistent.getState().profile[0] && storePersistent.getState().profile[0].userprefs.mode === "encrypt" && <button className="btn btn-default rightButton" onClick={this.export}>{"Export"} </button>}
+                    </div>
+                </span>
 
-        return (
-            <span className="exportBody">
-                <div className="row">
-                    {!this.state.data && <span style={{ "width": "100%" }}><span style={{ "color": "grey", "fontSize": "larger", "marginLeft": "1%" }} id="loadingExport"> {this.state.dialogMsg}</span></span>}
-                    {(this.state.data && this.state.data.length === 0) && <span style={{ "width": "100%" }}><i class="fa fa-circle-o-notch fa-spin" style={{ "color": "grey", "width": "10px", "height": "10px", "marginLeft": "5%" }}></i><span style={{ "color": "grey", "fontSize": "larger", "marginLeft": "1%" }} id="loadingExport"> {this.state.dialogMsg}</span><span style={{ "color": "grey", "fontSize": "larger" }}>{this.state.downloadValue !== 0 ? " Downloading data size: " + this.state.downloadValue : ""}</span></span>}
-                </div>
-                <div className="row">
-                    {(this.state.data && this.state.data.length !== 0) && storePersistent.getState().profile && storePersistent.getState().profile[0] && storePersistent.getState().profile[0].userprefs.mode === "encrypt" && <span style={{ "marginTop": "10px", "marginLeft": "2px" }}><input type="checkbox" id="decryptCheckbox" className="decryptCheckbox" defaultChecked={false} /><label style={{ "paddingBottom": "11px", "color": "grey", "fontSize": "larger" }}>Decrypt data. It could take a few minutes.</label></span>}
-                    {this.state.showProgressBar && <div className="row" style={{ "width": "65%", "marginLeft": "2px", "color": "grey", "fontSize": "larger" }}><div id="Progress_Status" className="col">  <div id="myprogressBar" style={{ "width": this.state.progressValue + "%" }}></div>  </div>{this.state.progressValue + "%"}<div>{this.state.progressText}</div></div>}
-                    {(this.state.data && this.state.data.length !== 0) && storePersistent.getState().profile && storePersistent.getState().profile[0] && storePersistent.getState().profile[0].userprefs.mode === "encrypt" && <button className="btn btn-default rightButton" onClick={this.export}>{"Export"} </button>}
-                </div>
-            </span>
-
-        )
+            )
     }
 }
 
