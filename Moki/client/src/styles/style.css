@@ -628,6 +628,8 @@ button.export {
     margin-top: 38px;
     position: fixed;
     z-index: 9999999;
+    color: white;
+    font-weight: bold;
 }
 
 .errorStay {
@@ -642,6 +644,8 @@ button.export {
     padding: 4px;
     position: fixed;
     z-index: 9999999;
+    color: white;
+    font-weight: bold;
 }
 
 .closeButton {

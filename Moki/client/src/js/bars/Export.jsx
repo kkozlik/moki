@@ -55,7 +55,7 @@ class Export extends Component {
         this.setState({
             data: [],
             downloadValue: 0,
-            dialogMsg: "Downloading data, it can take a while! "
+            dialogMsg: "Downloading data, it can take a while!"
         });
         window.notification.showError({ errno: 5, text: "Downloading data, it can take a while! ", level: "info" });
 
