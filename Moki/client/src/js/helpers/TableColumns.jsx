@@ -130,14 +130,16 @@ export const closePopupExclude = (i) => {
 export const syntaxHighlight = (json) => {
 
     if (typeof json != 'string') {
+        try {
+            if (json.attrs && json.attrs["rtp-stats-a"]) {
+                json.attrs["rtp-stats-a"] = JSON.parse(json.attrs["rtp-stats-a"]);
+            }
 
-        if (json.attrs && json.attrs["rtp-stats-a"]) {
-            json.attrs["rtp-stats-a"] = JSON.parse(json.attrs["rtp-stats-a"]);
+            if (json.attrs && json.attrs["rtp-stats-b"]) {
+                json.attrs["rtp-stats-b"] = JSON.parse(json.attrs["rtp-stats-b"]);
+            }
         }
-
-        if (json.attrs && json.attrs["rtp-stats-b"]) {
-            json.attrs["rtp-stats-b"] = JSON.parse(json.attrs["rtp-stats-b"]);
-        }
+        catch (e) { }
 
 
         /*      let innerPaths = [];
@@ -200,29 +202,33 @@ export const syntaxHighlight = (json) => {
 
         //sort rtp-stats-a - is an array
         if (json.attrs && json.attrs["rtp-stats-a"] && json.attrs["rtp-stats-a"][0]) {
-            not_sorted = json.attrs["rtp-stats-a"][0];
-            json.attrs["rtp-stats-a"][0] = Object.keys(not_sorted)
-                .sort(function (a, b) {
-                    return a.toLowerCase().localeCompare(
-                        b.toLowerCase()
-                    );
-                })
-                .reduce((acc, key) => ({
-                    ...acc, [key]: not_sorted[key]
-                }), {})
+            for (let k = 0; k < json.attrs["rtp-stats-a"].length; k++) {
+                not_sorted = json.attrs["rtp-stats-a"][k];
+                json.attrs["rtp-stats-a"][k] = Object.keys(not_sorted)
+                    .sort(function (a, b) {
+                        return a.toLowerCase().localeCompare(
+                            b.toLowerCase()
+                        );
+                    })
+                    .reduce((acc, key) => ({
+                        ...acc, [key]: not_sorted[key]
+                    }), {})
+            }
         }
 
         if (json.attrs && json.attrs["rtp-stats-b"] && json.attrs["rtp-stats-b"][0]) {
-            not_sorted = json.attrs["rtp-stats-b"][0];
-            json.attrs["rtp-stats-b"][0] = Object.keys(not_sorted)
-                .sort(function (a, b) {
-                    return a.toLowerCase().localeCompare(
-                        b.toLowerCase()
-                    );
-                })
-                .reduce((acc, key) => ({
-                    ...acc, [key]: not_sorted[key]
-                }), {})
+            for (let k = 0; k < json.attrs["rtp-stats-b"].length; k++) {
+                not_sorted = json.attrs["rtp-stats-b"][k];
+                json.attrs["rtp-stats-b"][k] = Object.keys(not_sorted)
+                    .sort(function (a, b) {
+                        return a.toLowerCase().localeCompare(
+                            b.toLowerCase()
+                        );
+                    })
+                    .reduce((acc, key) => ({
+                        ...acc, [key]: not_sorted[key]
+                    }), {})
+            }
         }
 
         json = JSON.stringify(json, undefined, 4);
@@ -530,7 +536,7 @@ function getColumn(column_name, tags, tag, width = 0, hidden = false, dashboard)
                     {column_name.icons.includes("details") && <Popup trigger={<img className="icon" alt="detailsIcon" src={detailsIcon} title="details" />} modal>
                         {close => (
                             <div className="Advanced">
-                                <button className="link close export" onClick={() => exportJSON(ob)} style={{ "position": "absolute", "top": "-5px" }}>
+                                <button className="link close" onClick={() => exportJSON(ob)} style={{ "position": "absolute", "right": "40px" }}>
                                     <img className="icon" alt="downloadIcon" src={downloadIcon} title="download json" />
                                 </button>
                                 <button className="close" onClick={close}>
