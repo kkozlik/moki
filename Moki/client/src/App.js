@@ -550,10 +550,10 @@ class App extends Component {
         var sipUserSwitch;
         const aws = this.state.aws;
         var url = window.location.pathname;
-        var style = aws || sipUser.jwt !== 0 ? "" : { "paddingBottom": "7px", "paddingLeft": "7px" };
+        var styleAws ={ "paddingLeft": "7px",  "paddingBottom": "5px"};
 
         if (storePersistent.getState().user) {
-            style = storePersistent.getState().user.jwt === 0 ? { "paddingBottom": "7px", "paddingLeft": "7px" } : style;
+            var style = storePersistent.getState().user.aws === false ? { "paddingBottom": "27px", "paddingLeft": "7px"} : styleAws;
         }
         //show just diagram
         if (this.state.dashboards.length > 0) {
@@ -584,7 +584,7 @@ class App extends Component {
                 sipUserSwitch = <div className="row" id="body-row" >
                     <NavBar redirect={this.redirect} toggle={this.toggle} aws={this.state.aws} dashboardsUser={this.state.dashboardsUser} dashboards={this.state.dashboards} dashboardsSettings={this.state.dashboardsSettings} />
                     <div className="row justify-content-between header" style={{ "marginRight": 0, "marginLeft": 0 }} >
-                        <span id="user" className="top" style={{ style }}>
+                        <span id="user" className="top" style={ style }>
                             {aws === true && <DecryptPasswordPopup />}
                             <div style={styleUser}>{this.state.user.account}</div>
                             {aws === true && (!this.state.admin && !this.state.siteAdmin) && <a href="/logout" > Log out </a>}
