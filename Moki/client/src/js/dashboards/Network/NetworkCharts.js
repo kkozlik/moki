@@ -113,15 +113,15 @@ class NetworkCharts extends Dashboard {
                 { this.state.isLoading && <LoadingScreenCharts />}
                 <div className="row no-gutters">
                     <div className="col-6 pr-1">
-                        <MultipleLineChart id="callsByHost" hostnames={this.state.hostnames} data={this.state.callsByHost} name={"CALLS BY HOST"} ticks={3}
+                        <MultipleLineChart id="callsByHost" hostnames={this.state.hostnames} data={this.state.callsByHost} name={"MAX CALLS BY HOST"} ticks={3}
                         />
                     </div>
                     <div className="col-6 px-1">
-                        <MultipleLineChart id="regsByHost" hostnames={this.state.hostnames} data={this.state.regsByHost} name={"REGS BY HOST"} ticks={3}
+                        <MultipleLineChart id="regsByHost" hostnames={this.state.hostnames} data={this.state.regsByHost} name={"MAX REGS BY HOST"} ticks={3}
                         />
                     </div>
                     <div className="col-6 pr-1">
-                        <MultipleLineChart id="callStartsByHost" hostnames={this.state.hostnames} data={this.state.callStartsByHost} name={"CALL STARTS BY HOST"} ticks={3}
+                        <MultipleLineChart id="callStartsByHost" hostnames={this.state.hostnames} data={this.state.callStartsByHost} name={"MAX CALL STARTS BY HOST"} ticks={3}
                         />
                     </div>
                     <div className="col-6 px-1">

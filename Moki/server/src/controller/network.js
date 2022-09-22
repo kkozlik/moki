@@ -1,5 +1,6 @@
 const Controller = require('./controller');
 const datehistogram_three_agg_query = require('../../js/template_queries/datehistogram_three_agg_query');
+const datehistogram_three_agg_query_max = require('../../js/template_queries/datehistogram_three_agg_query_max');
 
 class networkController extends Controller {
 
@@ -41,11 +42,11 @@ class networkController extends Controller {
   static getCharts(req, res, next) {
     super.request(req, res, next, [
       //CALLS BY HOST
-      { index: "collectd*", template: datehistogram_three_agg_query, params: ['attrs.hostname', 'attrs.calls', 'attrs.calls', "timebucket"], filter: "*" },
+      { index: "collectd*", template: datehistogram_three_agg_query_max, params: ['attrs.hostname', 'attrs.calls', 'attrs.calls', "timebucket"], filter: "*" },
       //REGS BY HOST
-      { index: "collectd*", template: datehistogram_three_agg_query, params: ['attrs.hostname', 'attrs.regs', 'attrs.regs', "timebucket"], filter: "*" },
+      { index: "collectd*", template: datehistogram_three_agg_query_max, params: ['attrs.hostname', 'attrs.regs', 'attrs.regs', "timebucket"], filter: "*" },
       //CALL STARTS BY HOST
-      { index: "collectd*", template: datehistogram_three_agg_query, params: ['attrs.hostname', 'attrs.callstarts', 'attrs.callstarts', "timebucket"], filter: "*" },
+      { index: "collectd*", template: datehistogram_three_agg_query_max, params: ['attrs.hostname', 'attrs.callstarts', 'attrs.callstarts', "timebucket"], filter: "*" },
       //RELAYED RTP BY HOST
       { index: "collectd*", template: datehistogram_three_agg_query, params: ['attrs.hostname', 'attrs.bits', 'attrs.bits', "timebucket"], filter: "*" },
       //RX BYTES BY HOST
