@@ -1478,7 +1478,7 @@ button {
     width: fit-content !important;
     overflow-y: auto;
     min-height: 200px;
-    margin-top: 50px;
+    margin-top: 50px !important;
 }
 
 .close {
@@ -1490,6 +1490,7 @@ button {
     top: 5px;
     font-size: 24px;
     background: #ffffff;
+    color: #56747F;
 }
 
 
