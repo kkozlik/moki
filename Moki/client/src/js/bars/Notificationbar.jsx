@@ -48,6 +48,7 @@ class Notificationbar extends Component {
     }
 
     componentDidMount() {
+        /*
         var self = this;
         let statusCheck = setInterval(async function () {
 
@@ -67,12 +68,14 @@ class Notificationbar extends Component {
                 self.remove(2)
             }
         }, 30000);
+        
 
         this.setState({statusCheck: statusCheck});
+        */
     }
 
     componentWillUnmount(){
-        clearTimeout(this.state.statusCheck);
+        // clearTimeout(this.state.statusCheck);
     }
     
     /**
