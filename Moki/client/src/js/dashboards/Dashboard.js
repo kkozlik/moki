@@ -119,7 +119,7 @@ class Dashboard extends Component {
         var data = await elasticsearchConnection(this.state.dashboardName);
 
         if (typeof data === "string") {
-          this.props.showError(data);
+          window.notification.showError( { errno: 2, text: data, level: "error" });
           this.setState({ isLoading: false });
           return;
         } else if (data) {
@@ -129,7 +129,8 @@ class Dashboard extends Component {
           console.info(new Date() + " MOKI DASHBOARD: finished parsing data");
         }
       } catch (e) {
-        this.props.showError("Error: " + e);
+        window.notification.showError( { errno: 2, text: "Problem to parse data.", level: "error" });
+        console.error(e);
         this.setState({ isLoading: false });
       }
     }

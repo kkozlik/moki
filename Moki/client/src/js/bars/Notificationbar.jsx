@@ -96,7 +96,6 @@ class Notificationbar extends Component {
                 notifications: this.state.notifications.concat(error)
             });
         }
-        if (this.props.className !== "errorBarLoading") this.props.deleteAllErrors();
     }
 
 
