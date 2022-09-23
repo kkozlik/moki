@@ -236,10 +236,10 @@ export default class listChart extends Component {
                 if (curCol) {
                     var diffX = e.pageX - pageX;
                     if (curColWidth + diffX > 80 && curColWidth + diffX < 400) {
-                        if (nxtCol)
+                        if (nxtCol && nxtColWidth - (diffX) > 80) {
                             nxtCol.style.width = (nxtColWidth - (diffX)) + 'px';
-
-                        curCol.style.width = (curColWidth + diffX) + 'px';
+                            curCol.style.width = (curColWidth + diffX) + 'px';
+                        }
                     }
                 }
             });
