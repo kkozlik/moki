@@ -82,7 +82,7 @@ class CallCharts extends Dashboard {
                 //EVENT CALLS TIMELINE 17
                 [{ result: 'eventCallsTimeline', func: parseStackedbarTimeData, attrs: ["attrs.type"] }],
                 //ASR OVER TIME 18
-                [{ result: 'asrDurationOverTime', func: parseBucketData }]
+                [{ result: 'asrDurationOverTime', func: parseBucketData, attrs: ["attrs.duration"] }]
             ]
         };
     }
