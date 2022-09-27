@@ -871,33 +871,27 @@ class SettingController {
   */
   static systemStatus(req, res, next) {
     async function search() {
-      let logstash = "";
-      let elastic = "";
-      //get systemctl status logstash
-      exec("systemctl is-active  logstash", function (error, stdout) {
-        if (!error) {
-          logstash = stdout;
-        } else {
-          logstash = error;
-        }
-
-        exec("systemctl is-active  elasticsearch", function (error, stdout) {
-          if (!error) {
-            elastic = stdout;
-          } else {
-            elastic = error;
+      const client = connectToES(res);
+      var filter = {
+        index: 'status*',
+        size: 1,
+        "sort": [
+          {
+            "timestamp": {
+              "order": "desc"
+            }
           }
-
-          return res.json({
-            logstash: logstash,
-            elasticsearch: elastic
-          });
-        });
-      });
+        ],
+        "query": {"bool": {"must": [
+          { "range": { "clock": { "gte": "now-40s", "lte": "now"} }}
+        ]}}
+      };
+      var result = await client.search(filter);
+      return res.json(200, result);
     }
-      return search().catch((e) => {
-        return next(e);
-      });
+    return search().catch((e) => {
+      return next(e);
+    });
   }
 }
 
