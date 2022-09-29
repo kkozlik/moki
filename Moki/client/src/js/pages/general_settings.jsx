@@ -435,7 +435,7 @@ class Settings extends Component {
                                     <input className="text-left form-check-input" type="checkbox" id={data[i].attribute} onClick={(e) => this.checkboxClick(e.target.getAttribute("id"))} />
                                     : data[i].type === "file" && data[i].value !== "" ? ""
                                         :
-                                        <input className="text-left form-control form-check-input" type={data[i].type} defaultValue={data[i].type !== "file" ? data[i].value : ""} id={data[i].attribute} label={data[i].label} isRequired={data[i].required} restriction={JSON.stringify(data[i].restriction)} onChange={(e) => { this.check(e.target.getAttribute("id"), e.target.value, e.target.getAttribute("label"), e.target.getAttribute("restriction"), e.target.getAttribute("isRequired")) }} />
+                                        <input className="text-left form-control form-check-input" type={data[i].type} accept=".pem, .cert" defaultValue={data[i].type !== "file" ? data[i].value : ""} id={data[i].attribute} label={data[i].label} isRequired={data[i].required} restriction={JSON.stringify(data[i].restriction)} onChange={(e) => { this.check(e.target.getAttribute("id"), e.target.value, e.target.getAttribute("label"), e.target.getAttribute("restriction"), e.target.getAttribute("isRequired")) }} />
 
                                 }
                                 {data[i].type === "file" && data[i].value !== "" ? <span style={{ "fontSize": "0.8rem" }}>{"CA certificate for ldap TLS connection"}<img className="icon"
