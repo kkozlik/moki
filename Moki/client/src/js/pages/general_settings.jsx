@@ -234,6 +234,14 @@ class Settings extends Component {
 
             for (i = 0; i < jsonData.length; i++) {
                 data = document.getElementById(jsonData[i].attribute);
+
+                if (jsonData[i].attribute === "ldap_ca_cert" && !data) {
+                    result.push({
+                        attribute: "ldap_ca_cert",
+                        value: jsonData[i].value
+                    });
+                }
+
                 if (data) {
                     if (data.type === "checkbox") {
                         jsonData[i].value = data.checked;
