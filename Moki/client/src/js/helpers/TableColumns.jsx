@@ -637,7 +637,7 @@ function getColumn(column_name, tags, tag, width = 0, hidden = false, dashboard)
                                     <img field={field} value={value} onClick={doUnfilter} className="icon" title="unfilter" alt="unfilterIcon" src={unfilterIcon} />
                                     <span><img onClick={() => copyToclipboard(value)} className="icon" title="copy to clipboard" alt="clipboardIcon" src={clipboardIcon} /><span id={"copyToClipboardText" + value} className="copyToClip">copied to clipboard</span></span>
                                 </div >{value}
-                                {field === "attrs.source" && window.location.pathname.includes("/alerts") && ob["exceeded-by"] === "ip" && <BLcheck data={ob} />}
+                                {field === "attrs.source" && window.location.pathname.includes("/alerts") && <BLcheck data={ob} />}
                             </span>
                         }
                     }
