@@ -313,7 +313,7 @@ function getColumnWidth(column, width = 0) {
 }
 
 //copy value in table to clipboard and show msg
-function copyToclipboard(value) {
+function copyToclipboard(value, id = null) {
     var dummy = document.createElement("textarea");
     document.body.appendChild(dummy);
     dummy.value = value;
@@ -321,9 +321,13 @@ function copyToclipboard(value) {
     document.execCommand("copy");
     document.body.removeChild(dummy);
 
-    document.getElementById("copyToClipboardText" + value).style.display = "inline";
+    if (!id) {
+        id = value;
+    }
+
+    document.getElementById("copyToClipboardText" + id).style.display = "inline";
     setTimeout(function () {
-        document.getElementById("copyToClipboardText" + value).style.display = "none";
+        document.getElementById("copyToClipboardText" + id).style.display = "none";
     }, 1000);
 }
 
@@ -539,6 +543,12 @@ function getColumn(column_name, tags, tag, width = 0, hidden = false, dashboard)
                                 <button className="link close" onClick={() => exportJSON(ob)} style={{ "position": "absolute", "right": "40px" }}>
                                     <img className="icon" alt="downloadIcon" src={downloadIcon} title="download json" />
                                 </button>
+                                <span>
+                                    <button className="link close" onClick={() => copyToclipboard(JSON.stringify(ob), "Details")} style={{ "position": "absolute", "right": "65px" }}>
+                                        <img className="icon" alt="clipboardIcon" src={clipboardIcon} title="copy to clipboard" />
+                                    </button>
+                                    <span id={"copyToClipboardTextDetails"} className="copyToClip" style={{"position": "absolute", "right": "22px", "top": "18px" }}>copied to clipboard</span>
+                                </span>
                                 <button className="close" onClick={close}>
                                     &times;
                                 </button>
