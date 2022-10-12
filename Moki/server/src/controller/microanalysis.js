@@ -99,6 +99,8 @@ class MicronalysisController extends Controller {
       { index: "logstash*", template: agg_query, params: ["terms", "geoip.country_code2"], filter: "*" },
       //TOP SERVER IP
       { index: "logstash*", template: agg_query, params: ["terms", "server.ip"], filter: "*" },
+	//DURATION GROUP
+      { index: "logstash*", template: agg_query, params: ["terms", "attrs.durationGroup"], filter: "*" },
     ], "microanalysis");
   }
 
