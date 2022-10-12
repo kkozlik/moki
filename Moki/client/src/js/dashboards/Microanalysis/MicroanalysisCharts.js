@@ -47,6 +47,7 @@ class MicroanalysisCharts extends Dashboard {
             versions: [],
             callingCountries: [],
             serverIP: [],
+            durationGroup: [],
             isLoading: true
         }
         this.callBacks = {
@@ -128,11 +129,13 @@ class MicroanalysisCharts extends Dashboard {
                 //DISTINCT URI
                 [{ result: 'distinctURI', func: parseAggDistinct, attrs: ["attrs.from.keyword"] }],
 
-                //CALLING COUNTRIES
+                //CALLING COUNTRIES 25
                 [{ result: 'callingCountries', func: parseListData, attrs: ["geoip.country_code2"] }],
 
                 //SERVER IP 
                 [{ result: 'serverIP', func: parseListData, attrs: ["server.ip"] }],
+                //DURATION GROUP 27
+                [{ result: 'durationGroup', func: parseListData, attrs: ["attrs.durationGroup"] }]
             ]
         }
     }
@@ -263,6 +266,11 @@ class MicroanalysisCharts extends Dashboard {
                         name={"SUM DURATION"}
                         field={"attrs.from.keyword"}
                     />  </div>}
+                {this.state.charts["DURATION GROUP"] && <div className="col-auto">
+                    <ListChart data={
+                        this.state.durationGroup
+                    } name={"DURATION GROUP"} field={"attrs.durationGroup"} />
+                </div>}
                 {this.state.charts["TOP DURATION"] && <div className="col-auto" >
                     <ListChart data={this.state.topDuration}
                         name={"TOP DURATION"}
@@ -283,12 +291,12 @@ class MicroanalysisCharts extends Dashboard {
                         name={"TOP HOSTs LIST"}
                         field={"agent.hostname"}
                     />  </div>}
-                    {this.state.charts["CALLING COUNTRIES"] && <div className="col-auto" >
+                {this.state.charts["CALLING COUNTRIES"] && <div className="col-auto" >
                     <ListChart data={this.state.callingCountries}
                         name={"CALLING COUNTRIES"}
                         field={"geoip.country_code2"}
                     />  </div>}
-                    {this.state.charts["SERVER IP"] && <div className="col-auto" >
+                {this.state.charts["SERVER IP"] && <div className="col-auto" >
                     <ListChart data={this.state.serverIP}
                         name={"SERVER IP"}
                         field={"server.ip"}
