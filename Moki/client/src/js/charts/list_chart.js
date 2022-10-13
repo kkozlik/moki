@@ -21,12 +21,18 @@ class TableChart extends Component {
   }
 
   filter(event) {
-    createFilter(event.currentTarget.getAttribute('field') + ":\"" + event.currentTarget.getAttribute('value') + "\"");
+    //check for ""
+    let value = event.currentTarget.getAttribute('value');
+    value = value.replace(/([^"\\]*(?:\\.[^"\\]*)*)"/g, '$1\\"');
+    createFilter(event.currentTarget.getAttribute('field') + ":\"" + value + "\"");
   }
 
 
   unfilter(event) {
-    createFilter("NOT " + event.currentTarget.getAttribute('field') + ":\"" + event.currentTarget.getAttribute('value') + "\"");
+    //check for ""
+    let value = event.currentTarget.getAttribute('value');
+    value = value.replace(/([^"\\]*(?:\\.[^"\\]*)*)"/g, '$1\\"');
+    createFilter("NOT " + event.currentTarget.getAttribute('field') + ":\"" + value + "\"");
   }
 
   componentWillReceiveProps(nextProps) {
@@ -39,7 +45,7 @@ class TableChart extends Component {
     this.setState({ data: data });
   }
 
- encryptedAttr(value) {
+  encryptedAttr(value) {
     let isEncrypted = false;
     let field = this.props.field;
 
@@ -48,7 +54,7 @@ class TableChart extends Component {
     field = field === "attrs.to.keyword" ? "attrs.to" : field;
     field = field === "attrs.r-uri.keyword" ? "attrs.r-uri" : field;
 
-    if (storePersistent.getState().profile[0] && storePersistent.getState().profile[0].userprefs.mode && storePersistent.getState().profile[0].userprefs.mode === "anonymous" && storePersistent.getState().profile[0].userprefs.anonymizableAttrs[field] ) {
+    if (storePersistent.getState().profile[0] && storePersistent.getState().profile[0].userprefs.mode && storePersistent.getState().profile[0].userprefs.mode === "anonymous" && storePersistent.getState().profile[0].userprefs.anonymizableAttrs[field]) {
       isEncrypted = true;
     }
 
