@@ -25,7 +25,8 @@ class Settings extends Component {
             data: [],
             wait: false,
             tags: this.props.tags,
-            isLdap: false
+            isLdap: false,
+            shouldDisplayCAcert: false
         }
     }
 
@@ -47,6 +48,12 @@ class Settings extends Component {
         if (attribute === "ldap_enable") {
             this.setState({
                 isLdap: !this.state.isLdap
+            })
+        }
+
+        if (attribute === "event_tls_verify_peer") {
+            this.setState({
+                shouldDisplayCAcert: !this.state.shouldDisplayCAcert
             })
         }
     }
@@ -80,9 +87,13 @@ class Settings extends Component {
                             isLdap: true
                         });
                     }
-                    else {
-                        continue
-                    }
+                }
+
+                //special case: check for event_tls_verify_peer bool
+                if (hit.attribute === "event_tls_verify_peer") {
+                    this.setState({
+                        shouldDisplayCAcert: hit.value
+                    });
                 }
             }
             this.setState({
@@ -486,12 +497,13 @@ class Settings extends Component {
 
                 }
                 else {
-
-                    if (data[i].type === "file") {
-                        const cert = Certificate.fromPEM(data[i].value);
+                    let cert = null;
+                    var thiss = this;
+                    if (data[i].type === "file" && data[i].restriction && data[i].restriction.extensions && data[i].restriction.extensions.includes(".pem") && data[i].value) {
+                        cert = Certificate.fromPEM(data[i].value);
                     }
                     alarms.push(
-                        <div key={data[i].attribute + "key"} className={data[i].attribute.includes("ldap") && !this.state.isLdap && data[i].attribute !== "ldap_enable" ? "tab hidden" : "tab"}>
+                        <div key={data[i].attribute + "key"} className={(!this.state.shouldDisplayCAcert && data[i].attribute === "event_tls_cacert") || (data[i].attribute.includes("ldap") && !this.state.isLdap && data[i].attribute !== "ldap_enable") ? "tab hidden" : "tab"}>
                             <span className="form-inline row justify-content-start paddingBottom">
                                 <span className="col-6" >
                                     <label> {data[i].label} </label>
@@ -501,10 +513,11 @@ class Settings extends Component {
                                     <input className="text-left form-check-input" type="checkbox" id={data[i].attribute} onClick={(e) => this.checkboxClick(e.target.getAttribute("id"))} />
                                     : data[i].type === "file" && data[i].value !== "" ? ""
                                         :
-                                        <input className="text-left form-control form-check-input" type={data[i].type} accept=".pem, .cert" defaultValue={data[i].type !== "file" ? data[i].value : ""} id={data[i].attribute} label={data[i].label} isRequired={data[i].required} restriction={JSON.stringify(data[i].restriction)} onChange={(e) => { this.check(e.target.getAttribute("id"), e.target.value, e.target.getAttribute("label"), e.target.getAttribute("restriction"), e.target.getAttribute("isRequired")) }} />
+                                        <input className="text-left form-control form-check-input" type={data[i].type} accept={data[i].restriction && data[i].restriction.extensions ? data[i].restriction.extensions : null} defaultValue={data[i].type !== "file" ? data[i].value : ""}
+                                            id={data[i].attribute} label={data[i].label} isRequired={data[i].required} restriction={JSON.stringify(data[i].restriction)} onChange={(e) => { this.check(e.target.getAttribute("id"), e.target.value, e.target.getAttribute("label"), e.target.getAttribute("restriction"), e.target.getAttribute("isRequired")) }} />
 
                                 }
-                                {data[i].type === "file" && data[i].value !== "" ? <span style={{ "fontSize": "0.8rem" }}>{"CA certificate for ldap TLS connection"}
+                                {data[i].type === "file" && data[i].value !== "" && cert ? <span style={{ "fontSize": "0.8rem" }}>{data[i].label}
                                     <Popup trigger={<img className="icon" alt="detailsIcon" src={detailsIcon} title="details" />} modal>
                                         {close => (
                                             <div className="Advanced">
@@ -513,7 +526,7 @@ class Settings extends Component {
                                                 </button>
                                                 <div className="contentAdvanced">
                                                     <pre> <div onClick={thiss.clickHandlerHTML}
-                                                        dangerouslySetInnerHTML={{ __html: thiss.syntaxHighlight(Certificate.fromPEM(value)) }} /></pre>
+                                                        dangerouslySetInnerHTML={{ __html: thiss.syntaxHighlight(cert) }} /></pre>
                                                 </div>
                                             </div>
                                         )}
