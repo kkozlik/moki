@@ -300,9 +300,9 @@ class Settings extends Component {
             for (i = 0; i < jsonData.length; i++) {
                 data = document.getElementById(jsonData[i].attribute);
 
-                if (jsonData[i].attribute === "ldap_ca_cert" && !data) {
+                if (jsonData[i].type === "file" && !data) {
                     result.push({
-                        attribute: "ldap_ca_cert",
+                        attribute: jsonData[i].attribute,
                         value: jsonData[i].value
                     });
                 }
@@ -497,10 +497,15 @@ class Settings extends Component {
 
                 }
                 else {
-                    let cert = null;
+                    let cert = data[i].value;
                     var thiss = this;
                     if (data[i].type === "file" && data[i].restriction && data[i].restriction.extensions && data[i].restriction.extensions.includes(".pem") && data[i].value) {
+                        try{
                         cert = Certificate.fromPEM(data[i].value);
+                        }
+                        catch(error){
+                            console.log(error);
+                        }
                     }
                     alarms.push(
                         <div key={data[i].attribute + "key"} className={(!this.state.shouldDisplayCAcert && data[i].attribute === "event_tls_cacert") || (data[i].attribute.includes("ldap") && !this.state.isLdap && data[i].attribute !== "ldap_enable") ? "tab hidden" : "tab"}>
