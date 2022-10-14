@@ -8,7 +8,9 @@ import isEmail from '../helpers/isEmail';
 import deleteIcon from "../../styles/icons/delete_grey.png";
 import { elasticsearchConnection } from '@moki-client/gui';
 import storePersistent from "../store/indexPersistent";
-
+import Popup from "reactjs-popup";
+import detailsIcon from "../../styles/icons/details.png";
+const { Certificate } = require('@fidm/x509');
 
 class Settings extends Component {
     constructor(props) {
@@ -108,6 +110,58 @@ class Settings extends Component {
         this.setState({ data: jsonData })
     }
 
+    //json syntax highlight
+    syntaxHighlight(json) {
+        //no breaks for array fix
+        function replacer(key, value) {
+            if (value && value.type === "Buffer") {
+                return JSON.stringify(value.data);
+            }
+            return value;
+        }
+        json = JSON.stringify(json, replacer, 4);
+        json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        json = json.substring(1);
+        json = json.substring(0, json.length - 1);
+        json = json.replaceAll("{", "<button class='expandJson'>-</button><span>{");
+        json = json.replaceAll("}", "}</span>");
+
+        return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\\-]?\d+)?)/g, function (match) {
+            var cls = 'number';
+            if (/^"/.test(match)) {
+                if (/:$/.test(match)) {
+                    cls = 'key';
+                } else {
+                    cls = 'string';
+                }
+            } else if (/true|false/.test(match)) {
+                cls = 'boolean';
+            } else if (/null/.test(match)) {
+                cls = 'null';
+            }
+
+            return '<span class="rowSplit ' + cls + '">' + match + '</span>';
+        });
+
+    }
+
+    clickHandlerHTML(e) {
+        let el = e.target;
+        if (el.className === "expandJson") {
+            if (el.innerText === '-') {
+                el.setAttribute("expand", 'false');
+                el.innerText = "+";
+                el.nextSibling.style.display = "none";
+            }
+            else {
+                el.setAttribute("expand", 'true');
+                el.innerText = "-";
+                el.nextSibling.style.display = "inline";
+            }
+        }
+    }
+
+
     validate(attribute, value, label, restriction, required = false) {
         if (required && value === "") {
             return "Error: field '" + label + "' must be filled.";
@@ -165,7 +219,7 @@ class Settings extends Component {
                 if (restriction.type.enum.includes(value)) {
                     return true;
                 }
-                return "Error: field '"+ label+"' must have value one of " + restriction.type.enum.join('-');
+                return "Error: field '" + label + "' must have value one of " + restriction.type.enum.join('-');
             }
 
             return true;
@@ -288,46 +342,46 @@ class Settings extends Component {
             var thiss = this;
 
             if (!ldapChange) {
-                 await fetch("api/save", {
-                     method: "POST",
-                     body: JSON.stringify({
-                         "app": "m_config",
-                         "attrs": result
-                     }),
-                     credentials: 'include',
-                     headers: {
-                         "Content-Type": "application/json",
-                         "Access-Control-Allow-Credentials": "include"
-                     }
-                 }).then(function (response) {
-                     thiss.setState({
-                         wait: false
-                     });
-                     if (!response.ok) {
-                         console.error(response.statusText);
-                     }
-                     else {
-                         //store new settings in storage
-                         result.forEach(res => {
-                             jsonData.forEach(data => {
-                                 if (data.attributes === res.attribute) {
-                                     data.value = res.value;
-                                 }
-                             })
-                         });
-                         let settings = storePersistent.getState().settings;
-                         settings[0] = { app: "m_config", attrs: jsonData };
-                     }
-                     return response.json();
-                 }).then(function (responseData) {
-                     if (responseData.msg && responseData.msg !== "Data has been saved.") {
-                         alert(JSON.stringify(responseData.msg));
-                     }
- 
-                 }).catch(function (error) {
-                     console.error(error);
-                     alert("Problem with saving data. " + error);
-                 });
+                await fetch("api/save", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        "app": "m_config",
+                        "attrs": result
+                    }),
+                    credentials: 'include',
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Access-Control-Allow-Credentials": "include"
+                    }
+                }).then(function (response) {
+                    thiss.setState({
+                        wait: false
+                    });
+                    if (!response.ok) {
+                        console.error(response.statusText);
+                    }
+                    else {
+                        //store new settings in storage
+                        result.forEach(res => {
+                            jsonData.forEach(data => {
+                                if (data.attributes === res.attribute) {
+                                    data.value = res.value;
+                                }
+                            })
+                        });
+                        let settings = storePersistent.getState().settings;
+                        settings[0] = { app: "m_config", attrs: jsonData };
+                    }
+                    return response.json();
+                }).then(function (responseData) {
+                    if (responseData.msg && responseData.msg !== "Data has been saved.") {
+                        alert(JSON.stringify(responseData.msg));
+                    }
+
+                }).catch(function (error) {
+                    console.error(error);
+                    alert("Problem with saving data. " + error);
+                });
             }
             else {
                 fetch("api/save", {
@@ -432,6 +486,10 @@ class Settings extends Component {
 
                 }
                 else {
+
+                    if (data[i].type === "file") {
+                        const cert = Certificate.fromPEM(data[i].value);
+                    }
                     alarms.push(
                         <div key={data[i].attribute + "key"} className={data[i].attribute.includes("ldap") && !this.state.isLdap && data[i].attribute !== "ldap_enable" ? "tab hidden" : "tab"}>
                             <span className="form-inline row justify-content-start paddingBottom">
@@ -446,13 +504,28 @@ class Settings extends Component {
                                         <input className="text-left form-control form-check-input" type={data[i].type} accept=".pem, .cert" defaultValue={data[i].type !== "file" ? data[i].value : ""} id={data[i].attribute} label={data[i].label} isRequired={data[i].required} restriction={JSON.stringify(data[i].restriction)} onChange={(e) => { this.check(e.target.getAttribute("id"), e.target.value, e.target.getAttribute("label"), e.target.getAttribute("restriction"), e.target.getAttribute("isRequired")) }} />
 
                                 }
-                                {data[i].type === "file" && data[i].value !== "" ? <span style={{ "fontSize": "0.8rem" }}>{"CA certificate for ldap TLS connection"}<img className="icon"
-                                    alt="deleteIcon" src={deleteIcon}
-                                    title="remove file"
-                                    attr={data[i].attribute}
-                                    onClick={(e) => this.removeFile(e.target.getAttribute("attr"))}
-                                    id={data[i].key}
-                                /></span> : ""}
+                                {data[i].type === "file" && data[i].value !== "" ? <span style={{ "fontSize": "0.8rem" }}>{"CA certificate for ldap TLS connection"}
+                                    <Popup trigger={<img className="icon" alt="detailsIcon" src={detailsIcon} title="details" />} modal>
+                                        {close => (
+                                            <div className="Advanced">
+                                                <button className="close" onClick={close}>
+                                                    &times;
+                                                </button>
+                                                <div className="contentAdvanced">
+                                                    <pre> <div onClick={thiss.clickHandlerHTML}
+                                                        dangerouslySetInnerHTML={{ __html: thiss.syntaxHighlight(Certificate.fromPEM(value)) }} /></pre>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </Popup>
+
+                                    <img className="icon"
+                                        alt="deleteIcon" src={deleteIcon}
+                                        title="remove file"
+                                        attr={data[i].attribute}
+                                        onClick={(e) => this.removeFile(e.target.getAttribute("attr"))}
+                                        id={data[i].key}
+                                    /></span> : ""}
 
                                 {this.state[data[i].attribute] ? <span className="col-3 errorStay" >{this.state[data[i].attribute]}</span> : ""}
 
