@@ -48,36 +48,26 @@ class Notificationbar extends Component {
     }
 
     componentDidMount() {
-        /*
         var self = this;
         let statusCheck = setInterval(async function () {
 
-            //run ES? logstash status check every 30s
+            //ES, logstash status check every 30s
             let result = await status();
-            if (!result.logstash) {
-                self.showError(self.getNotification(1));
+            if(result.status !== "ok")     {
+                self.showError(result.status);
             }
             else {
                 self.remove(1);
-            }
-
-            if (!result.elasticsearch) {
-                self.showError(self.getNotification(2));
-            }
-            else {
-                self.remove(2)
+                self.remove(2);
             }
         }, 30000);
-        
-
-        this.setState({statusCheck: statusCheck});
-        */
+        this.setState({ statusCheck: statusCheck });
     }
 
-    componentWillUnmount(){
-        // clearTimeout(this.state.statusCheck);
+    componentWillUnmount() {
+        clearTimeout(this.state.statusCheck);
     }
-    
+
     /**
 * display errors in error bar
 * @param {errors}  string
@@ -142,7 +132,7 @@ class Notificationbar extends Component {
     * @param {object}  error an error 
     * @return {} stores in state 
     * */
-     update(errno) {
+    update(errno) {
         var array = [...this.state.notifications];
         let isFound = false;
         for (let j = 0; j < array.length; j++) {
@@ -193,7 +183,7 @@ class Notificationbar extends Component {
             }
             for (let dontshow of dontshowNotification) {
                 if (dontshow.errno === notification.errno) {
-                    if (new Date() - 1000 * 60 * 60 >  dontshow.time) {
+                    if (new Date() - 1000 * 60 * 60 > dontshow.time) {
                         result.push(notification);
                     }
                     else {
@@ -219,10 +209,10 @@ class Notificationbar extends Component {
             return (
                 <div className="row" >
                     {window.location.pathname !== "/monitoring" && <div className={this.props.className}>  {this.state.notifications.map((notification, i) => {
-                        return <div key={i} style={notification.level === "error" ? { "backgroundColor": "#FD3031", "padding": "10px", "border": "0.05rem solid" } : notification.level === "warning" ? { "backgroundColor": "#FEBD02", "padding": "10px", "border": "0.05rem solid"  } : { "backgroundColor": "#34C15D", "padding": "10px", "border": "0.05rem solid"  }}>
-                             <img className="icon" alt="icon" src={notification.level === "error" ? errorIcon : notification.level === "warning" ? warningIcon : infoIcon} />
-                             <span onClick={() => this.setState({ "redirect": true })} style={{"cursor": "pointer", "paddingLeft": "25px"}}>{notification.text}</span>
-                             {notification.level !== "error" && <button style={{"float": "right", "marginRight": "20px", "color": "white", "fontSize": "25px"}} className="closeButton" onClick={() => this.remove(notification.errno)}>&times;</button>}
+                        return <div key={i} style={notification.level === "error" ? { "backgroundColor": "#FD3031", "padding": "10px", "border": "0.05rem solid" } : notification.level === "warning" ? { "backgroundColor": "#FEBD02", "padding": "10px", "border": "0.05rem solid" } : { "backgroundColor": "#34C15D", "padding": "10px", "border": "0.05rem solid" }}>
+                            <img className="icon" alt="icon" src={notification.level === "error" ? errorIcon : notification.level === "warning" ? warningIcon : infoIcon} />
+                            <span onClick={() => this.setState({ "redirect": true })} style={{ "cursor": "pointer", "paddingLeft": "25px" }}>{notification.text}</span>
+                            {notification.level !== "error" && <button style={{ "float": "right", "marginRight": "20px", "color": "white", "fontSize": "25px" }} className="closeButton" onClick={() => this.remove(notification.errno)}>&times;</button>}
                         </div>
                     })}
                     </div>}

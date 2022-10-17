@@ -13,30 +13,16 @@ export default async function status() {
     });
 
     const json = await response.json();
-    if (!response.ok) {
-        return {
-            logstash: false,
-            elasticsearch: false
-        }
+    let result = "ok";
+
+    if(json.error) {
+        result = { errno: 2, text: "Elasticsearch is not running", level: "error" };
     }
-    else {
-        let logstash = true;
-        let elasticsearch = true;
-
-        if(typeof json.logstash === 'string') json.logstash = json.logstash.replace(/\r?\n|\r/g, "");
-        if(typeof json.elasticsearch === 'string') json.elasticsearch = json.elasticsearch.replace(/\r?\n|\r/g, "");
-
-
-        if (json.logstash !== "active") {
-            logstash = false;
-        }
-
-        if (json.elasticsearch !== "active") {
-            elasticsearch = false;
-        }
-        return {
-            logstash: logstash,
-            elasticsearch: elasticsearch
-        }
+    //no event in last 30 seconds
+    else if (json.hits && json.hits.hits && json.hits.hits.length === 0) {
+        result = { errno: 1, text: "Logstash is not running", level: "error" };
+    }
+    return {
+        status: result
     }
 }
