@@ -34,8 +34,7 @@ class Export extends Component {
 
     componentDidUpdate(prevProps, prevState) {
         if (prevProps.exportOpen !== this.props.exportOpen) {
-            this.setState({ exportOpen: this.props.exportOpen });
-            if (this.props.exportOpen === true) {
+            if (this.props.exportOpen === true ) {
                 this.loadData();
             }
         }
@@ -125,11 +124,13 @@ class Export extends Component {
                 /* this.setState({
                      error: "Problem to get data from elasticsearch"
                  })*/
+
+                window.notification.update({ errno: 5, text: "Nothing to export.", level: "info" });
                 this.setState({
                     data: null,
                     dialogMsg: "No data in elasticsearch"
                 });
-
+                this.props.close();
             }
 
         } catch (error) {
@@ -138,6 +139,7 @@ class Export extends Component {
                 data: null,
                 dialogMsg: "Problem to get data from elasticsearch"
             })
+            this.props.close();
             console.error(error);
         }
 
@@ -297,7 +299,7 @@ class Export extends Component {
                 <span className="exportBody">
                     <div className="row">
                         {!this.state.data && <span style={{ "width": "100%" }}><span style={{ "color": "grey", "fontSize": "larger", "marginLeft": "1%" }} id="loadingExport"> {this.state.dialogMsg}</span></span>}
-                        {(this.state.data && this.state.data.length === 0) && <span style={{ "width": "100%" }}><i class="fa fa-circle-o-notch fa-spin" style={{ "color": "grey", "width": "10px", "height": "10px", "marginLeft": "5%" }}></i><span style={{ "color": "grey", "fontSize": "larger", "marginLeft": "1%" }} id="loadingExport"> {this.state.dialogMsg}</span><span style={{ "color": "grey", "fontSize": "larger" }}>{this.state.downloadValue !== 0 ? " Downloading data size: " + this.state.downloadValue : ""}</span></span>}
+                        {(this.state.data && this.state.data.length === 0) && <span style={{ "width": "100%" }}><i className="fa fa-circle-o-notch fa-spin" style={{ "color": "grey", "width": "10px", "height": "10px", "marginLeft": "5%" }}></i><span style={{ "color": "grey", "fontSize": "larger", "marginLeft": "1%" }} id="loadingExport"> {this.state.dialogMsg}</span><span style={{ "color": "grey", "fontSize": "larger" }}>{this.state.downloadValue !== 0 ? " Downloading data size: " + this.state.downloadValue : ""}</span></span>}
                     </div>
                     <div className="row">
                         {(this.state.data && this.state.data.length !== 0) && storePersistent.getState().profile && storePersistent.getState().profile[0] && storePersistent.getState().profile[0].userprefs.mode === "encrypt" && <span style={{ "marginTop": "10px", "marginLeft": "2px" }}><input type="checkbox" id="decryptCheckbox" className="decryptCheckbox" defaultChecked={false} /><label style={{ "paddingBottom": "11px", "color": "grey", "fontSize": "larger" }}>Decrypt data. It could take a few minutes.</label></span>}
