@@ -417,6 +417,20 @@ class timerangeBar extends Component {
                 timestamp_gte = this.state.timestamp_gte;
             }
 
+            function isValidDate(d) {
+                return d instanceof Date && !isNaN(d);
+            }
+
+            if (!isValidDate(new Date(timestamp_gte))) {
+                alert("Error: timestamp from is not valid date");
+                return;
+            }
+
+            if (!isValidDate(new Date(timestamp_lte))) {
+                alert("Error: timestamp to is not valid date");
+                return;
+            }
+
             if (new Date(timestamp_gte).getTime() < 0) {
                 alert("Error: Timestamp 'FROM' is not valid date.");
                 return;
