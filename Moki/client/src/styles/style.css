@@ -330,6 +330,7 @@ a {
     width: -moz-available;
     /* Firefox/Gecko */
     height: max-content;
+    overflow: hidden;
 }
 
 label {
@@ -880,6 +881,10 @@ text {
 #filterBar {
     margin-top: 0.3rem;
     margin-left: 10px;
+}
+
+.filterToggleActive {
+    position: relative;
 }
 
 .filterToggleActive:hover .filterToggle {
