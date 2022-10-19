@@ -10,7 +10,7 @@ import { elasticsearchConnection } from '@moki-client/gui';
 import storePersistent from "../store/indexPersistent";
 import Popup from "reactjs-popup";
 import detailsIcon from "../../styles/icons/details.png";
-const { Certificate } = require('@fidm/x509');
+const { Certificate, PrivateKey  } = require('@fidm/x509');
 
 class Settings extends Component {
     constructor(props) {
@@ -173,7 +173,7 @@ class Settings extends Component {
     }
 
 
-    validate(attribute, value, label, restriction, required = false) {
+    async validate(attribute, value, label, restriction, required = false) {
         if (required && value === "") {
             return "Error: field '" + label + "' must be filled.";
         }
@@ -233,6 +233,31 @@ class Settings extends Component {
                 return "Error: field '" + label + "' must have value one of " + restriction.type.enum.join('-');
             }
 
+            
+            //if cert needs to key check, only if new file was loaded
+            if (value && restriction.key) {
+                let key = document.getElementById(restriction.key);
+                if (!key) {
+                    return "Error:  field '" + label + "' must have also key to certificate.";
+                }
+                else {
+
+                    async function parseJsonFile(file) {
+                        return new Promise((resolve, reject) => {
+                            const fileReader = new FileReader()
+                            fileReader.onload = event => resolve(JSON.parse(JSON.stringify(event.target.result)))
+                            fileReader.onerror = error => reject(error)
+                            fileReader.readAsText(file)
+                        })
+                    }
+                    const keyObject = await parseJsonFile(key);
+
+                    const data = Buffer.allocUnsafe(100);
+                    const cert = Certificate.fromPEM(value);
+                    const signature = PrivateKey.fromPEM(keyObject);
+                }
+            }
+
             return true;
         }
 
@@ -246,8 +271,8 @@ class Settings extends Component {
         return true;
     }
 
-    check(attribute, value, label, restriction, required) {
-        var error = this.validate(attribute, value, label, restriction, required);
+    async check(attribute, value, label, restriction, required) {
+        var error = await this.validate(attribute, value, label, restriction, required);
         if (error !== true) {
             this.setState({
                 [attribute]: error
@@ -334,7 +359,7 @@ class Settings extends Component {
                     if (jsonData[i].attribute.includes("ldap")) {
                         required = ldap_enable ? jsonData[i].required && true : false;
                     }
-                    var validateResult = this.validate(jsonData[i].attribute, jsonData[i].value, jsonData[i].label, JSON.stringify(jsonData[i].restriction), required)
+                    var validateResult = await this.validate(jsonData[i].attribute, jsonData[i].value, jsonData[i].label, JSON.stringify(jsonData[i].restriction), required)
                     if (validateResult !== true) {
                         alert(validateResult);
                         return;
