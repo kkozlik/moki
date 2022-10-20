@@ -10,7 +10,7 @@ import { elasticsearchConnection } from '@moki-client/gui';
 import storePersistent from "../store/indexPersistent";
 import Popup from "reactjs-popup";
 import detailsIcon from "../../styles/icons/details.png";
-const { Certificate, PrivateKey  } = require('@fidm/x509');
+const { Certificate, PrivateKey } = require('@fidm/x509');
 
 class Settings extends Component {
     constructor(props) {
@@ -233,31 +233,6 @@ class Settings extends Component {
                 return "Error: field '" + label + "' must have value one of " + restriction.type.enum.join('-');
             }
 
-            
-            //if cert needs to key check, only if new file was loaded
-            if (value && restriction.key) {
-                let key = document.getElementById(restriction.key);
-                if (!key) {
-                    return "Error:  field '" + label + "' must have also key to certificate.";
-                }
-                else {
-
-                    async function parseJsonFile(file) {
-                        return new Promise((resolve, reject) => {
-                            const fileReader = new FileReader()
-                            fileReader.onload = event => resolve(JSON.parse(JSON.stringify(event.target.result)))
-                            fileReader.onerror = error => reject(error)
-                            fileReader.readAsText(file)
-                        })
-                    }
-                    const keyObject = await parseJsonFile(key);
-
-                    const data = Buffer.allocUnsafe(100);
-                    const cert = Certificate.fromPEM(value);
-                    const signature = PrivateKey.fromPEM(keyObject);
-                }
-            }
-
             return true;
         }
 
@@ -345,8 +320,58 @@ class Settings extends Component {
                                 fileReader.readAsText(file)
                             })
                         }
+                        //if cert needs to key check, only if new file was loaded
+                        if (jsonData[i].restriction && jsonData[i].restriction.key) {
+                            let key = document.getElementById(jsonData[i].restriction.key);
+                            console.log("checking key");
+                            console.log(key);
+                            console.log(key.files);
+                            console.log(key.files[0]);
+
+                            if (!key || !key.files[0]) {
+                                this.setState({
+                                    [jsonData[i].restriction.key]: "Error:  field '" + key + "' must have also key to certificate."
+                                })
+                                return;
+                            }
+                            else {
+                                try {
+                                    const keyObject = await parseJsonFile(key.files[0]);
+                                    console.log("checking cert a key");
+                                    console.log(data.files[0]);
+                                    const certObject = await parseJsonFile(data.files[0]);
+                                    const cert = Certificate.fromPEM(certObject);
+
+                                    try {
+                                        const signature = PrivateKey.fromPEM(keyObject);
+                                        const dataBuffer = Buffer.allocUnsafe(100);
+                                        console.log(cert.publicKey.verify(dataBuffer, signature, 'sha256'));
+
+                                    }
+                                    catch (e) {
+                                        console.error(e);
+                                        this.setState({ [jsonData[i].attribute]: "Error:  field '" + jsonData[i].attribute + "' is not valid certificate to key." });
+                                        return;
+
+                                    }
+                                }
+                                catch (e) {
+                                    console.error(e);
+                                    this.setState({
+                                        [jsonData[i].attribute]: "Error:  field '" + jsonData[i].attribute + "' has not valid format."
+                                    })
+                                    return;
+
+                                }
+
+                            }
+                        }
                         const object = await parseJsonFile(data.files[0]);
                         jsonData[i].value = object;//JSON.stringify(object);
+
+                        console.log(Certificate.fromPEM(object));
+
+
                     }
                     else if (jsonData[i].attribute === "jwtAdmins" && !Array.isArray(jsonData[i].value)) {
                         jsonData[i].value = jsonData[i].value.split(",");
@@ -525,10 +550,10 @@ class Settings extends Component {
                     let cert = data[i].value;
                     var thiss = this;
                     if (data[i].type === "file" && data[i].restriction && data[i].restriction.extensions && data[i].restriction.extensions.includes(".pem") && data[i].value) {
-                        try{
-                        cert = Certificate.fromPEM(data[i].value);
+                        try {
+                            cert = Certificate.fromPEM(data[i].value);
                         }
-                        catch(error){
+                        catch (error) {
                             console.log(error);
                         }
                     }
