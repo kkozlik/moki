@@ -62,7 +62,7 @@ class securityController extends Controller {
       //6 MAP FOR GEOHASH
       { index: "logstash*", template: geoip_hash_query, params: [3], filter: "*" },
        //7 EVENTS BY signature
-       { index: "logstash*", template: agg_filter, params: ['sip.request.sig', 10], filter: "*" },
+       { index: "logstash*", template: agg_filter, params: ['sip.request.sig.keyword', 10], filter: "*" },
     ], "security");
   }
 
