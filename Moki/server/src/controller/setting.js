@@ -877,13 +877,13 @@ class SettingController {
         size: 1,
         "sort": [
           {
-            "timestamp": {
+            "@timestamp": {
               "order": "desc"
             }
           }
         ],
         "query": {"bool": {"must": [
-          { "range": { "clock": { "gte": "now-40s", "lte": "now"} }}
+          { "range": { "@timestamp": { "gte": "now-40s", "lte": "now"} }}
         ]}}
       };
       var result = await client.search(filter);
