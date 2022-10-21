@@ -96,7 +96,13 @@ class AlertProfile extends Component {
         else {
             //check if custom profile or not
             if (this.state.data["exceeded-by"].startsWith("cstm_")) {
-                result = await this.get("api/bw/getcustomprofile?pretty=true&key=" + this.state.data.attrs["from-ua"] + "&list=attrs.from-ua&hmac=" + hmac);
+                //.key.value should be taken and split in everything before the first occurrence of _ to become list and everything after to become key
+                if (this.state.data.alertv3) {
+                    let data = JSON.parse(this.state.data.alertv3).key.value;
+                    let list = data.substring(0, data.indexOf("_"));
+                    let key = data.substring(data.indexOf("_") + 1, data.length);
+                    result = await this.get("api/bw/getcustomprofile?pretty=true&key=" + key + "&list=" + list + "&hmac=" + hmac);
+                }
             }
             else {
                 result = await this.get("api/bw/gettenantprofile?pretty=true");
