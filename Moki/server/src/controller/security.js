@@ -55,12 +55,14 @@ class securityController extends Controller {
       { index: "logstash*", template: agg_filter, params: ['attrs.source', 10], filter: "*" },
       //TOP SUBNETS /24
       { index: "logstash*", template: agg_filter, params: ["attrs.sourceSubnets", 10], filter: "*" },
-      //EVENTS BY COUNTRY
+      //4 EVENTS BY COUNTRY
       { index: "logstash*", template: agg_filter, params: ['geoip.country_code2', 10], filter: "*" },
-      //TYPES
+      //5 TYPES
       { index: "logstash*", template: agg_query, params: ["terms", 'attrs.type'], filter: "*" },
-      //MAP FOR GEOHASH
-      { index: "logstash*", template: geoip_hash_query, params: [3], filter: "*" }
+      //6 MAP FOR GEOHASH
+      { index: "logstash*", template: geoip_hash_query, params: [3], filter: "*" },
+       //7 EVENTS BY signature
+       { index: "logstash*", template: agg_filter, params: ['sip.request.sig.keyword', 10], filter: "*" },
     ], "security");
   }
 
