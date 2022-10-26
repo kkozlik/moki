@@ -341,7 +341,8 @@ class Controller {
 
       console.info("SERVER search with filters: " + filters + " types: " + types + " timerange: " + timestamp_gte + "-" + timestamp_lte + " timebucket: " + timebucket + " userFilter: " + userFilter + " domainFilter: " + domainFilter + " encrypt checksum filter: " + isEncryptChecksumFilter);
       //always timerange_query
-      requests.query = timerange_query.getTemplate(getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, requests.filter, domainFilter, isEncryptChecksumFilter, false, requests.index), supress, source, querySize);
+      let shouldSortByTime = requests.index.includes("logstash") || requests.index.includes("collectd") || requests.index.includes("exceeded") ? true : false;
+      requests.query = timerange_query.getTemplate(getQueries(filters, types, timestamp_gte, timestamp_lte, userFilter, requests.filter, domainFilter, isEncryptChecksumFilter, false, requests.index), supress, source, shouldSortByTime, querySize);
       if (cfg.debug) console.info(requests.index);
       if (cfg.debug) console.info(JSON.stringify(requests.query));
 
