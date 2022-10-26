@@ -270,8 +270,15 @@ class ProfileController {
             }
           }
         }
-        if(cfg.debug) console.info("Got domain profile stored in ES "+JSON.stringify(domainProfile));
+        if (cfg.debug) console.info("Got domain profile stored in ES " + JSON.stringify(domainProfile));
 
+        //set hmac in cookie
+        let hmac = userProfile.userprefs.validation_code;
+        if (userProfile.userprefs.mode === "anonymous") {
+          hmac = userProfile.userprefs.validation_code;
+        }
+        if (hmac !== "plain") hmac = hmac.substring(0, hmac.indexOf(":"));
+        req.cookie = "hmac=" + hmac;
         res.status(200).send([userProfile, domainProfile]);
       }
       else {
