@@ -507,7 +507,7 @@ class SettingController {
     //get config file
     const jsonData = JSON.parse(fs.readFileSync(cfg.fileMonitor));
     const jsonDataOld = JSON.parse(fs.readFileSync(cfg.fileMonitor));
-
+    let m_config = [];
     //if filters paste it on top layer
     if (request.body.app === "m_filters") {
       let filters = [];
@@ -525,7 +525,11 @@ class SettingController {
     } else {
       //the rest of m_config
       let isConfigGroupThere = false;
+
       for (let i = 0; i < jsonData["general"]["global-config"].length; i++) {
+        if (jsonData["general"]["global-config"][i]["app"] === "m_config") {
+          m_config = jsonData["general"]["global-config"][i]["attrs"];
+        }
 
         if (jsonData["general"]["global-config"][i]["app"] === request.body.app) {
 
@@ -543,41 +547,121 @@ class SettingController {
     monitorVersion.replace(/(\r\n|\n|\r)/gm, "");
     jsonData["m_version"] = monitorVersion;
 
-    //write it to monitor file
-    fs.writeFile(cfg.fileMonitor, JSON.stringify(jsonData, null, 2), function (error) {
-      if (error) {
-        respond.status(400).send({ "msg": error });
+    //check cert and keys validation
+    console.log("-----------------------");
+    fs.readFile(cfg.fileDefaults, function (err, defaults) {
+      if (err) {
+        console.error("Problem with reading defaults file. " + err);
       }
-      console.info("Writing new config to file. " + JSON.stringify(jsonData));
-      //call check config script
-      exec("sudo /usr/sbin/abc-monitor-check-config", function (error, stdout, stderr) {
-        if (error) {
-          //write old data back
-          fs.writeFile(cfg.fileMonitor, JSON.stringify(jsonDataOld, null, 2));
-          console.error("Config checked failed. Writing old config back. " + stderr);
-          respond.status(400).send({
-            "msg": stderr
-          });
+      else {
+        let defaultsValues = JSON.parse(defaults);
+        defaultsValues = defaultsValues[0].attrs;
+        let key = "";
+        let cert = "";
 
-        } else {
-          console.info("Activating config.");
-          //call generate config script
-          exec("sudo /usr/sbin/abc-monitor-activate-config", function (error, stdout, stderr) {
+        console.log(JSON.stringify(defaultsValues));
+        //find if cert field is filled
+        for (let hit of m_config) {
+          if (hit.attribute.includes("cert") && hit.value !== "") {
+            cert = hit.value;
+            // check format settings
+            for (let def of defaultsValues) {
+              if (def.attribute === hit.attribute) {
+                if (def.type !== "file") {
+                  cert = "";
+                }
+                else {
+                  if (def.restriction && def.restriction.key) {
+                    key = def.restriction.key;
+                    // get the key if filled
+                    for (let keyFile of m_config) {
+                      if (keyFile.attribute === key) {
+                        key = keyFile.value;
+                      }
+                    }
+                  }
+
+                  //check cert and key validation
+                  console.log("cheking cert");
+                  console.log(cert);
+                  console.log(key);
+
+                  console.log("openssl x509 -in "+JSON.stringify(cert)+" -text -noout");
+
+                  exec("openssl x509 -in "+cert+" -text -noout", function (error, stdout, stderr) {
+                    if (error) {
+                      console.error("Problem to parse cert. " + error);
+                      respond.status(400).send({
+                        "msg": stderr
+                      });
+                      return;
+                    }
+                    else {
+                      console.log(stdout);
+                    }
+                  })
+
+                  key = "";
+                  cert = "";
+                }
+              }
+            }
+          }
+        }
+
+
+
+        //write it to monitor file
+        fs.writeFile(cfg.fileMonitor, JSON.stringify(jsonData, null, 2), function (error) {
+          if (error) {
+            //write old data back
+            fs.writeFile(cfg.fileMonitor, JSON.stringify(jsonDataOld, null, 2));
+            console.error("Config checked failed. Writing old config back. " + stderr);
+            respond.status(400).send({
+              "msg": stderr
+            });
+
+            respond.status(400).send({ "msg": error });
+          }
+          console.info("Writing new config to file. " + JSON.stringify(jsonData));
+          //call check config script
+          exec("sudo /usr/sbin/abc-monitor-check-config", function (error, stdout, stderr) {
             if (error) {
+              //write old data back
+              fs.writeFile(cfg.fileMonitor, JSON.stringify(jsonDataOld, null, 2));
+              console.error("Config checked failed. Writing old config back. " + stderr);
               respond.status(400).send({
                 "msg": stderr
               });
-              console.error("Config cannot be activated. " + stderr);
-              respond.end();
+
             } else {
-              console.info("New config activated.");
-              respond.status(200).send({
-                "msg": "Data has been saved."
+              console.info("Activating config.");
+              //call generate config script
+              exec("sudo /usr/sbin/abc-monitor-activate-config", function (error, stdout, stderr) {
+                if (error) {
+                  //write old data back
+                  fs.writeFile(cfg.fileMonitor, JSON.stringify(jsonDataOld, null, 2));
+                  console.error("Config checked failed. Writing old config back. " + stderr);
+                  respond.status(400).send({
+                    "msg": stderr
+                  });
+
+                  respond.status(400).send({
+                    "msg": stderr
+                  });
+                  console.error("Config cannot be activated. " + stderr);
+                  respond.end();
+                } else {
+                  console.info("New config activated.");
+                  respond.status(200).send({
+                    "msg": "Data has been saved."
+                  });
+                }
               });
             }
           });
-        }
-      });
+        });
+      }
     });
   }
 
@@ -895,9 +979,9 @@ class SettingController {
         });
       });
     }
-      return search().catch((e) => {
-        return next(e);
-      });
+    return search().catch((e) => {
+      return next(e);
+    });
   }
 }
 
