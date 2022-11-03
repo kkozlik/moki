@@ -11,6 +11,55 @@ import storePersistent from "../store/indexPersistent";
 import Popup from "reactjs-popup";
 import detailsIcon from "../../styles/icons/details.png";
 
+class Certificate extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            cert: null
+        }
+        this.getCertificate = this.getCertificate.bind(this);
+    }
+
+    async componentDidMount() {
+        await this.getCertificate(this.props.cert);
+    }
+
+    async getCertificate(cert) {
+        //parse cert with OpenSSL
+        try {
+            const response = await fetch("/api/parse/certificate", {
+                method: "POST",
+                credentials: 'include',
+                headers: {
+                    "Content-Type": "application/json",
+                    "Access-Control-Allow-Credentials": "include"
+                },
+                body: JSON.stringify({
+                    cert: cert,
+                    type: this.props.type
+                })
+            });
+            var jsonData = await response.json();
+        }
+        catch (error) {
+            this.setState({ cert: { error: error } });
+        }
+
+        this.setState({ cert: jsonData.msg });
+    }
+
+
+    render() {
+        return (
+            <span>
+                {!this.state.cert && <span>Parsing certificate</span>}
+                {this.state.cert && this.state.cert.error && <span>{this.state.cert.error}</span>}
+                {this.state.cert && !this.state.cert.error && <span>{this.state.cert}</span>}
+            </span>
+        )
+    }
+}
+
 class Settings extends Component {
     constructor(props) {
         super(props);
@@ -25,7 +74,7 @@ class Settings extends Component {
             wait: false,
             tags: this.props.tags,
             isLdap: false,
-            shouldDisplayCAcert: false
+            shouldDisplayCAcert: false,
         }
     }
 
@@ -120,40 +169,6 @@ class Settings extends Component {
         this.setState({ data: jsonData })
     }
 
-    //json syntax highlight
-    syntaxHighlight(json) {
-        //no breaks for array fix
-        function replacer(key, value) {
-            if (value && value.type === "Buffer") {
-                return JSON.stringify(value.data);
-            }
-            return value;
-        }
-        json = JSON.stringify(json, replacer, 4);
-        json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-        json = json.substring(1);
-        json = json.substring(0, json.length - 1);
-        json = json.replaceAll("{", "<button class='expandJson'>-</button><span>{");
-        json = json.replaceAll("}", "}</span>");
-
-        return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\\-]?\d+)?)/g, function (match) {
-            var cls = 'number';
-            if (/^"/.test(match)) {
-                if (/:$/.test(match)) {
-                    cls = 'key';
-                } else {
-                    cls = 'string';
-                }
-            } else if (/true|false/.test(match)) {
-                cls = 'boolean';
-            } else if (/null/.test(match)) {
-                cls = 'null';
-            }
-
-            return '<span class="rowSplit ' + cls + '">' + match + '</span>';
-        });
-
-    }
 
     clickHandlerHTML(e) {
         let el = e.target;
@@ -324,8 +339,9 @@ class Settings extends Component {
                             let key = document.getElementById(jsonData[i].restriction.key);
                             if (!key || !key.files[0]) {
                                 this.setState({
-                                    [jsonData[i].restriction.key]: "Error:  field '" + key + "' must have also key to certificate."
+                                    [jsonData[i].restriction.key]: "Error:  field '" + jsonData[i].restriction.key + "' must have also key to certificate."
                                 })
+                                data.scrollIntoView();
                                 return;
                             }
                         }
@@ -346,6 +362,7 @@ class Settings extends Component {
                     }
                     var validateResult = await this.validate(jsonData[i].attribute, jsonData[i].value, jsonData[i].label, JSON.stringify(jsonData[i].restriction), required)
                     if (validateResult !== true) {
+                        data.scrollIntoView();
                         alert(validateResult);
                         return;
                     }
@@ -508,15 +525,7 @@ class Settings extends Component {
                 }
                 else {
                     let cert = data[i].value;
-                    var thiss = this;
-                    //TODO parse cert
-                    if (data[i].type === "file" && data[i].restriction && data[i].restriction.extensions && data[i].restriction.extensions.includes(".pem") && data[i].value) {
-                        try {
-                        }
-                        catch (error) {
-                            console.log(error);
-                        }
-                    }
+                    let type = data[i].restriction && data[i].restriction.type ? data[i].restriction.type : "certificate";
                     alarms.push(
                         <div key={data[i].attribute + "key"} className={(!this.state.shouldDisplayCAcert && data[i].attribute === "event_tls_cacert") || (data[i].attribute.includes("ldap") && !this.state.isLdap && data[i].attribute !== "ldap_enable") ? "tab hidden" : "tab"}>
                             <span className="form-inline row justify-content-start paddingBottom">
@@ -533,19 +542,18 @@ class Settings extends Component {
 
                                 }
                                 {data[i].type === "file" && data[i].value !== "" && cert ? <span style={{ "fontSize": "0.8rem" }}>{data[i].label}
-                                    <Popup trigger={<img className="icon" alt="detailsIcon" src={detailsIcon} title="details" />} modal>
+                                    { type === "certificate" && <Popup trigger={<img className="icon" alt="detailsIcon" src={detailsIcon} title="details" />} modal>
                                         {close => (
                                             <div className="Advanced">
                                                 <button className="close" onClick={close}>
                                                     &times;
                                                 </button>
                                                 <div className="contentAdvanced">
-                                                    <pre> <div onClick={thiss.clickHandlerHTML}
-                                                        dangerouslySetInnerHTML={{ __html: thiss.syntaxHighlight(cert) }} /></pre>
+                                                    <pre><Certificate cert={cert}></Certificate> </pre>
                                                 </div>
                                             </div>
                                         )}
-                                    </Popup>
+                                    </Popup>}
 
                                     <img className="icon"
                                         alt="deleteIcon" src={deleteIcon}

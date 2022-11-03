@@ -44,7 +44,8 @@ module.exports = () => {
     .get('/tags', SettingController.tags)
     .post('/tag/delete', SettingController.deleteTag)
     .post('/filters/delete', SettingController.deleteFilter)
-    .post('/filters/save', SettingController.saveFilter);
+    .post('/filters/save', SettingController.saveFilter)
+    .post('/parse/certificate', SettingController.parseOpenSSLCertificate);
 
   router
     .post('/profile/save', ProfileController.storeUserSettings)
