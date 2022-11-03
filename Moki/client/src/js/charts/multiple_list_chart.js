@@ -102,7 +102,7 @@ render() {
     return (
         <div className="tableChart chart">
          <h3 className="alignLeft title" style={{"float": "inherit"}}>{this.props.name}</h3>
-       {this.props.data.length > 0 &&
+       {this.props.data && this.props.data.length > 0 &&
           <table>
           <tbody>
         {this.props.data.map((items, keys) => {

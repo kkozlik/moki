@@ -28,6 +28,7 @@ class SecurityCharts extends Dashboard {
             eventsByCountry: [],
             typesCount: [],
             geoipHashMap: [],
+            signature: [],
             sLoading: true
 
         };
@@ -53,6 +54,8 @@ class SecurityCharts extends Dashboard {
 
                 //DISTRIBUTION HASH GEOIP MAP
                 [{ result: 'geoipHashMap', func: parseAggCities }],
+                 //EVENTS BY SIGNATURE
+                 [{ result: 'signature', func: parseListData, attrs: ["sip.request.sig"] }],
             ]
         };
 
@@ -127,6 +130,18 @@ class SecurityCharts extends Dashboard {
                         type="list"
                         field={
                             "geoip.country_code2"
+                        }
+                    />  </div>}
+                    {this.state.charts["EVENTS BY SIGNATURE"] && <div className="col-auto" >
+                    <ListChart data={
+                        this.state.signature
+                    }
+                        name={
+                            "EVENTS BY SIGNATURE"
+                        }
+                        type="list"
+                        field={
+                            "sip.request.sig"
                         }
                     />  </div>}
             </div>
