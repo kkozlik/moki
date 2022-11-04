@@ -2,6 +2,7 @@
 
 const fs = require('fs');
 const { exec } = require('child_process');
+const { spawn } = require('child_process')
 const { newHTTPError } = require('./index');
 const { cfg, setMonitorVersion } = require('../modules/config');
 const { connectToES } = require('../modules/elastic');
@@ -453,6 +454,29 @@ class SettingController {
     });
   }
 
+  static parseOpenSSLCertificate(req, res, next) {
+    let params = ["x509", "-text", "-noout"];
+    if (req.body.type === "key") {
+      params = ["rsa", "-text", "-noout"];
+    }
+    const command = spawn('openssl', params);
+    command.stdin.write(req.body.cert);
+    command.stdin.end();
+
+    command.stdout.on('data', output => {
+      return res.status(200).send({
+        "msg": output.toString()
+      });
+    })
+
+    command.stderr.on('data', output => {
+      res.status(400).send({
+        "msg": "Problem to parse certificate. " + output.toString()
+      });
+    })
+  }
+
+
   /**
    * @swagger
    * /api/save:
@@ -503,11 +527,11 @@ class SettingController {
    *             example:
    *               error: "Config checked failed. Writing old config back."
    */
-  static save(request, respond) {
+  static async save(request, respond) {
     //get config file
     const jsonData = JSON.parse(fs.readFileSync(cfg.fileMonitor));
     const jsonDataOld = JSON.parse(fs.readFileSync(cfg.fileMonitor));
-
+    let m_config = [];
     //if filters paste it on top layer
     if (request.body.app === "m_filters") {
       let filters = [];
@@ -525,7 +549,11 @@ class SettingController {
     } else {
       //the rest of m_config
       let isConfigGroupThere = false;
+
       for (let i = 0; i < jsonData["general"]["global-config"].length; i++) {
+        if (jsonData["general"]["global-config"][i]["app"] === "m_config") {
+          m_config = request.body.attrs;
+        }
 
         if (jsonData["general"]["global-config"][i]["app"] === request.body.app) {
 
@@ -543,43 +571,181 @@ class SettingController {
     monitorVersion.replace(/(\r\n|\n|\r)/gm, "");
     jsonData["m_version"] = monitorVersion;
 
-    //write it to monitor file
-    fs.writeFile(cfg.fileMonitor, JSON.stringify(jsonData, null, 2), function (error) {
-      if (error) {
-        respond.status(400).send({ "msg": error });
-      }
-      console.info("Writing new config to file. " + JSON.stringify(jsonData));
-      //call check config script
-      exec("sudo /usr/sbin/abc-monitor-check-config", function (error, stdout, stderr) {
+    //check cert and keys validation
+    async function checkCertificate(m_config, respond) {
+      return new Promise((resolve, reject) => {
+        fs.readFile(cfg.fileDefaults, async function (err, defaults) {
+          if (err) {
+            console.error("Problem with reading defaults file. " + err);
+            return (false);
+          }
+          else {
+            let defaultsValues = JSON.parse(defaults);
+            defaultsValues = defaultsValues[0].attrs;
+            var key = "";
+            var cert = "";
+            var resolving = true;
+
+            //find if cert field is filled
+            for (let hit of m_config) {
+              if (hit.attribute.includes("cert") && hit.value !== "") {
+                cert = JSON.parse(JSON.stringify(hit.value));
+                // check format settings
+                for (let def of defaultsValues) {
+                  if (def.attribute === hit.attribute) {
+                    if (def.type !== "file") {
+                      cert = "";
+                    }
+                    else {
+                      if (def.restriction && def.restriction.key) {
+                        key = def.restriction.key;
+                        // get the key if filled
+                        for (let keyFile of m_config) {
+                          if (keyFile.attribute === key) {
+                            key = JSON.parse(JSON.stringify(keyFile.value));
+                          }
+                        }
+                      }
+                      resolving = resolving && await new Promise((resolve, reject) => {
+                        //check cert
+                        const certResult = spawn('openssl', ["x509", "-text", "-noout"]);
+                        certResult.stdin.write(cert);
+                        certResult.stdin.end();
+
+                        certResult.stderr.on('data', output => {
+                          respond.status(400).send({
+                            "msg": "Wrong format for " + hit.attribute + " " + output
+                          });
+                          resolve(false);
+                        })
+
+                        //store parsed cert
+                        if (!def.restriction.type || (def.restriction.type && def.restriction.type !== "bundle")) {
+                          hit.value = spawn('openssl', ["x509"]);
+                          hit.value.stdin.write(cert);
+                          hit.value.stdin.end();
+                          hit.value.stdout.on('data', output => {
+                            hit.value = output.toString();
+                          })
+                        }
+
+                        //check key
+                        if (key) {
+                          const keyResult = spawn('openssl', ["rsa", "-text", "-noout"]);
+                          keyResult.stdin.write(key);
+                          keyResult.stdin.end();
+                          keyResult.stderr.on('data', output => {
+                            respond.status(400).send({
+                              "msg": "Wrong format for " + def.restriction.key + " " + output
+                            });
+                            resolve(false);
+                          })
+
+                          var certificateMD5 = [];
+                          var keyyMD5 = [];
+                          //check if cert is valid for this key
+                          const child = spawn('openssl', ["md5"]);
+                          const certMD5 = spawn('openssl', ["x509", "-modulus", "-noout"]);
+                          certMD5.stdin.write(cert);
+                          certMD5.stdin.end();
+                          child.stdin.pipe(certMD5.stdin);
+                          child.stdin.end();
+                          certMD5.stdout.on('data', output => {
+                            certificateMD5 = output.toString();
+
+                          })
+
+                          const childKey = spawn('openssl', ["md5"]);
+                          const keyMD5 = spawn('openssl', ["rsa", "-modulus", "-noout"]);
+                          keyMD5.stdin.write(key);
+                          keyMD5.stdin.end();
+                          childKey.stdin.pipe(keyMD5.stdin);
+                          childKey.stdin.end();
+                          keyMD5.stdout.on('data', output => {
+                            keyyMD5 = output.toString();
+                            if (certificateMD5 !== keyyMD5) {
+                              respond.status(400).send({
+                                "msg": "This " + def.restriction.key + " is not valid key for " + hit.attribute
+                              });
+                              resolve(false);
+                            }
+                            else {
+                              resolve(true);
+                            }
+                          })
+                        }
+                        else {
+                          respond.status(400).send({
+                            "msg": "No key for " + hit.attribute
+                          });
+                          resolve(false);
+                        }
+                        key = "";
+                        cert = "";
+                      })
+                    }
+                  }
+                }
+              }
+            }
+            if (resolving) {
+              resolve(true);
+            }
+            else {
+              resolve(false);
+            }
+          }
+        })
+      })
+    }
+
+    let certCheck = await checkCertificate(m_config, respond);
+    if (certCheck !== false) {
+      //write it to monitor file
+      fs.writeFile(cfg.fileMonitor, JSON.stringify(jsonData, null, 2), function (error) {
         if (error) {
           //write old data back
           fs.writeFile(cfg.fileMonitor, JSON.stringify(jsonDataOld, null, 2));
           console.error("Config checked failed. Writing old config back. " + stderr);
-          respond.status(400).send({
-            "msg": stderr
-          });
-
-        } else {
-          console.info("Activating config.");
-          //call generate config script
-          exec("sudo /usr/sbin/abc-monitor-activate-config", function (error, stdout, stderr) {
-            if (error) {
-              respond.status(400).send({
-                "msg": stderr
-              });
-              console.error("Config cannot be activated. " + stderr);
-              respond.end();
-            } else {
-              console.info("New config activated.");
-              respond.status(200).send({
-                "msg": "Data has been saved."
-              });
-            }
-          });
+          respond.status(400).send({ "msg": error });
         }
+        console.info("Writing new config to file. " + JSON.stringify(jsonData));
+        //call check config script
+        exec("sudo /usr/sbin/abc-monitor-check-config", function (error, stdout, stderr) {
+          if (error) {
+            //write old data back
+            fs.writeFile(cfg.fileMonitor, JSON.stringify(jsonDataOld, null, 2));
+            console.error("Config checked failed. Writing old config back. " + stderr);
+            respond.status(400).send({
+              "msg": stderr
+            });
+
+          } else {
+            console.info("Activating config.");
+            //call generate config script
+            exec("sudo /usr/sbin/abc-monitor-activate-config", function (error, stdout, stderr) {
+              if (error) {
+                //write old data back
+                fs.writeFile(cfg.fileMonitor, JSON.stringify(jsonDataOld, null, 2));
+                console.error("Config checked failed. Writing old config back. " + stderr);
+                respond.status(400).send({
+                  "msg": stderr
+                });
+                console.error("Config cannot be activated. " + stderr);
+                respond.end();
+              } else {
+                console.info("New config activated.");
+                respond.status(200).send({
+                  "msg": "Data has been saved."
+                });
+              }
+            });
+          }
+        });
       });
-    });
+    }
   }
+
 
   /**
    * @swagger
