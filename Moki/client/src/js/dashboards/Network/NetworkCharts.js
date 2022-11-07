@@ -32,8 +32,7 @@ class NetworkCharts extends Dashboard {
             greylist: [],
             whitelist: [],
             isLoading: true,
-            hostnames: [],
-            dropAlert: []
+            hostnames: []
 
         };
         this.callBacks = {
@@ -81,10 +80,7 @@ class NetworkCharts extends Dashboard {
               [{result: 'greylist', func: parseMultipleLineData}],
 
               //IPS ON FW WHITELIST BY HOST
-              [{result: 'whitelist', func: parseMultipleLineData}],
-
-               //packet drop alert events' counters
-               [{result: 'dropAlert', func: parseMultipleLineData}]
+              [{result: 'whitelist', func: parseMultipleLineData}]
             ]
         };
     }
@@ -180,10 +176,6 @@ class NetworkCharts extends Dashboard {
                         />
                     </div>
 
-                    <div className="col-6 px-1">
-                        <MultipleLineChart id="dropAlert" hostnames={this.state.hostnames} data={this.state.dropAlert} name={"PACKET DROP ALERT COUNTERS"} ticks={3}
-                        />
-                    </div>
                 </div>
             </div>
         );
