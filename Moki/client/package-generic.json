@@ -10,7 +10,6 @@
       "url": "http://www.apache.org/licenses/LICENSE-2.0"
     }
   ],
-  "homepage": ".",
   "dependencies": {
     "@moki-client/es-response-parser": "git+https://git@github.com/intuitivelabs/es-response-parser.git#master",
     "@moki-client/gui": "git+https://git@github.com/intuitivelabs/moki-gui.git#master",
