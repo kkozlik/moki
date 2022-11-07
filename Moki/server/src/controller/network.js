@@ -71,8 +71,6 @@ class networkController extends Controller {
       { index: "collectd*", template: datehistogram_three_agg_query, params: ['attrs.hostname', 'value', 'value', "timebucket"], filter: "tags:collectd AND plugin_instance:greylist" },
       //IPS ON FW WHITELIST BY HOST
       { index: "collectd*", template: datehistogram_three_agg_query, params: ['attrs.hostname', 'value', 'value', "timebucket"], filter: "tags:collectd AND plugin_instance:whitelist" },
-       // packet drop alert events' counters
-       { index: "logstash*", template: datehistogram_three_agg_query, params: ['attrs.hostname', 'attrs.value', 'attrs.value', "timebucket"], filter: "*" }
     ]);
   }
 
