@@ -962,10 +962,46 @@ class SettingController {
 
   //api/monitor/logo
   static loadLogo(request, respond) {
-    const logoPath = request.body.path;
-    const img = fs.readFileSync(logoPath);
-    respond.writeHead(200, { 'Content-Type': 'image/png' });
-    respond.end(img, 'binary');
+    fs.readFile(cfg.fileGUILayout, function (err, defaults) {
+      if (err) {
+        res.status(400).send({
+          msg: "Problem with reading data: " + err
+        });
+        console.error("Problem with reading monitor layout file. " + err);
+      }
+        defaults = JSON.parse(defaults);
+
+        if (defaults.logo) {
+          const img = fs.readFileSync(defaults.logo);
+          respond.writeHead(200, { 'Content-Type': 'image/png' });
+          respond.end(img, 'binary');
+          return;
+        }  
+        else {
+          res.status(400).send({
+            msg: "Problem with getting logo: " + err
+          });
+        }
+    });
+  }
+
+  //api/monitor/logo
+  static loadFavicon(request, respond) {
+    fs.readFile(cfg.fileGUILayout, function (err, defaults) {
+      if (err) {
+        res.status(400).send({
+          msg: "Problem with reading data: " + err
+        });
+        console.error("Problem with reading monitor layout file. " + err);
+      }
+        defaults = JSON.parse(defaults);
+        if (defaults.favicon) {
+          const img = fs.readFileSync(defaults.favicon);
+          respond.writeHead(200, { 'Content-Type': 'image/png' });
+          respond.end(img, 'binary');
+          return;
+        }
+    });
   }
 
   // get hostnames

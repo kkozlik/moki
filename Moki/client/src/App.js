@@ -241,9 +241,9 @@ class App extends Component {
         });
 
         //set favicon
-        this.setState({ logo: "data:;base64," + await this.getLogo(jsonData.logo) },
+        this.setState({ logo: "data:;base64," + await this.getLogo("logo") },
             async () => {
-                document.getElementById("favicon").href = "data:;base64," + await this.getLogo(jsonData.favicon);
+                document.getElementById("favicon").href = "data:;base64," + await this.getLogo("favicon");
 
                 //set main and secondary color
                 document.body.style.setProperty('--main', jsonData.color);
@@ -280,19 +280,21 @@ class App extends Component {
 * @param {path}  path path to logo img
 * @return {base64} return img in base64
 * */
-    async getLogo(path) {
-        var url = BASE_NAME + "/api/monitor/logo";
+    async getLogo(type) {
+        let path = "/api/monitor/favicon";
+        if(type === "logo"){
+            path = "/api/monitor/logo";
+        }
+
+        var url = BASE_NAME + path;
         try {
             const response = await fetch(url, {
-                method: "POST",
+                method: "GET",
                 credentials: 'include',
                 headers: {
                     "Content-Type": "application/json",
                     "Access-Control-Allow-Credentials": "include"
-                },
-                body: JSON.stringify({
-                    "path": path
-                })
+                }
             });
             var logo = await response.arrayBuffer();
             const base64 = btoa(
