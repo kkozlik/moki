@@ -949,14 +949,28 @@ class SettingController {
    *               error: "bash: not found"
    */
   static loadMonitorVersion(request, respond) {
-    return exec(" rpm -q --qf '%{VERSION}-%{RELEASE}\n'  abc-monitor", (error, stdout) => {
-      if (!error) {
-        setMonitorVersion(stdout);
+    fs.readFile("/build_info", 'utf8', function (err, defaults) {
+      if (err) {
+        res.status(400).send({
+          msg: "Problem with reading data from build info: " + err
+        });
+        return;
       }
-      monitorVersion = cfg.monitorVersion;
-      return respond.status(200).send({
-        version: cfg.monitorVersion
-      });
+      let release = defaults.indexOf("RELEASE=");
+      if (release !== -1) {
+        let version = defaults.substring(release + 8, release + 11);
+        setMonitorVersion(version);
+        monitorVersion = cfg.monitorVersion;
+        return respond.status(200).send({
+          version: cfg.monitorVersion
+        });
+      }
+      else {
+        res.status(400).send({
+          msg: "Problem to get monitor version from build info."
+        });
+        return;
+      }
     });
   }
 
@@ -969,19 +983,19 @@ class SettingController {
         });
         console.error("Problem with reading monitor layout file. " + err);
       }
-        defaults = JSON.parse(defaults);
+      defaults = JSON.parse(defaults);
 
-        if (defaults.logo) {
-          const img = fs.readFileSync(defaults.logo);
-          respond.writeHead(200, { 'Content-Type': 'image/png' });
-          respond.end(img, 'binary');
-          return;
-        }  
-        else {
-          res.status(400).send({
-            msg: "Problem with getting logo: " + err
-          });
-        }
+      if (defaults.logo) {
+        const img = fs.readFileSync(defaults.logo);
+        respond.writeHead(200, { 'Content-Type': 'image/png' });
+        respond.end(img, 'binary');
+        return;
+      }
+      else {
+        res.status(400).send({
+          msg: "Problem with getting logo"
+        });
+      }
     });
   }
 
@@ -994,13 +1008,18 @@ class SettingController {
         });
         console.error("Problem with reading monitor layout file. " + err);
       }
-        defaults = JSON.parse(defaults);
-        if (defaults.favicon) {
-          const img = fs.readFileSync(defaults.favicon);
-          respond.writeHead(200, { 'Content-Type': 'image/png' });
-          respond.end(img, 'binary');
-          return;
-        }
+      defaults = JSON.parse(defaults);
+      if (defaults.favicon) {
+        const img = fs.readFileSync(defaults.favicon);
+        respond.writeHead(200, { 'Content-Type': 'image/png' });
+        respond.end(img, 'binary');
+        return;
+      }
+      else {
+        res.status(400).send({
+          msg: "Problem with getting favicon"
+        });
+      }
     });
   }
 
@@ -1073,23 +1092,29 @@ class SettingController {
   */
   static systemStatus(req, res, next) {
     async function search() {
-      const client = connectToES(res);
-      var filter = {
-        index: 'status*',
-        size: 1,
-        "sort": [
-          {
-            "@timestamp": {
-              "order": "desc"
-            }
+      let logstash = "";
+      let elastic = "";
+      //get systemctl status logstash
+      exec("systemctl is-active  logstash", function (error, stdout) {
+        if (!error) {
+          logstash = stdout;
+        } else {
+          logstash = error;
+        }
+
+        exec("systemctl is-active  elasticsearch", function (error, stdout) {
+          if (!error) {
+            elastic = stdout;
+          } else {
+            elastic = error;
           }
-        ],
-        "query": {"bool": {"must": [
-          { "range": { "@timestamp": { "gte": "now-40s", "lte": "now"} }}
-        ]}}
-      };
-      var result = await client.search(filter);
-      return res.json(200, result);
+
+          return res.json({
+            logstash: logstash,
+            elasticsearch: elastic
+          });
+        });
+      });
     }
     return search().catch((e) => {
       return next(e);
