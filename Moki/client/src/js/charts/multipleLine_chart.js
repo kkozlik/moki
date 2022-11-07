@@ -32,12 +32,17 @@ import { setTickNrForTimeXAxis } from "../helpers/chart";
 
 const ABSOLUTE_VALUES = ["BLACKLISTED IPs", "WHITELISTED IPs"];
 const DONT_DISPLAY_OPTION = ["IPS ON FW BLACKLIST BY HOST", "IPS ON FW GREYLIST BY HOST", "IPS ON FW WHITELIST BY HOST", "LOAD-SHORTTERM", "LOAD-MIDTERM", "LOAD-LONGTERM", "MEMORY-FREE", "MEMORY-USED", "MEMORY-CACHED", "MEMORY-BUFFERED", "CPU-USER", "CPU-SYSTEM", "CPU-IDLE"]
+
 export default class MultipleLineChart extends Component {
     constructor(props) {
         super(props);
+        let storedState = localStorage.getItem('multipleLineCharts');
+        if(storedState){
+            storedState = JSON.parse(storedState);
+        }
         this.state = {
             data: [],
-            state: ABSOLUTE_VALUES.includes(this.props.name) ? "rate" : "absolute"
+            state: storedState && storedState[this.props.id] ? storedState[this.props.id] : ABSOLUTE_VALUES.includes(this.props.name) ? "rate" : "absolute"
         }
         this.draw = this.draw.bind(this);
         this.changeState = this.changeState.bind(this);
@@ -104,6 +109,7 @@ export default class MultipleLineChart extends Component {
     }
 
     draw(data, id, ticks, hostnames, state = this.state.state) {
+;
         var field = this.props.field ? this.props.field : "attrs.hostname";
 
         //make div values if necessary
@@ -432,7 +438,16 @@ export default class MultipleLineChart extends Component {
 
     changeState(newState) {
         this.setState({ state: newState }, this.draw(this.props.data, this.props.id, this.props.ticks, this.props.hostnames, newState));
-
+        //store change in localstorage
+        let multipleLineCharts = localStorage.getItem('multipleLineCharts');
+        if(multipleLineCharts){
+            multipleLineCharts = JSON.parse(multipleLineCharts);
+            multipleLineCharts[this.props.id] = newState;
+            localStorage.setItem('multipleLineCharts', JSON.stringify(multipleLineCharts));
+        }
+        else {
+            localStorage.setItem('multipleLineCharts', JSON.stringify({[this.props.id]: newState}));
+        }
     }
 
     render() {
@@ -445,10 +460,10 @@ export default class MultipleLineChart extends Component {
             } <span className="smallText"> (interval: {bucket})</span></h3>
             {this.props.data && this.props.data.length > 0 && !DONT_DISPLAY_OPTION.includes(this.props.name) && 
                 <div style={{ "marginLeft": "83%" }}>
-                    <input type="radio" value="rate" style={{ "width": "34px" }} name={"ratio" + this.props.name} onClick={() => this.changeState("rate")} defaultChecked={ABSOLUTE_VALUES.includes(this.props.name)} />
+                    <input type="radio" value="rate" style={{ "width": "34px" }} name={"ratio" + this.props.name} onClick={() => this.changeState("rate")} defaultChecked={this.state.state === "rate" ? true : false} />
                     rate
                     <br />
-                    <input type="radio" value="absolute" style={{ "width": "34px" }} name={"ratio" + this.props.name} onClick={() => this.changeState("absolute")} defaultChecked={!ABSOLUTE_VALUES.includes(this.props.name)} />
+                    <input type="radio" value="absolute" style={{ "width": "34px" }} name={"ratio" + this.props.name} onClick={() => this.changeState("absolute")} defaultChecked={this.state.state === "absolute" ? true : false} />
                     absolute
                 </div>}
         </div>)
