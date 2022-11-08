@@ -603,6 +603,12 @@ class SettingController {
                         for (let keyFile of m_config) {
                           if (keyFile.attribute === key) {
                             key = JSON.parse(JSON.stringify(keyFile.value));
+                            if(!key || key === ""){
+                                respond.status(400).send({
+                                  "msg": "No key for " + hit.attribute
+                                });
+                                resolve(false);
+                            }
                           }
                         }
                       }
@@ -675,10 +681,7 @@ class SettingController {
                           })
                         }
                         else {
-                          respond.status(400).send({
-                            "msg": "No key for " + hit.attribute
-                          });
-                          resolve(false);
+                          resolve(true);
                         }
                         key = "";
                         cert = "";
