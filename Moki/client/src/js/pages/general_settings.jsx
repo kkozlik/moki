@@ -422,27 +422,32 @@ class Settings extends Component {
                 });
             }
             else {
-                fetch("api/save", {
-                    method: "POST",
-                    body: JSON.stringify({
-                        "app": "m_config",
-                        "attrs": result
-                    }),
-                    credentials: 'include',
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Access-Control-Allow-Credentials": "include"
-                    }
+              
+                    fetch("api/save", {
+                        method: "POST",
+                        body: JSON.stringify({
+                            "app": "m_config",
+                            "attrs": result
+                        }),
+                        credentials: 'include',
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Access-Control-Allow-Credentials": "include"
+                        }
 
-                })
-
-
-                setTimeout(function () {
-                    thiss.setState({
-                        wait: false
+                    }) .then(function() {
+                    }).catch(function() {
+                        //no handlig error needed, nginx will reset connection and client shouldn't expect answer
                     });
 
-                }, 1000);
+
+                    setTimeout(function () {
+                        thiss.setState({
+                            wait: false
+                        });
+
+                    }, 1000);
+                    return;
             }
         }
 
@@ -542,7 +547,7 @@ class Settings extends Component {
 
                                 }
                                 {data[i].type === "file" && data[i].value !== "" && cert ? <span style={{ "fontSize": "0.8rem" }}>{data[i].label}
-                                    { type === "certificate" && <Popup trigger={<img className="icon" alt="detailsIcon" src={detailsIcon} title="details" />} modal>
+                                    {type === "certificate" && <Popup trigger={<img className="icon" alt="detailsIcon" src={detailsIcon} title="details" />} modal>
                                         {close => (
                                             <div className="Advanced">
                                                 <button className="close" onClick={close}>
