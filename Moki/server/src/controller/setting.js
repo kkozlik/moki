@@ -584,6 +584,7 @@ class SettingController {
             defaultsValues = defaultsValues[0].attrs;
             var key = "";
             var cert = "";
+            var keyFormat = "";
             var resolving = true;
 
             //find if cert field is filled
@@ -603,11 +604,22 @@ class SettingController {
                         for (let keyFile of m_config) {
                           if (keyFile.attribute === key) {
                             key = JSON.parse(JSON.stringify(keyFile.value));
-                            if(!key || key === ""){
-                                respond.status(400).send({
-                                  "msg": "No key for " + hit.attribute
-                                });
-                                resolve(false);
+
+
+                            //get key format
+                            for (let defKey of defaultsValues) {
+                              if (defKey.attribute === keyFile.attribute ) {
+                                if (defKey.restriction && defKey.restriction.format) {
+                                  keyFormat = defKey.restriction.format;
+                                }
+                              }
+                            }
+                          
+                            if (!key || key === "") {
+                              respond.status(400).send({
+                                "msg": "No key for " + hit.attribute
+                              });
+                              resolve(false);
                             }
                           }
                         }
@@ -635,9 +647,14 @@ class SettingController {
                           })
                         }
 
+                        let params = ["rsa", "-text", "-noout"];
                         //check key
                         if (key) {
-                          const keyResult = spawn('openssl', ["rsa", "-text", "-noout"]);
+                          if(keyFormat === "PKCS8"){
+                            params = ["pkcs8", "-topk8", "-nocrypt"] 
+                          }
+
+                          const keyResult = spawn('openssl', params);
                           keyResult.stdin.write(key);
                           keyResult.stdin.end();
                           keyResult.stderr.on('data', output => {
