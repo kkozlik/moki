@@ -986,10 +986,9 @@ class SettingController {
         });
       }
       else {
-        res.status(400).send({
-          msg: "Problem to get monitor version from build info."
+        return res.status(200).send({
+          version: ""
         });
-        return;
       }
     });
   }
