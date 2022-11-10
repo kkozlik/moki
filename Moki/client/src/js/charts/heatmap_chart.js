@@ -99,6 +99,7 @@ export default class heatmap extends Component {
 
             rootsvg.append('svg:image')
                 .attr("xlink:href", emptyIcon)
+                .attr("class", "noData")
                 .attr('transform', 'translate(' + (widthSum / 2) + ',25)')
 
         } else {

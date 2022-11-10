@@ -98,6 +98,7 @@ export default class timedateHeatmap extends Component {
 
             rootsvg.append('svg:image')
                 .attr("xlink:href", emptyIcon)
+                .attr("class", "noData")
                 .attr('transform', 'translate(' + width / 2 + ',25)')
 
         } else {

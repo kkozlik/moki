@@ -97,6 +97,7 @@ export default class StackedChartLine extends Component {
         if (data === undefined || data.length === 0) {
             rootsvg
                 .append('svg:image')
+                .attr("class", "noData")
                 .attr("xlink:href", emptyIcon)
                 .attr('transform', 'translate(' + widthChart / 2 + ',' + height / 2 + ')')
         }

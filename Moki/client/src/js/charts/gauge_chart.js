@@ -27,6 +27,7 @@ export default class GaugeChart extends Component {
 
             svg.append('svg:image')
                 .attr("xlink:href", emptyIcon)
+                .attr("class", "noData")
                 .attr('transform', 'translate(' + 0 + ',' + 250 / 2 + ')');
 
         } else {

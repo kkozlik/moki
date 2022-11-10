@@ -129,6 +129,7 @@ export default class geoIpMap extends Component {
             svg.append('svg:image')
                 .attr("xlink:href", emptyIcon)
                 .attr("id", "emptyIconChart")
+                .attr("class", "noData")
                 .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')')
         } else {
 

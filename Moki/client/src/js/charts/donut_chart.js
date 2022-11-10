@@ -127,6 +127,7 @@ export default class StackedChart extends Component {
 
             svg.append('svg:image')
                 .attr("xlink:href", emptyIcon)
+                .attr("class", "noData")
                 .attr('transform', 'translate(' + 150 + ',' + 200 / 2 + ')');
 
             legendSVG = document.getElementById("divLegend" + this.props.id);

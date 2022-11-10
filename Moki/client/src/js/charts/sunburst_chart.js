@@ -64,6 +64,7 @@ export default class sunburst extends Component {
 
             g.append('svg:image')
                 .attr("xlink:href", emptyIcon)
+                .attr("class", "noData")
                 .attr('transform', 'translate(' + svgWidth / 2 + ',30)');
 
         } else {

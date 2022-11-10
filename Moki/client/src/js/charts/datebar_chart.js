@@ -116,6 +116,7 @@ export default class datebarChart extends Component {
         if (data.length === 0) {
             svg.append('svg:image')
                 .attr("xlink:href", emptyIcon)
+                .attr("class", "noData")
                 .attr('transform', 'translate(' + (width - 60) / 2 + ',' + height / 2 + ')')
 
         } else {

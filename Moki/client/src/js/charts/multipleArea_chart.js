@@ -199,6 +199,7 @@ export default class MultipleAreaChart extends Component {
 
             svg.append('svg:image')
                 .attr("xlink:href", emptyIcon)
+                .attr("class", "noData")
                 .attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')')
 
 

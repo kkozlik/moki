@@ -66,6 +66,7 @@ export default class topology extends Component {
 
             g.append('svg:image')
                 .attr("xlink:href", emptyIcon)
+                .attr("class", "noData")
                 .attr('transform', 'translate(' + width / 2 + ',100)')
 
             legendSVG = document.getElementById("divLegend" + this.props.id);

@@ -275,6 +275,7 @@ export default class MultipleLineChart extends Component {
         if (data.length === 0) {
             svg.append('svg:image')
                 .attr("xlink:href", emptyIcon)
+                .attr("class", "noData")
                 .attr('transform', 'translate(' + (width / 3 + 20) + ',' + height / 4 + ')')
 
         } else {
