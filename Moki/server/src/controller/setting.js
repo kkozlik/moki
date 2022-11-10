@@ -968,7 +968,7 @@ class SettingController {
    *             example:
    *               error: "bash: not found"
    */
-  static loadMonitorVersion(request, respond) {
+  static loadMonitorVersion(req, res) {
     fs.readFile("/build_info", 'utf8', function (err, defaults) {
       if (err) {
         res.status(400).send({
@@ -981,7 +981,7 @@ class SettingController {
         let version = defaults.substring(release + 8, release + 11);
         setMonitorVersion(version);
         monitorVersion = cfg.monitorVersion;
-        return respond.status(200).send({
+        return res.status(200).send({
           version: cfg.monitorVersion
         });
       }
@@ -995,7 +995,7 @@ class SettingController {
   }
 
   //api/monitor/logo
-  static loadLogo(request, respond) {
+  static loadLogo(req, res) {
     fs.readFile(cfg.fileGUILayout, function (err, defaults) {
       if (err) {
         res.status(400).send({
@@ -1007,8 +1007,8 @@ class SettingController {
 
       if (defaults.logo) {
         const img = fs.readFileSync(defaults.logo);
-        respond.writeHead(200, { 'Content-Type': 'image/png' });
-        respond.end(img, 'binary');
+        res.writeHead(200, { 'Content-Type': 'image/png' });
+        res.end(img, 'binary');
         return;
       }
       else {
@@ -1020,7 +1020,7 @@ class SettingController {
   }
 
   //api/monitor/logo
-  static loadFavicon(request, respond) {
+  static loadFavicon(req, res) {
     fs.readFile(cfg.fileGUILayout, function (err, defaults) {
       if (err) {
         res.status(400).send({
@@ -1031,8 +1031,8 @@ class SettingController {
       defaults = JSON.parse(defaults);
       if (defaults.favicon) {
         const img = fs.readFileSync(defaults.favicon);
-        respond.writeHead(200, { 'Content-Type': 'image/png' });
-        respond.end(img, 'binary');
+        res.writeHead(200, { 'Content-Type': 'image/png' });
+        res.end(img, 'binary');
         return;
       }
       else {
