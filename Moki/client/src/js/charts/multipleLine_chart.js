@@ -42,7 +42,7 @@ export default class MultipleLineChart extends Component {
         }
         this.state = {
             data: [],
-            state: storedState && storedState[this.props.id] ? storedState[this.props.id] : ABSOLUTE_VALUES.includes(this.props.name) ? "rate" : "absolute"
+            state: storedState && storedState[this.props.id] ? storedState[this.props.id] : ABSOLUTE_VALUES.includes(this.props.name) ? "absolute" : "rate"
         }
         this.draw = this.draw.bind(this);
         this.changeState = this.changeState.bind(this);
