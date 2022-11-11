@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import Popup from "reactjs-popup";
+import { cipherAttr } from '@moki-client/gui';
 import detailsIcon from "../../styles/icons/details.png";
 import TagRanger from "../bars/TagRanger";
 import filterIcon from "../../styles/icons/filter.png";
 import clipboardIcon from "../../styles/icons/clipboard.png";
 import shareIcon from "../../styles/icons/share_dark.png";
 import overviewIcon from "../../styles/icons/alertProfile.png";
+import suppressIcon from "../../styles/icons/suppress.png";
 import unfilterIcon from "../../styles/icons/unfilter.png";
 import alertProfileIcon from "../../styles/icons/alert_profile.png";
 import AlertProfile from "../helpers/alertProfile";
@@ -312,6 +314,54 @@ function getColumnWidth(column, width = 0) {
     }
 }
 
+//IL suppress alert  /api/alertapi/supress?toggle=true&key=37.128.36.211&hmac=a2b87&alertid=TMAA
+async function supressAlert(ob) {
+    let hmac = ob.encrypt;
+    if (hmac && hmac !== "plain") hmac = hmac.substring(0, hmac.indexOf(":"));
+    let profile = storePersistent.getState().profile;
+
+    let key = "";
+    let attr = "";
+    if (ob["exceeded-by"] === "ip") {
+        key =ob.attrs.source;
+        attr = "attrs.source";
+    }
+    else if (ob["exceeded-by"] === "uri") {
+        key = ob.attrs.from;
+        attr = "attrs.from";
+    }
+    else if (ob["exceeded-by"] === "tenant") {
+        key = storePersistent.getState().user.domainID;
+        hmac = "plain";
+    }
+    let keyEncrypted = await cipherAttr(attr, key, profile, "encrypt");
+    let id = ob.alert.alertId;
+
+    let url = "api/alertapi/supress?toggle=true&key=" + keyEncrypted + "&hmac=" + hmac + "&alertid=" + id;
+    try {
+        const response = await fetch(url, {
+            method: "GET",
+            credentials: 'include',
+            headers: {
+                "Content-Type": "application/json",
+                "Access-Control-Allow-Credentials": "include"
+            }
+        });
+        var jsonData = await response.json();
+
+        if (jsonData.statusCode && jsonData.statusCode === 404) {
+            alert(jsonData.statusDescription);
+            return;
+        }
+
+        alert("Next time, you won't see "+ id +" alert for "+key);
+    } catch (error) {
+        console.error(error);
+        alert("Problem with receiving data. " + error);
+        return;
+    }
+}
+
 //copy value in table to clipboard and show msg
 function copyToclipboard(value, id = null) {
     var dummy = document.createElement("textarea");
@@ -534,6 +584,9 @@ function getColumn(column_name, tags, tag, width = 0, hidden = false, dashboard)
                         )}
                     </Popup>
                     }
+                    {(storePersistent.getState().user.aws === true && storePersistent.getState().user.jwt !== 0 && window.location.pathname.includes("/alerts")) &&
+                        <button className="noFormatButton" onClick={() => supressAlert(ob)} data={obj}>  <img className="icon" alt="suppressIcon" src={suppressIcon} title="suppress alert" /></button>
+                    }
                     {(storePersistent.getState().user.aws === true && (window.location.pathname.includes("/exceeded") || window.location.pathname.includes("/alerts")) && (ob["exceeded-by"] === "ip" || ob["exceeded-by"] === "uri")) &&
                         <button className="noFormatButton" onClick={() => window.tableChart.createFilterAndRedirect(ob)} data={obj}>  <img className="icon" alt="overview" src={overviewIcon} title="show records in overview" /></button>
                     }
@@ -547,7 +600,7 @@ function getColumn(column_name, tags, tag, width = 0, hidden = false, dashboard)
                                     <button className="link close" onClick={() => copyToclipboard(JSON.stringify(ob), "Details")} style={{ "position": "absolute", "right": "65px" }}>
                                         <img className="icon" alt="clipboardIcon" src={clipboardIcon} title="copy to clipboard" />
                                     </button>
-                                    <span id={"copyToClipboardTextDetails"} className="copyToClip" style={{"position": "absolute", "right": "22px", "top": "18px" }}>copied to clipboard</span>
+                                    <span id={"copyToClipboardTextDetails"} className="copyToClip" style={{ "position": "absolute", "right": "22px", "top": "18px" }}>copied to clipboard</span>
                                 </span>
                                 <button className="close" onClick={close}>
                                     &times;
