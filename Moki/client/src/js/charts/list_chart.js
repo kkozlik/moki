@@ -9,12 +9,14 @@ import Animation from '../helpers/Animation';
 import CountryFlag from "../helpers/countryFlag";
 import storePersistent from "../store/indexPersistent";
 import clipboardIcon from "../../styles/icons/clipboard.png";
+import { Redirect } from 'react-router';
 
 class TableChart extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: this.props.data
+      data: this.props.data,
+      redirect: false
     }
     this.filter = this.filter.bind(this);
     this.setData = this.setData.bind(this);
@@ -25,6 +27,9 @@ class TableChart extends Component {
     let value = event.currentTarget.getAttribute('value');
     value = value.replace(/([^"\\]*(?:\\.[^"\\]*)*)"/g, '$1\\"');
     createFilter(event.currentTarget.getAttribute('field') + ":\"" + value + "\"");
+    if(this.props.name === "SEVERITY"){
+      this.setState({redirect: true})
+    }
   }
 
 
@@ -96,7 +101,18 @@ class TableChart extends Component {
       else return nmb;
     }
 
-    function shortText(string) {
+    function shortText(string, name) {
+      if(name === "SEVERITY"){
+        if(string === 0){
+          return "high";
+        }
+        else if (string === 1){
+          return "medium";
+        }
+        else {
+          return "low";
+        }
+      }
       if (string.length > 40) {
         return string.substring(0, 40) + '...';
       }
@@ -180,7 +196,7 @@ class TableChart extends Component {
                   <tr key={key}>
                     <td className="filtertd listChart filterToggleActiveWhite" id={item.key} title={item.key} style={{ "width": longestText(this.state.data) * 10 + 150 + "px" }}>
                       {(this.props.name.includes("COUNTRY") || this.props.name.includes("COUNTRIES")) && item.key !== "unknown" && storePersistent.getState().profile[0] && storePersistent.getState().profile[0].mode !== "anonymous" ? <CountryFlag countryCode={item.key} /> : <span />}
-                      {this.encryptedAttr(shortText(item.key))}
+                      {this.encryptedAttr(shortText(item.key, this.props.name))}
                       {this.props.field && <span className="filterToggle">
                         <img onClick={this.filter} field={this.props.field} value={item.key} className="icon" alt="filterIcon" src={filter} />
                         <img field={this.props.field} value={item.key} onClick={this.unfilter} className="icon" alt="unfilterIcon" src={unfilter} />
@@ -202,6 +218,7 @@ class TableChart extends Component {
               </tbody>
             </table>
           }
+          {this.state.redirect && <Redirect push to="/alerts" />}
         </div>
       )
     }

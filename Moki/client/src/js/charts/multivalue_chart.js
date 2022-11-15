@@ -126,6 +126,7 @@ export default class multivalueChart extends Component {
 
         var data = this.state.pagginationData;
         var items = [];
+
         if (data) {
             for (var i = 0; i < data.length; i++) {
                 items.push(<tr key={i}><td className="filterToggleActiveWhite">
@@ -137,44 +138,42 @@ export default class multivalueChart extends Component {
                         <div title={data[i].name} className="table-text-truncate">{data[i].name}</div>
                     </div>
                 </td>
-                    <td className="filtertd text-nowrap" key={"value0" + i}> {niceNumber(data[i].value0)}</td>
-                    <td className="filtertd text-nowrap" key={"value1" + i}>{this.props.name2 === "Minutes" ? durationFormat(data[i].value1) : data[i].value1}</td>
-                    <td className="filtertd text-nowrap" key={"value2" + i}>{niceNumber(data[i].value2)}</td>
-                    <td className="filtertd text-nowrap" key={"value3" + i}>{niceNumber(data[i].value3)}</td>
-                    <td className="filtertd text-nowrap" key={"value4" + i}>{niceNumber(data[i].value4)}</td>
+                    {data[i].values.map((value, i) => {
+                        return <td className="filtertd text-nowrap" key={"value" + i}>{i === 2 && this.props.name2 === "Minutes" ?  durationFormat(value["value" + i]) : niceNumber(value["value" + i])}</td>
+                    })}
                 </tr>
                 )
             }
             if (data.length === 0) {
                 items.push(<tr key={"key"}><td key={"value"}>-</td>
-                    <td className="filtertd" key={"value0"}>0</td>
-                    <td className="filtertd" key={"value1"}>0</td>
-                    <td className="filtertd" key={"value2"}>0</td>
-                    <td className="filtertd" key={"value3"}>0</td>
-                    <td className="filtertd" key={"value4"}>0</td>
+                    {data && data[0] && data[0].values && data[0].values.map((value, i) => {
+                        return <td className="filtertd" key={"value" + i}>0</td>
+                    })}
                 </tr>
                 )
             }
         }
 
+        let columnNames = [];
+        for (let hit of Object.keys(this.props)) {
+            if (hit.includes("name")) {
+                columnNames.push(this.props[hit]);
+            }
+        }
 
         return (
             <div id={this.props.id} style={{ "width": "100%" }} className="chart">
-                <h3 className="alignLeft title">{this.props.name}</h3>
+                <h3 className="alignLeft title">{this.props.title}</h3>
                 <div className="table-margins">
                     <table style={{ "width": "100%" }} className="m-0">
                         <tbody>
                             <tr>
-                                <th><h3 className="text-nowrap">{this.props.name1}<img onClick={this.order} field="name" className="icon" alt="filterIcon" src={sortIcon} /></h3>
-                                </th>
-                                <th><h3 className="text-nowrap">{this.props.name2}<img onClick={this.order} field="value0" className="icon" alt="filterIcon" src={sortIcon} /></h3></th>
-                                <th><h3 className="text-nowrap">{this.props.name3} <img onClick={this.order} field="value1" className="icon" alt="filterIcon" src={sortIcon} /></h3> </th>
-                                <th><h3 className="text-nowrap">{this.props.name4} <img onClick={this.order} field="value2" className="icon" alt="filterIcon" src={sortIcon} /></h3> </th>
-                                <th><h3 className="text-nowrap">{this.props.name5} <img onClick={this.order} field="value3" className="icon" alt="filterIcon" src={sortIcon} /></h3></th>
-                                <th><h3 className="text-nowrap">{this.props.name6} <img onClick={this.order} field="value4" className="icon" alt="filterIcon" src={sortIcon} /></h3></th>
+                                {columnNames.length > 0 && columnNames.map((value, i) => {
+                                    return <th><h3 className="text-nowrap">{value}<img onClick={this.order} field={"value" + i} className="icon" alt="filterIcon" src={sortIcon} /></h3></th>
+                                })}
                             </tr>
                             {items}
-                            { this.state.data && this.state.data.length > 10 && this.createPaggination()}
+                            {this.state.data && this.state.data.length > 10 && this.createPaggination()}
                         </tbody>
                     </table>
                 </div>
