@@ -1,11 +1,14 @@
 const Controller = require('./controller');
 const query_string = require('../../js/template_queries/query_string');
 const agg_sum_bucket_query = require('../../js/template_queries/agg_sum_bucket_query');
+const ratio = require('../../js/template_queries/ratio');
 const agg_query = require('../../js/template_queries/agg_query');
 const datehistogram_query = require('../../js/template_queries/datehistogram_query');
 const datehistogram_agg_query = require('../../js/template_queries/datehistogram_agg_query');
 const distinct_timerange_query_string = require('../../js/template_queries/distinct_timerange_query_string');
 const distinct_query_string = require('../../js/template_queries/distinct_query_string');
+const multiple_query_home = require('../../js/template_queries/multiple_query_home');
+const agg = require('../../js/template_queries/agg');
 
 /**
  * @swagger
@@ -191,10 +194,20 @@ class HomeController extends Controller {
       { index: "exceeded*", template: datehistogram_query, params: ["timebucket", "timestamp_gte", "timestamp_lte"], types: "*", filter: "*" },
       //12 INCIDENT COUNT DAY AGO
       { index: "exceeded*", template: datehistogram_query, params: ["timebucket", "timestamp_gte", "timestamp_lte"], types: "*", filter: "*", timestamp_gte: "- 60 * 60 * 24 * 1000", timestamp_lte: "- 60 * 60 * 24 * 1000" },
-       //DISTINCT IP
-       { index: "logstash*", template: distinct_query_string, params: ["attrs.source"], filter: "*" },
+      //DISTINCT IP
+      { index: "logstash*", template: distinct_query_string, params: ["attrs.source"], filter: "*" },
       //DISTINCT URI
       { index: "logstash*", template: distinct_query_string, params: ["attrs.from.keyword"], filter: "*" },
+      //DOMAINS STATISTICS
+      { index: "polda*", template: multiple_query_home, params: ["attrs.hostname", "blacklisted"], filter: "*", types: "*" },
+      //filtered packets
+      { index: "polda*", template: agg_query, params: ["sum", "pkt_accept"], filter: "*", types: "*" },
+      //ratio blacklisted:processed
+      { index: "polda*", template: ratio, params: ["blacklisted", "hits"], filter: "*", types: "*" },
+      //ratio  whitelisted:processed
+      { index: "polda*", template: ratio, params: ["whitelisted", "hits"], filter: "*", types: "*" },
+      //SEVERITY
+      { index: "exceeded*", template: agg, params: ["severity", "10"], filter: "*" , types: "*"}
     ]);
   }
 }

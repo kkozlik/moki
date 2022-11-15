@@ -156,7 +156,6 @@ export default class multivalueChart extends Component {
 
         let columnNames = [];
         for (let hit of Object.keys(this.props)) {
-            console.log(hit);
             if (hit.includes("name")) {
                 columnNames.push(this.props[hit]);
             }

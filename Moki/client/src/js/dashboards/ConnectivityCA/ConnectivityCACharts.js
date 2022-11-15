@@ -127,7 +127,7 @@ class ConnectivityCACharts extends Dashboard {
               }
                   field="attrs.dst_ca_id"
                   id="statsCA"
-                  name={
+                  title={
                       "DESTINATIONS CAs STATISTICS"
                   }
                   name1={
@@ -155,7 +155,7 @@ class ConnectivityCACharts extends Dashboard {
               }
                   field="attrs.src_ca_id"
                   id="srcStatsCA"
-                  name={
+                  title={
                       "SOURCE CAs STATISTICS"
                   }
                   name1={
