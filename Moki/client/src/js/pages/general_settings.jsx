@@ -4,6 +4,7 @@ import React, {
 import SavingScreen from '../helpers/SavingScreen';
 import isNumber from '../helpers/isNumber';
 import isIP from '../helpers/isIP';
+import isLDAPIP from '../helpers/isLDAPIP';
 import isEmail from '../helpers/isEmail';
 import deleteIcon from "../../styles/icons/delete_grey.png";
 import { elasticsearchConnection } from '@moki-client/gui';
@@ -233,10 +234,10 @@ class Settings extends Component {
             }
 
             if (restriction.type === "ldapIP") {
-                if (/^(ldap(s)?:\/\/)(((\d{1,3}.){3}\d{1,3}(:\d+)?)|(\[([a-f0-9]{1,4}:{1,2}){1,4}([a-f0-9]{1,4})\]:\d+)|((\w|\d)+\.)+(\w)+(:\d+)?|([a-f0-9]{1,4}:{1,2}){1,4}([a-f0-9]{1,4}))$/.test(value)) {
+                if (value === "") return true;
+                else if (isLDAPIP(value)) {
                     return true;
                 }
-                else if (value === "") return true;
                 return "Error: field '" + label + "' must have format 'ldap:// + ipv4 or ipv4:port or ipv6 or ip6:port or dns";
             }
 
