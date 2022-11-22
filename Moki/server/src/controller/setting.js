@@ -969,28 +969,34 @@ class SettingController {
    *               error: "bash: not found"
    */
   static loadMonitorVersion(req, res) {
-    fs.readFile("/build_info", 'utf8', function (err, defaults) {
-      if (err) {
-        res.status(400).send({
-          msg: "Problem with reading data from build info: " + err
-        });
-        return;
-      }
-      let release = defaults.indexOf("RELEASE=");
-      if (release !== -1) {
-        let version = defaults.substring(release + 8, release + 11);
-        setMonitorVersion(version);
-        monitorVersion = cfg.monitorVersion;
-        return res.status(200).send({
-          version: cfg.monitorVersion
-        });
-      }
-      else {
-        return res.status(200).send({
-          version: ""
-        });
-      }
-    });
+    try {
+      fs.readFile("/build_info", 'utf8', function (err, defaults) {
+        if (err) {
+          return res.status(200).send({
+            version: ""
+          });
+        }
+        let release = defaults.indexOf("RELEASE=");
+        if (release !== -1) {
+          let version = defaults.substring(release + 8, release + 11);
+          setMonitorVersion(version);
+          monitorVersion = cfg.monitorVersion;
+          return res.status(200).send({
+            version: cfg.monitorVersion
+          });
+        }
+        else {
+          return res.status(200).send({
+            version: ""
+          });
+        }
+      });
+    }
+    catch (e) {
+      return res.status(200).send({
+        version: ""
+      });
+    }
   }
 
   //api/monitor/logo
