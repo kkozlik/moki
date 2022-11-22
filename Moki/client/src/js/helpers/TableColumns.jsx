@@ -334,7 +334,11 @@ async function supressAlert(ob) {
         key = storePersistent.getState().user.domainID;
         hmac = "plain";
     }
-    let keyEncrypted = await cipherAttr(attr, key, profile, "encrypt");
+
+    let keyEncrypted = key;
+    if(ob.encrypt !== "plain"){
+        keyEncrypted = await cipherAttr(attr, key, profile, "encrypt");
+    }
     let id = ob.alert.alertId;
 
     let url = "api/alertapi/supress?toggle=true&key=" + keyEncrypted + "&hmac=" + hmac + "&alertid=" + id;
