@@ -16,7 +16,9 @@ class TableChart extends Component {
     super(props);
     this.state = {
       data: this.props.data,
-      redirect: false
+      redirect: false,
+      page: 0,
+      pagginationData: []
     }
     this.filter = this.filter.bind(this);
     this.setData = this.setData.bind(this);
@@ -40,15 +42,55 @@ class TableChart extends Component {
     createFilter("NOT " + event.currentTarget.getAttribute('field') + ":\"" + value + "\"");
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.data !== this.state.data) {
-      this.setState({ data: nextProps.data });
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.data !== this.props.data) {
+      //data format: [list, sum]
+      var pagginationData = [];
+      if (this.props.data.length > 0) {
+        pagginationData = [this.props.data[0].slice(0, 10), this.props.data[1]]
+      }
+
+      this.setState({
+        data: this.props.data,
+        pagginationData: pagginationData
+      });
     }
   }
+
 
   setData(data) {
     this.setState({ data: data });
   }
+
+  //change paggination page
+  setPage(i) {
+    i = parseInt(i);
+    i = i-1;
+  //  var pagginationData = i === 1 ? [this.state.data[0].slice(i - 1, i * 10), this.state.data[1]] : [this.state.data[0].slice(i - 1, (i - 1) * 10), this.state.data[1]];
+  var pagginationData =  [this.state.data[0].slice(i *10, i * 10+10), this.state.data[1]] 
+    this.setState({
+      page: i,
+      pagginationData: pagginationData
+
+    })
+  }
+
+  //Create buttons list for paggination
+  createPaggination() {
+    var data = this.state.data[0];
+    if (data) {
+      var pageCount = Math.ceil(data.length / 10);
+      if (pageCount >= 2) {
+        var buttons = [];
+        for (var i = 0; i < pageCount; i++) {
+          buttons.push(<button value={i + 1} key={i + 1} onClick={e => this.setPage(e.target.value)} className={this.state.page === i ? "page-link-active page-link page-link-myPadding " : "page-link page-link-myPadding "}>{i + 1}</button>);
+        }
+        return buttons;
+      }
+
+    }
+  }
+  
 
   encryptedAttr(value) {
     let isEncrypted = false;
@@ -158,9 +200,9 @@ class TableChart extends Component {
         <div className="tableChart chart" >
           <h3 className="alignLeft title" style={{ "float": "inherit" }}>{this.props.name}</h3>
           <Animation display="none" name={this.props.name} type={this.props.type} setData={this.setData} dataAll={this.state.data} autoplay={this.props.autoplay} />
-          {this.state.data[0] && this.state.data[0].length > 0 &&
+          {this.state.pagginationData[0] && this.state.pagginationData[0].length > 0 &&
             <table>
-              <tbody>{data.map((item, key) => {
+                 <tbody>{this.state.pagginationData[0].map((item, key) => {
                 return (
                   <tr key={key} style={{ "height": "30px" }}>
                     <td className="listChart filterToggleActiveWhite" id={item.key} style={{ "borderBottom": "none" }} title={item.key}>
@@ -189,9 +231,9 @@ class TableChart extends Component {
         <div className="tableChart chart chartMinHeight">
           <h3 className="alignLeft title" style={{ "float": isAnimation ? "left" : "inherit" }}>{this.props.name}</h3>
           {isAnimation && <Animation name={this.props.name} type={this.props.type} setData={this.setData} dataAll={this.state.data} />}
-          {this.state.data && this.state.data[0] && this.state.data[0] !== "" && this.state.data[0].length > 0 &&
+          {this.state.pagginationData[0] && this.state.pagginationData[0].length > 0 &&
             <table style={{ "display": "initial" }}>
-              <tbody>{this.state.data[0].map((item, key) => {
+              <tbody>{this.state.pagginationData[0].map((item, key) => {
                 return (
                   <tr key={key}>
                     <td className="filtertd listChart filterToggleActiveWhite" id={item.key} title={item.key} style={{ "width": longestText(this.state.data) * 10 + 150 + "px" }}>
@@ -211,6 +253,7 @@ class TableChart extends Component {
               })}</tbody>
             </table>
           }
+           <div style={{"marginTop": "5px", "marginLeft": "25%", "marginBottom": "5px"}}>{this.createPaggination()}</div>
           {((this.state.data && this.state.data[0] && this.state.data[0].length === 0) || (this.state.data && this.state.data[0] === "")) &&
             <table style={{ "minWidth": "17em" }}>
               <tbody>

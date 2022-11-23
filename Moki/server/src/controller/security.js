@@ -52,17 +52,17 @@ class securityController extends Controller {
       //EVENT SECURITY  TIMELINE
       { index: "logstash*", template: datehistogram_agg_filter_query, params: ["attrs.type", "timebucket"], filter: "*" },
       //EVENTS BY IP ADDR
-      { index: "logstash*", template: agg_filter, params: ['attrs.source', 10], filter: "*" },
+      { index: "logstash*", template: agg_filter, params: ['attrs.source', 128], filter: "*" },
       //TOP SUBNETS /24
-      { index: "logstash*", template: agg_filter, params: ["attrs.sourceSubnets", 10], filter: "*" },
+      { index: "logstash*", template: agg_filter, params: ["attrs.sourceSubnets", 128], filter: "*" },
       //4 EVENTS BY COUNTRY
-      { index: "logstash*", template: agg_filter, params: ['geoip.country_code2', 10], filter: "*" },
+      { index: "logstash*", template: agg_filter, params: ['geoip.country_code2', 128], filter: "*" },
       //5 TYPES
       { index: "logstash*", template: agg_query, params: ["terms", 'attrs.type'], filter: "*" },
       //6 MAP FOR GEOHASH
       { index: "logstash*", template: geoip_hash_query, params: [3], filter: "*" },
        //7 EVENTS BY signature
-       { index: "logstash*", template: agg_filter, params: ['sip.request.sig', 10], filter: "*" },
+       { index: "logstash*", template: agg_filter, params: ['sip.request.sig', 128], filter: "*" },
     ], "security");
   }
 

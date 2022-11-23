@@ -1732,6 +1732,7 @@ input {
     padding: 5px !important;
     color: var(--main);
     line-height: 1;
+    border: 0px solid #dee2e6;
 }
 
 .page-link-myPadding {
