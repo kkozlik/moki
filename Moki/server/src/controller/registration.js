@@ -54,7 +54,7 @@ class registrationController extends Controller {
       //USER-AGENTS IN REG. NEW
       { index: "logstash*", template: agg_filter, params: ['attrs.from-ua', 30], filter: 'attrs.type:reg-new' },
       //TOP REG. EXPIRED
-      { index: "logstash*", template: agg_filter, params: ["attrs.from.keyword", 10], filter: "attrs.type:reg-expired" },
+      { index: "logstash*", template: agg_filter, params: ["attrs.from.keyword", 128], filter: "attrs.type:reg-expired" },
       //TRANSPORT PROTOCOL
       { index: "logstash*", template: agg_filter, params: ['attrs.transport', 30], filter: "*" },
       //PARALLEL REGS
@@ -62,7 +62,7 @@ class registrationController extends Controller {
       //PARALLEL REGS 1 DAY AGO   
       { index: "collectd*", template: distinct_timerange_query_string, params: ["attrs.hostname", "max", "attrs.regs", "timebucket", "timestamp_gte", "timestamp_lte"], filter: "*", timestamp_gte: "- 60 * 60 * 24 * 1000", timestamp_lte: "- 60 * 60 * 24 * 1000", exists: "attrs.regs", types: "*" },
       //ACTUAL REGS  
-      { index: "collectd*", template: two_agg_query, params: ["attrs.hostname", "max", "attrs.regs"], filter: "*", timestamp_gte: "lastTimebucket", exists: "attrs.regs", types: "*" },
+      { index: "collectd*", template: two_agg_query, params: ["attrs.hostname", "max", "attrs.regs", 10], filter: "*", timestamp_gte: "lastTimebucket", exists: "attrs.regs", types: "*" },
       //MAP FOR GEOHASH
       { index: "logstash*", template: geoip_hash_query, params: [3], filter: "*" },
       //TYPES DISTRIBUTIONS

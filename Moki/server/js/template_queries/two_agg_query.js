@@ -2,7 +2,7 @@
 Properties:
 index, timestamp from, timestamp to, type of aggregation, type of subaggregation, search query, types
 */
-var getTemplate = function (agg, agg_type, subagg, queries, supress) {
+var getTemplate = function (agg, agg_type, subagg, size, queries, supress) {
     var template = {
         "size": 0,
         track_total_hits: true,
@@ -20,7 +20,7 @@ var getTemplate = function (agg, agg_type, subagg, queries, supress) {
             "agg": {
                 "terms": {
                     "field": agg,
-                    "size": 10,
+                    "size": size,
                     "order": {
                         "agg": "desc"
                     }

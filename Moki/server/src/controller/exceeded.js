@@ -50,13 +50,13 @@ class exceededController extends Controller {
       //EXCEEDED TYPE
       { index: "exceeded*", template: agg, params: ["exceeded", "50"], filter: "*" },
       //TOP OFFENDERS BY COUNT
-      { index: "exceeded*", template: agg, params: ["attrs.from.keyword", "10"], filter: "*" },
+      { index: "exceeded*", template: agg, params: ["attrs.from.keyword", "128"], filter: "*" },
       //EVENTS BY IP ADDR EXCEEDED 
-      { index: "exceeded*", template: agg, params: ["attrs.source", "10"], filter: "*" },
+      { index: "exceeded*", template: agg, params: ["attrs.source", "128"], filter: "*" },
       //TOP SUBNETS /24 EXCEEDED
-      { index: "exceeded*", template: agg, params: ["attrs.sourceSubnets", "10"], filter: "*" },
+      { index: "exceeded*", template: agg, params: ["attrs.sourceSubnets", "128"], filter: "*" },
       //EXCEEDED TYPE
-      { index: "exceeded*", template: agg, params: ["exceeded-by", "20"], filter: "*" }
+      { index: "exceeded*", template: agg, params: ["exceeded-by", "128"], filter: "*" }
     ], "exceeded");
 
   }

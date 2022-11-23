@@ -45,62 +45,62 @@ class MicronalysisController extends Controller {
 
   static getCharts(req, res, next) {
     super.request(req, res, next, [
-      //TYPES
-      { index: "logstash*", template: agg_query, params: ["terms", 'attrs.type'], filter: "*" },
-      //FROM UA
-      { index: "logstash*", template: agg_query, params: ["terms", "attrs.from-ua"], filter: "*" },
-      //SIP METHOD
-      { index: "logstash*", template: agg_query, params: ["terms", "attrs.method"], filter: "*" },
-      //SIP CODE
-      { index: "logstash*", template: agg_query, params: ["terms", "attrs.sip-code"], filter: "*" },
-      //TOP SUBNETS
-      { index: "logstash*", template: agg_query, params: ["terms", "attrs.sourceSubnets"], filter: "*" },
-      //r-URI PREFIX STRIPPED
-      { index: "logstash*", template: agg_query, params: ["terms", "attrs.r-uri-shorted"], filter: "*" },
-      //SOURCE IP ADDRESS
-      { index: "logstash*", template: agg_query, params: ["terms", "attrs.source"], filter: "*" },
-      //TOP 10 FROM
-      { index: "logstash*", template: agg_query, params: ["terms", "attrs.from.keyword"], filter: "*" },
-      //CALLER DOMAIN
-      { index: "logstash*", template: agg_query, params: ["terms", "attrs.from-domain"], filter: "*" },
-      //TOP 10 TO
-      { index: "logstash*", template: agg_query, params: ["terms", "attrs.to.keyword"], filter: "*" },
-      //DOMAIN STATS
-      { index: "logstash*", template: agg_cardinality, params: ["attrs.from-domain", "attrs.from.keyword"], filter: "*" },
-      //TOP CALL ATTEMPTS
-      { index: "logstash*", template: agg_filter, params: ['attrs.from.keyword', 10], filter: "attrs.type:call-attempt" },
-      //TOP CALL ENDS
-      { index: "logstash*", template: agg_filter, params: ['attrs.from.keyword', 10], filter: "attrs.type:call-end" },
-      //DESTINATION BY R-URI
-      { index: "logstash*", template: agg_filter, params: ['attrs.r-uri.keyword', 10], filter: "attrs.type:call-end OR attrs.type:call-attempt" },
-      //DURATION SUM
-      { index: "logstash*", template: two_agg_query, params: ["attrs.from.keyword", "sum", "attrs.duration"], filter: "attrs.type:call-end" },
-      //MAX SUM
-      { index: "logstash*", template: two_agg_query, params: ["attrs.from.keyword", "max", "attrs.duration"], filter: "attrs.type:call-end" },
-      //TOP DURATION <5
-      { index: "logstash*", template: agg_filter, params: ["attrs.from.keyword", 10], filter: "attrs.duration: [0 TO 5]" },
-      //TOP SBCs LIST
-      { index: "logstash*", template: agg_query, params: ["terms", "attrs.sbc"], filter: "attrs.type:call-end" },
-      //SRC CA
-      { index: "logstash*", template: agg_query, params: ["terms", "attrs.src_ca_id"], filter: "*" },
-      //DST CA
-      { index: "logstash*", template: agg_query, params: ["terms", "attrs.dst_ca_id"], filter: "*" },
-      //ORIGINATOR
-      { index: "logstash*", template: agg_query, params: ["terms", "attrs.originator"], filter: "*" },
-      //DISTINCT IP
+      //0 TYPES
+      { index: "logstash*", template: agg_filter, params: ['attrs.type', 128], filter: "*" },
+      //1 FROM UA
+      { index: "logstash*", template: agg_filter, params: ["attrs.from-ua", 128], filter: "*" },
+      //2 SIP METHOD
+      { index: "logstash*", template: agg_filter, params: ["attrs.method", 128], filter: "*" },
+      //3 SIP CODE
+      { index: "logstash*", template: agg_filter, params: ["attrs.sip-code", 128], filter: "*" },
+      //4 TOP SUBNETS
+      { index: "logstash*", template: agg_filter, params: ["attrs.sourceSubnets", 128], filter: "*" },
+      //5 r-URI PREFIX STRIPPED
+      { index: "logstash*", template: agg_filter, params: [ "attrs.r-uri-shorted", 128], filter: "*" },
+      //6 SOURCE IP ADDRESS
+      { index: "logstash*", template: agg_filter, params: ["attrs.source", 128], filter: "*" },
+      //7 TOP 10 FROM
+      { index: "logstash*", template: agg_filter, params: ["attrs.from.keyword", 128], filter: "*" },
+      //8 CALLER DOMAIN
+      { index: "logstash*", template: agg_filter, params: ["attrs.from-domain", 128], filter: "*" },
+      //9 TOP 10 TO
+      { index: "logstash*", template: agg_filter, params: ["attrs.to.keyword", 128], filter: "*" },
+      //10 DOMAIN STATS
+      { index: "logstash*", template: agg_cardinality, params: ["attrs.from-domain", "attrs.from.keyword", 128], filter: "*" },
+      //11 TOP CALL ATTEMPTS
+      { index: "logstash*", template: agg_filter, params: ['attrs.from.keyword', 128], filter: "attrs.type:call-attempt" },
+      //12 TOP CALL ENDS
+      { index: "logstash*", template: agg_filter, params: ['attrs.from.keyword', 128], filter: "attrs.type:call-end" },
+      //13 DESTINATION BY R-URI
+      { index: "logstash*", template: agg_filter, params: ['attrs.r-uri.keyword', 128], filter: "attrs.type:call-end OR attrs.type:call-attempt" },
+      //14 DURATION SUM
+      { index: "logstash*", template: two_agg_query, params: ["attrs.from.keyword", "sum", "attrs.duration", 128], filter: "attrs.type:call-end" },
+      //15 MAX SUM
+      { index: "logstash*", template: two_agg_query, params: ["attrs.from.keyword", "max", "attrs.duration", 128], filter: "attrs.type:call-end" },
+      //16 TOP DURATION <5
+      { index: "logstash*", template: agg_filter, params: ["attrs.from.keyword", 128], filter: "attrs.duration: [0 TO 5]" },
+      //17 TOP SBCs LIST
+      { index: "logstash*", template: agg_filter, params: ["attrs.sbc", 128], filter: "attrs.type:call-end" },
+      //18 SRC CA
+      { index: "logstash*", template: agg_filter, params: ["attrs.src_ca_id", 128], filter: "*" },
+      //19 DST CA
+      { index: "logstash*", template: agg_filter, params: [ "attrs.dst_ca_id", 128], filter: "*" },
+      //20 ORIGINATOR
+      { index: "logstash*", template: agg_filter, params: [ "attrs.originator", 128], filter: "*" },
+      //21 DISTINCT IP
       { index: "logstash*", template: distinct_query_string, params: ["attrs.source"], filter: "*" },
-      //TOP NODEs LIST
-      { index: "logstash*", template: agg_query, params: ["terms", "agent.hostname"], filter: "*" },
-      //SIP VERSION
-      { index: "logstash*", template: agg_query, params: ["terms", "agent.version"], filter: "*" },
-      //DISTINCT URI
+      //22 TOP NODEs LIST
+      { index: "logstash*", template: agg_filter, params: ["agent.hostname", 128], filter: "*" },
+      //23 SIP VERSION
+      { index: "logstash*", template: agg_filter, params: ["agent.version", 128], filter: "*" },
+      //24 DISTINCT URI
       { index: "logstash*", template: distinct_query_string, params: ["attrs.from.keyword"], filter: "*" },
-      //CALLING COUNTRIES
-      { index: "logstash*", template: agg_query, params: ["terms", "geoip.country_code2"], filter: "*" },
-      //TOP SERVER IP
-      { index: "logstash*", template: agg_query, params: ["terms", "server.ip"], filter: "*" },
-	//DURATION GROUP
-      { index: "logstash*", template: agg_query, params: ["terms", "attrs.durationGroup"], filter: "*" },
+      //25 CALLING COUNTRIES
+      { index: "logstash*", template: agg_filter, params: [ "geoip.country_code2", 128], filter: "*" },
+      //26 TOP SERVER IP
+      { index: "logstash*", template: agg_filter, params: ["server.ip", 128], filter: "*" },
+      //27 DURATION GROUP
+      { index: "logstash*", template: agg_filter, params: ["attrs.durationGroup", 128], filter: "*" },
     ], "microanalysis");
   }
 

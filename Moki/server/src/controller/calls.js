@@ -66,7 +66,7 @@ class CallsController extends Controller {
       //ANSWER-SEIZURE RATIO
       { index: "logstash*", template: agg_sum_bucket_query, params: ["CallEnd", "AnsweredCalls"], filter: "*" },
       //CALLING COUNTRIES
-      { index: "logstash*", template: agg_query, params: ["terms", "geoip.country_code2"], filter: "*" },
+      { index: "logstash*", template: agg_filter, params: ["geoip.country_code2", 128], filter: "*" },
       //SUM DURATION OVER TIME
       { index: "logstash*", template: date_bar, params: ["attrs.duration", "timebucket"], filter: "*" },
       //MAX DURATION
@@ -78,9 +78,9 @@ class CallsController extends Controller {
       //DURATION GROUP
       { index: "logstash*", template: agg_query, params: ["terms", "attrs.durationGroup"], filter: "*" },
       //SIP-CODE COUNT
-      { index: "logstash*", template: agg_query, params: ["terms", "attrs.sip-code"], filter: "*" },
+      { index: "logstash*", template: agg_filter, params: [ "attrs.sip-code", 128], filter: "*" },
       //CALLED COUNTIRES
-      { index: "logstash*", template: agg_query, params: ["terms", "attrs.tst_cc"], filter: "*" },
+      { index: "logstash*", template: agg_filter, params: ["attrs.tst_cc", 128], filter: "*" },
       //EVENT CALLS TIMELINE
       { index: "logstash*", template: datehistogram_agg_filter_query, params: ["attrs.type", "timebucket"], filter: "*" },
       //EVENT CALLS TIMELINE

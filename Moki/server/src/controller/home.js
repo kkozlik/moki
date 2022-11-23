@@ -195,9 +195,9 @@ class HomeController extends Controller {
       //12 INCIDENT COUNT DAY AGO
       { index: "exceeded*", template: datehistogram_query, params: ["timebucket", "timestamp_gte", "timestamp_lte"], types: "*", filter: "*", timestamp_gte: "- 60 * 60 * 24 * 1000", timestamp_lte: "- 60 * 60 * 24 * 1000" },
       //DISTINCT IP
-      { index: "logstash*", template: distinct_query_string, params: ["attrs.source"], filter: "*" },
+      { index: "logstash*", template: distinct_query_string, params: ["attrs.source", 128], filter: "*" },
       //DISTINCT URI
-      { index: "logstash*", template: distinct_query_string, params: ["attrs.from.keyword"], filter: "*" },
+      { index: "logstash*", template: distinct_query_string, params: ["attrs.from.keyword", 128], filter: "*" },
       //DOMAINS STATISTICS
       { index: "polda*", template: multiple_query_home, params: ["attrs.hostname", "blacklisted"], filter: "*", types: "*" },
       //filtered packets
