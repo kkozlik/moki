@@ -18,12 +18,13 @@ var getTemplate = function ( field, agg_type,  timebucket, queries, supress) {
                     "field": "@timestamp",
                     "fixed_interval": timebucket,
                     "time_zone": "Europe/Berlin",
-                    "min_doc_count": 1
+                    "min_doc_count": 0
                 },
                 "aggs": {
                     "agg": {
                         [agg_type]: {
-                            "field": field
+                            "field": field,
+                            "size": 50
                         }
                     }
                 }
