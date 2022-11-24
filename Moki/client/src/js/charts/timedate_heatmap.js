@@ -82,7 +82,7 @@ export default class timedateHeatmap extends Component {
 
         var parseDate = parseTimestampD3js(store.getState().timerange[0], store.getState().timerange[1]);
 
-        const buckets = 5;
+        const buckets = 8;
         colorScale = d3.scaleQuantile()
             .domain([0, buckets - 1, d3.max(data, (d) => d.value)])
             .range(colorOneShade)
