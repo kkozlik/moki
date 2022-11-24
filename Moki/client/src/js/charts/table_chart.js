@@ -28,7 +28,7 @@ import { downloadPcap } from '../helpers/download/downloadPcap';
 import { downloadSD } from '../helpers/download/downloadSD';
 import { tableColumns } from '../helpers/TableColumns';
 import { getPcap } from '../helpers/getPcap.js';
-import { setFilters } from "../actions/index";
+import { setFilters} from "../actions/index";
 import { downloadPcapMerged } from '../helpers/download/downloadPcapMerged';
 import { parseTimestamp } from "../helpers/parseTimestamp";
 import { decryptTableHits, decryptAttr } from '@moki-client/es-response-parser';
@@ -164,7 +164,7 @@ export default class listChart extends Component {
 
     //create exceeded-by filter and redirect to overview
     createFilterAndRedirect(obj) {
-        if (obj["exceeded-by"] !== "tenant") {
+        if (obj.alert && obj.alert.elasticFilter) {
             //disable old filters
             var oldFilters = store.getState().filters;
             if (oldFilters.length > 0) {
@@ -173,17 +173,29 @@ export default class listChart extends Component {
                 }
                 store.dispatch(setFilters(oldFilters));
             }
-            //create new filter
-            if (obj["exceeded-by"] === "uri") {
-                createFilter("attrs.from.keyword:\"" + obj.attrs.from + "\"");
+            //create new filter for types
+            if (obj.alert.elasticFilter.gui.types && obj.alert.elasticFilter.gui.types.query_string.query) {
+                createFilter(obj.alert.elasticFilter.gui.types.query_string.query);
             }
-            else if (obj["exceeded-by"] === "ip") {
-                createFilter("attrs.source:\"" + obj.attrs.source + "\"");
-            }
-            /* else if(obj["exceeded-by"] === "tenant"){
-                 createFilter("attrs.source:" + attrs.source);
-             }*/
 
+            //filters
+            if (obj.alert.elasticFilter.gui.lucene && obj.alert.elasticFilter.gui.lucene.length > 0) {
+                for (let hit of obj.alert.elasticFilter.gui.lucene) {
+                    createFilter(hit);
+                }
+            }
+
+            //timerange
+            let timerange_gte = store.getState().timerange[0];
+            let timerange_lte = store.getState().timerange[1];
+            if (obj.alert.elasticFilter.gui.timerange_gte && obj.alert.elasticFilter.gui.timerange_gte !== null) {
+                timerange_gte = obj.alert.elasticFilter.gui.timerange_gte;
+            }
+
+            if (obj.alert.elasticFilter.gui.timerange_lte && obj.alert.elasticFilter.gui.timerange_lte !== null) {
+                timerange_lte = obj.alert.elasticFilter.gui.timerange_lte;
+            }
+            window.timebar.changeTimerange(timerange_gte, timerange_lte);
             this.setState({ redirect: true });
         }
     }

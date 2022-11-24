@@ -591,7 +591,7 @@ function getColumn(column_name, tags, tag, width = 0, hidden = false, dashboard)
                     {(storePersistent.getState().user.aws === true && storePersistent.getState().user.jwt !== 0 && window.location.pathname.includes("/alerts")) &&
                         <button className="noFormatButton" onClick={() => supressAlert(ob)} data={obj}>  <img className="icon" alt="suppressIcon" src={suppressIcon} title="suppress alert" /></button>
                     }
-                    {(storePersistent.getState().user.aws === true && (window.location.pathname.includes("/exceeded") || window.location.pathname.includes("/alerts")) && (ob["exceeded-by"] === "ip" || ob["exceeded-by"] === "uri")) &&
+                    {storePersistent.getState().user.aws === true && (window.location.pathname.includes("/exceeded") || window.location.pathname.includes("/alerts")) &&
                         <button className="noFormatButton" onClick={() => window.tableChart.createFilterAndRedirect(ob)} data={obj}>  <img className="icon" alt="overview" src={overviewIcon} title="show records in overview" /></button>
                     }
                     {column_name.icons.includes("details") && <Popup trigger={<img className="icon" alt="detailsIcon" src={detailsIcon} title="details" />} modal>
