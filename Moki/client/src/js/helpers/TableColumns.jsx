@@ -320,24 +320,15 @@ async function supressAlert(ob) {
     if (hmac && hmac !== "plain") hmac = hmac.substring(0, hmac.indexOf(":"));
     let profile = storePersistent.getState().profile;
 
-    let key = "";
-    let attr = "";
-    if (ob["exceeded-by"] === "ip") {
-        key =ob.attrs.source;
-        attr = "attrs.source";
+    let key = ob.alert.key.origval;
+    if (ob.alert.key.encrypt === "encrypt") {
+        key = await cipherAttr(ob.alert.key.attrName, ob.alert.key.origval, profile, "encrypt");
     }
-    else if (ob["exceeded-by"] === "uri") {
-        key = ob.attrs.from;
-        attr = "attrs.from";
-    }
-    else if (ob["exceeded-by"] === "tenant") {
-        key = storePersistent.getState().user.domainID;
-        hmac = "plain";
-    }
-    let keyEncrypted = await cipherAttr(attr, key, profile, "encrypt");
+ 
     let id = ob.alert.alertId;
 
-    let url = "api/alertapi/supress?toggle=true&key=" + keyEncrypted + "&hmac=" + hmac + "&alertid=" + id;
+    let url = "api/alertapi/supress?toggle=true&key=" + key + "&hmac=" + hmac + "&alertid=" + id;
+    
     try {
         const response = await fetch(url, {
             method: "GET",
