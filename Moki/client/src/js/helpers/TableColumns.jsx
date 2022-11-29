@@ -316,19 +316,9 @@ function getColumnWidth(column, width = 0) {
 
 //IL suppress alert  /api/alertapi/supress?toggle=true&key=37.128.36.211&hmac=a2b87&alertid=TMAA
 async function supressAlert(ob) {
-    let hmac = ob.encrypt;
-    if (hmac && hmac !== "plain") hmac = hmac.substring(0, hmac.indexOf(":"));
-    let profile = storePersistent.getState().profile;
-
-    let key = ob.alert.key.origval;
-    if (ob.alert.key.encrypt === "encrypt") {
-        key = await cipherAttr(ob.alert.key.attrName, ob.alert.key.origval, profile, "encrypt");
-    }
- 
     let id = ob.alert.alertId;
+    let url = "api/alertapi/supress?keyRef=" + ob.alert.key.keyRef + "&toggle=false&alertid="+id;
 
-    let url = "api/alertapi/supress?toggle=true&key=" + key + "&hmac=" + hmac + "&alertid=" + id;
-    
     try {
         const response = await fetch(url, {
             method: "GET",
@@ -345,7 +335,7 @@ async function supressAlert(ob) {
             return;
         }
 
-        alert("Next time, you won't see "+ id +" alert for "+key);
+        alert("Next time, you won't see " + ob.alert.key.attrName + " alert for " + ob.alert.key.value);
     } catch (error) {
         console.error(error);
         alert("Problem with receiving data. " + error);

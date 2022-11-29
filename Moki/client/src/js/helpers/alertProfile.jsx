@@ -2,7 +2,7 @@ import { Component } from 'react';
 import { parseTimestamp } from "./parseTimestamp";
 import storePersistent from "../store/indexPersistent";
 import { cipherAttr } from '@moki-client/gui';
-const DATEFORMATS = ["lastModified", "created", "lastLogin", "lastExceeded", "ts", "lastRaised", "lastLaunchedTimer", "lastRaisedTS", "lastExceededTS", "timestamp"];
+const DATEFORMATS = ["lastModified", "created", "lastLogin", "lastExceeded", "ts", "lastRaised", "lastLaunchedTimer", "lastRaisedTS", "lastExceededTS", "timestamp", "lastTimerTS", "lastExpired", "lastReceivedTimer"];
 
 class AlertProfile extends Component {
     constructor(props) {
@@ -46,31 +46,7 @@ class AlertProfile extends Component {
     }
 
     async resetProfile() {
-        let hmac = this.state.data.encrypt;
-        if (hmac && hmac !== "plain") hmac = hmac.substring(0, hmac.indexOf(":"));
-
-        let list = "";
-        let key = "";
-        let attr = "";
-        if (this.state.data["exceeded-by"] === "ip") {
-            list = "ipprofile";
-            key = this.state.data.attrs.source;
-            attr = "attrs.source";
-        }
-        else if (this.state.data["exceeded-by"] === "uri") {
-            list = "uriprofile";
-            key = this.state.data.attrs.from;
-            attr = "attrs.from";
-        }
-        else if (this.state.data["exceeded-by"] === "tenant") {
-            list = "tenantprofile";
-            key = storePersistent.getState().user.domainID;
-            hmac = "plain";
-        }
-
-        let profile = storePersistent.getState().profile;
-        key = await cipherAttr(attr, key, profile, "encrypt");
-        await this.get("api/bw/delete?key=" + key + "&list=" + list + "&hmac=" + hmac);
+        await this.get("api/alertapi/rmprofile?keyRef=" + this.state.data.alert.key.keyRef);
         this.setState({
             data: [],
             result: []
@@ -79,38 +55,16 @@ class AlertProfile extends Component {
 
     async load() {
         let result = null;
-        //let hmac = window.localStorage.HMAC_SHA_256_KEY ? window.localStorage.HMAC_SHA_256_KEY : "plain";
-        //if (hmac !== "plain") hmac = hmac.substring(0, hmac.indexOf(":"));
-        let hmac = this.state.data.encrypt;
-        if (hmac && hmac !== "plain") hmac = hmac.substring(0, hmac.indexOf(":"));
         let profile = storePersistent.getState().profile;
-
-        if (this.state.data["exceeded-by"] === "ip") {
-            let key = await cipherAttr("attrs.source", this.state.data.attrs.source, profile, "encrypt");
-            result = await this.get("api/bw/getip?key=" + key + "&list=ipprofile&hmac=" + hmac + "&pretty=true");
+        if (this.state.data.alert && this.state.data.alert.key && this.state.data.alert.key.keyRef) {
+            result = await this.get("api/alertapi/getprofile?keyRef=" + this.state.data.alert.key.keyRef);
         }
-        else if (this.state.data["exceeded-by"] === "uri") {
-            let key = await cipherAttr("attrs.from", this.state.data.attrs.from, profile, "encrypt");
-            result = await this.get("api/bw/geturi?key=" + key + "&list=uriprofile&hmac=" + hmac + "&pretty=true");
+        //add exceeded name from settings
+        if (!result || (result && result.statusCode)) {
+            this.close();
         }
         else {
-            //check if custom profile or not
-            if (this.state.data["exceeded-by"].startsWith("cstm_")) {
-                //.key.value should be taken and split in everything before the first occurrence of _ to become list and everything after to become key
-                if (this.state.data.alertv3) {
-                    let data = JSON.parse(this.state.data.alertv3).key.value;
-                    let list = data.substring(0, data.indexOf("_"));
-                    let key = data.substring(data.indexOf("_") + 1, data.length);
-                    result = await this.get("api/bw/getcustomprofile?pretty=true&key=" + key + "&list=" + list + "&hmac=" + hmac);
-                }
-            }
-            else {
-                result = await this.get("api/bw/gettenantprofile?pretty=true");
-            }
-        }
 
-        //add exceeded name from settings
-        if (result && result.statusCode !== 400) {
             if (storePersistent.getState().layout.types.exceeded) {
                 for (let item of Object.keys(result.Item)) {
                     for (let template of storePersistent.getState().layout.types.exceeded) {
@@ -248,11 +202,11 @@ class AlertProfile extends Component {
     render() {
         return (
             <div className="row no-gutters" >
+                <div onClick={() => this.close()} style={{ "cursor": "pointer", "marginLeft": "97%" }}>X</div>
                 <div style={{ "marginRight": "5px", "marginTop": "20px" }} className="preStyle">
                     {this.renderAlertProfile(this.state.result)}
                     {(this.state.result !== null && Object.keys(this.state.result).length !== 0) && <button className="btn btn-secondary" style={{ "float": "right" }} onClick={() => this.resetProfile()}>Reset</button>}
                 </div>
-                <div onClick={() => this.close()} style={{ "cursor": "pointer" }}>X</div>
             </div>
         )
     }
