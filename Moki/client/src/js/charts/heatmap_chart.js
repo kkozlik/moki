@@ -181,6 +181,9 @@ export default class heatmap extends Component {
                 .attr('x', function (d) {
                     return xScale(d.attr1);
                 })
+                .attr('value', function (d) {
+                    return d.value;
+                })
                 .attr('fill', function (d) {
                     if (name === "CONNECTION FAILURE RATIO CA") {
                         if (d.value <= 10) { return "#1a321a" }

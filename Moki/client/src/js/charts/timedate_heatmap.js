@@ -202,6 +202,9 @@ export default class timedateHeatmap extends Component {
                 .attr('y', function (d) {
                     return yScale(d.attr2);
                 })
+                .attr('value', function (d) {
+                    return d.value;
+                })
                 .attr('x', function (d) {
                     if (xScale(d.attr1) - cellSize / 2 < 0) {
                         return -1000;
