@@ -103,7 +103,7 @@ class timerangeBar extends Component {
         this.toggleMenu = this.toggleMenu.bind(this);
         store.subscribe(() => this.rerenderTimerange());
 
-
+        window.timebar = this;
         var parameters = window.location.search;
         if (parameters) {
             var refreshTime = parameters.indexOf("refresh=") !== -1 ? parseInt(parameters.substring(parameters.indexOf("refresh=") + 8)) : 0;
