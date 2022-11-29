@@ -210,7 +210,7 @@ class Notificationbar extends Component {
                 <div className="row" >
                     {window.location.pathname !== "/monitoring" && <div className={this.props.className}>  {this.state.notifications.map((notification, i) => {
                         return <div key={i} style={notification.level === "error" ? { "backgroundColor": "#FD3031", "padding": "10px", "border": "0.05rem solid" } : notification.level === "warning" ? { "backgroundColor": "#FEBD02", "padding": "10px", "border": "0.05rem solid" } : { "backgroundColor": "#34C15D", "padding": "10px", "border": "0.05rem solid" }}>
-                            <img className="icon" alt="icon" src={notification.level === "error" ? errorIcon : notification.level === "warning" ? warningIcon : infoIcon} />
+                            <img className="icon" alt="icon" src={notification.level === "error" ? warningIcon : notification.level === "warning" ? warningIcon : infoIcon} />
                             <span onClick={() => this.setState({ "redirect": true })} style={{ "cursor": "pointer", "paddingLeft": "25px" }}>{notification.text}</span>
                             {notification.level !== "error" && <button style={{ "float": "right", "marginRight": "20px", "color": "white", "fontSize": "25px" }} className="closeButton" onClick={() => this.remove(notification.errno)}>&times;</button>}
                         </div>

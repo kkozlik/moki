@@ -1121,16 +1121,13 @@ class SettingController {
       var filter = {
         index: 'status*',
         size: 1,
-        "sort": [
-          {
-            "timestamp": {
-              "order": "desc"
-            }
+        "query": {
+          "bool": {
+            "must": [
+              { "range": { "@timestamp": { "gte": "now-40s", "lte": "now" } } }
+            ]
           }
-        ],
-        "query": {"bool": {"must": [
-          { "range": { "clock": { "gte": "now-40s", "lte": "now"} }}
-        ]}}
+        }
       };
       var result = await client.search(filter);
       return res.json(200, result);
