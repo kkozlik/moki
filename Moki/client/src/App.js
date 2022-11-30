@@ -164,7 +164,7 @@ class App extends Component {
         if (res !== "ok") {
             //this.showError(JSON.stringify(res));
         }
-        
+
         //store layout
         var jsonData = await getLayoutSettings();
         storePersistent.dispatch(setLayout(jsonData));
@@ -540,6 +540,7 @@ class App extends Component {
         var loadingScreen = <span>
             <Notificationbar className="errorBarLoading"></Notificationbar>
             <div style={{ "marginTop": (window.innerHeight / 2) - 50 }} className=" align-items-center justify-content-center">
+                {!this.state.logo && <div style={{ "marginLeft": "42%", "marginBottom": "15px", "fontSize": "2.75rem", "color": "gray" }}>MONITOR</div>}
                 <div className="loaderr">
                     <div className="bar"></div>
                 </div>
