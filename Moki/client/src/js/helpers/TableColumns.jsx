@@ -569,7 +569,7 @@ function getColumn(column_name, tags, tag, width = 0, hidden = false, dashboard)
                         <button className="noFormatButton" onClick={() => supressAlert(ob)} data={obj}>  <img className="icon" alt="suppressIcon" src={suppressIcon} title="suppress alert" /></button>
                     }
                     {storePersistent.getState().user.aws === true && (window.location.pathname.includes("/exceeded") || window.location.pathname.includes("/alerts")) &&
-                        <button className="noFormatButton" onClick={() => window.tableChart.createFilterAndRedirect(ob)} data={obj}>  <img className="icon" alt="overview" src={overviewIcon} title="show records in overview" /></button>
+                        <button className="noFormatButton" onClick={() => window.tableChart.createFilterAndRedirect(obj)} data={obj}>  <img className="icon" alt="overview" src={overviewIcon} title="show records in cause analysis" /></button>
                     }
                     {column_name.icons.includes("details") && <Popup trigger={<img className="icon" alt="detailsIcon" src={detailsIcon} title="details" />} modal>
                         {close => (

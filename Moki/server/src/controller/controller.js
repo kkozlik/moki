@@ -258,6 +258,7 @@ class Controller {
       const client = connectToES();
       let filters = getFiltersConcat(req.body.filters);
       let types = req.body.types;
+      let req_index = req.body.index;
       const querySize = req.body.params && req.body.params.size ? req.body.params.size : 500;
       if (cfg.debug) console.info("----------------------TABLE DATA SEARCH-------------------------");
 
@@ -277,6 +278,10 @@ class Controller {
 
       if (requests.index === "report*") {
         types = "*";
+      }
+
+      if(req_index){
+        requests.index = req_index;
       }
 
       if (req.url.includes("network") || req.url.includes("system") || req.url.includes("realm")) {
