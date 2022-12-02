@@ -63,8 +63,8 @@ class ConnectivityCharts extends Dashboard {
                             300
                         }
                         units={"count"}
-                        field1={"attrs.from"}
-                        field2={"attrs.to"}
+                        field1={"attrs.from.keyword"}
+                        field2={"attrs.to.keyword"}
                         id="topologyChart"
                     />  </div>
 
@@ -87,10 +87,10 @@ class ConnectivityCharts extends Dashboard {
                             store.getState().width - 300
                         }
                         field2={
-                            "attrs.from"
+                            "attrs.from.keyword"
                         }
                         field={
-                            "attrs.to"
+                            "attrs.to.keyword"
                         }
                     />  </div> <div className="col" >
                     <Heatmap data={
@@ -107,11 +107,11 @@ class ConnectivityCharts extends Dashboard {
                             store.getState().width - 300
                         }
                         field2={
-                            "attrs.to"
+                            "attrs.to.keyword"
                         }
                         units={"%"}
                         field={
-                            "attrs.from"
+                            "attrs.from.keyword"
                         }
                         marginBottom={
                             250
@@ -134,10 +134,10 @@ class ConnectivityCharts extends Dashboard {
                             250
                         }
                         field={
-                            "attrs.to"
+                            "attrs.to.keyword"
                         }
                         field2={
-                            "attrs.from"
+                            "attrs.from.keyword"
                         }
                         units={"count"}
                     />  </div> <div className="col" >
@@ -158,10 +158,10 @@ class ConnectivityCharts extends Dashboard {
                             250
                         }
                         field={
-                            "attrs.to"
+                            "attrs.to.keyword"
                         }
                         field2={
-                            "attrs.from"
+                            "attrs.from.keyword"
                         }
                     />  </div> </div> </div>
         );
