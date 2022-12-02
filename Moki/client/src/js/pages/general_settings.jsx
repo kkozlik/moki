@@ -11,6 +11,7 @@ import { elasticsearchConnection } from '@moki-client/gui';
 import storePersistent from "../store/indexPersistent";
 import Popup from "reactjs-popup";
 import detailsIcon from "../../styles/icons/details.png";
+import { setSettings } from "../actions/index";
 
 class Certificate extends Component {
     constructor(props) {
@@ -301,6 +302,16 @@ class Settings extends Component {
                         ldapChange = true;
                     }
                 }
+
+                //check if previous was enabled, show alert
+                if (jsonData[i].attribute === "disable_alarms") {
+                    let workers =  document.getElementById("logstash_workers");
+                    if (data.checked === false && jsonData[i].value === true && workers.value !== 1) {
+                        alert("Set logstash workers to 1.");
+                        workers.scrollIntoView();
+                        return;
+                    }
+                }
             }
 
             if (auth_dis === true && ldap_enable === false) {
@@ -408,8 +419,9 @@ class Settings extends Component {
                                 }
                             })
                         });
-                        let settings = storePersistent.getState().settings;
+                        let settings = JSON.parse(JSON.stringify(storePersistent.getState().settings));
                         settings[0] = { app: "m_config", attrs: jsonData };
+                        storePersistent.dispatch(setSettings(settings));
                     }
                     return response.json();
                 }).then(function (responseData) {
@@ -423,32 +435,32 @@ class Settings extends Component {
                 });
             }
             else {
-              
-                    fetch("api/save", {
-                        method: "POST",
-                        body: JSON.stringify({
-                            "app": "m_config",
-                            "attrs": result
-                        }),
-                        credentials: 'include',
-                        headers: {
-                            "Content-Type": "application/json",
-                            "Access-Control-Allow-Credentials": "include"
-                        }
 
-                    }) .then(function() {
-                    }).catch(function() {
-                        //no handlig error needed, nginx will reset connection and client shouldn't expect answer
+                fetch("api/save", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        "app": "m_config",
+                        "attrs": result
+                    }),
+                    credentials: 'include',
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Access-Control-Allow-Credentials": "include"
+                    }
+
+                }).then(function () {
+                }).catch(function () {
+                    //no handlig error needed, nginx will reset connection and client shouldn't expect answer
+                });
+
+
+                setTimeout(function () {
+                    thiss.setState({
+                        wait: false
                     });
 
-
-                    setTimeout(function () {
-                        thiss.setState({
-                            wait: false
-                        });
-
-                    }, 1000);
-                    return;
+                }, 1000);
+                return;
             }
         }
 
@@ -634,6 +646,7 @@ class Settings extends Component {
         var LE = [];
         var Events = [];
         var Auth = [];
+        var Alarms = [];
 
         //separate type
         for (var i = 0; i < data.length; i++) {
@@ -646,6 +659,9 @@ class Settings extends Component {
             } else if (data[i].category === "Events") {
                 Events.push(data[i]);
             }
+            else if (data[i].category === "Alarms") {
+                Alarms.push(data[i]);
+            }
             else if (data[i].category === "Authentication") {
                 Auth.push(data[i]);
             }
@@ -656,12 +672,14 @@ class Settings extends Component {
         var LEdata = this.generate(LE);
         var Eventsdata = this.generate(Events);
         var Authdata = this.generate(Auth);
+        var Alarmsdata = this.generate(Alarms);
         //        var Tagdata = this.generateTags();
 
 
         return (<div className="container-fluid" > {this.state.wait && < SavingScreen />}
             <div className="chart"><p className="settingsH" style={{ "marginTop": "30px" }}> General </p> {Generaldata} </div>
             <div className="chart"><p className="settingsH" > Authentication </p> {Authdata}</div>
+            <div className="chart"><p className="settingsH" > Alarms </p> {Alarmsdata} </div>
             <div className="chart"><p className="settingsH" > Events </p> {Eventsdata} </div>
             <div className="chart"><p className="settingsH" > Elasticsearch and logstash </p> {LEdata} </div>
             <div className="chart"><p className="settingsH" > Slowlog </p> {Slowlogdata} </div>
