@@ -44,13 +44,13 @@ class ConnectivityController extends Controller {
       //topology chart
       { index: "logstash*", template: two_agg_filter_query, params: ["attrs.from.keyword", "attrs.to.keyword"], filter: "attrs.type:call-end" },
       //CONNECTION FAILURE RATIO 
-      { index: "logstash*", template: heatmap_query, params: ["attrs.from.keyword", "failure", "attrs.to.keyword", "failure"], filter: "*" },
+      { index: "logstash*", template: heatmap_query, params: ["attrs.to.keyword", "failure", "attrs.from.keyword", "failure"], filter: "*" },
       //NUMBER OF CALL-ATTEMPS 
-      { index: "logstash*", template: two_agg_filter_query, params: ["attrs.from.keyword", "attrs.to.keyword"], filter: "attrs.type:call-attempt" },
+      { index: "logstash*", template: two_agg_filter_query, params: ["attrs.to.keyword", "attrs.from.keyword"], filter: "attrs.type:call-attempt" },
       //DURATION OF CALLS 
-      { index: "logstash*", template: heatmap_query, params: ["attrs.from.keyword", "attrs.duration", "attrs.to.keyword", "attrs.duration"], filter: "*" },
+      { index: "logstash*", template: heatmap_query, params: ["attrs.to.keyword", "attrs.duration", "attrs.from.keyword", "attrs.duration"], filter: "*" },
       //NUMBER OF CALL-ENDS 
-      { index: "logstash*", template: two_agg_filter_query, params: ["attrs.from.keyword", "attrs.to.keyword"], filter: "attrs.type:call-end" }
+      { index: "logstash*", template: two_agg_filter_query, params: ["attrs.to.keyword", "attrs.from.keyword"], filter: "attrs.type:call-end" }
     ]);
   }
 

@@ -246,10 +246,10 @@ export default class heatmap extends Component {
                 // d3.select(this).style("stroke", "none");
                 tooltip.style("visibility", "hidden");
                 if (field2) {
-                    createFilter(field2 + ":" + el.attr2);
+                    createFilter(field2 + ":\"" + el.attr2+ "\"");
                 }
 
-                createFilter(field + ":" + el.attr1);
+                createFilter(field + ":\"" + el.attr1+ "\"");
 
 
                 var tooltips = document.getElementById("tooltip" + id);
