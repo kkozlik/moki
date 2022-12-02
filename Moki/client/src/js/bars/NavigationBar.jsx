@@ -21,6 +21,8 @@ class navBar extends Component {
 
         };
         this.togglebar = this.togglebar.bind(this);
+        this.updateState = this.updateState.bind(this);
+        storePersistent.subscribe(() => this.updateState());
     }
 
     componentWillReceiveProps(nextProps) {
@@ -34,6 +36,15 @@ class navBar extends Component {
             this.setState({ dashboardsUser: nextProps.dashboardsUser });
         }
 
+    }
+
+    updateState() {
+        this.setState({
+            dashboards: this.props.dashboards,
+            dashboardsSettings: this.props.dashboardsSettings,
+            dashboardsUser: this.props.dashboardsUser
+
+        })
     }
 
     componentDidMount() {
@@ -212,8 +223,30 @@ class navBar extends Component {
     }
 
     render() {
-        var dashboardsSettings = this.state.dashboardsSettings;
-        var dashboards = this.state.dashboards;
+        var dashboardsSettings = [...this.state.dashboardsSettings];
+        var dashboards = [...this.state.dashboards];
+
+        let shouldRemoveAlerts = false;
+        if (storePersistent.getState().settings && storePersistent.getState().settings[0]) {
+            for (let hit of storePersistent.getState().settings[0].attrs) {
+                if (hit.attribute === "disable_alarms") {
+                    shouldRemoveAlerts = hit.value;
+                }
+            }
+        }
+
+        if (shouldRemoveAlerts) {
+            let index = dashboards.indexOf("exceeded");
+            if (index > -1) {
+                dashboards.splice(index, 1);
+            }
+
+            index = dashboardsSettings.indexOf("alarms");
+            if (index > -1) {
+                dashboardsSettings.splice(index, 1);
+            }
+        }
+
         var navbar = renderNavBar(dashboards);
         var navbarSettings = renderNavBar(dashboardsSettings);
 
