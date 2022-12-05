@@ -236,7 +236,7 @@ class ConnectivityCACharts extends Dashboard {
                       type="2agg"
                       id="callAtemptsCA"
                       name={
-                          "NUMBER OF CALL-ATTEMPS CA"
+                          "NUMBER OF CALL-ATTEMPTS CA"
                       }
                       width={
                           (store.getState().width - 300) / 2

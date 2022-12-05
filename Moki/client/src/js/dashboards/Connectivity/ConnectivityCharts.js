@@ -32,7 +32,7 @@ class ConnectivityCharts extends Dashboard {
                 //CONNECTION FAILURE RATIO 
                 [{ result: 'failure', func: parseHeatmapData }],
 
-                //NUMBER OF CALL-ATTEMPS 
+                //NUMBER OF CALL-ATTEMPTS 
                 [{ result: 'callAtempts', func: parseDateHeatmap }],
 
                 //DURATION 
@@ -125,7 +125,7 @@ class ConnectivityCharts extends Dashboard {
                         }
                         id="callAtempts"
                         name={
-                            "NUMBER OF CALL-ATTEMPS"
+                            "NUMBER OF CALL-ATTEMPTS"
                         }
                         width={
                             store.getState().width - 300
