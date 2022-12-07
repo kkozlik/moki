@@ -220,7 +220,7 @@ export async function checkBLip(ob) {
         let profile = storePersistent.getState().profile;
         let key = await cipherAttr("attrs.source", ob.attrs.source, profile, "encrypt");
 
-        let url = "api/bw/getip?key=" + key + "&list=ipprofile&hmac=" + hmac + "&pretty=true"
+        let url = "api/bw/getip?key=" + key + "&list=ipblack&hmac=" + hmac + "&pretty=true"
         const response = await fetch(url, {
             method: "GET",
             credentials: 'include',
