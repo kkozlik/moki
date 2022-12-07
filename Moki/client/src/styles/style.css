@@ -638,11 +638,9 @@ button.export {
 }
 
 .errorBarLoading {
-    padding-left: 30px;
     width: 100%;
     margin-left: 15px;
     font-size: medium;
-    padding: 4px;
     position: fixed;
     z-index: 9999999;
     color: white;

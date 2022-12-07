@@ -64,6 +64,7 @@ export default class listChart extends Component {
             checkall: false,
             selected: [],
             redirect: false,
+            redirectLink: "/causeAnalysis",
             count: count,
             page: 1,
             decryptAttrs: [],
@@ -163,7 +164,8 @@ export default class listChart extends Component {
 
 
     //create exceeded-by filter and redirect to overview
-    createFilterAndRedirect(obj) {
+    createFilterAndRedirect(ob) {
+        let obj = ob._source;
         if (obj.alert && obj.alert.elasticFilter) {
             //disable old filters
             var oldFilters = store.getState().filters;
@@ -197,7 +199,10 @@ export default class listChart extends Component {
                 timerange_lte = obj.alert.elasticFilter.gui.timerange_lte;
             }
             window.timebar.changeTimerange(timerange_gte, timerange_lte);
-            this.setState({ redirect: true });
+            this.setState({
+                redirect: true,
+                redirectLink: "/causeAnalysis?event_id=" + ob._id + "&alert_id=" + obj.alert.key.keyRef
+            });
         }
     }
 
@@ -1098,7 +1103,7 @@ export default class listChart extends Component {
                         }
                     </ToolkitProvider>
                 }
-                {this.state.redirect && <Redirect push to="/overview" />}
+                {this.state.redirect && <Redirect push to={this.state.redirectLink} />}
             </div>
         );
     }
