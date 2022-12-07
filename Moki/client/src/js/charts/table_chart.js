@@ -28,7 +28,7 @@ import { downloadPcap } from '../helpers/download/downloadPcap';
 import { downloadSD } from '../helpers/download/downloadSD';
 import { tableColumns } from '../helpers/TableColumns';
 import { getPcap } from '../helpers/getPcap.js';
-import { setFilters} from "../actions/index";
+import { setFilters } from "../actions/index";
 import { downloadPcapMerged } from '../helpers/download/downloadPcapMerged';
 import { parseTimestamp } from "../helpers/parseTimestamp";
 import { decryptTableHits, decryptAttr } from '@moki-client/es-response-parser';
@@ -181,7 +181,8 @@ export default class listChart extends Component {
             //filters
             if (obj.alert.elasticFilter.gui.lucene && obj.alert.elasticFilter.gui.lucene.length > 0) {
                 for (let hit of obj.alert.elasticFilter.gui.lucene) {
-                    createFilter(hit);
+                    //pass encrypt value because alert can be plain or encrypt
+                    createFilter(hit, null, true, false, obj.alert.key.encrypt);
                 }
             }
 
