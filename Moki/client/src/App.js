@@ -116,10 +116,10 @@ class App extends Component {
                 while (filters !== -1) {
                     var last = parameters.indexOf("&", filters + 7);
                     if (last === -1) {
-                        result.push(await createFilter(parameters.substring(filters + 7), id, false, true));
+                        result.push(await createFilter(parameters.substring(filters + 7), id, false, true, false));
                     }
                     else {
-                        result.push(await createFilter(parameters.substring(filters + 7, last), id, false, true));
+                        result.push(await createFilter(parameters.substring(filters + 7, last), id, false, true, false));
                     }
                     filters = parameters.indexOf("filter=", (filters + 1));
                     id++;
