@@ -528,9 +528,18 @@ class SettingController {
    *               error: "Config checked failed. Writing old config back."
    */
   static async save(request, respond) {
-    //get config file
-    const jsonData = JSON.parse(fs.readFileSync(cfg.fileMonitor));
-    const jsonDataOld = JSON.parse(fs.readFileSync(cfg.fileMonitor));
+    try {
+      //rename old config file
+      fs.renameSync(cfg.fileMonitor, cfg.fileMonitor + "_backup");
+    }
+    catch (err) {
+      console.error("Problem with creating backup file. " + err);
+      respond.status(400).send({ "msg": "Problem with creating backup file. " + err });
+      return;
+    }
+
+    //read from renamed config file
+    const jsonData = JSON.parse(fs.readFileSync(cfg.fileMonitor + "_backup"));
     let m_config = [];
     //if filters paste it on top layer
     if (request.body.app === "m_filters") {
@@ -561,6 +570,7 @@ class SettingController {
           isConfigGroupThere = true;
         }
       }
+
       //no m_sns or m_m_config or m_alarms
       if (isConfigGroupThere === false) {
         jsonData["general"]["global-config"].push(request.body);
@@ -577,7 +587,7 @@ class SettingController {
         fs.readFile(cfg.fileDefaults, async function (err, defaults) {
           if (err) {
             console.error("Problem with reading defaults file. " + err);
-            return (false);
+            resolve(false);
           }
           else {
             let defaultsValues = JSON.parse(defaults);
@@ -605,16 +615,15 @@ class SettingController {
                           if (keyFile.attribute === key) {
                             key = JSON.parse(JSON.stringify(keyFile.value));
 
-
                             //get key format
                             for (let defKey of defaultsValues) {
-                              if (defKey.attribute === keyFile.attribute ) {
+                              if (defKey.attribute === keyFile.attribute) {
                                 if (defKey.restriction && defKey.restriction.format) {
                                   keyFormat = defKey.restriction.format;
                                 }
                               }
                             }
-                          
+
                             if (!key || key === "") {
                               respond.status(400).send({
                                 "msg": "No key for " + hit.attribute
@@ -650,8 +659,8 @@ class SettingController {
                         let params = ["rsa", "-text", "-noout"];
                         //check key
                         if (key) {
-                          if(keyFormat === "PKCS8"){
-                            params = ["pkcs8", "-topk8", "-nocrypt"] 
+                          if (keyFormat === "PKCS8") {
+                            params = ["pkcs8", "-topk8", "-nocrypt"]
                           }
 
                           const keyResult = spawn('openssl', params);
@@ -722,39 +731,69 @@ class SettingController {
     let certCheck = await checkCertificate(m_config, respond);
     if (certCheck !== false) {
       //write it to monitor file
-      fs.writeFile(cfg.fileMonitor, JSON.stringify(jsonData, null, 2), function (error) {
+      fs.writeFile(cfg.fileMonitor, JSON.stringify(jsonData, null, 2), function (error, stdout, stderr) {
         if (error) {
           //write old data back
-          fs.writeFile(cfg.fileMonitor, JSON.stringify(jsonDataOld, null, 2));
+          try {
+            fs.renameSync(cfg.fileMonitor + "_backup", cfg.fileMonitor);
+          }
+          catch (err) {
+            respond.status(400).send({ "msg": err });
+            return;
+          }
+          //remove backup file
+         // fs.unlinkSync(cfg.fileMonitor + "_backup");
           console.error("Config checked failed. Writing old config back. " + stderr);
           respond.status(400).send({ "msg": error });
+          return;
         }
         console.info("Writing new config to file. " + JSON.stringify(jsonData));
         //call check config script
         exec("sudo /usr/sbin/abc-monitor-check-config", function (error, stdout, stderr) {
           if (error) {
-            //write old data back
-            fs.writeFile(cfg.fileMonitor, JSON.stringify(jsonDataOld, null, 2));
+            //write old data back - rename again
+            try {
+              fs.renameSync(cfg.fileMonitor + "_backup", cfg.fileMonitor);
+            }
+            catch (err) {
+              respond.status(400).send({ "msg": err });
+              return;
+            }
+            //remove backup file
+             //fs.unlinkSync(cfg.fileMonitor + "_backup");
+
             console.error("Config checked failed. Writing old config back. " + stderr);
             respond.status(400).send({
               "msg": stderr
             });
+            return;
 
           } else {
             console.info("Activating config.");
             //call generate config script
             exec("sudo /usr/sbin/abc-monitor-activate-config", function (error, stdout, stderr) {
               if (error) {
-                //write old data back
-                fs.writeFile(cfg.fileMonitor, JSON.stringify(jsonDataOld, null, 2));
+                //write old data back - rename again
+                try {
+                  fs.renameSync(cfg.fileMonitor + "_backup", cfg.fileMonitor);
+                }
+                catch (err) {
+                  respond.status(400).send({ "msg": err });
+                  return;
+                }
+                //remove backup file
+                 //fs.unlinkSync(cfg.fileMonitor + "_backup");
                 console.error("Config checked failed. Writing old config back. " + stderr);
                 respond.status(400).send({
                   "msg": stderr
                 });
                 console.error("Config cannot be activated. " + stderr);
                 respond.end();
+                return;
               } else {
                 console.info("New config activated.");
+                //remove backup file
+                 //fs.unlinkSync(cfg.fileMonitor + "_backup");
                 respond.status(200).send({
                   "msg": "Data has been saved."
                 });
@@ -765,6 +804,8 @@ class SettingController {
       });
     }
   }
+
+
 
 
   /**
